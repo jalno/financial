@@ -1,0 +1,7 @@
+{
+	"permissions": "*",
+	"routing": "routing.json",
+	"frontend":"frontend",
+	"autoload":"autoloader.json",
+	"dependencies": ["base", "userpanel"]
+}

@@ -1,0 +1,23 @@
+{
+	"author": {
+		"name" : "Yeganemehr",
+		"website" : "http://www.yeganemehr.ir/"
+	},
+	"rtl": true,
+	"phrases":{
+		"services": "سرویس ها",
+		"files":"فایل ها",
+		"plan.name" : "پلن",
+		"transaction.title": "عنوان",
+		"transaction.price": "مبلغ",
+		"transaction.createdate": "تاریخ صدور",
+		"transaction.number": "شماره {number}",
+		"title.transaction.view" : "مشاهده صورتحساب",
+		"tranactions" : "صورتحساب ها",
+		"tranaction" : "صورتحساب {id}",
+		"transaction.unpaid" : "پرداخت نشده",
+		"tranactions.paid" : "پرداخت شده",
+		"tranactions.refund" : "بازگشت داده شده"
+
+	}
+}

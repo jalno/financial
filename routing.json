@@ -1,0 +1,12 @@
+[
+	{
+		"path": ["userpanel","transactions"],
+		"controller": "controllers\\transactions@listtransactions",
+		"method":"get"
+	},
+	{
+		"path": ["userpanel","transactions","view", {"type":"dynamic", "name":"id", "regex":"/^(\\d+)$/"}],
+		"controller": "controllers\\transactions@transaction_view",
+		"method":"get"
+	}
+]

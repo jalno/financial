@@ -1,0 +1,27 @@
+{
+	"name" : "clipone",
+	"title":"Clip One",
+	"version" : "1.0.0",
+	"author" : {
+		"name" : "Jeyserver",
+		"website" : "http://www.jeyserver.com/"
+	},
+	"autoload":"autoloader.json",
+	"languages":{
+		"fa_IR" : "langs/fa_IR.json"
+	},
+	"assets":[
+	],
+	"views":[
+		{
+			"name":"\\themes\\clipone\\views\\transactions\\listview",
+			"parent":"\\packages\\financial\\views\\transactions\\listview",
+			"file":"transactions.list.php"
+		},
+		{
+			"name":"\\themes\\clipone\\views\\transactions\\view",
+			"parent":"\\packages\\financial\\views\\transactions\\view",
+			"file":"transactions.view.php"
+		}
+	]
+}

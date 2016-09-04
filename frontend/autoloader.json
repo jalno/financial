@@ -1,0 +1,12 @@
+{
+	"files":[
+		{
+			"classes":["views\\transactions\\listview"],
+			"file":"views/transactions/list.php"
+		},
+		{
+			"classes":["views\\transactions\\view"],
+			"file":"views/transactions/view.php"
+		}
+	]
+}
