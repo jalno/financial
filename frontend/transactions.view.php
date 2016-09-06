@@ -26,7 +26,7 @@ $this->the_header();
 					<h4>خریدار:</h4>
 					<div class="well">
 						<address>
-							<strong><?php echo $this->transaction->user->name; echo $this->transaction->user->lastname; ?></strong>
+							<strong><?php echo $this->transaction->user->name.' '.$this->transaction->user->lastname; ?></strong>
 							<br>
 							<?php echo $this->transaction->user->address; ?>
 							<br>
@@ -99,7 +99,9 @@ $this->the_header();
 							</tr>
 						</thead>
 						<tbody>
-						<?php foreach($this->transaction->products as $product){ ?>
+						<?php
+						foreach($this->transaction->products as $product){
+								?>
 							<tr>
 								<td>1</td>
 								<td><?php echo $product->title; ?></td>
@@ -109,7 +111,7 @@ $this->the_header();
 								<td class="hidden-480"> <?php echo $product->discount; ?> ریال</td>
 								<td><?php echo $product->price; ?> ریال</td>
 							</tr>
-						<?php } ?>
+							<?php } ?>
 						</tbody>
 					</table>
 				</div>
@@ -118,7 +120,7 @@ $this->the_header();
 				<div class="col-sm-12 invoice-block">
 					<ul class="list-unstyled amounts">
 						<li><strong>جمع کل:</strong> <?php echo(number_format($this->transaction->price)); ?> ریال</li>
-						<li><strong>تخفیف:</strong><?php echo(number_format($this->transaction->products->discount)); ?> ریال</li>
+						<li><strong>تخفیف:</strong><?php echo(number_format($product->discount)); ?> ریال</li>
 						<li><strong>مالیات:</strong> 0 ریال</li>
 						<li><strong>مبلغ قابل پرداخت:</strong><?php echo(number_format($this->transaction->price)); ?> ریال</li>
 					</ul>

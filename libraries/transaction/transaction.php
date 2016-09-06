@@ -12,7 +12,7 @@ class transaction extends dbObject{
 	protected $primaryKey = "id";
 	protected $dbFields = array(
 		'id' => array('type' => 'int'),
-        'user' => array('type' => 'int'),
+        'user' => array('type' => 'int', 'required' => true),
         'title' => array('type' => 'text', 'required' => true),
         'price' => array('type' => 'int', 'required' => true),
 		'create_at' => array('type' => 'int', 'required' => true),
@@ -21,7 +21,7 @@ class transaction extends dbObject{
 		'status' => array('type' => 'int', 'required' => true)
     );
 	protected $relations = array(
-		'user' => array('hasone', 'packages\\userpanel\\user', 'user'),
+		'user' => array('hasOne', 'packages\\userpanel\\user', 'user'),
 		'params' => array('hasMany', 'packages\\financial\\transactions_params', 'transaction'),
 		'products' => array('hasMany', 'packages\\financial\\transaction_product', 'transaction')
 	);

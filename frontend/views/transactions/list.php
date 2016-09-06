@@ -1,5 +1,6 @@
 <?php
 namespace themes\clipone\views\transactions;
+use \packages\base\db\dbObject;
 use \packages\financial\views\transactions\listview as transactionsListView;
 use \packages\userpanel;
 use \packages\userpanel\date;
@@ -7,6 +8,7 @@ use \themes\clipone\navigation;
 use \themes\clipone\navigation\menuItem;
 use \themes\clipone\views\listTrait;
 use \packages\base\translator;
+use \packages\base\utility;
 
 class listview extends transactionsListView{
 	use listTrait;
@@ -48,7 +50,7 @@ class listview extends transactionsListView{
 	}
 	public function check_multiuser(){
 		if($this->dataList){
-			$users = array_unique(array_column($this->dataList, 'user'));
+			$users = array_unique(array_column(dbObject::objectToArray($this->dataList), 'user'));
 			$this->multiuser = count($users) > 1;
 		}
 	}

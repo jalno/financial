@@ -26,7 +26,7 @@ $this->the_header();
 								<th class="center">#</th>
 								<th><?php echo translator::trans('transaction.title'); ?></th>
 								<th><?php echo translator::trans('transaction.price'); ?></th>
-								<th><?php echo translator::trans('user.name'); ?></th>
+								<?php if($this->multiuser){ ?><th><?php echo translator::trans('user.name'); ?></th><?php } ?>
 								<th><?php echo translator::trans('transaction.createdate'); ?></th>
 								<th><?php echo translator::trans('service.status'); ?></th>
 								<?php if($hasButtons){ ?><th></th><?php } ?>
@@ -53,7 +53,7 @@ $this->the_header();
 								<td class="center"><?php echo $row->id; ?></td>
 								<td><?php echo $row->title; ?></td>
 								<td><?php echo $row->price; ?></td>
-								<td><?php if($this->multiuser){echo $row->user->name;}else{echo("-");}?></td>
+								<?php if($this->multiuser){ ?><td><a href="<?php echo userpanel\url('users/view/').$row->user->id; ?>"><?php echo $row->user->name; ?></a></td><?php } ?>
 								<td><?php echo $row->create_at; ?></td>
 								<td class="hidden-xs"><span class="<?php echo $statusClass; ?>"><?php echo translator::trans($statusTxt); ?></span></td>
 								<?php
