@@ -5,14 +5,20 @@ use \packages\financial\transactions_product_param;
 class transaction_product extends dbObject{
 	const host = 1;
 	const domain = 2;
+	const buy = 1;
+	const renew = 2;
+	const upgrade = 3;
+	const downgrade = 4;
+	const refund = 5;
+	const other = 6;
 	protected $dbTable = "financial_transactions_products";
 	protected $primaryKey = "id";
 	protected $dbFields = array(
-		'id' => array('type' => 'int'),
-        'title' => array('type' => 'text'),
-        'transaction' => array('type' => 'int'),
+        'title' => array('type' => 'text', 'required' => true),
+        'transaction' => array('type' => 'int', 'required' => true),
 		'description' => array('type' => 'text'),
 		'type' => array('type' => 'text', 'required' => true),
+		'method' => array('type' => 'int', 'required' => true),
 		'price' => array('type' => 'int', 'required' => true),
 		'discount' => array('type' => 'int', 'required' => true),
 		'number' => array('type' => 'int', 'required' => true)
@@ -38,6 +44,13 @@ class transaction_product extends dbObject{
 				unset($data['params']);
 			}
 			$newdata = $data;
+		}
+		if(!isset($data['number'])){
+			$newdata['number'] = 1;
+		}
+
+		if(!isset($data['discount'])){
+			$newdata['discount'] = 0;
 		}
 		return $newdata;
 	}

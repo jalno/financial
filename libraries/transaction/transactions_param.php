@@ -5,9 +5,8 @@ class transactions_param extends dbObject{
 	protected $dbTable = "financial_transactions_params";
 	protected $primaryKey = "id";
 	protected $dbFields = array(
-		'id' => array('type' => 'int'),
-        'transaction' => array('type' => 'int'),
-        'name' => array('type' => 'text'),
+        'transaction' => array('type' => 'int', 'required' => true),
+        'name' => array('type' => 'text', 'required' => true),
         'value' => array('type' => 'text')
 	);
 }

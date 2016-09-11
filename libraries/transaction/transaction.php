@@ -36,6 +36,28 @@ class transaction extends dbObject{
 			return $product->save();
 		}
 	}
+	protected function preLoad($data){
+		if(!isset($data['status'])){
+			$data['status'] = self::unpaid;
+		}
+		if(!isset($data['create_at']) or !$data['create_at']){
+			$data['create_at'] = time();
+		}
+		if($data['status'] == self::unpaid and (!isset($data['expire_at']) or !$data['expire_at'])){
+			$data['expire_at'] = $data['create_at'] + (86400*2);
+		}
+		$products = array();
+		if ($this->isNew){
+			$products = &$this->tmproduct;
+		}else{
+			$products = $this->products;
+		}
+		$data['price'] = 0;
+		foreach($products as $product){
+			$data['price'] += (($product->price*$product->number) - $product->discount);
+		}
+		return $data;
+	}
 	public function save($data = null){
 		if(($return = parent::save($data))){
 			foreach($this->tmproduct as $product){
