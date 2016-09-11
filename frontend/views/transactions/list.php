@@ -25,11 +25,14 @@ class listview extends transactionsListView{
 		navigation::active("transactions/list");
 	}
 	public static function onSourceLoad(){
-		$item = new menuItem("transactions");
-		$item->setTitle("صورتحساب ها");
-		$item->setURL(userpanel\url('transactions'));
-		$item->setIcon('clip-data');
-		navigation::addItem($item);
+		parent::onSourceLoad();
+		if(self::$navigation){
+			$item = new menuItem("transactions");
+			$item->setTitle("صورتحساب ها");
+			$item->setURL(userpanel\url('transactions'));
+			$item->setIcon('fa fa-money');
+			navigation::addItem($item);
+		}
 	}
 	public function setButtons(){
 		$this->setButton('transactions_view', $this->canView, array(
