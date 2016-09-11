@@ -12,6 +12,7 @@ use \packages\base\translator;
 class view extends transactionsView{
 	use listTrait;
 	protected $transaction;
+	protected $hasdesc;
 	function __beforeLoad(){
 		$this->transaction = $this->getData('transaction');
 		$this->setTitle(array(
@@ -19,6 +20,7 @@ class view extends transactionsView{
 		));
 		$this->setShortDescription(translator::trans('transaction.number',array('number' =>  $this->transaction->id)));
 		$this->setNavigation();
+		$this->SetNoteBox();
 
 	}
 	private function setNavigation(){
@@ -34,5 +36,14 @@ class view extends transactionsView{
 		$item->setIcon('clip-user');
 		breadcrumb::addItem($item);
 		navigation::active("transactions/list");
+	}
+	private function SetNoteBox(){
+		$this->hasdesc = false;
+		foreach($this->transaction->products as $product){
+			if($product->param('description')){
+				$this->hasdesc = true;
+				break;
+			}
+		}
 	}
 }

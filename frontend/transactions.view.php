@@ -21,6 +21,24 @@ $this->the_header();
 				</div>
 			</div>
 			<hr>
+			<?php
+			if($this->hasdesc){
+			?>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="box-note">
+						<?php
+						foreach($this->transaction->products as $product){
+							if($product->param('description')){
+						?>
+						<p><b><?php echo $product->title ?></b>: <br><?php echo $product->param('description') ?></p>
+					<?php
+							}
+						}?>
+					</div>
+				</div>
+			</div>
+			<?php } ?>
 			<div class="row">
 				<div class="col-sm-4">
 					<h4>خریدار:</h4>
@@ -100,10 +118,11 @@ $this->the_header();
 						</thead>
 						<tbody>
 						<?php
+						$x = 1;
 						foreach($this->transaction->products as $product){
 								?>
 							<tr>
-								<td>1</td>
+								<td><?php echo $x++; ?></td>
 								<td><?php echo $product->title; ?></td>
 								<td class="hidden-480"><?php echo $product->description; ?></td>
 								<td class="hidden-480"><?php echo $product->number; ?> عدد</td>

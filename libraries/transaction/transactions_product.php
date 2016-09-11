@@ -18,7 +18,7 @@ class transaction_product extends dbObject{
 		'number' => array('type' => 'int', 'required' => true)
     );
 	protected $relations = array(
-		'product' => array('hasMany', 'packages\\financial\\transactions_products_param', 'product')
+		'params' => array('hasMany', 'packages\\financial\\transactions_products_param', 'product')
 	);
 	function __construct($data = null, $connection = 'default'){
 		$data = $this->processData($data);

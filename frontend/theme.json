@@ -11,6 +11,10 @@
 		"fa_IR" : "langs/fa_IR.json"
 	},
 	"assets":[
+		{
+			"type":"css",
+			"file":"assets/css/note.css"
+		}
 	],
 	"views":[
 		{

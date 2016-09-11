@@ -21,6 +21,7 @@ class transactions extends controller{
 				}else{
 					db::where("userpanel_users.id", authentication::getID());
 				}
+				db::orderBy('id', ' DESC');
 				db::pageLimit($this->items_per_page);
 				$transactionsData = db::paginate("financial_transactions", $this->page, array("financial_transactions.*"));
 				$transactions = array();
