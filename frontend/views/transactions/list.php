@@ -26,7 +26,7 @@ class listview extends transactionsListView{
 	}
 	public static function onSourceLoad(){
 		$item = new menuItem("transactions");
-		$item->setTitle("صورت حساب ها");
+		$item->setTitle("صورتحساب ها");
 		$item->setURL(userpanel\url('transactions'));
 		$item->setIcon('clip-data');
 		navigation::addItem($item);

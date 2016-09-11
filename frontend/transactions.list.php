@@ -52,8 +52,8 @@ $this->the_header();
 							<tr>
 								<td class="center"><?php echo $row->id; ?></td>
 								<td><?php echo $row->title; ?></td>
-								<td><?php echo $row->price; ?></td>
-								<?php if($this->multiuser){ ?><td><a href="<?php echo userpanel\url('users/view/').$row->user->id; ?>"><?php echo $row->user->name; ?></a></td><?php } ?>
+								<td><?php echo $row->price." ریال"; ?></td>
+								<?php if($this->multiuser){ ?><td><a href="<?php echo userpanel\url('users/view/').$row->user->id; ?>"><?php echo $row->user->name.' '.$row->user->lastname; ?></a></td><?php } ?>
 								<td><?php echo $row->create_at; ?></td>
 								<td class="hidden-xs"><span class="<?php echo $statusClass; ?>"><?php echo translator::trans($statusTxt); ?></span></td>
 								<?php
