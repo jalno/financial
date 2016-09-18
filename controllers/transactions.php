@@ -190,39 +190,49 @@ class transactions extends controller{
 				$transaction = $this->getTransaction($data['transaction']);
 				if($transaction->status == transaction::unpaid){
 					$view->setTransaction($transaction);
-					$view->setBankAccounts(payport::where("status", 1)->get());
+					$view->setBankAccounts(bankaccount::where("status", 1)->get());
 					$this->response->setStatus(false);
 					if(http::is_post()){
 						$inputsRoles = array(
-							'payport' => array(
+							'bankaccount' => array(
 								'type' => 'number'
 							),
 							'price' => array(
 								'type' => 'number',
+							),
+							'followup' => array(
+								'type' => 'string'
+							),
+							'date' => array(
+								'type' => 'date'
 							)
 						);
 						try{
 							$inputs = $this->checkinputs($inputsRoles);
-							if($payport = payport::where("status", payport::active)->byId($inputs['bankaccount'])){
+							if($bankaccount = bankaccount::where("status", bankaccount::active)->byId($inputs['bankaccount'])){
 								if($inputs['price'] > 0 and $inputs['price'] <= $transaction->payablePrice()){
-									if($transaction->addPay(array(
-										'date' => $inputs['date'],
-										'method' => transaction_pay::banktransfer,
-										'price' => $inputs['price'],
-										'status' => transaction_pay::pending,
-										'params' => array(
-											'bankaccount' => $bankaccount->id,
-											'followup' => $inputs['followup']
-										)
-									))){
-										$this->response->setStatus(true);
-										$this->response->Go(userpanel\url('transactions/view/'.$transaction->id));
+									if(($inputs['date'] = date::strtotime($inputs['date'])) > date::time() - (86400*30)){
+										if($transaction->addPay(array(
+											'date' => $inputs['date'],
+											'method' => transaction_pay::banktransfer,
+											'price' => $inputs['price'],
+											'status' => transaction_pay::pending,
+											'params' => array(
+												'bankaccount' => $bankaccount->id,
+												'followup' => $inputs['followup']
+											)
+										))){
+											$this->response->setStatus(true);
+											$this->response->Go(userpanel\url('transactions/view/'.$transaction->id));
+										}
+									}else{
+										throw new inputValidation("date");
 									}
 								}else{
 									throw new inputValidation("price");
 								}
 							}else{
-								throw new inputValidation("payport");
+								throw new inputValidation("bankaccount");
 							}
 						}catch(inputValidation $error){
 							$view->setFormError(FormError::fromException($error));
