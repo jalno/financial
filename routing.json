@@ -8,5 +8,34 @@
 		"path": ["userpanel","transactions","view", {"type":"dynamic", "name":"id", "regex":"/^(\\d+)$/"}],
 		"controller": "controllers\\transactions@transaction_view",
 		"method":"get"
+	},
+	{
+		"path": ["userpanel","transactions","pay", {"type":"dynamic", "name":"transaction", "regex":"/^(\\d+)$/"}],
+		"controller": "controllers\\transactions@pay",
+		"method":"get"
+	},
+	{
+		"path": ["userpanel","transactions","pay", "credit", {"type":"dynamic", "name":"transaction", "regex":"/^(\\d+)$/"}],
+		"controller": "controllers\\transactions@payByCredit"
+	},
+	{
+		"path": ["userpanel","transactions","pay", "banktransfer", {"type":"dynamic", "name":"transaction", "regex":"/^(\\d+)$/"}],
+		"controller": "controllers\\transactions@payByBankTransfer"
+	},
+	{
+		"path": ["userpanel","transactions","pay", "accept", {"type":"dynamic", "name":"pay", "regex":"/^(\\d+)$/"}],
+		"controller": "controllers\\transactions@acceptPay"
+	},
+	{
+		"path": ["userpanel","transactions","pay", "reject", {"type":"dynamic", "name":"pay", "regex":"/^(\\d+)$/"}],
+		"controller": "controllers\\transactions@rejectPay"
+	},
+	{
+		"path": ["userpanel","transactions","pay", "onlinepay", {"type":"dynamic", "name":"transaction", "regex":"/^\\d+$/"}],
+		"controller": "controllers\\transactions@onlinePay"
+	},
+	{
+		"path": ["userpanel","transactions","pay", "onlinepay", "callback", {"type":"dynamic", "name":"pay", "regex":"/^\\d+$/"}],
+		"controller": "controllers\\transactions@onlinePay_callback"
 	}
 ]

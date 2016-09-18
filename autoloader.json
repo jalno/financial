@@ -58,6 +58,65 @@
 		{
 			"classes":["transactions_products_param"],
 			"file":"libraries/transaction/transactions_products_param.php"
+		},
+		{
+			"classes":["bankaccount"],
+			"file":"libraries/bank/bankaccount.php"
+		},
+		{
+			"classes":["payport"],
+			"file":"libraries/payports/payport.php"
+		},
+		{
+			"classes":[
+				"views\\transactions\\payTrait",
+				"views\\transactions\\pay"
+			],
+			"file":"views/transactions/pay.php"
+		},
+		{
+			"classes":["views\\transactions\\pay\\credit"],
+			"file":"views/transactions/pay/credit.php"
+		},
+		{
+			"classes":["transaction_pay"],
+			"file":"libraries/transaction/transaction_pay.php"
+		},
+		{
+			"classes":["transaction_pay_param"],
+			"file":"libraries/transaction/transaction_pay_param.php"
+		},
+		{
+			"classes":["views\\transactions\\pay\\banktransfer"],
+			"file":"views/transactions/pay/banktransfer.php"
+		},
+		{
+			"classes":["views\\transactions\\pay\\accept"],
+			"file":"views/transactions/pay/accept.php"
+		},
+		{
+			"classes":["views\\transactions\\pay\\reject"],
+			"file":"views/transactions/pay/reject.php"
+		},
+		{
+			"classes":["views\\transactions\\pay\\onlinepay"],
+			"file":"views/transactions/pay/onlinepay.php"
+		},
+		{
+			"classes":["payport_pay"],
+			"file":"libraries/payports/pay.php"
+		},
+		{
+			"classes":["payport_pay_param"],
+			"file":"libraries/payports/pay_param.php"
+		},
+		{
+			"classes":["payport\\gateway"],
+			"file":"libraries/payports/gateway.php"
+		},
+		{
+			"classes":["views\\transactions\\pay\\onlinepay\\error"],
+			"file":"views/transactions/pay/onlinepay_error.php"
 		}
 	]
 }

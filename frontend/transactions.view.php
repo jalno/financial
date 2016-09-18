@@ -1,6 +1,7 @@
 <?php
 use \packages\userpanel;
 use \packages\financial\transaction;
+use \packages\financial\transaction_pay;
 use \packages\base\translator;
 use \themes\clipone\utility;
 use \packages\userpanel\date;
@@ -135,17 +136,83 @@ $this->the_header();
 					</table>
 				</div>
 			</div>
+			<?php
+			if($this->pays){
+				$hasdesc = $this->paysHasDiscription();
+				$hastatus = $this->paysHasStatus();
+				$hasButtons = $this->hasButtons();
+			?>
+			<h3><?php echo translator::trans('pays'); ?></h3>
+			<div class="row">
+				<div class="col-xs-12">
+					<table class="table table-striped table-hover">
+						<thead>
+							<tr>
+								<th> # </th>
+								<th> <?php echo translator::trans('date&time'); ?> </th>
+								<th> <?php echo translator::trans('pay.method'); ?> </th>
+								<?php if($hasdesc){ ?><th> <?php echo translator::trans('description'); ?> </th><?php } ?>
+								<th> <?php echo translator::trans('transaction.price'); ?> </th>
+								<?php if($hastatus){ ?><th> <?php echo translator::trans('pay.status'); ?> </th><?php } ?>
+								<?php if($hasButtons){ ?><th></th><?php } ?>
+							</tr>
+						</thead>
+						<tbody>
+						<?php
+						$x = 1;
+						foreach($this->pays as $pay){
+							if($hasButtons){
+								$this->setButtonParam('pay_accept', 'link', userpanel\url("transactions/pay/accept/".$pay->id));
+								$this->setButtonParam('pay_reject', 'link', userpanel\url("transactions/pay/reject/".$pay->id));
+
+							}
+							if($hastatus){
+								$statusClass = utility::switchcase($pay->status, array(
+									'label label-danger' => transaction_pay::rejected,
+									'label label-success' => transaction_pay::accepted,
+									'label label-warning' => transaction_pay::pending
+								));
+								$statusTxt = utility::switchcase($pay->status, array(
+									'pay.rejected' => transaction_pay::rejected,
+									'pay.accepted' => transaction_pay::accepted,
+									'pay.pending' => transaction_pay::pending
+								));
+							}
+						?>
+							<tr>
+								<td><?php echo $x++; ?></td>
+								<td><?php echo $pay->date; ?></td>
+								<td class="hidden-480"><?php echo $pay->method; ?></td>
+								<?php if($hasdesc){ ?><td><?php echo $pay->description; ?></td><?php } ?>
+								<td><?php echo $pay->price; ?></td>
+								<?php if($hastatus){ ?><td><span class="<?php echo $statusClass; ?>"><?php echo translator::trans($statusTxt); ?></td><?php } ?>
+								<?php
+								if($hasButtons){
+									echo("<td class=\"center\">".$this->genButtons()."</td>");
+								}
+								?>
+								</tr>
+							</tr>
+						<?php } ?>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<?php
+			}
+			?>
 			<div class="row">
 				<div class="col-sm-12 invoice-block">
 					<ul class="list-unstyled amounts">
 						<li><strong>جمع کل:</strong> <?php echo(number_format($this->transaction->price)); ?> ریال</li>
 						<li><strong>تخفیف:</strong><?php echo(number_format($product->discount)); ?> ریال</li>
 						<li><strong>مالیات:</strong> 0 ریال</li>
-						<li><strong>مبلغ قابل پرداخت:</strong><?php echo(number_format($this->transaction->price)); ?> ریال</li>
+						<li><strong>مبلغ قابل پرداخت:</strong><?php echo(number_format($this->transaction->payablePrice())); ?> ریال</li>
 					</ul>
 					<br>
 					<a onclick="javascript:window.print();" class="btn btn-lg btn-teal hidden-print">چاپ<i class="fa fa-print"></i></a>
-					<a class="btn btn-lg btn-green hidden-print btn-pay" data-toggle="modal" href="#typepay">پرداخت صورتحساب<i class="fa fa-check"></i></a>
+					<?php if($this->transaction->status == transaction::unpaid){ ?><a class="btn btn-lg btn-green hidden-print btn-pay" href="<?php echo userpanel\url('transactions/pay/'.$this->transaction->id);?>">پرداخت صورتحساب<i class="fa fa-check"></i></a><?php } ?>
 				</div>
 			</div>
 		</div>

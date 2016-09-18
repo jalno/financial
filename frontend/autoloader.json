@@ -7,6 +7,34 @@
 		{
 			"classes":["views\\transactions\\view"],
 			"file":"views/transactions/view.php"
+		},
+		{
+			"classes":["views\\transactions\\pay"],
+			"file":"views/transactions/pay.php"
+		},
+		{
+			"classes":["views\\transactions\\pay\\credit"],
+			"file":"views/transactions/pay/credit.php"
+		},
+		{
+			"classes":["views\\transactions\\pay\\banktransfer"],
+			"file":"views/transactions/pay/banktransfer.php"
+		},
+		{
+			"classes":["views\\transactions\\pay\\accept"],
+			"file":"views/transactions/pay/accept.php"
+		},
+		{
+			"classes":["views\\transactions\\pay\\reject"],
+			"file":"views/transactions/pay/reject.php"
+		},
+		{
+			"classes":["views\\transactions\\pay\\onlinepay"],
+			"file":"views/transactions/pay/onlinepay.php"
+		},
+		{
+			"classes":["views\\transactions\\pay\\onlinepay\\error"],
+			"file":"views/transactions/pay/onlinepay_error.php"
 		}
 	]
 }

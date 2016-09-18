@@ -23,9 +23,11 @@ class transaction extends dbObject{
 	protected $relations = array(
 		'user' => array('hasOne', 'packages\\userpanel\\user', 'user'),
 		'params' => array('hasMany', 'packages\\financial\\transactions_params', 'transaction'),
-		'products' => array('hasMany', 'packages\\financial\\transaction_product', 'transaction')
+		'products' => array('hasMany', 'packages\\financial\\transaction_product', 'transaction'),
+		'pays' => array('hasMany', 'packages\\financial\\transaction_pay', 'transaction')
 	);
 	protected $tmproduct = array();
+	protected $tmpays = array();
 	protected function addProduct($productdata){
 		$product = new transaction_product($productdata);
 		if ($this->isNew){
@@ -34,6 +36,39 @@ class transaction extends dbObject{
 		}else{
 			$product->transaction = $this->id;
 			return $product->save();
+		}
+	}
+	protected function addPay($paydata){
+		$pay = new transaction_pay($paydata);
+		if ($this->isNew){
+			$this->tmpays[] = $pay;
+			return true;
+		}else{
+			$pay->transaction = $this->id;
+			return $pay->save();
+		}
+	}
+	protected function payablePrice(){
+		$payable = $this->price;
+		if($this->id){
+			unset($this->data['pays']);
+			foreach($this->pays as $pay){
+				if($pay->status == transaction_pay::accepted){
+					$payable -= $pay->price;
+				}
+			}
+		}
+		return $payable;
+	}
+	protected function trigger_paid(){
+		foreach($this->products as $product){
+			if(class_exists($product->type)){
+				$obj = new $product->type($product->data);
+				if(method_exists($obj, 'trigger_paid')){
+					$obj->trigger_paid();
+				}
+				unset($obj);
+			}
 		}
 	}
 	protected function preLoad($data){
@@ -64,7 +99,12 @@ class transaction extends dbObject{
 				$product->transaction = $this->id;
 				$product->save();
 			}
-			$this->tmproduct = array();
+			$this->tmpays = array();
+			foreach($this->tmpays as $pay){
+				$pay->transaction = $this->id;
+				$pay->save();
+			}
+			$this->tmpays = array();
 		}
 		return $return;
 	}
