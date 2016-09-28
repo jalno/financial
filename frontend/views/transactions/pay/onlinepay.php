@@ -7,10 +7,11 @@ use \packages\financial\views\transactions\pay\onlinepay as onlinepayView;
 use \themes\clipone\breadcrumb;
 use \themes\clipone\navigation;
 use \themes\clipone\navigation\menuItem;
+use \themes\clipone\viewTrait;
 use \themes\clipone\views\formTrait;
 
 class onlinepay extends onlinepayView{
-	use formTrait;
+	use viewTrait,formTrait;
 	protected $transaction;
 	function __beforeLoad(){
 		$this->transaction = $this->getTransaction();

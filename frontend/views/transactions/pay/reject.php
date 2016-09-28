@@ -7,10 +7,11 @@ use \packages\financial\views\transactions\pay\reject as rejectView;
 use \themes\clipone\breadcrumb;
 use \themes\clipone\navigation;
 use \themes\clipone\navigation\menuItem;
+use \themes\clipone\viewTrait;
 use \themes\clipone\views\formTrait;
 
 class reject extends rejectView{
-	use formTrait;
+	use viewTrait,formTrait;
 	protected $pay;
 	protected $transaction;
 	protected $action = 'reject';

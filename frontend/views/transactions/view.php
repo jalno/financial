@@ -10,11 +10,12 @@ use \packages\financial\views\transactions\view as transactionsView;
 use \themes\clipone\breadcrumb;
 use \themes\clipone\navigation;
 use \themes\clipone\navigation\menuItem;
+use \themes\clipone\viewTrait;
 use \themes\clipone\views\listTrait;
 use \packages\base\translator;
 
 class view extends transactionsView{
-	use listTrait;
+	use viewTrait,listTrait;
 	protected $transaction;
 	protected $pays;
 	protected $hasdesc;

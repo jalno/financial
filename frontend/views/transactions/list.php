@@ -6,12 +6,13 @@ use \packages\userpanel;
 use \packages\userpanel\date;
 use \themes\clipone\navigation;
 use \themes\clipone\navigation\menuItem;
+use \themes\clipone\viewTrait;
 use \themes\clipone\views\listTrait;
 use \packages\base\translator;
 use \packages\base\utility;
 
 class listview extends transactionsListView{
-	use listTrait;
+	use viewTrait,listTrait;
 	protected $multiuser = false;
 
 	function __beforeLoad(){

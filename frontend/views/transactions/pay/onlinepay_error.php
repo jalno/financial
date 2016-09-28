@@ -7,10 +7,11 @@ use \packages\financial\views\transactions\pay\onlinepay\error as errorView;
 use \themes\clipone\breadcrumb;
 use \themes\clipone\navigation;
 use \themes\clipone\navigation\menuItem;
+use \themes\clipone\viewTrait;
 use \themes\clipone\views\formTrait;
 
 class error extends errorView{
-	use formTrait;
+	use viewTrait,formTrait;
 	protected $pay;
 	protected $transaction;
 	function __beforeLoad(){
