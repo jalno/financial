@@ -35,6 +35,10 @@
 		{
 			"classes":["views\\transactions\\pay\\onlinepay\\error"],
 			"file":"views/transactions/pay/onlinepay_error.php"
+		},
+		{
+			"classes":["views\\transactions\\delete"],
+			"file":"views/transactions/delete.php"
 		}
 	]
 }

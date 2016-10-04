@@ -36,8 +36,8 @@ $this->the_header();
 							<?php
 							foreach($this->dataList as $row){
 								$this->setButtonParam('transactions_view', 'link', userpanel\url("transactions/view/".$row->id));
-								$this->setButtonParam('transactions_edit', 'link', userpanel\url("transaction/edit/".$row->id));
-								$this->setButtonParam('transactions_del', 'link', userpanel\url("transaction/delete/".$row->id));
+								$this->setButtonParam('transactions_edit', 'link', userpanel\url("transactions/edit/".$row->id));
+								$this->setButtonParam('transactions_delete', 'link', userpanel\url("transactions/delete/".$row->id));
 								$statusClass = utility::switchcase($row->status, array(
 									'label label-danger' => transaction::unpaid,
 									'label label-success' => transaction::paid,
@@ -53,7 +53,7 @@ $this->the_header();
 								<td class="center"><?php echo $row->id; ?></td>
 								<td><?php echo $row->title; ?></td>
 								<td><?php echo $row->price." ریال"; ?></td>
-								<?php if($this->multiuser){ ?><td><a href="<?php echo userpanel\url('users/view/').$row->user->id; ?>"><?php echo $row->user->name.' '.$row->user->lastname; ?></a></td><?php } ?>
+								<?php if($this->multiuser){ ?><td><a href="<?php echo userpanel\url('users/view/'.$row->user->id); ?>"><?php echo $row->user->name.' '.$row->user->lastname; ?></a></td><?php } ?>
 								<td><?php echo $row->create_at; ?></td>
 								<td class="hidden-xs"><span class="<?php echo $statusClass; ?>"><?php echo translator::trans($statusTxt); ?></span></td>
 								<?php

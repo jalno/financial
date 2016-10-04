@@ -397,5 +397,34 @@ class transactions extends controller{
 		}
 		return $this->response;
 	}
+	public function delete($data){
+		$view = view::byName("\\packages\\financial\\views\\transactions\\delete");
+		authorization::haveOrFail('transactions_delete');
+		$types = authorization::childrenTypes();
+		db::join("userpanel_users", "userpanel_users.id=financial_transactions.user", "LEFT");
+		if($types){
+			db::where("userpanel_users.type", $types, 'in');
+		}else{
+			db::where("userpanel_users.id", authentication::getID());
+		}
+		db::where("financial_transactions.id", $data['id']);
+		$transaction = new transaction(db::getOne("financial_transactions", "financial_transactions.*"));
+		if($transaction){
+			$view->setTransactionData($transaction);
+			$this->response->setStatus(false);
+			if(http::is_post()){
+				$transaction->delete();
+				$this->response->setStatus(true);
+				$this->response->Go(userpanel\url('transactions'));
+			}else{
+				$this->response->setStatus(true);
+				$this->response->setView($view);
+			}
+			return $this->response;
+		}else{
+			throw new transactionNotFound();
+
+		}
+	}
 }
 class transactionNotFound extends NotFound{}

@@ -66,6 +66,9 @@
 		"pay.online.backto.transaction" : "برگشت به تراکنش",
 		"pay.online.backto.pay" : "تلاش مجدد",
 		"pay.byPayOnline.withpayport" : "پرداخت آنلاین از طریق {payport}",
-		"pay.byPayOnline":"پرداخت آنلاین"
+		"pay.byPayOnline":"پرداخت آنلاین",
+		"delete":"حذف",
+		"transaction.delete":"حذف صورتحساب",
+		"transaction.delete.warning":"آیا شما از حذف صورتحساب به شماره #{transaction.id} اطمینان دارید؟ این عملیات بدون بازگشت است."
 	}
 }

@@ -37,5 +37,9 @@
 	{
 		"path": ["userpanel","transactions","pay", "onlinepay", "callback", {"type":"dynamic", "name":"pay", "regex":"/^\\d+$/"}],
 		"controller": "controllers\\transactions@onlinePay_callback"
+	},
+	{
+		"path": ["userpanel","transactions","delete", {"type":"dynamic", "name":"id", "regex":"/^\\d+$/"}],
+		"controller": "controllers\\transactions@delete"
 	}
 ]

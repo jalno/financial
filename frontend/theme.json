@@ -61,6 +61,11 @@
 			"name":"\\themes\\clipone\\views\\transactions\\pay\\onlinepay\\error",
 			"parent":"\\packages\\financial\\views\\transactions\\pay\\onlinepay\\error",
 			"file":"transactions.pay.onlinepay.error.php"
+		},
+		{
+			"name":"\\themes\\clipone\\views\\transactions\\delete",
+			"parent":"\\packages\\financial\\views\\transactions\\delete",
+			"file":"transactions.delete.php"
 		}
 	]
 }

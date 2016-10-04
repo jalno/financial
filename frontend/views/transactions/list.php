@@ -46,10 +46,10 @@ class listview extends transactionsListView{
 			'icon' => 'fa fa-files-o',
 			'classes' => array('btn', 'btn-xs', 'btn-green')
 		));
-		$this->setButton('transactions_del', $this->canDel, array(
-			'title' => translator::trans('transactions.del'),
-			'icon' => 'fa fa-files-o',
-			'classes' => array('btn', 'btn-xs', 'btn-green')
+		$this->setButton('transactions_delete', $this->canDel, array(
+			'title' => translator::trans('transactions.delete'),
+			'icon' => 'fa fa-times',
+			'classes' => array('btn', 'btn-xs', 'btn-bricky')
 		));
 	}
 	public function check_multiuser(){
