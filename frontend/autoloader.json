@@ -39,6 +39,14 @@
 		{
 			"classes":["views\\transactions\\delete"],
 			"file":"views/transactions/delete.php"
+		},
+		{
+			"classes":["views\\transactions\\edit"],
+			"file":"views/transactions/edit.php"
+		},
+		{
+			"classes":["views\\transactions\\add"],
+			"file":"views/transactions/add.php"
 		}
 	]
 }

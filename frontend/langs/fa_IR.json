@@ -68,7 +68,26 @@
 		"pay.byPayOnline.withpayport" : "پرداخت آنلاین از طریق {payport}",
 		"pay.byPayOnline":"پرداخت آنلاین",
 		"delete":"حذف",
+		"edit":"ویرایش",
+		"add":"اضافه کردن",
+		"cancel":"انصراف",
 		"transaction.delete":"حذف صورتحساب",
-		"transaction.delete.warning":"آیا شما از حذف صورتحساب به شماره #{transaction.id} اطمینان دارید؟ این عملیات بدون بازگشت است."
+		"transaction.delete.warning":"آیا شما از حذف صورتحساب به شماره #{transaction.id} اطمینان دارید؟ این عملیات بدون بازگشت است.",
+		"transaction.edit":"ویرایش صورتحساب",
+		"Toman":"تومان",
+		"transaction.user":"کاربر مربوط",
+		"transaction.add":"صورتحساب جدید",
+		"transaction.add.setting":"تنظیمات صورت حساب",
+		"transaction.add.title":"عنوان صورت حساب",
+		"transaction.add.product":"محصول",
+		"transaction.add.products":"محصولات",
+		"transaction.add.description":"توضیحات",
+		"transaction.add.create_at":"تاریخ ایجاد",
+		"transaction.add.expire_at":"تاریخ انقضا",
+		"transaction.add.notification":"اطلاع از ایجاد صورت حساب: ",
+		"transaction.add.notification.support":"اطلاع بعد از پرداخت به پشتیبانی: ",
+		"transaction.add.number":"تعداد",
+		"transaction.add.price":"مبلغ",
+		"transaction.add.discount":"تخفیف"
 	}
 }

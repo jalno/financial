@@ -1,6 +1,5 @@
 <?php
 namespace packages\financial;
-use \packages\financial\transaction_product;
 use \packages\base\db\dbObject;
 class transaction extends dbObject{
 	const unpaid = 0;
@@ -22,7 +21,7 @@ class transaction extends dbObject{
     );
 	protected $relations = array(
 		'user' => array('hasOne', 'packages\\userpanel\\user', 'user'),
-		'params' => array('hasMany', 'packages\\financial\\transactions_params', 'transaction'),
+		'params' => array('hasMany', 'packages\\financial\\transaction_param', 'transaction'),
 		'products' => array('hasMany', 'packages\\financial\\transaction_product', 'transaction'),
 		'pays' => array('hasMany', 'packages\\financial\\transaction_pay', 'transaction')
 	);
@@ -93,6 +92,43 @@ class transaction extends dbObject{
 		}
 		return $data;
 	}
+	protected $tmparams = array();
+	public function setParam($name, $value){
+		$param = false;
+		foreach($this->params as $p){
+			if($p->name == $name){
+				$param = $p;
+				break;
+			}
+		}
+		if(!$param){
+			$param = new transaction_param(array(
+				'name' => $name,
+				'value' => $value
+			));
+		}else{
+			$param->value = $value;
+		}
+
+		if(!$this->id){
+			$this->tmparams[$name] = $param;
+		}else{
+			$param->transaction = $this->id;
+			return $param->save();
+		}
+	}
+	public function param($name){
+		if(!$this->id){
+			return(isset($this->tmparams[$name]) ? $this->tmparams[$name]->value : null);
+		}else{
+			foreach($this->params as $param){
+				if($param->name == $name){
+					return $param->value;
+				}
+			}
+			return false;
+		}
+	}
 	public function save($data = null){
 		if(($return = parent::save($data))){
 			foreach($this->tmproduct as $product){
@@ -105,6 +141,11 @@ class transaction extends dbObject{
 				$pay->save();
 			}
 			$this->tmpays = array();
+			foreach($this->tmparams as $param){
+				$param->product = $this->id;
+				$param->save();
+			}
+			$this->tmparams = array();
 		}
 		return $return;
 	}

@@ -43,8 +43,8 @@ class listview extends transactionsListView{
 		));
 		$this->setButton('transactions_edit', $this->canEdit, array(
 			'title' => translator::trans('transactions.edit'),
-			'icon' => 'fa fa-files-o',
-			'classes' => array('btn', 'btn-xs', 'btn-green')
+			'icon' => 'fa fa-edit',
+			'classes' => array('btn', 'btn-xs', 'btn-warning')
 		));
 		$this->setButton('transactions_delete', $this->canDel, array(
 			'title' => translator::trans('transactions.delete'),

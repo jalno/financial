@@ -129,7 +129,7 @@ $this->the_header();
 								<td class="hidden-480"><?php echo $product->number; ?> عدد</td>
 								<td class="hidden-480"> <?php echo $product->price/$product->number; ?> ریال</td>
 								<td class="hidden-480"> <?php echo $product->discount; ?> ریال</td>
-								<td><?php echo $product->price; ?> ریال</td>
+								<td><?php echo($product->price-$product->discount); ?> ریال</td>
 							</tr>
 							<?php } ?>
 						</tbody>

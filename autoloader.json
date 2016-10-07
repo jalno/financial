@@ -52,6 +52,10 @@
 			"file":"libraries/transaction/transaction.php"
 		},
 		{
+			"classes":["transaction_param"],
+			"file":"libraries/transaction/transactions_param.php"
+		},
+		{
 			"classes":["transaction_product"],
 			"file":"libraries/transaction/transactions_product.php"
 		},
@@ -121,6 +125,14 @@
 		{
 			"classes":["views\\transactions\\delete"],
 			"file":"views/transactions/delete.php"
+		},
+		{
+			"classes":["views\\transactions\\edit"],
+			"file":"views/transactions/edit.php"
+		},
+		{
+			"classes":["views\\transactions\\add"],
+			"file":"views/transactions/add.php"
 		}
 	]
 }

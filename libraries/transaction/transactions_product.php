@@ -17,7 +17,7 @@ class transaction_product extends dbObject{
         'title' => array('type' => 'text', 'required' => true),
         'transaction' => array('type' => 'int', 'required' => true),
 		'description' => array('type' => 'text'),
-		'type' => array('type' => 'text', 'required' => true),
+		'type' => array('type' => 'text'),
 		'method' => array('type' => 'int', 'required' => true),
 		'price' => array('type' => 'int', 'required' => true),
 		'discount' => array('type' => 'int', 'required' => true),
@@ -78,16 +78,6 @@ class transaction_product extends dbObject{
 			return $param->save();
 		}
 	}
-	public function save($data = null) {
-		if($return = parent::save($data)){
-			foreach($this->tmparams as $param){
-				$param->product = $this->id;
-				$param->save();
-			}
-			$this->tmparams = array();
-		}
-		return $return;
-	}
 	public function param($name){
 		if(!$this->id){
 			return(isset($this->tmparams[$name]) ? $this->tmparams[$name]->value : null);
@@ -99,5 +89,15 @@ class transaction_product extends dbObject{
 			}
 			return false;
 		}
+	}
+	public function save($data = null) {
+		if($return = parent::save($data)){
+			foreach($this->tmparams as $param){
+				$param->product = $this->id;
+				$param->save();
+			}
+			$this->tmparams = array();
+		}
+		return $return;
 	}
 }

@@ -4,14 +4,19 @@ use \packages\base;
 use \packages\base\NotFound;
 use \packages\base\http;
 use \packages\base\db;
-use \packages\base\views\inputValidation;
+use \packages\base\inputValidation;
+use \packages\base\views\FormError;
+
 use \packages\userpanel;
+use \packages\userpanel\user;
 use \packages\userpanel\date;
+
 use \packages\financial\authorization;
 use \packages\financial\authentication;
 use \packages\financial\controller;
 use \packages\financial\view;
 use \packages\financial\transaction;
+use \packages\financial\transaction_product;
 use \packages\financial\transaction_pay;
 use \packages\financial\bankaccount;
 use \packages\financial\payport;
@@ -397,9 +402,7 @@ class transactions extends controller{
 		}
 		return $this->response;
 	}
-	public function delete($data){
-		$view = view::byName("\\packages\\financial\\views\\transactions\\delete");
-		authorization::haveOrFail('transactions_delete');
+	protected function checkData($data){
 		$types = authorization::childrenTypes();
 		db::join("userpanel_users", "userpanel_users.id=financial_transactions.user", "LEFT");
 		if($types){
@@ -409,22 +412,189 @@ class transactions extends controller{
 		}
 		db::where("financial_transactions.id", $data['id']);
 		$transaction = new transaction(db::getOne("financial_transactions", "financial_transactions.*"));
-		if($transaction){
-			$view->setTransactionData($transaction);
-			$this->response->setStatus(false);
-			if(http::is_post()){
-				$transaction->delete();
+		return ($transaction ? $transaction : new transactionNotFound);
+	}
+	public function delete($data){
+		$view = view::byName("\\packages\\financial\\views\\transactions\\delete");
+		authorization::haveOrFail('transactions_delete');
+		$transaction = $this->checkData($data);
+		$view->setTransactionData($transaction);
+		$this->response->setStatus(false);
+		if(http::is_post()){
+			$transaction->delete();
+			$this->response->setStatus(true);
+			$this->response->Go(userpanel\url('transactions'));
+		}else{
+			$this->response->setStatus(true);
+			$this->response->setView($view);
+		}
+		return $this->response;
+	}
+	public function edit($data){
+		$view = view::byName("\\packages\\financial\\views\\transactions\\edit");
+		authorization::haveOrFail('transactions_edit');
+		$transaction = $this->checkData($data);
+
+		$view->setTransactionData($transaction);
+		$inputsRules = array(
+			'title' => array(
+				'type' => 'string',
+				'optional' => true,
+				'empty' => true
+			),
+			'price' => array(
+				'type' => 'number',
+				'optional' => true,
+				'empty' => true
+			),
+			'client' => array(
+				'type' => 'number',
+				'optional' => true,
+				'empty' => true
+			),
+			'status' => array(
+				'type' => 'string',
+				'optional' => true,
+				'empty' => true
+			),
+			'description' => array(
+				'type' => 'string',
+				'optional' => true,
+				'empty' => true
+			)
+		);
+		$this->response->setStatus(false);
+		if(http::is_post()){
+			try{
+				$inputs = $this->checkinputs($inputsRules);
+				if(isset($inputs['title'])){
+					$transaction->title = $inputs['title'];
+				}
+				if(isset($inputs['price'])){
+					$transaction->price = $inputs['price'];
+				}
+				if(isset($inputs['client'])){
+					if($user = user::byId($inputs['client'])){
+						$transaction->user = $user->id;
+					}else{
+						throw new inputValidation("client");
+					}
+				}
+				if(isset($inputs['status'])){
+					if(in_array($inputs['status'], array(transaction::unpaid, transaction::paid))){
+						$transaction->status = $inputs['status'];
+					}else{
+						throw new inputValidation("status");
+					}
+				}
+				$transaction->save();
+				if(isset($inputs['description'])){
+					$transaction->setparam('description', $inputs['description']);
+				}
+
 				$this->response->setStatus(true);
 				$this->response->Go(userpanel\url('transactions'));
-			}else{
-				$this->response->setStatus(true);
-				$this->response->setView($view);
+			}catch(inputValidation $error){
+				$view->setFormError(FormError::fromException($error));
 			}
-			return $this->response;
 		}else{
-			throw new transactionNotFound();
-
+			$this->response->setStatus(true);
+			$this->response->setView($view);
 		}
+		return $this->response;
+	}
+	public function add(){
+		$view = view::byName("\\packages\\financial\\views\\transactions\\add");
+		authorization::haveOrFail('transactions_add');
+		$inputsRules = array(
+			'title' => array(
+				'type' => 'string'
+			),
+			'user' => array(
+				'type' => 'number'
+			),
+			'create_at' => array(
+				'type' => 'date'
+			),
+			'expire_at' => array(
+				'type' => 'date'
+			),
+			'products' => array()
+		);
+		$this->response->setStatus(false);
+		if(http::is_post()){
+			try{
+				$inputs = $this->checkinputs($inputsRules);
+				$inputs['user'] = user::byId($inputs['user']);
+				$inputs['create_at'] = date::strtotime($inputs['create_at']);
+				$inputs['expire_at'] = date::strtotime($inputs['expire_at']);
+
+				if(!$inputs['user']){
+					throw new inputValidation("user");
+				}
+				if($inputs['create_at'] <= 0){
+					throw new inputValidation("create_at");
+				}
+				if($inputs['expire_at'] < $inputs['create_at']){
+					throw new inputValidation("expire_at");
+				}
+				$products = array();
+				foreach($inputs['products'] as $x => $product){
+					if(!isset($product['product_title'])){
+						throw new inputValidation("product_title");
+					}
+					if(!isset($product['price']) or $product['price'] <= 0){
+						throw new inputValidation("price");
+					}
+					if(isset($product['discount'])){
+						if($product['discount'] < 0){
+							throw new inputValidation("discount");
+						}
+					}else{
+						$product['discount'] = 0;
+					}
+					if(isset($product['number'])){
+						if($product['number'] < 0){
+							throw new inputValidation("discount");
+						}
+					}else{
+						$product['number'] = 1;
+					}
+					$products[] = array(
+						'title' => $product['product_title'],
+						'price' => $product['price'],
+						'discount' => $product['discount'],
+						'description' => $product['description'],
+						'number' => $product['number'],
+						'method' => transaction_product::other
+					);
+
+				}
+
+				$transaction = new transaction;
+				foreach($products as $product){
+					$transaction->addProduct($product);
+				}
+				$transaction->title = $inputs['title'];
+				$transaction->user = $inputs['user']->id;
+				$transaction->create_at = $inputs['create_at'];
+				$transaction->expire_at = $inputs['expire_at'];
+
+				$transaction->save();
+				if(isset($inputs['description'])){
+					$transaction->setparam('description', $inputs['description']);
+				}
+
+				$this->response->setStatus(true);
+				$this->response->Go(userpanel\url('transactions'));
+			}catch(inputValidation $error){
+				$view->setFormError(FormError::fromException($error));
+			}
+		}else{
+			$this->response->setStatus(true);
+		}
+		$this->response->setView($view);
+		return $this->response;
 	}
 }
 class transactionNotFound extends NotFound{}
