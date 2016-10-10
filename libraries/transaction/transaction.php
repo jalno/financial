@@ -135,7 +135,7 @@ class transaction extends dbObject{
 				$product->transaction = $this->id;
 				$product->save();
 			}
-			$this->tmpays = array();
+			$this->tmproduct = array();
 			foreach($this->tmpays as $pay){
 				$pay->transaction = $this->id;
 				$pay->save();

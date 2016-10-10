@@ -439,52 +439,52 @@ class transactions extends controller{
 		$inputsRules = array(
 			'title' => array(
 				'type' => 'string',
-				'optional' => true,
-				'empty' => true
+				'optional' => true
 			),
-			'price' => array(
+			'user' => array(
 				'type' => 'number',
-				'optional' => true,
-				'empty' => true
+				'optional' => true
 			),
-			'client' => array(
-				'type' => 'number',
-				'optional' => true,
-				'empty' => true
-			),
-			'status' => array(
-				'type' => 'string',
-				'optional' => true,
-				'empty' => true
-			),
-			'description' => array(
-				'type' => 'string',
-				'optional' => true,
-				'empty' => true
+			'products' => array(
+				'optional' => true
 			)
 		);
 		$this->response->setStatus(false);
 		if(http::is_post()){
 			try{
 				$inputs = $this->checkinputs($inputsRules);
-				if(isset($inputs['title'])){
-					$transaction->title = $inputs['title'];
+				$inputs['user'] = user::byId($inputs['user']);
+				if(!$inputs['user']){
+					throw new inputValidation("user");
 				}
-				if(isset($inputs['price'])){
-					$transaction->price = $inputs['price'];
-				}
-				if(isset($inputs['client'])){
-					if($user = user::byId($inputs['client'])){
-						$transaction->user = $user->id;
-					}else{
-						throw new inputValidation("client");
-					}
-				}
-				if(isset($inputs['status'])){
-					if(in_array($inputs['status'], array(transaction::unpaid, transaction::paid))){
-						$transaction->status = $inputs['status'];
-					}else{
-						throw new inputValidation("status");
+
+				$transaction->title = $inputs['title'];
+				$transaction->user = $inputs['user']->id;
+				if(isset($inputs['products'])){
+					foreach($inputs['products'] as $row){
+						if(isset($row['id'])){
+							$product = transaction_product::byId($row['id']);
+							if(!$product){
+								throw new inputValidation("product");
+							}
+						}else{
+							$product = new transaction_product;
+							$product->transaction = $transaction->id;
+							$product->method  = transaction_product::other;
+						}
+						if($row['price'] < 0){
+							throw new inputValidation("price");
+						}
+						if($row['discount'] < 0){
+							throw new inputValidation("discount");
+						}
+						$product->title = $row['title'];
+						$product->description = $row['description'];
+						$product->number = $row['number'];
+						$product->price = $row['price'];
+						$product->discount = $row['discount'];
+						$product->save();
+
 					}
 				}
 				$transaction->save();
@@ -499,8 +499,8 @@ class transactions extends controller{
 			}
 		}else{
 			$this->response->setStatus(true);
-			$this->response->setView($view);
 		}
+		$this->response->setView($view);
 		return $this->response;
 	}
 	public function add(){

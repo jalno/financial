@@ -1,15 +1,6 @@
 <?php
 namespace themes\clipone\views\transactions;
-use \packages\userpanel;
-use \packages\userpanel\date;
-use \packages\financial\bankaccount;
-use \packages\financial\transaction;
-use \packages\financial\transaction_pay;
-use \packages\financial\payport_pay;
 use \packages\financial\views\transactions\delete as transactionsDelete;
-use \themes\clipone\breadcrumb;
-use \themes\clipone\navigation;
-use \themes\clipone\navigation\menuItem;
 use \themes\clipone\viewTrait;
 use \themes\clipone\views\listTrait;
 use \packages\base\translator;
