@@ -3,6 +3,10 @@ use \packages\base;
 use \packages\base\json;
 use \packages\base\translator;
 use \packages\userpanel;
+use \themes\clipone\utility;
+use \packages\userpanel\date;
+use \packages\financial\transaction;
+use \packages\financial\transaction_pay;
 
 $this->the_header();
 ?>
@@ -80,6 +84,72 @@ $this->the_header();
 							    </tbody>
 							</table>
 						</div>
+						<?php
+						if($this->pays){
+							$hasdesc = $this->paysHasDiscription();
+							$hastatus = $this->paysHasStatus();
+							$hasButtons = $this->hasButtons();
+						?>
+						<h3><?php echo translator::trans('pays'); ?></h3>
+						<div class="col-xs-12">
+							<table class="table table-striped table-hover">
+								<thead>
+									<tr>
+										<th> # </th>
+										<th> <?php echo translator::trans('date&time'); ?> </th>
+										<th> <?php echo translator::trans('pay.method'); ?> </th>
+										<?php if($hasdesc){ ?><th> <?php echo translator::trans('description'); ?> </th><?php } ?>
+										<th> <?php echo translator::trans('transaction.price'); ?> </th>
+										<?php if($hastatus){ ?><th> <?php echo translator::trans('pay.status'); ?> </th><?php } ?>
+										<?php if($hasButtons){ ?><th></th><?php } ?>
+										<th></th>
+									</tr>
+								</thead>
+								<tbody>
+									<?php
+									$x = 1;
+									foreach($this->pays as $pay){
+										if($hasButtons){
+											$this->setButtonParam('pay_accept', 'link', userpanel\url("transactions/pay/accept/".$pay->id));
+											$this->setButtonParam('pay_reject', 'link', userpanel\url("transactions/pay/reject/".$pay->id));
+
+										}
+										if($hastatus){
+											$statusClass = utility::switchcase($pay->status, array(
+												'label label-danger' => transaction_pay::rejected,
+												'label label-success' => transaction_pay::accepted,
+												'label label-warning' => transaction_pay::pending
+											));
+											$statusTxt = utility::switchcase($pay->status, array(
+												'pay.rejected' => transaction_pay::rejected,
+												'pay.accepted' => transaction_pay::accepted,
+												'pay.pending' => transaction_pay::pending
+											));
+										}
+									?>
+									<tr>
+										<td><?php echo $x++; ?></td>
+										<td><?php echo $pay->date; ?></td>
+										<td class="hidden-480"><?php echo $pay->method; ?></td>
+										<?php if($hasdesc){ ?><td><?php echo $pay->description; ?></td><?php } ?>
+										<td><?php echo $pay->price; ?></td>
+										<?php if($hastatus){ ?><td><span class="<?php echo $statusClass; ?>"><?php echo translator::trans($statusTxt); ?></td><?php } ?>
+										<?php
+										if($hasButtons){
+											echo("<td class=\"center\">".$this->genButtons()."</td>");
+										}
+										?>
+										<td>
+											<a href="<?php echo userpanel\url("transactions/pay/delete/".$pay->id) ?>" class="btn btn-xs btn-bricky product-delete"><i class="fa fa-times"></i></a>
+										</td>
+									</tr>
+								<?php } ?>
+								</tbody>
+							</table>
+						</div>
+						<?php
+						}
+						?>
 						<div class="col-md-12">
 			                <hr>
 			                <p>
@@ -91,98 +161,99 @@ $this->the_header();
                 </div>
             </div>
         </div>
-        <!-- end: BASIC PRODUCT EDIT -->
-		<div class="modal fade" id="product-edit" tabindex="-1" data-show="true" role="dialog">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-			</div>
-			<div class="modal-body">
-				<form id="editproductform" action="#" method="post" class="form-horizontal">
-					<input type="hidden" name="product" value="">
-					<?php
-					$this->setHorizontalForm('sm-3','sm-9');
-					$feilds = array(
-						array(
-							'name' => 'title',
-							'label' => translator::trans("transaction.add.product")
-						),
-						array(
-							'name' => 'description',
-							'label' => translator::trans("transaction.add.description")
-						),
-						array(
-							'name' => 'number',
-							'type' => 'number',
-							'label' => translator::trans("transaction.add.number")
-						),
-						array(
-							'name' => 'price',
-							'type' => 'number',
-							'label' => translator::trans("transaction.add.price")
-						),
-						array(
-							'name' => 'discount',
-							'type' => 'number',
-							'label' => translator::trans("transaction.add.discount")
-						)
-					);
-					foreach($feilds as $input){
-						echo $this->createField($input);
-					}
-					?>
-				</form>
-			</div>
-			<div class="modal-footer">
-				<button type="submit" form="editproductform" data-backdrop="static" aria-hidden="true" class="btn btn-success"><?php echo translator::trans('update'); ?></button>
-				<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo translator::trans('cancel'); ?></button>
-			</div>
-		</div>
-		<div class="modal fade" id="product-add" tabindex="-1" data-show="true" role="dialog">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				<h4 class="modal-title"><?php echo translator::trans('users.search'); ?></h4>
-			</div>
-			<div class="modal-body">
-				<form id="addproductform" action="" method="post" class="form-horizontal">
-					<?php
-					$this->setHorizontalForm('sm-3','sm-9');
-					$feilds = array(
-						array(
-							'name' => 'title',
-							'label' => translator::trans("transaction.add.product")
-						),
-						array(
-							'name' => 'description',
-							'label' => translator::trans("transaction.add.description")
-						),
-						array(
-							'name' => 'number',
-							'type' => 'number',
-							'label' => translator::trans("transaction.add.number")
-						),
-						array(
-							'name' => 'price',
-							'type' => 'number',
-							'label' => translator::trans("transaction.add.price")
-						),
-						array(
-							'name' => 'discount',
-							'type' => 'number',
-							'label' => translator::trans("transaction.add.discount")
-						)
-					);
-					foreach($feilds as $input){
-						echo $this->createField($input);
-					}
-					?>
-				</form>
-			</div>
-			<div class="modal-footer">
-				<button type="submit" form="addproductform" data-backdrop="static" aria-hidden="true" class="btn btn-success"><?php echo translator::trans('add'); ?></button>
-				<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo translator::trans('cancel'); ?></button>
-			</div>
-		</div>
     </div>
+</div>
+
+<!-- end: BASIC PRODUCT EDIT -->
+<div class="modal fade" id="product-edit" tabindex="-1" data-show="true" role="dialog">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	</div>
+	<div class="modal-body">
+		<form id="editproductform" action="#" method="post" class="form-horizontal">
+			<input type="hidden" name="product" value="">
+			<?php
+			$this->setHorizontalForm('sm-3','sm-9');
+			$feilds = array(
+				array(
+					'name' => 'title',
+					'label' => translator::trans("transaction.add.product")
+				),
+				array(
+					'name' => 'description',
+					'label' => translator::trans("transaction.add.description")
+				),
+				array(
+					'name' => 'number',
+					'type' => 'number',
+					'label' => translator::trans("transaction.add.number")
+				),
+				array(
+					'name' => 'price',
+					'type' => 'number',
+					'label' => translator::trans("transaction.add.price")
+				),
+				array(
+					'name' => 'discount',
+					'type' => 'number',
+					'label' => translator::trans("transaction.add.discount")
+				)
+			);
+			foreach($feilds as $input){
+				echo $this->createField($input);
+			}
+			?>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="submit" form="editproductform" data-backdrop="static" aria-hidden="true" class="btn btn-success"><?php echo translator::trans('update'); ?></button>
+		<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo translator::trans('cancel'); ?></button>
+	</div>
+</div>
+<div class="modal fade" id="product-add" tabindex="-1" data-show="true" role="dialog">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h4 class="modal-title"><?php echo translator::trans('users.search'); ?></h4>
+	</div>
+	<div class="modal-body">
+		<form id="addproductform" action="" method="post" class="form-horizontal">
+			<?php
+			$this->setHorizontalForm('sm-3','sm-9');
+			$feilds = array(
+				array(
+					'name' => 'title',
+					'label' => translator::trans("transaction.add.product")
+				),
+				array(
+					'name' => 'description',
+					'label' => translator::trans("transaction.add.description")
+				),
+				array(
+					'name' => 'number',
+					'type' => 'number',
+					'label' => translator::trans("transaction.add.number")
+				),
+				array(
+					'name' => 'price',
+					'type' => 'number',
+					'label' => translator::trans("transaction.add.price")
+				),
+				array(
+					'name' => 'discount',
+					'type' => 'number',
+					'label' => translator::trans("transaction.add.discount")
+				)
+			);
+			foreach($feilds as $input){
+				echo $this->createField($input);
+			}
+			?>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="submit" form="addproductform" data-backdrop="static" aria-hidden="true" class="btn btn-success"><?php echo translator::trans('add'); ?></button>
+		<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo translator::trans('cancel'); ?></button>
+	</div>
 </div>
 <?php
 	$this->the_footer();

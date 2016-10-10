@@ -133,6 +133,10 @@
 		{
 			"classes":["views\\transactions\\add"],
 			"file":"views/transactions/add.php"
+		},
+		{
+			"classes":["views\\transactions\\pay\\delete"],
+			"file":"views/transactions/pay.delete.php"
 		}
 	]
 }

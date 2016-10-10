@@ -88,6 +88,8 @@
 		"transaction.add.notification.support":"اطلاع بعد از پرداخت به پشتیبانی: ",
 		"transaction.add.number":"تعداد",
 		"transaction.add.price":"مبلغ",
-		"transaction.add.discount":"تخفیف"
+		"transaction.add.discount":"تخفیف",
+		"transaction.pay.delete.warning":"آیا شما از حذف پرداخت صورتحساب به شناسه #{pay.id} اطمینان دارید؟ این عملیات بدون بازگشت است",
+		"transaction.pay.delete":"حذف پرداخت"
 	}
 }
