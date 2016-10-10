@@ -596,6 +596,37 @@ class transactions extends controller{
 		$this->response->setView($view);
 		return $this->response;
 	}
+	public function product_delete($data){
+		$view = view::byName("\\packages\\financial\\views\\transactions\\product_delete");
+		authorization::haveOrFail('transactions_product_delete');
+		db::join("financial_transactions", "financial_transactions.id=financial_transactions_products.transaction", "LEFT");
+
+		db::where("financial_transactions_products.id", $data['id']);
+		$transaction_product = new transaction_product(db::getOne("financial_transactions_products", "financial_transactions_products.*"));
+		$view->setProductData($transaction_product);
+		$this->response->setStatus(false);
+		if(http::is_post()){
+			$transaction = transaction::byId($transaction_product->transaction);
+			try {
+				if(!$transaction){
+					throw new inputValidation("transaction");
+				}
+				if(count($transaction->products) != 1){
+					$transaction_product->delete();
+				}else{
+					throw new inputValidation("products");
+				}
+				$this->response->setStatus(true);
+				$this->response->Go(userpanel\url('transactions/edit/'.$transaction->id));
+			}catch(inputValidation $error){
+				$view->setFormError(FormError::fromException($error));
+			}
+		}else{
+			$this->response->setStatus(true);
+		}
+		$this->response->setView($view);
+		return $this->response;
+	}
 	public function pay_delete($data){
 		$view = view::byName("\\packages\\financial\\views\\transactions\\pay\\delete");
 		authorization::haveOrFail('transactions_pay_delete');
@@ -617,8 +648,8 @@ class transactions extends controller{
 			$this->response->Go(userpanel\url('transactions/edit/'.$id));
 		}else{
 			$this->response->setStatus(true);
-			$this->response->setView($view);
 		}
+		$this->response->setView($view);
 		return $this->response;
 	}
 }

@@ -81,6 +81,11 @@
 			"name":"\\themes\\clipone\\views\\transactions\\pay\\delete",
 			"parent":"\\packages\\financial\\views\\transactions\\pay\\delete",
 			"file":"transactions.pay.delete.php"
+		},
+		{
+			"name":"\\themes\\clipone\\views\\transactions\\product_delete",
+			"parent":"\\packages\\financial\\views\\transactions\\product_delete",
+			"file":"transactions.product.delete.php"
 		}
 	]
 }
