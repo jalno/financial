@@ -596,26 +596,6 @@ class transactions extends controller{
 		$this->response->setView($view);
 		return $this->response;
 	}
-	public function product_delete($data){
-		$view = view::byName("\\packages\\financial\\views\\transactions\\product_delete");
-		authorization::haveOrFail('transactions_product_delete');
-		db::join("financial_transactions", "financial_transactions.id=financial_transactions_products.transaction", "LEFT");
-
-		db::where("financial_transactions_products.id", $data['id']);
-		$transaction_pay = new transaction_pay(db::getOne("financial_transactions_products", "financial_transactions_products.*"));
-		$view->setPayData($transaction_pay);
-		$this->response->setStatus(false);
-		if(http::is_post()){
-			$id = $transaction_pay->transaction->id;
-			$transaction_pay->delete();
-			$this->response->setStatus(true);
-			$this->response->Go(userpanel\url('transactions/edit/'.$id));
-		}else{
-			$this->response->setStatus(true);
-			$this->response->setView($view);
-		}
-		return $this->response;
-	}
 	public function pay_delete($data){
 		$view = view::byName("\\packages\\financial\\views\\transactions\\pay\\delete");
 		authorization::haveOrFail('transactions_pay_delete');
