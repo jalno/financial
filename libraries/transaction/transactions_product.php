@@ -24,6 +24,7 @@ class transaction_product extends dbObject{
 		'number' => array('type' => 'int', 'required' => true)
     );
 	protected $relations = array(
+		'transaction' => array('hasOne', 'packages\\financial\\transaction', 'transaction'),
 		'params' => array('hasMany', 'packages\\financial\\transactions_products_param', 'product')
 	);
 	function __construct($data = null, $connection = 'default'){
