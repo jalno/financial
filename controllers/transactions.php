@@ -598,31 +598,38 @@ class transactions extends controller{
 	}
 	public function product_delete($data){
 		$view = view::byName("\\packages\\financial\\views\\transactions\\product_delete");
+		$types = authorization::childrenTypes();
 		authorization::haveOrFail('transactions_product_delete');
-		db::join("financial_transactions", "financial_transactions.id=financial_transactions_products.transaction", "LEFT");
-
+		db::join("financial_transactions", "financial_transactions.id=financial_transactions_products.transaction", "inner");
+		db::join("userpanel_users", "userpanel_users.id=financial_transactions.user", "inner");
+		if($types){
+			db::where("userpanel_users.type", $types, 'in');
+		}else{
+			db::where("userpanel_users.id", authentication::getID());
+		}
 		db::where("financial_transactions_products.id", $data['id']);
-		$transaction_product = new transaction_product(db::getOne("financial_transactions_products", "financial_transactions_products.*"));
-		$view->setProductData($transaction_product);
-		$this->response->setStatus(false);
-		if(http::is_post()){
-			$transaction = transaction::byId($transaction_product->transaction);
-			try {
-				if(!$transaction){
-					throw new inputValidation("transaction");
+		$transaction_product = db::getOne("financial_transactions_products", "financial_transactions_products.*");
+		if($transaction_product){
+			$transaction_product = new transaction_product($transaction_product);
+			$view->setProductData($transaction_product);
+			$this->response->setStatus(false);
+			if(http::is_post()){
+				try {
+					if(count($transaction_product->transaction->products) > 1){
+						$transaction_product->delete();
+					}else{
+						throw new inputValidation("products");
+					}
+					$this->response->setStatus(true);
+					$this->response->Go(userpanel\url('transactions/edit/'.$$transaction_product->transaction->id));
+				}catch(inputValidation $error){
+					$view->setFormError(FormError::fromException($error));
 				}
-				if(count($transaction->products) != 1){
-					$transaction_product->delete();
-				}else{
-					throw new inputValidation("products");
-				}
+			}else{
 				$this->response->setStatus(true);
-				$this->response->Go(userpanel\url('transactions/edit/'.$transaction->id));
-			}catch(inputValidation $error){
-				$view->setFormError(FormError::fromException($error));
 			}
 		}else{
-			$this->response->setStatus(true);
+			throw new NotFound;
 		}
 		$this->response->setView($view);
 		return $this->response;
