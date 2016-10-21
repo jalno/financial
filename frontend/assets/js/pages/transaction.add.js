@@ -72,6 +72,7 @@ var TransactionAdd = function () {
 		var $row = $(code).appendTo($('tbody', $table));
 		$row.data(product);
 		$(".btn-remove", $row ).click(productRemove);
+		$table.css("display", "table");
 	}
 	var transactionProduct = function(){
 		$('#addproductform').submit(function(e){
