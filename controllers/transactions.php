@@ -540,28 +540,28 @@ class transactions extends controller{
 				}
 				$products = array();
 				foreach($inputs['products'] as $x => $product){
-					if(!isset($product['product_title'])){
-						throw new inputValidation("product_title");
+					if(!isset($product['title'])){
+						throw new inputValidation("products[$x][title]");
 					}
 					if(!isset($product['price']) or $product['price'] <= 0){
-						throw new inputValidation("price");
+						throw new inputValidation("products[$x][price]");
 					}
 					if(isset($product['discount'])){
 						if($product['discount'] < 0){
-							throw new inputValidation("discount");
+							throw new inputValidation("products[$x][discount]");
 						}
 					}else{
 						$product['discount'] = 0;
 					}
 					if(isset($product['number'])){
 						if($product['number'] < 0){
-							throw new inputValidation("discount");
+							throw new inputValidation("products[$x][number]");
 						}
 					}else{
 						$product['number'] = 1;
 					}
 					$products[] = array(
-						'title' => $product['product_title'],
+						'title' => $product['title'],
 						'price' => $product['price'],
 						'discount' => $product['discount'],
 						'description' => $product['description'],
@@ -586,7 +586,7 @@ class transactions extends controller{
 				}
 
 				$this->response->setStatus(true);
-				$this->response->Go(userpanel\url('transactions'));
+				$this->response->Go(userpanel\url('transactions/view/'.$transaction->id));
 			}catch(inputValidation $error){
 				$view->setFormError(FormError::fromException($error));
 			}
