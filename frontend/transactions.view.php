@@ -13,7 +13,6 @@ $this->the_header();
 		<div class="invoice">
 			<div class="row invoice-logo">
 				<div class="col-sm-6">
-					<a href="http://jeyserver.com/" target="_blank"><img alt="" src="http://static.jeyserver.com/theme/panel/assets/images/jslogo3.png"></a>
 				</div>
 				<div class="col-sm-6">
 					<p>
@@ -45,22 +44,30 @@ $this->the_header();
 					<h4>خریدار:</h4>
 					<div class="well">
 						<address>
-							<strong><?php echo $this->transaction->user->name.' '.$this->transaction->user->lastname; ?></strong>
-							<br>
-							<?php echo $this->transaction->user->address; ?>
+							<strong><?php echo $this->transaction->user->getFullName(); ?></strong>
 							<br>
 							<?php
-							switch($this->transaction->user->country->id){
-								case'105':
-									echo("ایران");
-									break;
-								default:
-									echo($this->transaction->country->name);
-									break;
+							if($this->transaction->user->address){
+								echo $this->transaction->user->address;
+							?>
+							<br>
+							<?php
+							}
+							if($this->transaction->user->country){
+								switch($this->transaction->user->country->id){
+									case'105':
+										echo("ایران");
+										break;
+									default:
+										echo($this->transaction->country->name);
+										break;
+								}
 							}
 							?> - <?php echo $this->transaction->user->city; ?>
+							<?php if($this->transaction->user->phone){ ?>
 							<br>
 							<strong>تلفن:</strong><?php echo $this->transaction->user->phone; ?>
+							<?php } ?>
 						</address>
 						<address>
 							<strong>ایمیل: </strong>
