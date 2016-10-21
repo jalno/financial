@@ -1,6 +1,5 @@
 <?php
 namespace packages\financial\views\transactions;
-use \packages\financial\view;
 use \packages\financial\transaction;
 trait payTrait{
 	public function setTransaction(transaction $transaction){
@@ -10,7 +9,7 @@ trait payTrait{
 		return($this->getData('transaction'));
 	}
 }
-class pay  extends view{
+class pay  extends \packages\financial\view{
 	use payTrait;
 	public function setCredit($credit){
 		$this->setData($credit, 'credit');
