@@ -77,7 +77,7 @@ var TransactionAdd = function () {
 		$('#addproductform').submit(function(e){
 			e.preventDefault();
 			var product = {
-				product_title: $('input[name=product_title]', this).val(),
+				title: $('input[name=product_title]', this).val(),
 				description: $('input[name=description]', this).val(),
 				number: $('input[name=number]', this).val(),
 				price: $('input[name=price]', this).val(),
