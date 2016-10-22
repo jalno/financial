@@ -108,4 +108,11 @@ class view extends transactionsView{
 		}
 		return false;
 	}
+	protected function Discounts(){
+		$discounts = 0;
+		foreach($this->transaction->products as $product){
+			$discounts += $product->discount;
+		}
+		return $discounts;
+	}
 }

@@ -206,7 +206,7 @@ $this->the_header();
 				<div class="col-sm-12 invoice-block">
 					<ul class="list-unstyled amounts">
 						<li><strong>جمع کل:</strong> <?php echo(number_format($this->transaction->price)); ?> ریال</li>
-						<li><strong>تخفیف:</strong><?php echo(number_format($product->discount)); ?> ریال</li>
+						<li><strong>تخفیف:</strong><?php echo(number_format($this->Discounts())); ?> ریال</li>
 						<li><strong>مالیات:</strong> 0 ریال</li>
 						<li><strong>مبلغ قابل پرداخت:</strong><?php echo(number_format($this->transaction->payablePrice())); ?> ریال</li>
 					</ul>
