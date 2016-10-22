@@ -39,9 +39,9 @@ class view extends transactionsView{
 		breadcrumb::addItem($item);
 
 		$item = new menuItem("transaction");
-		$item->setTitle(translator::trans('tranaction', array('id' => $this->transaction->id)));
+		$item->setTitle(translator::trans('title.transaction.view'));
 		$item->setURL(userpanel\url('transactions/view/'.$this->transaction->id));
-		$item->setIcon('clip-user');
+		$item->setIcon('fa fa-television');
 		breadcrumb::addItem($item);
 		navigation::active("transactions/list");
 	}

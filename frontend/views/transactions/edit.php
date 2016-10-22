@@ -29,9 +29,24 @@ class edit extends transactionsEdit{
 		$this->setShortDescription(translator::trans('transaction.edit'));
 		$this->addAssets();
 		$this->setPays();
+		$this->setNavigation();
 	}
 	private function addAssets(){
 		$this->addJSFile(theme::url('assets/js/pages/transaction.edit.js'));
+	}
+	private function setNavigation(){
+		$item = new menuItem("transactions");
+		$item->setTitle(translator::trans('transactions'));
+		$item->setURL(userpanel\url('transactions'));
+		$item->setIcon('clip-users');
+		breadcrumb::addItem($item);
+
+		$item = new menuItem("transaction");
+		$item->setTitle(translator::trans('transaction.edit'));
+		$item->setURL(userpanel\url('transactions/edit/'.$this->getTransactionData()->id));
+		$item->setIcon('fa fa-edit');
+		breadcrumb::addItem($item);
+		navigation::active("transactions/list");
 	}
 	protected function setPays(){
 		$needacceptbtn = false;
