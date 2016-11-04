@@ -3,5 +3,11 @@
 	"routing": "routing.json",
 	"frontend":"frontend",
 	"autoload":"autoloader.json",
-	"dependencies": ["base", "userpanel"]
+	"dependencies": ["base", "userpanel"],
+	"events": [
+		{
+			"name":"\\packages\\userpanel\\events\\usertype_permissions_list",
+			"listener": "listeners\\settings\\usertype@permissions_list"
+		}
+	]
 }

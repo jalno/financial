@@ -141,6 +141,10 @@
 		{
 			"classes":["views\\transactions\\product_delete"],
 			"file":"views/transactions/product.delete.php"
+		},
+		{
+			"classes":["listeners\\settings\\usertype"],
+			"file":"listeners/settings/usertype.php"
 		}
 	]
 }
