@@ -45,7 +45,7 @@ class transactions extends controller{
 					$transactions[] = new transaction($transaction);
 				}
 				$view->setDataList($transactions);
-				$view->setPaginate($this->page, $this->total_pages, $this->items_per_page);
+				$view->setPaginate($this->page, db::totalCount(), $this->items_per_page);
 				$this->response->setStatus(true);
 				$this->response->setView($view);
 				return $this->response;

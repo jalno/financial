@@ -69,6 +69,7 @@ $this->the_header();
 						</tbody>
 					</table>
 				</div>
+				<?php $this->paginator(); ?>
 			</div>
 		</div>
 		<!-- end: BASIC TABLE PANEL -->
