@@ -97,6 +97,7 @@
 		"usertype.permissions.financial_transactions_list": "لیست صورتحساب ها",
 		"usertype.permissions.financial_transactions_add": "افزودن صورتحساب",
 		"usertype.permissions.financial_transactions_edit": "ویرایش صورتحساب",
+		"usertype.permissions.financial_transactions_view": "مشاهده صورتحساب",
 		"usertype.permissions.financial_transactions_delete": "حذف صورتحساب",
 		"usertype.permissions.financial_transactions_pays_accept": "تایید پرداخت صورتحساب",
 		"usertype.permissions.financial_transactions_pay_delete": "حذف پرداخت صورتحساب",

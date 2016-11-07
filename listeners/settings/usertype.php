@@ -8,6 +8,7 @@ class usertype{
 			'transactions_add',
 			'transactions_edit',
 			'transactions_delete',
+			'transactions_view',
 
 			'transactions_pays_accept',
 			'transactions_pay_delete',
