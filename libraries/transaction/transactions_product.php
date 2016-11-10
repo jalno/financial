@@ -64,7 +64,7 @@ class transaction_product extends dbObject{
 			}
 		}
 		if(!$param){
-			$param = new transactions_product_param(array(
+			$param = new transactions_products_param(array(
 				'name' => $name,
 				'value' => $value
 			));
