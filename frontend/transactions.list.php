@@ -12,7 +12,9 @@ $this->the_header();
 			<div class="panel-heading">
 				<i class="clip-data"></i> <?php echo translator::trans('transactions'); ?>
 				<div class="panel-tools">
-					<a class="btn btn-xs btn-link tooltips" title="<?php echo translator::trans('transaction.add'); ?>" href="<?php echo userpanel\url('transactions/new'); ?>"><i class="fa fa-plus"></i></a>
+					<?php if($this->canAdd){ ?>
+						<a class="btn btn-xs btn-link tooltips" title="<?php echo translator::trans('transaction.add'); ?>" href="<?php echo userpanel\url('transactions/new'); ?>"><i class="fa fa-plus"></i></a>
+					<?php } ?>
 					<a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
 				</div>
 			</div>
@@ -69,6 +71,7 @@ $this->the_header();
 						</tbody>
 					</table>
 				</div>
+				<?php $this->paginator(); ?>
 			</div>
 		</div>
 		<!-- end: BASIC TABLE PANEL -->
