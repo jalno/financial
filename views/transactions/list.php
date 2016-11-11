@@ -2,8 +2,9 @@
 namespace packages\financial\views\transactions;
 use \packages\financial\views\listview as list_view;
 use \packages\financial\authorization;
-
+use \packages\base\views\traits\form as formTrait;
 class listview extends  list_view{
+	use formTrait;
 	protected $canAdd;
 	protected $canEdit;
 	protected $canDel;

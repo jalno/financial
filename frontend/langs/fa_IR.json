@@ -13,7 +13,7 @@
 		"transaction.createdate": "تاریخ صدور",
 		"transaction.number": "شماره {number}",
 		"title.transaction.view" : "مشاهده صورتحساب",
-		"tranactions" : "صورتحساب ها",
+		"transactions" : "صورتحساب ها",
 		"tranaction" : "صورتحساب {id}",
 		"transaction.unpaid" : "پرداخت نشده",
 		"transaction.paid" : "پرداخت شده",
@@ -102,6 +102,8 @@
 		"usertype.permissions.financial_transactions_pays_accept": "تایید پرداخت صورتحساب",
 		"usertype.permissions.financial_transactions_pay_delete": "حذف پرداخت صورتحساب",
 		"usertype.permissions.financial_transactions_product_delete": "حذف محصول صورتحساب",
-		"transaction.adding_credit": "افزایش موجودی"
+		"transaction.adding_credit": "افزایش موجودی",
+		"transaction.id": "شناسه",
+		"transaction.status": "وضعیت"
 	}
 }

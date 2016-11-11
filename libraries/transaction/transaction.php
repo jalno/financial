@@ -2,9 +2,9 @@
 namespace packages\financial;
 use \packages\base\db\dbObject;
 class transaction extends dbObject{
-	const unpaid = 0;
-	const paid = 1;
-	const refund = 2;
+	const unpaid = 1;
+	const paid = 2;
+	const refund = 3;
 	const host = 1;
 	const domain = 2;
 	protected $dbTable = "financial_transactions";

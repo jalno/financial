@@ -29,31 +29,105 @@ use \packages\financial\payport\AlreadyVerified;
 class transactions extends controller{
 	protected $authentication = true;
 	function listtransactions(){
-		if(authorization::is_accessed('transactions_list')){
-			if($view = view::byName("\\packages\\financial\\views\\transactions\\listview")){
-				$types = authorization::childrenTypes();
-				db::join("userpanel_users", "userpanel_users.id=financial_transactions.user", "LEFT");
-				if($types){
-					db::where("userpanel_users.type", $types, 'in');
-				}else{
-					db::where("userpanel_users.id", authentication::getID());
+		authorization::is_accessed('transactions_list');
+		$view = view::byName("\\packages\\financial\\views\\transactions\\listview");
+		$types = authorization::childrenTypes();
+
+		$inputsRules = array(
+			'id' => array(
+				'type' => 'number',
+				'optional' => true,
+				'empty' => true
+			),
+			'title' => array(
+				'type' => 'string',
+				'optional' =>true,
+				'empty' => true
+			),
+			'name' => array(
+				'type' => 'string',
+				'optional' =>true,
+				'empty' => true
+			),
+			'user' => array(
+				'type' => 'number',
+				'optional' => true,
+				'empty' => true
+			),
+			'status' => array(
+				'type' => 'number',
+				'optional' => true,
+				'empty' => true
+			),
+			'word' => array(
+				'type' => 'string',
+				'optional' => true,
+				'empty' => true
+			),
+			'comparison' => array(
+				'values' => array('equals', 'startswith', 'contains'),
+				'default' => 'contains',
+				'optional' => true
+			)
+		);
+		try{
+			$inputs = $this->checkinputs($inputsRules);
+			//print_r($inputs);
+			//exit();
+			if(isset($inputs['status']) and $inputs['status'] != 0){
+				if(!in_array($inputs['status'], array(transaction::unpaid, transaction::paid, transaction::refund))){
+					throw new inputValidation("status");
 				}
-				db::orderBy('id', ' DESC');
-				db::pageLimit($this->items_per_page);
-				$transactionsData = db::paginate("financial_transactions", $this->page, array("financial_transactions.*"));
-				$transactions = array();
-				foreach($transactionsData as $transaction){
-					$transactions[] = new transaction($transaction);
-				}
-				$view->setDataList($transactions);
-				$view->setPaginate($this->page, db::totalCount(), $this->items_per_page);
-				$this->response->setStatus(true);
-				$this->response->setView($view);
-				return $this->response;
 			}
-		}else{
-			return authorization::FailResponse();
+			if(isset($inputs['user']) and $inputs['user'] != 0){
+				$user = user::byId($inputs['user']);
+				if(!$user){
+					throw new inputValidation("user");
+				}
+				$inputs['user'] = $user->id;
+			}
+			foreach(array('id', 'title', 'status', 'user') as $item){
+				if(isset($inputs[$item]) and $inputs[$item]){
+					$comparison = $inputs['comparison'];
+					if(in_array($item, array('id', 'status', 'user'))){
+						$comparison = 'equals';
+					}
+					db::where("financial_transactions.".$item, $inputs[$item], $comparison);
+				}
+			}
+			if(isset($inputs['word']) and $inputs['word']){
+				$parenthesis = new parenthesis();
+				foreach(array('title') as $item){
+					if(!isset($inputs[$item]) or !$inputs[$item]){
+						$parenthesis->where($item,$inputs['word'], $inputs['comparison'], 'OR');
+					}
+				}
+				db::where($parenthesis);
+			}
+		}catch(inputValidation $error){
+			print_r($error);
+			exit();
+			$view->setFormError(FormError::fromException($error));
+			$this->response->setStatus(false);
 		}
+		db::join("userpanel_users", "userpanel_users.id=financial_transactions.user", "LEFT");
+		if($types){
+			db::where("userpanel_users.type", $types, 'in');
+		}else{
+			db::where("userpanel_users.id", authentication::getID());
+		}
+		db::orderBy('id', ' DESC');
+		db::pageLimit($this->items_per_page);
+		$transactionsData = db::paginate("financial_transactions", $this->page, array("financial_transactions.*"));
+		$transactions = array();
+		foreach($transactionsData as $transaction){
+			$transactions[] = new transaction($transaction);
+		}
+		$view->setDataList($transactions);
+		$view->setPaginate($this->page, db::totalCount(), $this->items_per_page);
+		$this->response->setStatus(true);
+		$this->response->setView($view);
+		return $this->response;
 	}
 	function transaction_view($data){
 		if($view = view::byName("\\packages\\financial\\views\\transactions\\view")){

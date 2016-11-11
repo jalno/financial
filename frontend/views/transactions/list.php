@@ -1,29 +1,37 @@
 <?php
 namespace themes\clipone\views\transactions;
+use \packages\base\utility;
+use \packages\base\translator;
 use \packages\base\db\dbObject;
-use \packages\financial\views\transactions\listview as transactionsListView;
+use \packages\base\frontend\theme;
+
 use \packages\userpanel;
 use \packages\userpanel\date;
-use \themes\clipone\navigation;
-use \themes\clipone\navigation\menuItem;
-use \themes\clipone\viewTrait;
-use \themes\clipone\views\listTrait;
-use \packages\base\translator;
-use \packages\base\utility;
 
+use \themes\clipone\viewTrait;
+use \themes\clipone\navigation;
+use \themes\clipone\views\listTrait;
+use \themes\clipone\views\formTrait;
+use \themes\clipone\navigation\menuItem;
+use \packages\financial\transaction;
+use \packages\financial\views\transactions\listview as transactionsListView;
 class listview extends transactionsListView{
-	use viewTrait,listTrait;
+	use viewTrait,listTrait,formTrait;
 	protected $multiuser = false;
 
 	function __beforeLoad(){
 		$this->setTitle(array(
 			translator::trans('transactions'),
-			translator::trans('list'),
+			translator::trans('list')
 		));
 		$this->setButtons();
 		$this->check_multiuser();
 		$this->setDates();
+		$this->addAssets();
 		navigation::active("transactions/list");
+	}
+	private function addAssets(){
+		$this->addJSFile(theme::url('assets/js/pages/transaction.list.js'));
 	}
 	public static function onSourceLoad(){
 		parent::onSourceLoad();
@@ -62,5 +70,41 @@ class listview extends transactionsListView{
 		foreach($this->dataList as $key => $data){
 			$this->dataList[$key]->create_at = date::format("Y/m/d H:i:s", $data->create_at);
 		}
+	}
+	public function getComparisonsForSelect(){
+		return array(
+			array(
+				'title' => translator::trans('search.comparison.contains'),
+				'value' => 'contains'
+			),
+			array(
+				'title' => translator::trans('search.comparison.equals'),
+				'value' => 'equals'
+			),
+			array(
+				'title' => translator::trans('search.comparison.startswith'),
+				'value' => 'startswith'
+			)
+		);
+	}
+	protected function getStatusForSelect(){
+		return array(
+			array(
+				'title' => ' ',
+				'value' => ' '
+			),
+			array(
+				'title' => translator::trans('transaction.unpaid'),
+				'value' => transaction::unpaid
+			),
+			array(
+				'title' => translator::trans('transaction.paid'),
+				'value' => transaction::paid
+			),
+			array(
+				'title' => translator::trans('transaction.refund'),
+				'value' => transaction::refund
+			)
+		);
 	}
 }

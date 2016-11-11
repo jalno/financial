@@ -18,6 +18,7 @@ $this->the_header();
 					if($this->canAdd){ ?>
 						<a class="btn btn-xs btn-link tooltips" title="<?php echo translator::trans('transaction.add'); ?>" href="<?php echo userpanel\url('transactions/new'); ?>"><i class="fa fa-plus"></i></a>
 				<?php } ?>
+					<a class="btn btn-xs btn-link tooltips" title="<?php echo translator::trans('search'); ?>" href="#search" data-toggle="modal" data-original-title=""><i class="fa fa-search"></i></a>
 					<a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
 				</div>
 			</div>
@@ -78,6 +79,54 @@ $this->the_header();
 			</div>
 		</div>
 		<!-- end: BASIC TABLE PANEL -->
+	</div>
+</div>
+<div class="modal fade" id="search" tabindex="-1" data-show="true" role="dialog">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h4 class="modal-title"><?php echo translator::trans('search'); ?></h4>
+	</div>
+	<div class="modal-body">
+		<form id="transactionsearch" class="form-horizontal" action="<?php echo userpanel\url("transactions"); ?>" method="GET" autocomplete="off">
+			<input type="hidden" name="user" value="">
+			<?php
+			$this->setHorizontalForm('sm-3','sm-9');
+			$feilds = array(
+				array(
+					'name' => 'id',
+					'type' => 'number',
+					'label' => translator::trans("transaction.id")
+				),
+				array(
+					'name' => 'title',
+					'label' => translator::trans("transaction.title")
+				),
+				array(
+					'name' => 'user_name',
+					'label' => translator::trans("transaction.user")
+				),
+				array(
+					'type' => 'select',
+					'label' => translator::trans('transaction.status'),
+					'name' => 'status',
+					'options' => $this->getStatusForSelect()
+				),
+				array(
+					'type' => 'select',
+					'label' => translator::trans('search.comparison'),
+					'name' => 'comparison',
+					'options' => $this->getComparisonsForSelect()
+				)
+			);
+			foreach($feilds as $input){
+				echo $this->createField($input);
+			}
+			?>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="submit" form="transactionsearch" class="btn btn-success"><?php echo translator::trans("search"); ?></button>
+		<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo translator::trans('cancel'); ?></button>
 	</div>
 </div>
 <?php
