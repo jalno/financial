@@ -183,12 +183,12 @@ class transactions extends controller{
 			throw new NotFound;
 		}
 	}
-	private function getAvailablePayMethods(){
+	private function getAvailablePayMethods($canPayByCredit = true){
 		$methods = array();
 		$bankaccounts = bankaccount::where("status", 1)->has();
 		$credit = authentication::getUser()->credit;
 		$payports = payport::where("status", 1)->has();
-		if($credit > 0){
+		if($canPayByCredit and $credit > 0){
 			$methods[] = 'credit';
 		}
 		if($bankaccounts){
@@ -203,9 +203,16 @@ class transactions extends controller{
 	public function pay($data){
 		if($view = view::byName("\\packages\\financial\\views\\transactions\\pay")){
 			$transaction = $this->getTransaction($data['transaction']);
+			$canPayByCredit = true;
+			foreach($transaction->products as $product){
+				if($product->type == '\packages\financial\products\addingcredit'){
+					$canPayByCredit = false;
+					break;
+				}
+			}
 			if($transaction->status == transaction::unpaid){
 				$view->setTransaction($transaction);
-				foreach($this->getAvailablePayMethods() as $method){
+				foreach($this->getAvailablePayMethods($canPayByCredit) as $method){
 					$view->setMethod($method);
 				}
 				$this->response->setStatus(true);

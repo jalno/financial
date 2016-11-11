@@ -7,7 +7,7 @@ class addingcredit extends transaction_product{
 		$user = new user;
 		$user->where("id", $this->transaction->user->id);
 		$user = $user->getOne();
-		$user->credit = $this->transaction->price;
+		$user->credit += $this->price;
 		$user->save();
 	}
 }
