@@ -11,6 +11,7 @@ class transaction_product extends dbObject{
 	const downgrade = 4;
 	const refund = 5;
 	const other = 6;
+	const addingcredit = 7;
 	protected $dbTable = "financial_transactions_products";
 	protected $primaryKey = "id";
 	protected $dbFields = array(

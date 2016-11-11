@@ -57,5 +57,9 @@
 	{
 		"path": ["userpanel","transactions","product", "delete", {"type":"dynamic", "name":"id", "regex":"/^\\d+$/"}],
 		"controller": "controllers\\transactions@product_delete"
+	},
+	{
+		"path": ["userpanel","transactions","addingcredit"],
+		"controller": "controllers\\transactions@addingcredit"
 	}
 ]

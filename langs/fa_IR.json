@@ -1,0 +1,11 @@
+{
+	"author": {
+		"name" : "Mehdi Abedi",
+		"website" : "http://www.software-iaun.ir/"
+	},
+	"rtl": true,
+	"phrases":{
+		"ransaction.title.adding_credit": "افزایش موجودی",
+		"ransaction.adding_credit": "افزایش موجودی به مبلغ {price} ریال"
+	}
+}

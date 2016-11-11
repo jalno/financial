@@ -145,6 +145,14 @@
 		{
 			"classes":["listeners\\settings\\usertype"],
 			"file":"listeners/settings/usertype.php"
+		},
+		{
+			"classes":["views\\transactions\\addingcredit"],
+			"file":"views/transactions/addingcredit.php"
+		},
+		{
+			"classes":["products\\addingcredit"],
+			"file":"libraries/financial/addingcredit.php"
 		}
 	]
 }

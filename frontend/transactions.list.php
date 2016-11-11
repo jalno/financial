@@ -12,9 +12,12 @@ $this->the_header();
 			<div class="panel-heading">
 				<i class="clip-data"></i> <?php echo translator::trans('transactions'); ?>
 				<div class="panel-tools">
-					<?php if($this->canAdd){ ?>
+					<?php if($this->canAddingCredit){ ?>
+					<a class="btn btn-xs btn-link tooltips" title="<?php echo translator::trans('transaction.adding_credit'); ?>" href="<?php echo userpanel\url('transactions/addingcredit'); ?>"><i class="fa fa-money"></i></a>
+					<?php }
+					if($this->canAdd){ ?>
 						<a class="btn btn-xs btn-link tooltips" title="<?php echo translator::trans('transaction.add'); ?>" href="<?php echo userpanel\url('transactions/new'); ?>"><i class="fa fa-plus"></i></a>
-					<?php } ?>
+				<?php } ?>
 					<a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
 				</div>
 			</div>
