@@ -18,7 +18,7 @@ $this->the_header();
 			<div class="alert alert-block alert-warning fade in">
 				<div class="col-md-12">
 					<?php
-					if($error = $this->getFromErrorsByInput('products')){
+					if($error = $this->getFormErrorsByInput('products')){
 						echo('<div class="alert alert-block alert-info fade in center">');
 						if($error->error = FormError::DATA_VALIDATION){
 							echo '<div>'.translator::trans('product.error.inputValidation').'</div>';
@@ -33,7 +33,7 @@ $this->the_header();
 				</p>
 				<p>
 					<a href="<?php echo userpanel\url('transactions/edit/'.$this->getProductData()->transaction); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-right"></i> <?php echo translator::trans('return'); ?></a>
-					<button <?php if($error = $this->getFromErrorsByInput('products')){ echo "disabled";} ?> type="submit" class="btn btn-yellow"><i class="fa fa-trash-o tip"></i> <?php echo translator::trans("ticket.delete") ?></button>
+					<button <?php if($error = $this->getFormErrorsByInput('products')){ echo "disabled";} ?> type="submit" class="btn btn-yellow"><i class="fa fa-trash-o tip"></i> <?php echo translator::trans("ticket.delete") ?></button>
 				</p>
 			</div>
 		</form>
