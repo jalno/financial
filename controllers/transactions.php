@@ -32,7 +32,6 @@ class transactions extends controller{
 		authorization::is_accessed('transactions_list');
 		$view = view::byName("\\packages\\financial\\views\\transactions\\listview");
 		$types = authorization::childrenTypes();
-
 		$inputsRules = array(
 			'id' => array(
 				'type' => 'number',
@@ -72,8 +71,6 @@ class transactions extends controller{
 		);
 		try{
 			$inputs = $this->checkinputs($inputsRules);
-			//print_r($inputs);
-			//exit();
 			if(isset($inputs['status']) and $inputs['status'] != 0){
 				if(!in_array($inputs['status'], array(transaction::unpaid, transaction::paid, transaction::refund))){
 					throw new inputValidation("status");
@@ -105,8 +102,6 @@ class transactions extends controller{
 				db::where($parenthesis);
 			}
 		}catch(inputValidation $error){
-			print_r($error);
-			exit();
 			$view->setFormError(FormError::fromException($error));
 			$this->response->setStatus(false);
 		}
@@ -779,6 +774,39 @@ class transactions extends controller{
 					'number' => 1,
 					'method' => transaction_product::addingcredit
 				));
+				$transaction->save();
+				$this->response->setStatus(true);
+				$this->response->Go(userpanel\url("transactions/view/".$transaction->id));
+			}catch(inputValidation $error){
+				$view->setFormError(FormError::fromException($error));
+			}
+		}else{
+			$this->response->setStatus(true);
+		}
+		$this->response->setView($view);
+		return $this->response;
+	}
+	public function accepted($data){
+		authorization::haveOrFail('transactions_accept');
+		$view = view::byName("\\packages\\financial\\views\\transactions\\accept");
+		$transaction = transaction::byId($data['id']);
+		if(!$transaction){
+			throw new NotFound;
+		}
+		$view->setTransactionData($transaction);
+		if(http::is_post()){
+			try{
+				$transaction->addPay(array(
+					'date' => time(),
+					'method' => transaction_pay::payaccepted,
+					'price' => $transaction->price,
+					'status' => transaction_pay::accepted,
+					'params' => array(
+						'acceptor' => authentication::getID(),
+						'accept_date' => time(),
+					)
+				));
+				$transaction->status = transaction::paid;
 				$transaction->save();
 				$this->response->setStatus(true);
 				$this->response->Go(userpanel\url("transactions/view/".$transaction->id));

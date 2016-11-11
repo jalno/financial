@@ -153,6 +153,10 @@
 		{
 			"classes":["products\\addingcredit"],
 			"file":"libraries/financial/addingcredit.php"
+		},
+		{
+			"classes":["views\\transactions\\accept"],
+			"file":"views/transactions/accept.php"
 		}
 	]
 }

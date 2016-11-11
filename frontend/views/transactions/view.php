@@ -1,18 +1,22 @@
 <?php
 namespace themes\clipone\views\transactions;
 use \packages\userpanel;
+use \packages\base\translator;
+
+use \packages\userpanel\user;
 use \packages\userpanel\date;
+
 use \packages\financial\bankaccount;
 use \packages\financial\transaction;
-use \packages\financial\transaction_pay;
 use \packages\financial\payport_pay;
+use \packages\financial\transaction_pay;
 use \packages\financial\views\transactions\view as transactionsView;
+
+use \themes\clipone\viewTrait;
 use \themes\clipone\breadcrumb;
 use \themes\clipone\navigation;
-use \themes\clipone\navigation\menuItem;
-use \themes\clipone\viewTrait;
 use \themes\clipone\views\listTrait;
-use \packages\base\translator;
+use \themes\clipone\navigation\menuItem;
 
 class view extends transactionsView{
 	use viewTrait,listTrait;
@@ -77,6 +81,9 @@ class view extends transactionsView{
 				}else{
 					$pay->method = translator::trans('pay.byPayOnline');
 				}
+			}elseif($pay->method == transaction_pay::payaccepted){
+				$acceptor = user::byId($pay->param('acceptor'));
+				$pay->method = translator::trans('pay.method.payaccepted', array('acceptor' => $acceptor->getFullName()));
 			}
 		}
 		if($needacceptbtn){

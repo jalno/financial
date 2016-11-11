@@ -102,8 +102,13 @@
 		"usertype.permissions.financial_transactions_pays_accept": "تایید پرداخت صورتحساب",
 		"usertype.permissions.financial_transactions_pay_delete": "حذف پرداخت صورتحساب",
 		"usertype.permissions.financial_transactions_product_delete": "حذف محصول صورتحساب",
+		"usertype.permissions.financial_transactions_addingcredit": "پرداخت صورتحساب با موجودی کاربری",
+		"usertype.permissions.financial_transactions_accept": "تایید صورتحساب ها",
 		"transaction.adding_credit": "افزایش موجودی",
 		"transaction.id": "شناسه",
-		"transaction.status": "وضعیت"
+		"transaction.status": "وضعیت",
+		"paided": "پرداخت شده",
+		"transaction.accept.warning": "آیا شما از تایید صورتحساب به شناسه #{transaction_id} اطمینان دارید؟",
+		"pay.method.payaccepted": "تایید شده توسط: {acceptor}"
 	}
 }

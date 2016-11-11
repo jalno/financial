@@ -37,6 +37,15 @@ $this->the_header();
 					?>
 				</div>
 			</div>
+			<?php if($this->canAccept){ ?>
+			<div class="panel-footer">
+				<div class="row">
+					<div class="col-md-2 col-md-offset-10 col-sm-3 col-sm-offset-9">
+						<a href="<?php echo userpanel\url("transactions/accept/".$this->transaction->id); ?>" class="btn btn-success btn-block"><i class="fa fa-check-square-o"></i> <?php echo translator::trans("paided"); ?></a>
+					</div>
+				</div>
+			</div>
+			<?php } ?>
 		</div>
 	</div>
 </div>

@@ -59,6 +59,10 @@
 		{
 			"classes":["views\\transactions\\addingcredit"],
 			"file":"views/transactions/addingcredit.php"
+		},
+		{
+			"classes":["views\\transactions\\accept"],
+			"file":"views/transactions/accept.php"
 		}
 	]
 }

@@ -61,5 +61,9 @@
 	{
 		"path": ["userpanel","transactions","addingcredit"],
 		"controller": "controllers\\transactions@addingcredit"
+	},
+	{
+		"path": ["userpanel","transactions","accept", {"type":"dynamic", "name":"id", "regex":"/^\\d+$/"}],
+		"controller": "controllers\\transactions@accepted"
 	}
 ]
