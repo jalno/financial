@@ -29,7 +29,7 @@ use \packages\financial\payport\AlreadyVerified;
 class transactions extends controller{
 	protected $authentication = true;
 	function listtransactions(){
-		authorization::is_accessed('transactions_list');
+		authorization::haveOrFail('transactions_list');
 		$view = view::byName("\\packages\\financial\\views\\transactions\\listview");
 		$types = authorization::childrenTypes();
 		$inputsRules = array(

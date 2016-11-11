@@ -12,7 +12,9 @@ class usertype{
 
 			'transactions_pays_accept',
 			'transactions_pay_delete',
-			'transactions_product_delete'
+			'transactions_product_delete',
+			'transactions_addingcredit',
+			'transactions_accept'
 
 		);
 		foreach($permissions as $permission){
