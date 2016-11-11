@@ -4,6 +4,9 @@
 	"frontend":"frontend",
 	"autoload":"autoloader.json",
 	"dependencies": ["base", "userpanel"],
+	"languages":{
+		"fa_IR": "langs/fa_IR.json"
+	},
 	"events": [
 		{
 			"name":"\\packages\\userpanel\\events\\usertype_permissions_list",

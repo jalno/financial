@@ -1,9 +1,10 @@
 <?php
 namespace packages\financial\controllers;
 use \packages\base;
-use \packages\base\NotFound;
-use \packages\base\http;
 use \packages\base\db;
+use \packages\base\http;
+use \packages\base\NotFound;
+use \packages\base\translator;
 use \packages\base\inputValidation;
 use \packages\base\views\FormError;
 
@@ -653,6 +654,56 @@ class transactions extends controller{
 			$transaction->save();
 			$this->response->setStatus(true);
 			$this->response->Go(userpanel\url('transactions/edit/'.$id));
+		}else{
+			$this->response->setStatus(true);
+		}
+		$this->response->setView($view);
+		return $this->response;
+	}
+	public function addingcredit(){
+		$view = view::byName("\\packages\\financial\\views\\transactions\\addingcredit");
+		authorization::haveOrFail('transactions_addingcredit');
+		$types = authorization::childrenTypes();
+		if($types){
+			$view->setData(true, 'selectclient');
+		}
+		$inputsRules = array(
+			'price' => array(
+				'type' => 'number'
+			)
+		);
+		if($types){
+			$inputsRules['client'] = array(
+				'type' => 'number'
+			);
+		}
+		$this->response->setStatus(false);
+		if(http::is_post()){
+			try{
+				$inputs = $this->checkinputs($inputsRules);
+				$inputs['client'] = isset($inputs['client']) ? user::byId($inputs['client']) : authentication::getUser();
+				if($inputs['price'] <= 0){
+					throw new inputValidation('price');
+				}
+				$transaction = new transaction;
+				$transaction->title = translator::trans("transaction.adding_credit");
+				$transaction->user = $inputs['client']->id;
+				$transaction->create_at = time();
+				$transaction->expire_at = time()+86400;
+				$transaction->addProduct(array(
+					'title' => translator::trans("ransaction.adding_credit", array('price' => $inputs['price'])),
+					'price' => $inputs['price'],
+					'type' => '\packages\financial\products\addingcredit',
+					'discount' => 0,
+					'number' => 1,
+					'method' => transaction_product::addingcredit
+				));
+				$transaction->save();
+				$this->response->setStatus(true);
+				$this->response->Go(userpanel\url("transactions/view/".$transaction->id));
+			}catch(inputValidation $error){
+				$view->setFormError(FormError::fromException($error));
+			}
 		}else{
 			$this->response->setStatus(true);
 		}

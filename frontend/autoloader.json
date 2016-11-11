@@ -55,6 +55,10 @@
 		{
 			"classes":["views\\transactions\\product_delete"],
 			"file":"views/transactions/product.delete.php"
+		},
+		{
+			"classes":["views\\transactions\\addingcredit"],
+			"file":"views/transactions/addingcredit.php"
 		}
 	]
 }
