@@ -63,6 +63,10 @@
 		{
 			"classes":["views\\transactions\\accept"],
 			"file":"views/transactions/accept.php"
+		},
+		{
+			"classes":["listeners\\financial\\dashboard"],
+			"file":"listeners/clipone/dashboard.php"
 		}
 	]
 }

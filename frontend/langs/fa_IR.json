@@ -109,6 +109,9 @@
 		"transaction.status": "وضعیت",
 		"paided": "پرداخت شده",
 		"transaction.accept.warning": "آیا شما از تایید صورتحساب به شناسه #{transaction_id} اطمینان دارید؟",
-		"pay.method.payaccepted": "تایید شده توسط: {acceptor}"
+		"pay.method.payaccepted": "تایید شده توسط: {acceptor}",
+		"shortcut.transactions.title": "فاکتور ها",
+		"shortcut.transactions.text": "لیست فاکتور ها را بررسی کنید، شاید تاریخ انقضای فاکتوری در نزدیکی باشد و شما از وجود آن بی خبر باشید.",
+		"shortcut.transactions.link": "لیست فاکتور ها"
 	}
 }

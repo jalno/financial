@@ -16,6 +16,12 @@
 			"file":"assets/css/note.css"
 		}
 	],
+	"events":[
+		{
+			"name":"\\themes\\clipone\\events\\initializeDashboard",
+			"listener": "listeners\\financial\\dashboard@initialize"
+		}
+	],
 	"views":[
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\listview",
