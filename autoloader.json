@@ -157,6 +157,10 @@
 		{
 			"classes":["views\\transactions\\accept"],
 			"file":"views/transactions/accept.php"
+		},
+		{
+			"classes":["views\\transactions\\pay\\onlinepay\\redirect"],
+			"file":"views/transactions/pay/onlinepay_redirect.php"
 		}
 	]
 }

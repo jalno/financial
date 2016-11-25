@@ -67,6 +67,10 @@
 		{
 			"classes":["listeners\\financial\\dashboard"],
 			"file":"listeners/clipone/dashboard.php"
+		},
+		{
+			"classes":["views\\transactions\\pay\\onlinepay\\redirect"],
+			"file":"views/transactions/pay/onlinepay_redirect.php"
 		}
 	]
 }

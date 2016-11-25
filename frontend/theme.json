@@ -102,6 +102,11 @@
 			"name":"\\themes\\clipone\\views\\transactions\\accept",
 			"parent":"\\packages\\financial\\views\\transactions\\accept",
 			"file":"transactions.accept.php"
+		},
+		{
+			"name":"\\themes\\clipone\\views\\transactions\\pay\\onlinepay\\redirect",
+			"parent":"\\packages\\financial\\views\\transactions\\pay\\onlinepay\\redirect",
+			"file":"transactions.pay.onlinepay.redirect.php"
 		}
 	]
 }

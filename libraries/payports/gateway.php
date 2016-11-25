@@ -17,7 +17,10 @@ class redirect{
 	public $url;
 	public $data = array();
 	public function getURL(){
-		return $this->url.($this->data ? '?'.http_build_query($this->data) : '');
+		return $this->url.(($this->method == self::get and $this->data) ? '?'.http_build_query($this->data) : '');
+	}
+	public function addData($key, $value){
+		$this->data[$key] = $value;
 	}
 }
 class GatewayException extends \Exception{}

@@ -112,6 +112,11 @@
 		"pay.method.payaccepted": "تایید شده توسط: {acceptor}",
 		"shortcut.transactions.title": "فاکتور ها",
 		"shortcut.transactions.text": "لیست فاکتور ها را بررسی کنید، شاید تاریخ انقضای فاکتوری در نزدیکی باشد و شما از وجود آن بی خبر باشید.",
-		"shortcut.transactions.link": "لیست فاکتور ها"
+		"shortcut.transactions.link": "لیست فاکتور ها",
+		"pay.redirect":"ارجاع به درگاه پرداخت",
+		"pay.redirect.wait" : "لطفا صبر کنید...",
+		"pay.redirect.text" : "شما در حال انتقال به درگاه پرداخت هستید، لطفا چند لحظه صبر کنید...",
+		"pay.redirect.manual":"درصورتی بصورت خودکار هدایت نشدید، لطفا بر روی {submit} کلیک کنید.",
+		"here":"اینجا"
 	}
 }

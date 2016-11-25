@@ -395,47 +395,51 @@ class transactions extends controller{
 	}
 	public function onlinePay($data){
 		if(in_array('onlinepay',$this->getAvailablePayMethods())){
-			if($view = view::byName("\\packages\\financial\\views\\transactions\\pay\\onlinepay")){
-				$transaction = $this->getTransaction($data['transaction']);
-				if($transaction->status == transaction::unpaid){
-					$payports = payport::where("status", payport::active)->get();
-					$view->setTransaction($transaction);
-					$view->setPayports($payports);
-					$this->response->setStatus(false);
-					if(http::is_post()){
-						$inputsRoles = array(
-							'payport' => array(
-								'type' => 'number'
-							),
-							'price' => array(
-								'type' => 'number',
-							)
-						);
-						try{
-							$inputs = $this->checkinputs($inputsRoles);
-							if($payport = payport::byId($inputs['payport'])){
-								if($inputs['price'] > 0 and $inputs['price'] <= $transaction->payablePrice()){
-									$redirect = $payport->PaymentRequest($inputs['price'], $transaction);
-									if($redirect->method == redirect::get){
-										$this->response->Go($redirect->getURL());
-									}
-								}else{
-									throw new inputValidation("price");
+			$view = view::byName("\\packages\\financial\\views\\transactions\\pay\\onlinepay");
+			$transaction = $this->getTransaction($data['transaction']);
+			if($transaction->status == transaction::unpaid){
+				$payports = payport::where("status", payport::active)->get();
+				$view->setTransaction($transaction);
+				$view->setPayports($payports);
+
+				$this->response->setStatus(false);
+				if(http::is_post()){
+					$inputsRoles = array(
+						'payport' => array(
+							'type' => 'number'
+						),
+						'price' => array(
+							'type' => 'number',
+						)
+					);
+					try{
+						$inputs = $this->checkinputs($inputsRoles);
+						if($payport = payport::byId($inputs['payport'])){
+							if($inputs['price'] > 0 and $inputs['price'] <= $transaction->payablePrice()){
+								$redirect = $payport->PaymentRequest($inputs['price'], $transaction);
+								if($redirect->method == redirect::get){
+									$this->response->Go($redirect->getURL());
+								}elseif($redirect->method == redirect::post){
+									$view = view::byName("\\packages\\financial\\views\\transactions\\pay\\onlinepay\\redirect");
+									$view->setTransaction($transaction);
+									$view->setRedirect($redirect);
 								}
 							}else{
-								throw new inputValidation("bankaccount");
+								throw new inputValidation("price");
 							}
-						}catch(inputValidation $error){
-							$view->setFormError(FormError::fromException($error));
+						}else{
+							throw new inputValidation("payport");
 						}
-					}else{
-						$view->setDataForm($transaction->payablePrice(), 'price');
-						$this->response->setStatus(true);
+					}catch(inputValidation $error){
+						$view->setFormError(FormError::fromException($error));
 					}
-					$this->response->setView($view);
 				}else{
-					throw new NotFound;
+					$view->setDataForm($transaction->payablePrice(), 'price');
+					$this->response->setStatus(true);
 				}
+				$this->response->setView($view);
+			}else{
+				throw new NotFound;
 			}
 		}else{
 			throw new NotFound;
