@@ -161,6 +161,26 @@
 		{
 			"classes":["views\\transactions\\pay\\onlinepay\\redirect"],
 			"file":"views/transactions/pay/onlinepay_redirect.php"
+		},
+		{
+			"classes":["controllers\\settings\\bank"],
+			"file":"controllers/settings/bank.php"
+		},
+		{
+			"classes":["views\\settings\\bankaccount\\listview"],
+			"file":"views/settings/bankaccount/list.php"
+		},
+		{
+			"classes":["views\\settings\\bankaccount\\delete"],
+			"file":"views/settings/bankaccount/delete.php"
+		},
+		{
+			"classes":["views\\settings\\bankaccount\\edit"],
+			"file":"views/settings/bankaccount/edit.php"
+		},
+		{
+			"classes":["views\\settings\\bankaccount\\add"],
+			"file":"views/settings/bankaccount/add.php"
 		}
 	]
 }

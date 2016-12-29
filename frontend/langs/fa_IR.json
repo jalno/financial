@@ -104,6 +104,10 @@
 		"usertype.permissions.financial_transactions_product_delete": "حذف محصول صورتحساب",
 		"usertype.permissions.financial_transactions_addingcredit": "پرداخت صورتحساب با موجودی کاربری",
 		"usertype.permissions.financial_transactions_accept": "تایید صورتحساب ها",
+		"usertype.permissions.financial_settings_bankaccounts_list":"لیست حساب های بانکی",
+		"usertype.permissions.financial_settings_bankaccounts_add":"افزودن حساب بانکی",
+		"usertype.permissions.financial_settings_bankaccounts_delete":"حذف حساب بانکی",
+		"usertype.permissions.financial_settings_bankaccounts_edit":"ویرایش حساب بانکی",
 		"transaction.adding_credit": "افزایش موجودی",
 		"transaction.id": "شناسه",
 		"transaction.status": "وضعیت",
@@ -117,6 +121,13 @@
 		"pay.redirect.wait" : "لطفا صبر کنید...",
 		"pay.redirect.text" : "شما در حال انتقال به درگاه پرداخت هستید، لطفا چند لحظه صبر کنید...",
 		"pay.redirect.manual":"درصورتی بصورت خودکار هدایت نشدید، لطفا بر روی {submit} کلیک کنید.",
-		"here":"اینجا"
+		"here":"اینجا",
+		"bankaccount.active": "فعال",
+		"bankaccount.deactive": "غیر فعال",
+		"bankaccount.status": "وضعیت",
+		"bankaccount_edit": "ویرایش حساب بانکی",
+		"bankaccount_delete": "حذف حساب بانکی",
+		"bankaccount_add": "افزودن حساب بانکی",
+		"bankaccount.delete.warning": "آیا شما از حذف شماره حساب به شناسه #{bankaccount_id} اطمینان دارید؟ این عملیات بدون بازگشت خواهد بود."
 	}
 }

@@ -14,7 +14,12 @@ class usertype{
 			'transactions_pay_delete',
 			'transactions_product_delete',
 			'transactions_addingcredit',
-			'transactions_accept'
+			'transactions_accept',
+
+			'settings_bankaccounts_list',
+			'settings_bankaccounts_add',
+			'settings_bankaccounts_delete',
+			'settings_bankaccounts_edit'
 
 		);
 		foreach($permissions as $permission){

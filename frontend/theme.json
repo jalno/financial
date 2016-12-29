@@ -10,12 +10,7 @@
 	"languages":{
 		"fa_IR" : "langs/fa_IR.json"
 	},
-	"assets":[
-		{
-			"type":"css",
-			"file":"assets/css/note.css"
-		}
-	],
+	"assets":[],
 	"events":[
 		{
 			"name":"\\themes\\clipone\\events\\initializeDashboard",
@@ -107,6 +102,26 @@
 			"name":"\\themes\\clipone\\views\\transactions\\pay\\onlinepay\\redirect",
 			"parent":"\\packages\\financial\\views\\transactions\\pay\\onlinepay\\redirect",
 			"file":"transactions.pay.onlinepay.redirect.php"
+		},
+		{
+			"name":"\\themes\\clipone\\views\\settings\\bankaccount\\listview",
+			"parent":"\\packages\\financial\\views\\settings\\bankaccount\\listview",
+			"file":"settings.bankaccounts.list.php"
+		},
+		{
+			"name":"\\themes\\clipone\\views\\settings\\bankaccount\\delete",
+			"parent":"\\packages\\financial\\views\\settings\\bankaccount\\delete",
+			"file":"settings.bankaccounts.delete.php"
+		},
+		{
+			"name":"\\themes\\clipone\\views\\settings\\bankaccount\\edit",
+			"parent":"\\packages\\financial\\views\\settings\\bankaccount\\edit",
+			"file":"settings.bankaccounts.edit.php"
+		},
+		{
+			"name":"\\themes\\clipone\\views\\settings\\bankaccount\\add",
+			"parent":"\\packages\\financial\\views\\settings\\bankaccount\\add",
+			"file":"settings.bankaccounts.add.php"
 		}
 	]
 }

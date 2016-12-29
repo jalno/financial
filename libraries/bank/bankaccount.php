@@ -3,7 +3,7 @@ namespace packages\financial;
 use \packages\base\db\dbObject;
 class bankaccount extends dbObject{
 	const active = 1;
-	const deactive = 0;
+	const deactive = 2;
 	protected $dbTable = "financial_bankaccounts";
 	protected $primaryKey = "id";
 	protected $dbFields = array(
