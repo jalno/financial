@@ -15,6 +15,7 @@ class pay  extends \packages\financial\view{
 	protected $canAccept;
 	function __construct(){
 		$this->canAccept = authorization::is_accessed('transactions_accept');
+		$this->setData(array(), 'methods');
 	}
 	public function setCredit($credit){
 		$this->setData($credit, 'credit');
