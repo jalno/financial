@@ -19,7 +19,7 @@ use \packages\financial\bankaccount;
   * @author Mahdi Abedi <abedi@jeyserver.com>
   * @copyright 2016 JeyServer
   */
-class bank extends controller{
+class bankaccounts extends controller{
 	/**
 	* @var bool require authentication
 	*/
@@ -174,7 +174,7 @@ class bank extends controller{
 				}
 				$bankaccount->save();
 				$this->response->setStatus(true);
-				$this->response->GO(userpanel\url("settings/bankaccounts/edit/".$bankaccount->id));
+				$this->response->GO(userpanel\url("settings/financial/bankaccounts/edit/".$bankaccount->id));
 			}catch(inputValidation $error){
 				$view->setFormError(FormError::fromException($error));
 			}
@@ -222,7 +222,7 @@ class bank extends controller{
 				$bankaccount->status = $inputs['status'];
 				$bankaccount->save();
 				$this->response->setStatus(true);
-				$this->response->GO(userpanel\url("settings/bankaccounts/edit/".$bankaccount->id));
+				$this->response->GO(userpanel\url("settings/financial/bankaccounts/edit/".$bankaccount->id));
 			}catch(inputValidation $error){
 				$view->setFormError(FormError::fromException($error));
 			}

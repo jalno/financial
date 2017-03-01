@@ -167,8 +167,8 @@
 			"file":"views/transactions/pay/onlinepay_redirect.php"
 		},
 		{
-			"classes":["controllers\\settings\\bank"],
-			"file":"controllers/settings/bank.php"
+			"classes":["controllers\\settings\\bankaccounts"],
+			"file":"controllers/settings/bankaccounts.php"
 		},
 		{
 			"classes":["views\\settings\\bankaccount\\listview"],

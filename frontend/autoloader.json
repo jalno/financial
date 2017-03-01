@@ -73,20 +73,20 @@
 			"file":"views/transactions/pay/onlinepay_redirect.php"
 		},
 		{
-			"classes":["views\\settings\\bankaccount\\listview"],
-			"file":"views/settings/bankaccounts/list.php"
+			"classes":["views\\financial\\settings\\bankaccount\\listview"],
+			"file":"views/settings/bankaccount/list.php"
 		},
 		{
-			"classes":["views\\settings\\bankaccount\\delete"],
-			"file":"views/settings/bankaccounts/delete.php"
+			"classes":["views\\financial\\settings\\bankaccount\\delete"],
+			"file":"views/settings/bankaccount/delete.php"
 		},
 		{
-			"classes":["views\\settings\\bankaccount\\edit"],
-			"file":"views/settings/bankaccounts/edit.php"
+			"classes":["views\\financial\\settings\\bankaccount\\edit"],
+			"file":"views/settings/bankaccount/edit.php"
 		},
 		{
-			"classes":["views\\settings\\bankaccount\\add"],
-			"file":"views/settings/bankaccounts/add.php"
+			"classes":["views\\financial\\settings\\bankaccount\\add"],
+			"file":"views/settings/bankaccount/add.php"
 		},
 		{
 			"classes":["views\\financial\\settings\\gateways\\search"],

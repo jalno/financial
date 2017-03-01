@@ -67,38 +67,38 @@
 		"controller": "controllers\\transactions@accepted"
 	},
 	{
-		"path": ["userpanel", "settings", "bankaccounts"],
-		"controller": "controllers\\settings\\bank@listAcoounts"
+		"path": ["userpanel", "settings", "financial", "bankaccounts"],
+		"controller": "controllers\\settings\\bankaccounts@listAcoounts"
 	},
 	{
-		"path": ["userpanel", "settings", "bankaccounts", "delete", {"type":"dynamic","name":"id", "regex":"/^(\\d+)$/"}],
-		"controller": "controllers\\settings\\bank@delete"
+		"path": ["userpanel", "settings", "financial", "bankaccounts", "delete", {"type":"dynamic","name":"id", "regex":"/^(\\d+)$/"}],
+		"controller": "controllers\\settings\\bankaccounts@delete"
 	},
 	{
-		"path": ["userpanel", "settings", "bankaccounts", "edit", {"type":"dynamic","name":"id", "regex":"/^(\\d+)$/"}],
-		"controller": "controllers\\settings\\bank@edit"
+		"path": ["userpanel", "settings", "financial", "bankaccounts", "edit", {"type":"dynamic","name":"id", "regex":"/^(\\d+)$/"}],
+		"controller": "controllers\\settings\\bankaccounts@edit"
 	},
 	{
-		"path": ["userpanel", "settings", "bankaccounts", "add"],
-		"controller": "controllers\\settings\\bank@add"
+		"path": ["userpanel", "settings", "financial", "bankaccounts", "add"],
+		"controller": "controllers\\settings\\bankaccounts@add"
 	},
 	{
-		"path":["userpanel","settings","financial","gateways"],
+		"path":["userpanel","settings", "financial","gateways"],
 		"controller": "controllers\\settings\\gateways@listgateways",
 		"method":"get"
 	},
 	{
-		"path":["userpanel","settings","financial","gateways","add"],
+		"path":["userpanel","settings", "financial","gateways","add"],
 		"controller": "controllers\\settings\\gateways@add",
 		"method":["get","post"]
 	},
 	{
-		"path":["userpanel","settings","financial","gateways","delete",{"type":"dynamic","name":"gateway", "regex":"/^\\d+$/"}],
+		"path":["userpanel","settings", "financial","gateways","delete",{"type":"dynamic","name":"gateway", "regex":"/^\\d+$/"}],
 		"controller": "controllers\\settings\\gateways@delete",
 		"method":["get","post"]
 	},
 	{
-		"path":["userpanel","settings","financial","gateways","edit",{"type":"dynamic","name":"gateway", "regex":"/^\\d+$/"}],
+		"path":["userpanel","settings", "financial","gateways","edit",{"type":"dynamic","name":"gateway", "regex":"/^\\d+$/"}],
 		"controller": "controllers\\settings\\gateways@edit",
 		"method":["get","post"]
 	}

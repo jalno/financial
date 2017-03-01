@@ -1,5 +1,5 @@
 <?php
-namespace themes\clipone\views\settings\bankaccount;
+namespace themes\clipone\views\financial\settings\bankaccount;
 use \packages\base\translator;
 
 use \packages\userpanel;
@@ -21,7 +21,7 @@ class listview extends accounts_list{
 			translator::trans('list')
 		));
 		$this->setButtons();
-		navigation::active("settings/bankaccounts");
+		navigation::active("settings/financial/bankaccounts");
 	}
 	public function setButtons(){
 		$this->setButton('edit', $this->canEdit, array(
@@ -47,7 +47,7 @@ class listview extends accounts_list{
 			}
 			$bankaccount = new menuItem("bankaccounts");
 			$bankaccount->setTitle(translator::trans("bankaccounts"));
-			$bankaccount->setURL(userpanel\url('settings/bankaccounts'));
+			$bankaccount->setURL(userpanel\url('settings/financial/bankaccounts'));
 			$financial->addItem($bankaccount);
 		}
 	}

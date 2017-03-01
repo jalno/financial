@@ -1,5 +1,5 @@
 <?php
-namespace themes\clipone\views\settings\bankaccount;
+namespace themes\clipone\views\financial\settings\bankaccount;
 use \packages\base\translator;
 
 use \themes\clipone\viewTrait;
@@ -22,12 +22,6 @@ class edit extends account_edit{
 		$this->setNavigation();
 	}
 	private function setNavigation(){
-		breadcrumb::addItem(navigation::getByName('settings'));
-		breadcrumb::addItem(navigation::getByName('settings/bankaccounts'));
-		$item = new menuItem("edit");
-		$item->setTitle(translator::trans('bankaccount_edit'));
-		$item->setIcon('fa fa-edit');
-		breadcrumb::addItem($item);
 		navigation::active("settings/bankaccounts");
 	}
 	protected function setStatusForSelect(){
