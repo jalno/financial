@@ -38,12 +38,17 @@ class listview extends accounts_list{
 	public static function onSourceLoad(){
 		parent::onSourceLoad();
 		if(parent::$navigation){
-			if($settings = navigation::getByName("settings")){
-				$bankaccount = new menuItem("bankaccounts");
-				$bankaccount->setTitle(translator::trans("bankaccounts"));
-				$bankaccount->setURL(userpanel\url('settings/bankaccounts'));
-				$settings->addItem($bankaccount);
+			$settings = navigation::getByName("settings");
+			if(!$financial = navigation::getByName("settings/financial")){
+				$financial = new menuItem("financial");
+				$financial->setTitle(translator::trans('settings.financial'));
+				$financial->setIcon("fa fa-money");
+				if($settings)$settings->addItem($financial);
 			}
+			$bankaccount = new menuItem("bankaccounts");
+			$bankaccount->setTitle(translator::trans("bankaccounts"));
+			$bankaccount->setURL(userpanel\url('settings/bankaccounts'));
+			$financial->addItem($bankaccount);
 		}
 	}
 }

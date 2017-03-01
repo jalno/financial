@@ -72,6 +72,10 @@
 			"file":"libraries/payports/payport.php"
 		},
 		{
+			"classes":["payport\\param"],
+			"file":"libraries/payports/param.php"
+		},
+		{
 			"classes":[
 				"views\\transactions\\payTrait",
 				"views\\transactions\\pay"
@@ -181,6 +185,41 @@
 		{
 			"classes":["views\\settings\\bankaccount\\add"],
 			"file":"views/settings/bankaccount/add.php"
+		},
+		{
+			"classes":["events\\gateways"],
+			"file":"libraries/events/gateway/gateways.php"
+		},
+		{
+			"classes":["events\\gateways\\gateway"],
+			"file":"libraries/events/gateway/gateway.php"
+		},
+		{
+			"classes":[
+				"events\\gateways\\controllerException",
+				"events\\gateways\\inputNameException"
+			],
+			"file":"libraries/events/gateway/exceptions.php"
+		},
+		{
+			"classes":["controllers\\settings\\gateways"],
+			"file":"controllers/settings/gateways.php"
+		},
+		{
+			"classes":["views\\settings\\gateways\\search"],
+			"file":"views/settings/gateways/search.php"
+		},
+		{
+			"classes":["views\\settings\\gateways\\add"],
+			"file":"views/settings/gateways/add.php"
+		},
+		{
+			"classes":["views\\settings\\gateways\\delete"],
+			"file":"views/settings/gateways/delete.php"
+		},
+		{
+			"classes":["views\\settings\\gateways\\edit"],
+			"file":"views/settings/gateways/edit.php"
 		}
 	]
 }

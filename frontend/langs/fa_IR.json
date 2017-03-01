@@ -129,6 +129,21 @@
 		"bankaccount_delete": "حذف حساب بانکی",
 		"bankaccount_add": "افزودن حساب بانکی",
 		"bankaccount.delete.warning": "آیا شما از حذف شماره حساب به شناسه #{bankaccount_id} اطمینان دارید؟ این عملیات بدون بازگشت خواهد بود.",
-		"return": "بازگشت"
+		"return": "بازگشت",
+		"settings.financial": "مالی",
+		"settings.financial.gateways": "پنل های مالی",
+		"usertype.permissions.financial_settings_gateways_search": "لیست پنل های مالی",
+		"usertype.permissions.financial_settings_gateways_add": "افزودن پنل مالی",
+		"usertype.permissions.financial_settings_gateways_edit": "ویرایش پنل های مالی",
+		"usertype.permissions.financial_settings_gateways_delete": "حذف پنل های مالی",
+		"financial.gateway.status.active": "فعال",
+		"financial.gateway.status.deactive": "غیر فعال",
+		"financial.gateway.title": "عنوان",
+		"financial.gateway.type": "سامانه",
+		"financial.gateway.status": "وضعیت",
+		"settings.financial.gateways.edit": "ویرایش پنل مالی",
+		"settings.financial.gateways.delete": "حذف پنل مالی",
+		"financial.gateway.delete.warning": "آیا از حذف پنل مالی به شناسه #{gateway} اطمینان دارید؟ این عملیات بدون بازگشت است",
+		"settings.financial.gateways.add": "افزودن پنل مالی"
 	}
 }

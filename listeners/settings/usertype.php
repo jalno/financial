@@ -19,7 +19,12 @@ class usertype{
 			'settings_bankaccounts_list',
 			'settings_bankaccounts_add',
 			'settings_bankaccounts_delete',
-			'settings_bankaccounts_edit'
+			'settings_bankaccounts_edit',
+			
+			"settings_gateways_search",
+			"settings_gateways_add",
+			"settings_gateways_edit",
+			"settings_gateways_delete"
 
 		);
 		foreach($permissions as $permission){

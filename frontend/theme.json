@@ -122,6 +122,26 @@
 			"name":"\\themes\\clipone\\views\\settings\\bankaccount\\add",
 			"parent":"\\packages\\financial\\views\\settings\\bankaccount\\add",
 			"file":"settings.bankaccounts.add.php"
+		},
+		{
+			"name":"\\themes\\clipone\\views\\financial\\settings\\gateways\\search",
+			"parent":"\\packages\\financial\\views\\settings\\gateways\\search",
+			"file":"html/settings/gateways/search.php"
+		},
+		{
+			"name":"\\themes\\clipone\\views\\financial\\settings\\gateways\\add",
+			"parent":"\\packages\\financial\\views\\settings\\gateways\\add",
+			"file":"html/settings/gateways/add.php"
+		},
+		{
+			"name":"\\themes\\clipone\\views\\financial\\settings\\gateways\\delete",
+			"parent":"\\packages\\financial\\views\\settings\\gateways\\delete",
+			"file":"html/settings/gateways/delete.php"
+		},
+		{
+			"name":"\\themes\\clipone\\views\\financial\\settings\\gateways\\edit",
+			"parent":"\\packages\\financial\\views\\settings\\gateways\\edit",
+			"file":"html/settings/gateways/edit.php"
 		}
 	]
 }

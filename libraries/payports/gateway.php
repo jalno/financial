@@ -1,9 +1,11 @@
 <?php
 namespace packages\financial\payport;
 use packages\userpanel;
+use packages\financial\payport;
 use packages\financial\payport_pay;
 
 abstract class gateway{
+	abstract public function __construct(payport $payport);
 	abstract public function PaymentRequest(payport_pay $pay);
 	abstract public function PaymentVerification(payport_pay $pay);
 	protected function callbackURL(payport_pay $pay){

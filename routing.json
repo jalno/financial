@@ -81,5 +81,25 @@
 	{
 		"path": ["userpanel", "settings", "bankaccounts", "add"],
 		"controller": "controllers\\settings\\bank@add"
+	},
+	{
+		"path":["userpanel","settings","financial","gateways"],
+		"controller": "controllers\\settings\\gateways@listgateways",
+		"method":"get"
+	},
+	{
+		"path":["userpanel","settings","financial","gateways","add"],
+		"controller": "controllers\\settings\\gateways@add",
+		"method":["get","post"]
+	},
+	{
+		"path":["userpanel","settings","financial","gateways","delete",{"type":"dynamic","name":"gateway", "regex":"/^\\d+$/"}],
+		"controller": "controllers\\settings\\gateways@delete",
+		"method":["get","post"]
+	},
+	{
+		"path":["userpanel","settings","financial","gateways","edit",{"type":"dynamic","name":"gateway", "regex":"/^\\d+$/"}],
+		"controller": "controllers\\settings\\gateways@edit",
+		"method":["get","post"]
 	}
 ]

@@ -87,6 +87,22 @@
 		{
 			"classes":["views\\settings\\bankaccount\\add"],
 			"file":"views/settings/bankaccounts/add.php"
+		},
+		{
+			"classes":["views\\financial\\settings\\gateways\\search"],
+			"file":"views/settings/gateways/search.php"
+		},
+		{
+			"classes":["views\\financial\\settings\\gateways\\add"],
+			"file":"views/settings/gateways/add.php"
+		},
+		{
+			"classes":["views\\financial\\settings\\gateways\\delete"],
+			"file":"views/settings/gateways/delete.php"
+		},
+		{
+			"classes":["views\\financial\\settings\\gateways\\edit"],
+			"file":"views/settings/gateways/edit.php"
 		}
 	]
 }
