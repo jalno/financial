@@ -1,8 +1,10 @@
 <?php
 namespace themes\clipone\views\transactions;
-use \packages\userpanel;
+use \packages\base\options;
+use \packages\base\packages;
 use \packages\base\translator;
 
+use \packages\userpanel;
 use \packages\userpanel\user;
 use \packages\userpanel\date;
 
@@ -121,5 +123,11 @@ class view extends transactionsView{
 			$discounts += $product->discount;
 		}
 		return $discounts;
+	}
+	protected function getTransActionLogo(){
+		if($logoPath = options::get('packages.financial.transactions_logo')){
+			return packages::package("financial")->url($logoPath);
+		}
+		return null;
 	}
 }

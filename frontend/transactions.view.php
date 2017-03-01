@@ -1,4 +1,5 @@
 <?php
+use \packages\base;
 use \packages\userpanel;
 use \packages\financial\transaction;
 use \packages\financial\transaction_pay;
@@ -8,13 +9,19 @@ use \packages\userpanel\date;
 $this->the_header();
 ?>
 <div class="row">
-	<div class="col-md-12">
+	<div class="col-xs-12">
 		<!-- start: BASIC TABLE PANEL -->
 		<div class="invoice">
 			<div class="row invoice-logo">
-				<div class="col-sm-6">
-				</div>
-				<div class="col-sm-6">
+				<?php $logoPath = $this->getTransActionLogo(); ?>
+					<?php if($logoPath){ ?>
+					<div class="col-sm-6">
+						<a href="<?php echo base\url(); ?>" target="_blank" >
+							<img src="<?php echo($logoPath); ?>" height="244" width="221"/>
+						</a>
+					</div>
+					<?php } ?>
+				<div class="col-sm-6 <?php echo(!$logoPath ? "col-sm-offset-6" : ""); ?>">
 					<p>
 						#<?php echo $this->transaction->id; ?> / <?php echo date::format("l j F Y", $this->transaction->create_at); ?><span><?php echo $this->transaction->title; ?></span>
 					</p>
