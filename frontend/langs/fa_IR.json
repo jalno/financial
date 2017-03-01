@@ -102,7 +102,7 @@
 		"usertype.permissions.financial_transactions_pays_accept": "تایید پرداخت صورتحساب",
 		"usertype.permissions.financial_transactions_pay_delete": "حذف پرداخت صورتحساب",
 		"usertype.permissions.financial_transactions_product_delete": "حذف محصول صورتحساب",
-		"usertype.permissions.financial_transactions_addingcredit": "پرداخت صورتحساب با موجودی کاربری",
+		"usertype.permissions.financial_transactions_addingcredit": "افزودن موجودی کاربری",
 		"usertype.permissions.financial_transactions_accept": "تایید صورتحساب ها",
 		"usertype.permissions.financial_settings_bankaccounts_list":"لیست حساب های بانکی",
 		"usertype.permissions.financial_settings_bankaccounts_add":"افزودن حساب بانکی",
@@ -128,6 +128,7 @@
 		"bankaccount_edit": "ویرایش حساب بانکی",
 		"bankaccount_delete": "حذف حساب بانکی",
 		"bankaccount_add": "افزودن حساب بانکی",
-		"bankaccount.delete.warning": "آیا شما از حذف شماره حساب به شناسه #{bankaccount_id} اطمینان دارید؟ این عملیات بدون بازگشت خواهد بود."
+		"bankaccount.delete.warning": "آیا شما از حذف شماره حساب به شناسه #{bankaccount_id} اطمینان دارید؟ این عملیات بدون بازگشت خواهد بود.",
+		"return": "بازگشت"
 	}
 }
