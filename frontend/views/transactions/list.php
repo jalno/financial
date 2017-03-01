@@ -14,6 +14,7 @@ use \themes\clipone\views\listTrait;
 use \themes\clipone\views\formTrait;
 use \themes\clipone\navigation\menuItem;
 use \packages\financial\transaction;
+use \packages\financial\authorization;
 use \packages\financial\views\transactions\listview as transactionsListView;
 class listview extends transactionsListView{
 	use viewTrait,listTrait,formTrait;
@@ -61,10 +62,7 @@ class listview extends transactionsListView{
 		));
 	}
 	public function check_multiuser(){
-		if($this->dataList){
-			$users = array_unique(array_column(dbObject::objectToArray($this->dataList), 'user'));
-			$this->multiuser = count($users) > 1;
-		}
+		$this->multiuser = (bool)authorization::childrenTypes();
 	}
 	public function setDates(){
 		foreach($this->dataList as $key => $data){
