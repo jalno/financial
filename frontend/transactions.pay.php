@@ -21,9 +21,9 @@ $this->the_header();
 					$first = true;
 					foreach($this->methods as $method){
 						$icon = utility::switchcase($method, array(
-							'clip-banknote' => 'banktransfer',
+							'fa fa-university' => 'banktransfer',
 							'fa fa-money' => 'onlinepay',
-							'clip-phone-3' => 'credit'
+							'fa fa-credit-card' => 'credit'
 						));
 					?>
 					<div class="col-sm-<?php echo ($this->getColumnWidth());if($first)echo(' col-sm-offset-3'); ?>">
