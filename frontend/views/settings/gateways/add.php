@@ -23,8 +23,7 @@ class add extends addView{
 	public function addAssets(){
 		$this->addJSFile(theme::url('assets/plugins/jquery-validation/dist/jquery.validate.min.js'));
 		$this->addJSFile(theme::url('assets/plugins/bootstrap-inputmsg/bootstrap-inputmsg.min.js'));
-		$this->addJSFile(theme::url('assets/js/pages/add.js'));
-		$this->addCSSFile(theme::url('assets/css/pages/add.css'));
+		$this->addJSFile(theme::url('assets/js/pages/GateWays.js'));
 	}
 	private function setNavigation(){
 		navigation::active("settings/financial/gateways");

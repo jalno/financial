@@ -196,10 +196,10 @@ class gateways extends controller{
 			throw new NotFound;
 		}
 		$view = view::byName("\\packages\\financial\\views\\settings\\gateways\\edit");
-		$view->setGateway($gatewayObj);
 		$gateways = new gatewaysEvent();
 		events::trigger($gateways);
-		$view->setGateways($gateways);
+		$view->setGateways($gateways->get());
+		$view->setGateway($gatewayObj);
 		if(http::is_post()){
 			$inputsRules = array(
 				'title' => array(

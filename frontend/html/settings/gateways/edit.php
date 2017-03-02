@@ -44,9 +44,9 @@ $this->the_header();
 						</div>
 						<div class="col-md-6">
 							<?php
-							foreach($this->getGateways()->get() as $gateway){
+							foreach($this->getGateways() as $gateway){
 								$name = $gateway->getName();
-								echo("<div class=\" gateway-{$name}\">");
+								echo("<div class=\"gatewayfields gateway-{$name}\">");
 								foreach($gateway->getFields() as $field){
 									$this->createField($field);
 								}
