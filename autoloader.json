@@ -220,6 +220,10 @@
 		{
 			"classes":["views\\settings\\gateways\\edit"],
 			"file":"views/settings/gateways/edit.php"
+		},
+		{
+			"classes":["listeners\\search"],
+			"file":"listeners/search.php"
 		}
 	]
 }

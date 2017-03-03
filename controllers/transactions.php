@@ -771,7 +771,7 @@ class transactions extends controller{
 				$transaction->create_at = time();
 				$transaction->expire_at = time()+86400;
 				$transaction->addProduct(array(
-					'title' => translator::trans("ransaction.adding_credit", array('price' => $inputs['price'])),
+					'title' => translator::trans("transaction.adding_credit", array('price' => $inputs['price'])),
 					'price' => $inputs['price'],
 					'type' => '\packages\financial\products\addingcredit',
 					'discount' => 0,

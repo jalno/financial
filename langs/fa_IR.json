@@ -5,7 +5,9 @@
 	},
 	"rtl": true,
 	"phrases":{
-		"ransaction.title.adding_credit": "افزایش موجودی",
-		"ransaction.adding_credit": "افزایش موجودی به مبلغ {price} ریال"
+		"transaction.title.adding_credit": "افزایش موجودی",
+		"transaction.adding_credit": "افزایش موجودی به مبلغ {price} ریال",
+		"financial.transactions": "صورتحساب {title}",
+		"financial.transactions.description": "ساخته شده در: {create_at} کاربر: {user}"
 	}
 }
