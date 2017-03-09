@@ -5,6 +5,7 @@ use \packages\base\db;
 use \packages\base\http;
 use \packages\base\NotFound;
 use \packages\base\translator;
+use \packages\base\view\error;
 use \packages\base\inputValidation;
 use \packages\base\views\FormError;
 
@@ -125,24 +126,12 @@ class transactions extends controller{
 		return $this->response;
 	}
 	function transaction_view($data){
+		$transaction = $this->getTransaction($data['id']);
 		if($view = view::byName("\\packages\\financial\\views\\transactions\\view")){
-			$types = authorization::childrenTypes();
-			db::join("userpanel_users", "userpanel_users.id=financial_transactions.user", "LEFT");
-			if($types){
-				db::where("userpanel_users.type", $types, 'in');
-			}else{
-				db::where("userpanel_users.id", authentication::getID());
-			}
-			db::where("financial_transactions.id", $data['id']);
-			$transaction = new transaction(db::getOne("financial_transactions", "financial_transactions.*"));
-			if($transaction->id){
-				$view->setData($transaction, 'transaction');
-				$this->response->setStatus(true);
-				$this->response->setView($view);
-				return $this->response;
-			}else{
-				throw new NotFound;
-			}
+			$view->setTransaction($transaction);
+			$this->response->setStatus(true);
+			$this->response->setView($view);
+			return $this->response;
 		}
 	}
 	private function getTransaction($id){
@@ -244,7 +233,8 @@ class transactions extends controller{
 									$user->credit -= $inputs['credit'];
 									$user->save();
 									$this->response->setStatus(true);
-									$this->response->Go(userpanel\url('transactions/view/'.$transaction->id));
+									$redirect = $this->redirectToConfig($transaction);
+									$this->response->Go($redirect ? $redirect : userpanel\url('transactions/view/'.$transaction->id));
 								}
 							}else{
 								throw new inputValidation('credit');
@@ -446,6 +436,23 @@ class transactions extends controller{
 		}
 		return $this->response;
 	}
+	private function redirectToConfig($transaction){
+		if($transaction->status == transaction::paid and !$transaction->isConfigured()){
+			$count = 0;
+			$needConfigProduct = null;
+			foreach($transaction->products as $product){
+				if(!$product->configure){
+					$count++;
+					$needConfigProduct = $product;
+				}
+				if($count > 1)break;
+			}
+			if($count == 1){
+				return userpanel\url('transactions/config/'.$needConfigProduct->id);
+			}
+		}
+		return null;
+	}
 	public function onlinePay_callback($data){
 		if($view = view::byName("\\packages\\financial\\views\\transactions\\pay\\onlinepay\\error")){
 			if($pay = payport_pay::byId($data['pay'])){
@@ -464,7 +471,8 @@ class transactions extends controller{
 								)
 							));
 							$this->response->setStatus(true);
-							$this->response->Go(userpanel\url('transactions/view/'.$pay->transaction->id));
+							$redirect = $this->redirectToConfig($pay->transaction);
+							$this->response->Go($redirect ? $redirect : userpanel\url('transactions/view/'.$pay->transaction->id));
 						}else{
 							$view->setError('verification');
 						}
@@ -677,10 +685,8 @@ class transactions extends controller{
 		$this->response->setView($view);
 		return $this->response;
 	}
-	public function product_delete($data){
-		$view = view::byName("\\packages\\financial\\views\\transactions\\product_delete");
+	private function getProduct($data){
 		$types = authorization::childrenTypes();
-		authorization::haveOrFail('transactions_product_delete');
 		db::join("financial_transactions", "financial_transactions.id=financial_transactions_products.transaction", "inner");
 		db::join("userpanel_users", "userpanel_users.id=financial_transactions.user", "inner");
 		if($types){
@@ -689,28 +695,33 @@ class transactions extends controller{
 			db::where("userpanel_users.id", authentication::getID());
 		}
 		db::where("financial_transactions_products.id", $data['id']);
-		$transaction_product = db::getOne("financial_transactions_products", "financial_transactions_products.*");
-		if($transaction_product){
-			$transaction_product = new transaction_product($transaction_product);
-			$view->setProductData($transaction_product);
-			$this->response->setStatus(false);
-			if(http::is_post()){
-				try {
-					if(count($transaction_product->transaction->products) > 1){
-						$transaction_product->delete();
-					}else{
-						throw new inputValidation("products");
-					}
-					$this->response->setStatus(true);
-					$this->response->Go(userpanel\url('transactions/edit/'.$$transaction_product->transaction->id));
-				}catch(inputValidation $error){
-					$view->setFormError(FormError::fromException($error));
+		$product = new transaction_product(db::getOne("financial_transactions_products", "financial_transactions_products.*"));
+		if(!$product){
+			throw new NotFound();
+		}
+		return $product;
+	}
+	public function product_delete($data){
+		$view = view::byName("\\packages\\financial\\views\\transactions\\product_delete");
+		$types = authorization::childrenTypes();
+		authorization::haveOrFail('transactions_product_delete');
+		$transaction_product = $this->getProduct($data);
+		$view->setProductData($transaction_product);
+		$this->response->setStatus(false);
+		if(http::is_post()){
+			try {
+				if(count($transaction_product->transaction->products) > 1){
+					$transaction_product->delete();
+				}else{
+					throw new inputValidation("products");
 				}
-			}else{
 				$this->response->setStatus(true);
+				$this->response->Go(userpanel\url('transactions/edit/'.$$transaction_product->transaction->id));
+			}catch(inputValidation $error){
+				$view->setFormError(FormError::fromException($error));
 			}
 		}else{
-			throw new NotFound;
+			$this->response->setStatus(true);
 		}
 		$this->response->setView($view);
 		return $this->response;
@@ -814,6 +825,33 @@ class transactions extends controller{
 				$transaction->save();
 				$this->response->setStatus(true);
 				$this->response->Go(userpanel\url("transactions/view/".$transaction->id));
+			}catch(inputValidation $error){
+				$view->setFormError(FormError::fromException($error));
+			}
+		}else{
+			$this->response->setStatus(true);
+		}
+		$this->response->setView($view);
+		return $this->response;
+	}
+	public function config($data){
+		authorization::haveOrFail('transactions_product_config');
+		$product = $this->getProduct($data);
+		$view = view::byName("\\packages\\financial\\views\\transactions\\product\\config");
+		if($product->configure){
+			throw new NotFound();
+		}
+		$product->config();
+		$view->setProduct($product);
+		if(http::is_post()){
+			$this->response->setStatus(false);
+			try{
+				if($inputsRules = $product->getInputs()){
+					$inputs = $this->checkinputs($inputsRules);
+				}
+				$product->config($inputs);
+				$this->response->setStatus(true);
+				$this->response->Go(userpanel\url("transactions/view/".$product->transaction->id));
 			}catch(inputValidation $error){
 				$view->setFormError(FormError::fromException($error));
 			}

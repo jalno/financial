@@ -103,6 +103,10 @@
 		{
 			"classes":["views\\financial\\settings\\gateways\\edit"],
 			"file":"views/settings/gateways/edit.php"
+		},
+		{
+			"classes":["views\\transactions\\product\\config"],
+			"file":"views/transactions/product/config.php"
 		}
 	]
 }

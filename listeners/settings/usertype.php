@@ -24,7 +24,9 @@ class usertype{
 			"settings_gateways_search",
 			"settings_gateways_add",
 			"settings_gateways_edit",
-			"settings_gateways_delete"
+			"settings_gateways_delete",
+
+			"transactions_product_config"
 
 		);
 		foreach($permissions as $permission){

@@ -144,6 +144,12 @@
 		"settings.financial.gateways.edit": "ویرایش پنل مالی",
 		"settings.financial.gateways.delete": "حذف پنل مالی",
 		"financial.gateway.delete.warning": "آیا از حذف پنل مالی به شناسه #{gateway} اطمینان دارید؟ این عملیات بدون بازگشت است",
-		"settings.financial.gateways.add": "افزودن پنل مالی"
+		"settings.financial.gateways.add": "افزودن پنل مالی",
+		"error.financial.productNeedToConfigured": "بعضی محصولات برای کامل شدن فرایند خرید به پیکربندی خاصی نیاز دارند، لطفا اقدامات لازم را انجام دهید.",
+		"financial.configure": "پیکربندی",
+		"usertype.permissions.financial_transactions_product_config": "پیکربندی محصولات",
+		"transaction.product.configure": "پیکربندی محصول",
+		"financial.return": "بازگشت",
+		"financial.submit": "تایید"
 	}
 }

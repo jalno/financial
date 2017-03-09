@@ -1,5 +1,6 @@
 <?php
 namespace packages\financial\views\transactions;
+use \packages\base\view\error;
 use \packages\financial\transaction;
 use \packages\financial\authorization;
 class view extends \packages\financial\view{
@@ -13,5 +14,17 @@ class view extends \packages\financial\view{
 	}
 	public function getUserData($key){
 		return($this->data['user']->$key);
+	}
+	public function setTransaction(transaction $transaction){
+		$this->setData($transaction, "transaction");
+		if($transaction->status == transaction::paid and !$transaction->isConfigured()){
+			$error = new error();
+			$error->setType(error::WARNING);
+			$error->setCode("financial.productNeedToConfigured");
+			$this->addError($error);
+		}
+	}
+	protected function getTransaction(){
+		return $this->getData('transaction');
 	}
 }
