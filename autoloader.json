@@ -224,6 +224,10 @@
 		{
 			"classes":["views\\transactions\\product\\config"],
 			"file":"views/transactions/product/config.php"
+		},
+		{
+			"classes":["listeners\\search"],
+			"file":"listeners/search.php"
 		}
 	]
 }
