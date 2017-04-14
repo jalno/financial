@@ -69,7 +69,7 @@ class payport_pay extends dbObject{
 			$param->value = $value;
 		}
 
-		if(!$this->id){
+		if(!$this->id or $this->isNew){
 			$this->tmparams[$name] = $param;
 		}else{
 			$param->pay = $this->id;
