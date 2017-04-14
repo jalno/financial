@@ -61,7 +61,7 @@ class transaction extends dbObject{
 	}
 	protected function trigger_paid(){
 		foreach($this->products as $product){
-			if(class_exists($product->type)){
+			if($product->type and class_exists($product->type)){
 				$obj = new $product->type($product->data);
 				if(method_exists($obj, 'trigger_paid')){
 					$obj->trigger_paid();

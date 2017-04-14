@@ -19,7 +19,7 @@ class transaction_product extends dbObject{
         'transaction' => array('type' => 'int', 'required' => true),
 		'description' => array('type' => 'text'),
 		'type' => array('type' => 'text'),
-		'method' => array('type' => 'int', 'required' => true),
+		'method' => array('type' => 'int'),
 		'price' => array('type' => 'int', 'required' => true),
 		'discount' => array('type' => 'int', 'required' => true),
 		'number' => array('type' => 'int', 'required' => true)
