@@ -142,6 +142,11 @@
 			"name":"\\themes\\clipone\\views\\financial\\settings\\gateways\\edit",
 			"parent":"\\packages\\financial\\views\\settings\\gateways\\edit",
 			"file":"html/settings/gateways/edit.php"
+		},
+		{
+			"name":"\\themes\\clipone\\views\\transactions\\product\\config",
+			"parent":"\\packages\\financial\\views\\transactions\\product\\config",
+			"file":"html/transactions/product/config.php"
 		}
 	]
 }

@@ -60,15 +60,26 @@ class transaction extends dbObject{
 		return $payable;
 	}
 	protected function trigger_paid(){
-		foreach($this->products as $product){
-			if($product->type and class_exists($product->type)){
-				$obj = new $product->type($product->data);
-				if(method_exists($obj, 'trigger_paid')){
-					$obj->trigger_paid();
+		if(!$this->param("trigered_paid")){
+			$this->setParam("trigered_paid", true);
+			foreach($this->products as $product){
+				if($product->type and class_exists($product->type)){
+					$obj = new $product->type($product->data);
+					if(method_exists($obj, 'trigger_paid')){
+						$obj->trigger_paid();
+					}
+					unset($obj);
 				}
-				unset($obj);
 			}
 		}
+	}
+	public function isConfigured(){
+		foreach($this->products as $product){
+			if(!$product->configure){
+				return false;
+			}
+		}
+		return true;
 	}
 	protected function preLoad($data){
 		if(!isset($data['status'])){
@@ -142,7 +153,7 @@ class transaction extends dbObject{
 			}
 			$this->tmpays = array();
 			foreach($this->tmparams as $param){
-				$param->product = $this->id;
+				$param->transaction = $this->id;
 				$param->save();
 			}
 			$this->tmparams = array();

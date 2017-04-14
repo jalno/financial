@@ -12,6 +12,9 @@ class transaction_product extends dbObject{
 	const refund = 5;
 	const other = 6;
 	const addingcredit = 7;
+	private $inputs = array();
+	private $fields = array();
+	private $errorsData = array();
 	protected $dbTable = "financial_transactions_products";
 	protected $primaryKey = "id";
 	protected $dbFields = array(
@@ -22,7 +25,8 @@ class transaction_product extends dbObject{
 		'method' => array('type' => 'int'),
 		'price' => array('type' => 'int', 'required' => true),
 		'discount' => array('type' => 'int', 'required' => true),
-		'number' => array('type' => 'int', 'required' => true)
+		'number' => array('type' => 'int', 'required' => true),
+		'configure' => array('type' => 'bool', 'required' => true)
     );
 	protected $relations = array(
 		'transaction' => array('hasOne', 'packages\\financial\\transaction', 'transaction'),
@@ -53,6 +57,9 @@ class transaction_product extends dbObject{
 
 		if(!isset($data['discount'])){
 			$newdata['discount'] = 0;
+		}
+		if(!isset($data['configure'])){
+			$newdata['configure'] = 1;
 		}
 		return $newdata;
 	}
@@ -99,7 +106,44 @@ class transaction_product extends dbObject{
 				$param->save();
 			}
 			$this->tmparams = array();
+			if($this->transaction->status == transaction::paid and $this->transaction->isConfigured()){
+				$this->transaction->trigger_paid();
+			}
 		}
 		return $return;
+	}
+	public function addInput($input){
+		if(isset($input['name'])){
+			$this->inputs[$input['name']] = $input;
+		}else{
+			throw new inputNameException($input);
+		}
+	}
+	public function getInputs(){
+		return $this->inputs;
+	}
+	public function addField($field){
+		$this->fields[] = $field;
+	}
+	public function getFields(){
+		return $this->fields;
+	}
+	public function addError($field){
+		$this->errorsData[] = $field;
+	}
+	public function getErrors(){
+		return $this->errorsData;
+	}
+	public function config($data = array()){
+		if(class_exists($this->type)){
+			$obj = new $this->type($this->data);
+			if(method_exists($obj, 'config')){
+				$obj->config($data);
+				$this->fields = $obj->getFields();
+				$this->inputs = $obj->getInputs();
+				$this->errorsData = $obj->getErrors();
+			}
+		}
+		return null;
 	}
 }

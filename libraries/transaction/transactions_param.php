@@ -9,4 +9,5 @@ class transaction_param extends dbObject{
         'name' => array('type' => 'text', 'required' => true),
         'value' => array('type' => 'text')
 	);
+	protected $jsonFields = array('value');
 }

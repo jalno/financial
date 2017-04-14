@@ -101,5 +101,10 @@
 		"path":["userpanel","settings", "financial","gateways","edit",{"type":"dynamic","name":"gateway", "regex":"/^\\d+$/"}],
 		"controller": "controllers\\settings\\gateways@edit",
 		"method":["get","post"]
+	},
+	{
+		"path": ["userpanel","transactions","config", {"type":"dynamic", "name":"id", "regex":"/^\\d+$/"}],
+		"controller": "controllers\\transactions@config",
+		"method":["get","post"]
 	}
 ]

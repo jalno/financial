@@ -26,7 +26,7 @@ class view extends transactionsView{
 	protected $pays;
 	protected $hasdesc;
 	function __beforeLoad(){
-		$this->transaction = $this->getData('transaction');
+		$this->transaction = $this->getTransaction();
 		$this->pays = $this->transaction->pays;
 		$this->setTitle(array(
 			translator::trans('title.transaction.view')
@@ -38,17 +38,6 @@ class view extends transactionsView{
 
 	}
 	private function setNavigation(){
-		$item = new menuItem("transactions");
-		$item->setTitle(translator::trans('transactions'));
-		$item->setURL(userpanel\url('transactions'));
-		$item->setIcon('clip-users');
-		breadcrumb::addItem($item);
-
-		$item = new menuItem("transaction");
-		$item->setTitle(translator::trans('title.transaction.view'));
-		$item->setURL(userpanel\url('transactions/view/'.$this->transaction->id));
-		$item->setIcon('fa fa-television');
-		breadcrumb::addItem($item);
 		navigation::active("transactions/list");
 	}
 	private function SetNoteBox(){

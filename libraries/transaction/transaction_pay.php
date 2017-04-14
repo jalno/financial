@@ -87,7 +87,9 @@ class transaction_pay extends dbObject{
 					$this->transaction->expire_at = null;
 					$this->transaction->paid_at = time();
 					$this->transaction->save();
-					$this->transaction->trigger_paid();
+					if($this->transaction->isConfigured()){
+						$this->transaction->trigger_paid();
+					}
 				}
 			}
 		}

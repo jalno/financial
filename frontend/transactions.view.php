@@ -10,7 +10,6 @@ $this->the_header();
 ?>
 <div class="row">
 	<div class="col-xs-12">
-		<!-- start: BASIC TABLE PANEL -->
 		<div class="invoice">
 			<div class="row invoice-logo">
 				<?php $logoPath = $this->getTransActionLogo(); ?>
@@ -128,7 +127,8 @@ $this->the_header();
 								<th class="hidden-480"> تعداد </th>
 								<th class="hidden-480"> قیمت واحد </th>
 								<th class="hidden-480"> تخفیف </th>
-								<th> قیمت نهایی </th>
+								<th> قیمت نهایی </th>‍
+								<?php if($this->transaction->status == transaction::paid and !$this->transaction->isConfigured()){ ?><th></th>‍<?php } ?>
 							</tr>
 						</thead>
 						<tbody>
@@ -144,6 +144,9 @@ $this->the_header();
 								<td class="hidden-480"> <?php echo $product->price; ?> ریال</td>
 								<td class="hidden-480"> <?php echo $product->discount; ?> ریال</td>
 								<td><?php echo(($product->price*$product->number)-$product->discount); ?> ریال</td>
+								<?php if($this->transaction->status == transaction::paid and !$product->configure){ ?>
+								<td><a href="<?php echo userpanel\url("transactions/config/".$product->id); ?>" class="btn btn-sm btn-teal"><i class="fa fa-cog"></i> <?php echo translator::trans("financial.configure"); ?></a></td>
+								<?php } ?>
 							</tr>
 							<?php } ?>
 						</tbody>
@@ -230,7 +233,6 @@ $this->the_header();
 				</div>
 			</div>
 		</div>
-		<!-- end: BASIC TABLE PANEL -->
 	</div>
 </div>
 <?php
