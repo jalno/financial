@@ -150,6 +150,7 @@
 		"usertype.permissions.financial_transactions_product_config": "پیکربندی محصولات",
 		"transaction.product.configure": "پیکربندی محصول",
 		"financial.return": "بازگشت",
-		"financial.submit": "تایید"
+		"financial.submit": "تایید",
+		"financial.transaction.accept": "تایید پرداخت صورت حساب"
 	}
 }

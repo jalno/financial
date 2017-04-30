@@ -14,7 +14,7 @@ class accept extends transactionsAccept{
 	function __beforeLoad(){
 		$this->setTitle(array(
 			translator::trans('transactions'),
-			translator::trans("accept")
+			translator::trans("financial.transaction.accept")
 		));
 		navigation::active("transactions/list");
 	}

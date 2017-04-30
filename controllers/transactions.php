@@ -805,7 +805,7 @@ class transactions extends controller{
 		authorization::haveOrFail('transactions_accept');
 		$view = view::byName("\\packages\\financial\\views\\transactions\\accept");
 		$transaction = transaction::byId($data['id']);
-		if(!$transaction){
+		if(!$transaction or $transaction->status != transaction::unpaid){
 			throw new NotFound;
 		}
 		$view->setTransactionData($transaction);
