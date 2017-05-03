@@ -9,5 +9,5 @@ class transactions_products_param extends dbObject{
         'name' => array('type' => 'text', 'required' => true),
         'value' => array('type' => 'text', 'required' => true)
     );
-	protected $jsonFields = array('value');
+	protected $serializeFields = ['value'];
 }
