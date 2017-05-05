@@ -160,4 +160,19 @@ class transaction extends dbObject{
 		}
 		return $return;
 	}
+	public function deleteParam(string $name):bool{
+		if(!$this->id){
+			if(isset($this->tmparams[$name])){
+				unset($this->tmparams[$name]);
+			}
+		}else{
+			$param = new transaction_param();
+			$param->where('transaction', $this->id);
+			$param->where('name', $name);
+			if($param = $param->getOne()){
+				return $param->delete();
+			}
+		}
+		return true;
+	}
 }

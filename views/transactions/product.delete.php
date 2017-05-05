@@ -1,11 +1,12 @@
 <?php
 namespace packages\financial\views\transactions;
-
-class product_delete extends \packages\financial\views\form{
-	public function setProductData($data){
-		$this->setData($data, 'transaction');
+use \packages\financial\views\form;
+use \packages\financial\transaction_product;
+class product_delete extends form{
+	public function setProduct(transaction_product $product){
+		$this->setData($product, 'product');
 	}
-	public function getProductData(){
-		return $this->getData('transaction');
+	public function getProduct():transaction_product{
+		return $this->getData('product');
 	}
 }

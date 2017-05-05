@@ -102,6 +102,7 @@
 		"usertype.permissions.financial_transactions_pays_accept": "تایید پرداخت صورتحساب",
 		"usertype.permissions.financial_transactions_pay_delete": "حذف پرداخت صورتحساب",
 		"usertype.permissions.financial_transactions_product_delete": "حذف محصول صورتحساب",
+		"usertype.permissions.financial_transactions_product_edit": "ویرایش محصول صورتحساب",
 		"usertype.permissions.financial_transactions_addingcredit": "افزودن موجودی کاربری",
 		"usertype.permissions.financial_transactions_accept": "تایید صورتحساب ها",
 		"usertype.permissions.financial_settings_bankaccounts_list":"لیست حساب های بانکی",
@@ -151,6 +152,17 @@
 		"transaction.product.configure": "پیکربندی محصول",
 		"financial.return": "بازگشت",
 		"financial.submit": "تایید",
-		"financial.transaction.accept": "تایید پرداخت صورت حساب"
+		"financial.transaction.accept": "تایید پرداخت صورت حساب",
+		"financial.transaction.product": "محصول",
+		"financial.transaction.product.decription": "توضیحات",
+		"financial.transaction.product.number": "تعداد",
+		"financial.transaction.product.price.base": "قیمت واحد",
+		"financial.transaction.product.discount": "تخفیف",
+		"financial.transaction.product.price.final": "قیمت نهایی",
+		"financial.number": "{number} عدد",
+		"financial.price.rial": "{price} ریال",
+		"financial.transaction.pay.delete.triggered": "از سرگیری عملیات پس از پرداخت",
+		"financial.delete": "حذف",
+		"financial.edit": "ویرایش"
 	}
 }

@@ -4,20 +4,19 @@ use \packages\base\translator;
 use \packages\userpanel;
 use \packages\financial\views\transactions\pay\delete as payDelete;
 use \themes\clipone\viewTrait;
-use \themes\clipone\views\listTrait;
+use \themes\clipone\views\formTrait;
 use \themes\clipone\breadcrumb;
 use \themes\clipone\navigation;
 use \themes\clipone\navigation\menuItem;
 
 class delete extends payDelete{
-	use viewTrait,listTrait;
-	protected $transaction;
-	protected $pays;
-	protected $hasdesc;
+	use viewTrait, formTrait;
+	protected $pay;
 	function __beforeLoad(){
+		$this->pay = $this->getPayData();
 		$this->setTitle(array(
 			translator::trans('transaction.pay.delete'),
-			$this->getPayData()->id
+			$this->pay->id
 		));
 		$this->setShortDescription(translator::trans('transaction.pay.delete'));
 		$this->setNavigation();
@@ -32,7 +31,7 @@ class delete extends payDelete{
 
 		$item = new menuItem("transaction");
 		$item->setTitle(translator::trans('transaction.edit'));
-		$item->setURL(userpanel\url('transactions/edit/'.$this->getPayData()->transaction->id));
+		$item->setURL(userpanel\url('transactions/edit/'.$this->pay->transaction->id));
 		$item->setIcon('fa fa-edit');
 		breadcrumb::addItem($item);
 

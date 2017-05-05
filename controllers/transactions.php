@@ -525,47 +525,58 @@ class transactions extends controller{
 		$transaction = $this->checkData($data);
 
 		$view->setTransactionData($transaction);
-		$inputsRules = array(
-			'title' => array(
+		$inputsRules = [
+			'title' => [
 				'type' => 'string',
 				'optional' => true
-			),
-			'user' => array(
+			],
+			'user' => [
 				'type' => 'number',
 				'optional' => true
-			),
-			'products' => array(
+			],
+			'products' => [
 				'optional' => true
-			)
-		);
+			]
+		];
 		$this->response->setStatus(false);
 		if(http::is_post()){
 			try{
 				$inputs = $this->checkinputs($inputsRules);
-				$inputs['user'] = user::byId($inputs['user']);
-				if(!$inputs['user']){
-					throw new inputValidation("user");
+				if(isset($inputs['user'])){
+					if(!user::byId($inputs['user'])){
+						throw new inputValidation("user");
+					}
 				}
-
-				$transaction->title = $inputs['title'];
-				$transaction->user = $inputs['user']->id;
 				if(isset($inputs['products'])){
+					if(!is_array($inputs['products'])){
+						throw new inputValidation('products');
+					}
+					foreach($inputs['products'] as $product){
+						if(isset($product['id'])){
+							if(!transaction_product::byId($product['id'])){
+								throw new inputValidation("product");
+							}
+						}
+						if($product['price'] < 0){
+							throw new inputValidation("price");
+						}
+						if($product['discount'] < 0){
+							throw new inputValidation("discount");
+						}
+
+					}
+				}
+				if(isset($inputs['products'])){
+					if(!is_array($inputs['products'])){
+						throw new inputValidation('products');
+					}
 					foreach($inputs['products'] as $row){
 						if(isset($row['id'])){
 							$product = transaction_product::byId($row['id']);
-							if(!$product){
-								throw new inputValidation("product");
-							}
 						}else{
 							$product = new transaction_product;
 							$product->transaction = $transaction->id;
 							$product->method  = transaction_product::other;
-						}
-						if($row['price'] < 0){
-							throw new inputValidation("price");
-						}
-						if($row['discount'] < 0){
-							throw new inputValidation("discount");
 						}
 						$product->title = $row['title'];
 						$product->description = $row['description'];
@@ -576,13 +587,22 @@ class transactions extends controller{
 
 					}
 				}
-				$transaction->save();
+				foreach(['title', 'user'] as $item){
+					if(isset($inputs[$item])){
+						$transaction->$item = $inputs[$item];
+					}
+				}
 				if(isset($inputs['description'])){
 					$transaction->setparam('description', $inputs['description']);
 				}
-
+				if($transaction->status == transaction::unpaid){
+					if(isset($inputs['untriggered'])){
+						$transaction->setParam('trigered_paid', 0);
+					}
+				}
+				$transaction->save();
 				$this->response->setStatus(true);
-				$this->response->Go(userpanel\url('transactions'));
+				$this->response->Go(userpanel\url('transactions/edit/'.$transaction->id));
 			}catch(inputValidation $error){
 				$view->setFormError(FormError::fromException($error));
 			}
@@ -703,24 +723,24 @@ class transactions extends controller{
 		return $product;
 	}
 	public function product_delete($data){
-		$view = view::byName("\\packages\\financial\\views\\transactions\\product_delete");
-		$types = authorization::childrenTypes();
 		authorization::haveOrFail('transactions_product_delete');
 		$transaction_product = $this->getProduct($data);
-		$view->setProductData($transaction_product);
-		$this->response->setStatus(false);
+		$view = view::byName("\\packages\\financial\\views\\transactions\\product_delete");
+		$view->setProduct($transaction_product);
 		if(http::is_post()){
+			$this->response->setStatus(false);
 			try {
 				$transaction = $transaction_product->transaction;
-				if(count($transaction->products) > 1){
-					$transaction_product->delete();
-				}else{
-					throw new inputValidation("products");
+				if(count($transaction->products) < 2){
+					throw new illegalTransaction();
 				}
+				$transaction_product->delete();
 				$this->response->setStatus(true);
 				$this->response->Go(userpanel\url('transactions/edit/'.$transaction->id));
-			}catch(inputValidation $error){
-				$view->setFormError(FormError::fromException($error));
+			}catch(illegalTransaction $e){
+				$error = new error();
+				$error->setCode('illegalTransaction');
+				$view->addError($error);
 			}
 		}else{
 			$this->response->setStatus(true);
@@ -729,24 +749,44 @@ class transactions extends controller{
 		return $this->response;
 	}
 	public function pay_delete($data){
-		$view = view::byName("\\packages\\financial\\views\\transactions\\pay\\delete");
 		authorization::haveOrFail('transactions_pay_delete');
 		db::join("financial_transactions", "financial_transactions.id=financial_transactions_pays.transaction", "LEFT");
-
-		db::where("financial_transactions_pays.id", $data['id']);
-		$transaction_pay = new transaction_pay(db::getOne("financial_transactions_pays", "financial_transactions_pays.*"));
+		$transaction_pay = new transaction_pay();
+		$transaction_pay->where("financial_transactions_pays.id", $data['id']);
+		$transaction_pay = $transaction_pay->getOne("financial_transactions_pays.*");
+		if(!$transaction_pay){
+			throw new NotFound();
+		}
+		$view = view::byName("\\packages\\financial\\views\\transactions\\pay\\delete");
 		$view->setPayData($transaction_pay);
-		$this->response->setStatus(false);
 		if(http::is_post()){
-			$id = $transaction_pay->transaction->id;
-			$transaction_pay->delete();
-			$transaction = transaction::byId($id);
-			if($transaction->payablePrice() > 0){
-				$transaction->status = transaction::unpaid;
+			$this->response->setStatus(false);
+			$inputsRoles = [
+				'untriggered' => [
+					'type' => 'number',
+					'values' => [1],
+					'optional' => true,
+					'empty' => true
+				]
+			];
+			try{
+				$inputs = $this->checkinputs($inputsRoles);
+				$transaction = $transaction_pay->transaction;
+				if(count($transaction->pays) == 1){
+					if(isset($inputs['untriggered']) and $inputs['untriggered']){
+						$transaction->deleteParam('trigered_paid');
+					}
+				}
+				$transaction_pay->delete();
+				if($transaction->payablePrice() > 0){
+					$transaction->status = transaction::unpaid;
+				}
+				$transaction->save();
+				$this->response->setStatus(true);
+				$this->response->Go(userpanel\url('transactions/edit/'.$transaction->id));
+			}catch(inputValidation $error){
+				$view->setFormError(FormError::fromException($error));
 			}
-			$transaction->save();
-			$this->response->setStatus(true);
-			$this->response->Go(userpanel\url('transactions/edit/'.$id));
 		}else{
 			$this->response->setStatus(true);
 		}
@@ -865,3 +905,4 @@ class transactions extends controller{
 	}
 }
 class transactionNotFound extends NotFound{}
+class illegalTransaction extends \Exception{}

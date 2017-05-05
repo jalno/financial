@@ -12,9 +12,10 @@ class usertype{
 
 			'transactions_pays_accept',
 			'transactions_pay_delete',
-			'transactions_product_delete',
 			'transactions_addingcredit',
 			'transactions_accept',
+			'transactions_product_edit',
+			'transactions_product_delete',
 
 			'settings_bankaccounts_list',
 			'settings_bankaccounts_add',

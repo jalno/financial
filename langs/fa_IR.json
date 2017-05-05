@@ -8,6 +8,7 @@
 		"transaction.title.adding_credit": "افزایش موجودی",
 		"transaction.adding_credit": "افزایش موجودی به مبلغ {price} ریال",
 		"financial.transactions": "صورتحساب {title}",
-		"financial.transactions.description": "ساخته شده در: {create_at} کاربر: {user}"
+		"financial.transactions.description": "ساخته شده در: {create_at} کاربر: {user}",
+		"error.illegalTransaction": "شما نمیتوانید تمام محصولات صورتحساب را پاک کنید! باید حداقل یک محصول موجود باشد"
 	}
 }

@@ -17,7 +17,7 @@ use \packages\base\translator;
 use \packages\base\frontend\theme;
 
 class edit extends transactionsEdit{
-	use viewTrait,formTrait,listTrait;
+	use viewTrait, formTrait, listTrait;
 	protected $transaction;
 	protected $pays;
 	protected $hasdesc;
@@ -30,22 +30,13 @@ class edit extends transactionsEdit{
 		$this->addAssets();
 		$this->setPays();
 		$this->setNavigation();
+		$this->setButtons();
+		$this->setForm();
 	}
 	private function addAssets(){
 		$this->addJSFile(theme::url('assets/js/pages/transaction.edit.js'));
 	}
 	private function setNavigation(){
-		$item = new menuItem("transactions");
-		$item->setTitle(translator::trans('transactions'));
-		$item->setURL(userpanel\url('transactions'));
-		$item->setIcon('clip-users');
-		breadcrumb::addItem($item);
-
-		$item = new menuItem("transaction");
-		$item->setTitle(translator::trans('transaction.edit'));
-		$item->setURL(userpanel\url('transactions/edit/'.$this->getTransactionData()->id));
-		$item->setIcon('fa fa-edit');
-		breadcrumb::addItem($item);
 		navigation::active("transactions/list");
 	}
 	protected function setPays(){
@@ -102,5 +93,32 @@ class edit extends transactionsEdit{
 			}
 		}
 		return false;
+	}
+	public function setButtons(){
+		$this->setButton('productEdit', $this->canEditProduct, array(
+			'title' => translator::trans('financial.edit'),
+			'icon' => 'fa fa-edit ',
+			'classes' => array('btn', 'btn-xs', 'btn-teal', 'product-edit'),
+			'data' => [
+				'toggle' => 'modal'
+			]
+		));
+		$this->setButton('productDelete', $this->canDeleteProduct, array(
+			'title' => translator::trans('financial.delete'),
+			'icon' => 'fa fa-times',
+			'classes' => array('btn', 'btn-xs', 'btn-bricky', 'product-delete')
+		));
+		$this->setButton('pay_delete', $this->canPaydelete, array(
+			'title' => translator::trans('financial.delete'),
+			'icon' => 'fa fa-times',
+			'classes' => array('btn', 'btn-xs', 'btn-bricky')
+		));
+	}
+	private function setForm(){
+		if($user = $this->getDataForm('user')){
+			if($user = userpanel\user::byId($user)){
+				$this->setDataForm($user->getFullName(), 'user_name');
+			}
+		}
 	}
 }

@@ -4,7 +4,6 @@ var TransactionEdit = function () {
 	var ModalForm = $("#editproductform");
 	var productADD = ("#addproductform");
 	var table = $(".product-table");
-
 	var productEdit = '<a class="btn btn-xs btn-warning product-edit" href="#product-edit" data-toggle="modal" data-original-title=""><i class="fa fa-edit"></i></a>';
 	var runUserListener = function(){
 		$("input[name=user_name]", form).autocomplete({
@@ -51,7 +50,7 @@ var TransactionEdit = function () {
 			var product = tr.data('product');
 			$("input[name=product]", ModalEditProduct).val(product.id);
 			$("input[name=title]", ModalEditProduct).val(product.title);
-			$("input[name=description]", ModalEditProduct).val(product.description);
+			$("textarea[name=description]", ModalEditProduct).val(product.description);
 			$("input[name=number]", ModalEditProduct).val(product.number);
 			$("input[name=price]", ModalEditProduct).val(product.price);
 			$("input[name=discount]", ModalEditProduct).val(product.discount);
@@ -66,7 +65,7 @@ var TransactionEdit = function () {
 			var newdata = {
 				id: $("input[name=product]", this).val(),
 				title: $("input[name=title]", this).val(),
-				description: $("input[name=description]", this).val(),
+				description: $("textarea[name=description]", this).val(),
 				number: $("input[name=number]", this).val(),
 				price: $("input[name=price]", this).val(),
 				discount: $("input[name=discount]", this).val()

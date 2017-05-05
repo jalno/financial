@@ -11,8 +11,7 @@ use \packages\financial\transaction_pay;
 $this->the_header();
 ?>
 <div class="row">
-    <div class="col-md-12">
-        <!-- start: BASIC PRODUCT EDIT -->
+    <div class="col-xs-12">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <i class="fa fa-edit"></i>
@@ -24,34 +23,35 @@ $this->the_header();
             <div class="panel-body">
                 <div class="table-responsive">
                     <form class="create_form" action="<?php echo userpanel\url('transactions/edit/'.$this->getTransactionData()->id) ?>" method="post">
-                        <div class="col-md-6">
+                        <div class="col-sm-6">
 	                        <?php $this->createField(array(
 								'name' => 'title',
-								'label' => translator::trans("transaction.title"),
-								'value' => $this->getTransactionData()->title
+								'label' => translator::trans("transaction.title")
 							));
 							?>
                         </div>
-						<div class="col-md-6">
+						<div class="col-sm-6">
 							<input type="hidden" name="user" value="<?php echo $this->getTransactionData()->user->id; ?>">
 							<?php $this->createField(array(
 								'name' => 'user_name',
-								'label' => translator::trans("transaction.user"),
-								'value' => $this->getTransactionData()->user->name.' '.$this->getTransactionData()->user->lastname
+								'label' => translator::trans("transaction.user")
 							)); ?>
 						</div>
-						<div class="col-md-12">
+						<div class="col-sm-12">
 							<table class="table table-striped table-hover product-table">
+								<?php
+								$hasButtons = $this->hasButtons();
+								?>
 							    <thead>
 							        <tr>
 							            <th> # </th>
-							            <th> محصول </th>
-							            <th class="hidden-480"> توضیحات </th>
-							            <th class="hidden-480"> تعداد </th>
-							            <th class="hidden-480"> قیمت واحد </th>
-							            <th>تخفیف</th>
-							            <th> قیمت نهایی </th>
-							            <th></th>
+							            <th><?php echo translator::trans('financial.transaction.product'); ?></th>
+							            <th class="hidden-480"><?php echo translator::trans('financial.transaction.product.decription'); ?></th>
+							            <th class="hidden-480"><?php echo translator::trans('financial.transaction.product.number'); ?></th>
+							            <th class="hidden-480"><?php echo translator::trans('financial.transaction.product.price.base'); ?></th>
+							            <th><?php echo translator::trans('financial.transaction.product.discount'); ?></th>
+							            <th><?php echo translator::trans('financial.transaction.product.price.final'); ?></th>
+							            <?php if($hasButtons){ ?><th></th><?php } ?>
 							        </tr>
 							    </thead>
 							    <tbody>
@@ -66,19 +66,22 @@ $this->the_header();
 											'price' => $product->price,
 											'discount' => $product->discount
 										);
+										$this->setButtonParam('productEdit', 'link', '#product-edit');
+										$this->setButtonParam('productDelete', 'link', userpanel\url('transactions/product/delete/'.$product->id));
 									?>
 										<tr data-product='<?php echo json\encode($data); ?>'>
 											<td><?php echo $x++; ?></td>
 											<td><?php echo $product->title; ?></td>
 											<td class="hidden-480"><?php echo $product->description; ?></td>
-											<td class="hidden-480"><?php echo $product->number; ?> عدد</td>
-											<td class="hidden-480"><?php echo $product->price; ?> ریال</td>
-											<td class="hidden-480"><?php echo $product->discount; ?> ریال</td>
-											<td><?php echo(($product->price*$product->number)-$product->discount); ?> ریال</td>
-											<td class="center">
-												<a  class="btn btn-xs btn-warning product-edit" href="#product-edit" data-toggle="modal" data-original-title=""><i class="fa fa-edit"></i></a>
-											    <a href="<?php echo userpanel\url("transactions/product/delete/".$product->id) ?>" class="btn btn-xs btn-bricky product-delete"><i class="fa fa-times"></i></a>
-											</td>
+											<td class="hidden-480"><?php echo translator::trans('financial.number', ['number'=>$product->number]); ?></td>
+											<td class="hidden-480"><?php echo translator::trans('financial.price.rial', ['price'=>$product->price]); ?></td>
+											<td class="hidden-480"><?php echo translator::trans('financial.price.rial', ['price'=>$product->disscount ? $product->disscount : 0]); ?></td>
+											<td><?php echo translator::trans('financial.price.rial', ['price'=>(($product->price*$product->number)-$product->discount)]); ?></td>
+											<?php
+												if($hasButtons){
+													echo("<td class=\"center\">".$this->genButtons(['productEdit', 'productDelete'])."</td>");
+												}
+											?>
 										</tr>
 									<?php } ?>
 							    </tbody>
@@ -102,7 +105,6 @@ $this->the_header();
 										<th> <?php echo translator::trans('transaction.price'); ?> </th>
 										<?php if($hastatus){ ?><th> <?php echo translator::trans('pay.status'); ?> </th><?php } ?>
 										<?php if($hasButtons){ ?><th></th><?php } ?>
-										<th></th>
 									</tr>
 								</thead>
 								<tbody>
@@ -112,7 +114,7 @@ $this->the_header();
 										if($hasButtons){
 											$this->setButtonParam('pay_accept', 'link', userpanel\url("transactions/pay/accept/".$pay->id));
 											$this->setButtonParam('pay_reject', 'link', userpanel\url("transactions/pay/reject/".$pay->id));
-
+											$this->setButtonParam('pay_delete', 'link', userpanel\url("transactions/pay/delete/".$pay->id));
 										}
 										if($hastatus){
 											$statusClass = utility::switchcase($pay->status, array(
@@ -136,12 +138,9 @@ $this->the_header();
 										<?php if($hastatus){ ?><td><span class="<?php echo $statusClass; ?>"><?php echo translator::trans($statusTxt); ?></td><?php } ?>
 										<?php
 										if($hasButtons){
-											echo("<td class=\"center\">".$this->genButtons()."</td>");
+											echo("<td class=\"center\">".$this->genButtons(['pay_accept', 'pay_reject', 'pay_delete'])."</td>");
 										}
 										?>
-										<td>
-											<a href="<?php echo userpanel\url("transactions/pay/delete/".$pay->id) ?>" class="btn btn-xs btn-bricky product-delete"><i class="fa fa-times"></i></a>
-										</td>
 									</tr>
 								<?php } ?>
 								</tbody>
@@ -150,7 +149,7 @@ $this->the_header();
 						<?php
 						}
 						?>
-						<div class="col-md-12">
+						<div class="col-sm-12">
 			                <hr>
 			                <p>
 			                    <a href="<?php echo userpanel\url('transactions'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-right"></i> <?php echo translator::trans('return'); ?></a>
@@ -163,8 +162,7 @@ $this->the_header();
         </div>
     </div>
 </div>
-
-<!-- end: BASIC PRODUCT EDIT -->
+<?php if($this->canEditProduct){ ?>
 <div class="modal fade" id="product-edit" tabindex="-1" data-show="true" role="dialog">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -181,6 +179,7 @@ $this->the_header();
 				),
 				array(
 					'name' => 'description',
+					'type' => 'textarea',
 					'label' => translator::trans("transaction.add.description")
 				),
 				array(
@@ -210,6 +209,7 @@ $this->the_header();
 		<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo translator::trans('cancel'); ?></button>
 	</div>
 </div>
+<?php } ?>
 <div class="modal fade" id="product-add" tabindex="-1" data-show="true" role="dialog">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
