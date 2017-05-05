@@ -694,8 +694,9 @@ class transactions extends controller{
 		}else{
 			db::where("userpanel_users.id", authentication::getID());
 		}
-		db::where("financial_transactions_products.id", $data['id']);
-		$product = new transaction_product(db::getOne("financial_transactions_products", "financial_transactions_products.*"));
+		$product = new transaction_product();
+		$product->where("financial_transactions_products.id", $data['id']);
+		$product = $product->getOne("financial_transactions_products.*");
 		if(!$product){
 			throw new NotFound();
 		}
@@ -710,13 +711,14 @@ class transactions extends controller{
 		$this->response->setStatus(false);
 		if(http::is_post()){
 			try {
-				if(count($transaction_product->transaction->products) > 1){
+				$transaction = $transaction_product->transaction;
+				if(count($transaction->products) > 1){
 					$transaction_product->delete();
 				}else{
 					throw new inputValidation("products");
 				}
 				$this->response->setStatus(true);
-				$this->response->Go(userpanel\url('transactions/edit/'.$$transaction_product->transaction->id));
+				$this->response->Go(userpanel\url('transactions/edit/'.$transaction->id));
 			}catch(inputValidation $error){
 				$view->setFormError(FormError::fromException($error));
 			}
