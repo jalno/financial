@@ -163,6 +163,8 @@
 		"financial.price.rial": "{price} ریال",
 		"financial.transaction.pay.delete.triggered": "از سرگیری عملیات پس از پرداخت",
 		"financial.delete": "حذف",
-		"financial.edit": "ویرایش"
+		"financial.edit": "ویرایش",
+		"error.financial.transaction.notfound": "هیج صورتحسابی یافت نشد، در صورتی که احساس میکنید مشکلی وجود دارد به ما گزارش بدهید.",
+		"financial.transaction.add": "افزودن صورتحساب"
 	}
 }
