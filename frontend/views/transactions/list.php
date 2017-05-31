@@ -20,10 +20,10 @@ class listview extends transactionsListView{
 	protected $multiuser = false;
 
 	function __beforeLoad(){
-		$this->setTitle(array(
+		$this->setTitle([
 			translator::trans('transactions'),
 			translator::trans('list')
-		));
+		]);
 		$this->setButtons();
 		$this->check_multiuser();
 		$this->setDates();
@@ -76,21 +76,21 @@ class listview extends transactionsListView{
 		}
 	}
 	public function setButtons(){
-		$this->setButton('transactions_view', $this->canView, array(
+		$this->setButton('transactions_view', $this->canView, [
 			'title' => translator::trans('transactions.view'),
 			'icon' => 'fa fa-files-o',
-			'classes' => array('btn', 'btn-xs', 'btn-green')
-		));
-		$this->setButton('transactions_edit', $this->canEdit, array(
+			'classes' => ['btn', 'btn-xs', 'btn-green']
+		]);
+		$this->setButton('transactions_edit', $this->canEdit, [
 			'title' => translator::trans('transactions.edit'),
 			'icon' => 'fa fa-edit',
-			'classes' => array('btn', 'btn-xs', 'btn-warning')
-		));
-		$this->setButton('transactions_delete', $this->canDel, array(
+			'classes' => ['btn', 'btn-xs', 'btn-warning']
+		]);
+		$this->setButton('transactions_delete', $this->canDel, [
 			'title' => translator::trans('transactions.delete'),
 			'icon' => 'fa fa-times',
-			'classes' => array('btn', 'btn-xs', 'btn-bricky')
-		));
+			'classes' => ['btn', 'btn-xs', 'btn-bricky']
+		]);
 	}
 	public function check_multiuser(){
 		$this->multiuser = (bool)authorization::childrenTypes();
@@ -101,39 +101,43 @@ class listview extends transactionsListView{
 		}
 	}
 	public function getComparisonsForSelect(){
-		return array(
-			array(
+		return [
+			[
 				'title' => translator::trans('search.comparison.contains'),
 				'value' => 'contains'
-			),
-			array(
+			],
+			[
 				'title' => translator::trans('search.comparison.equals'),
 				'value' => 'equals'
-			),
-			array(
+			],
+			[
 				'title' => translator::trans('search.comparison.startswith'),
 				'value' => 'startswith'
-			)
-		);
+			]
+		];
 	}
 	protected function getStatusForSelect(){
-		return array(
-			array(
+		return [
+			[
 				'title' => ' ',
 				'value' => ' '
-			),
-			array(
+			],
+			[
 				'title' => translator::trans('transaction.unpaid'),
 				'value' => transaction::unpaid
-			),
-			array(
+			],
+			[
 				'title' => translator::trans('transaction.paid'),
 				'value' => transaction::paid
-			),
-			array(
+			],
+			[
 				'title' => translator::trans('transaction.refund'),
 				'value' => transaction::refund
-			)
-		);
+			],
+			[
+				'title' => translator::trans('transaction.status.expired'),
+				'value' => transaction::expired
+			]
+		];
 	}
 }

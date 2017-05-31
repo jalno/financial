@@ -48,12 +48,14 @@ $this->the_header();
 								$statusClass = utility::switchcase($row->status, array(
 									'label label-danger' => transaction::unpaid,
 									'label label-success' => transaction::paid,
-									'label label-warning' => transaction::refund
+									'label label-warning' => transaction::refund,
+									'label label-inverse' => transaction::expired
 								));
 								$statusTxt = utility::switchcase($row->status, array(
 									'transaction.unpaid' => transaction::unpaid,
 									'transaction.paid' => transaction::paid,
-									'transaction.refund' => transaction::refund
+									'transaction.refund' => transaction::refund,
+									'transaction.status.expired' => transaction::expired
 								));
 							?>
 							<tr>

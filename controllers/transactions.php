@@ -31,8 +31,10 @@ class transactions extends controller{
 	protected $authentication = true;
 	function listtransactions(){
 		authorization::haveOrFail('transactions_list');
+		transaction::checkExpiration();
 		$view = view::byName("\\packages\\financial\\views\\transactions\\listview");
 		$types = authorization::childrenTypes();
+		$transaction = new transaction;
 		$inputsRules = array(
 			'id' => array(
 				'type' => 'number',
@@ -57,7 +59,8 @@ class transactions extends controller{
 			'status' => array(
 				'type' => 'number',
 				'optional' => true,
-				'empty' => true
+				'empty' => true,
+				'values' => [transaction::unpaid, transaction::paid, transaction::refund, transaction::expired]
 			),
 			'word' => array(
 				'type' => 'string',
@@ -70,13 +73,9 @@ class transactions extends controller{
 				'optional' => true
 			)
 		);
+		$searched = false;
 		try{
 			$inputs = $this->checkinputs($inputsRules);
-			if(isset($inputs['status']) and $inputs['status'] != 0){
-				if(!in_array($inputs['status'], array(transaction::unpaid, transaction::paid, transaction::refund))){
-					throw new inputValidation("status");
-				}
-			}
 			if(isset($inputs['user']) and $inputs['user'] != 0){
 				$user = user::byId($inputs['user']);
 				if(!$user){
@@ -90,7 +89,8 @@ class transactions extends controller{
 					if(in_array($item, array('id', 'status', 'user'))){
 						$comparison = 'equals';
 					}
-					db::where("financial_transactions.".$item, $inputs[$item], $comparison);
+					$transaction->where("financial_transactions.".$item, $inputs[$item], $comparison);
+					$searched = true;
 				}
 			}
 			if(isset($inputs['word']) and $inputs['word']){
@@ -100,7 +100,8 @@ class transactions extends controller{
 						$parenthesis->where($item,$inputs['word'], $inputs['comparison'], 'OR');
 					}
 				}
-				db::where($parenthesis);
+				$searched = true;
+				$transaction->where($parenthesis);
 			}
 		}catch(inputValidation $error){
 			$view->setFormError(FormError::fromException($error));
@@ -112,13 +113,12 @@ class transactions extends controller{
 		}else{
 			db::where("userpanel_users.id", authentication::getID());
 		}
-		db::orderBy('id', ' DESC');
-		db::pageLimit($this->items_per_page);
-		$transactionsData = db::paginate("financial_transactions", $this->page, array("financial_transactions.*"));
-		$transactions = array();
-		foreach($transactionsData as $transaction){
-			$transactions[] = new transaction($transaction);
+		if(!$searched){
+			$transaction->where('financial_transactions.status', transaction::expired, '!=');
 		}
+		$transaction->orderBy('id', ' DESC');
+		$transaction->pageLimit = $this->items_per_page;
+		$transactions = $transaction->paginate($this->page, ["financial_transactions.*"]);
 		$view->setDataList($transactions);
 		$view->setPaginate($this->page, db::totalCount(), $this->items_per_page);
 		$this->response->setStatus(true);
@@ -142,13 +142,13 @@ class transactions extends controller{
 		}else{
 			db::where("userpanel_users.id", authentication::getID());
 		}
-		db::where("financial_transactions.id", $id);
-		$transactionData = db::getOne("financial_transactions", "financial_transactions.*");
-		if($transactionData){
-			return new transaction($transactionData);
-		}else{
+		$transaction = new transaction();
+		$transaction->where("financial_transactions.id", $id);
+		$transaction = $transaction->getOne("financial_transactions.*");
+		if(!$transaction){
 			throw new NotFound;
 		}
+		return $transaction;
 	}
 	private function getPay($id){
 		$types = authorization::childrenTypes();

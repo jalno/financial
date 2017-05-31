@@ -1,10 +1,12 @@
 <?php
 namespace packages\financial;
+use \packages\userpanel\date;
 use \packages\base\db\dbObject;
 class transaction extends dbObject{
 	const unpaid = 1;
 	const paid = 2;
 	const refund = 3;
+	const expired = 4;
 	const host = 1;
 	const domain = 2;
 	protected $dbTable = "financial_transactions";
@@ -174,5 +176,14 @@ class transaction extends dbObject{
 			}
 		}
 		return true;
+	}
+	public static function checkExpiration(){
+		$transaction = new transaction();
+		$transaction->where('status', self::unpaid);
+		$transaction->where('expire_at', date::time(), '<');
+		foreach($transaction->get() as $transaction){
+			$transaction->status = self::expired;
+			$transaction->save();
+		}
 	}
 }
