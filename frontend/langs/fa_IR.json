@@ -166,6 +166,7 @@
 		"financial.edit": "ویرایش",
 		"error.financial.transaction.notfound": "هیج صورتحسابی یافت نشد، در صورتی که احساس میکنید مشکلی وجود دارد به ما گزارش بدهید.",
 		"financial.transaction.add": "افزودن صورتحساب",
-		"error.financial.settings.payport.notfound": "هیج پنل مالی یافت نشد، به محض افزودن پنل مالی جدید آن را در اینجا مشاهده خواهید کرد"
+		"error.financial.settings.payport.notfound": "هیج پنل مالی یافت نشد، به محض افزودن پنل مالی جدید آن را در اینجا مشاهده خواهید کرد.",
+		"error.financial.settings.bankaccount.notfound": "هیج حساب بانکی یافت نشد، به محض افزودن حساب بانکی جدید آن را در اینجا مشاهده خواهید کرد."
 	}
 }

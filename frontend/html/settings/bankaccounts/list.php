@@ -5,9 +5,9 @@ use \themes\clipone\utility;
 use \packages\base\translator;
 use \packages\financial\bankaccount;
 ?>
-<!-- start: PAGE CONTENT -->
 <div class="row">
 	<div class="col-md-12">
+	<?php if(!empty($this->getBankaccounts())){ ?>
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<i class="fa fa-external-link-square"></i>لیست حساب ها
@@ -68,9 +68,8 @@ use \packages\financial\bankaccount;
 				</div>
 			</div>
 		</div>
-		<!-- end: BASIC TABLE PANEL -->
+	<?php } ?>
 	</div>
 </div>
-<!-- end: PAGE CONTENT-->
 <?php
 $this->the_footer();
