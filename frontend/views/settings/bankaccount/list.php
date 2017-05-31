@@ -1,17 +1,14 @@
 <?php
 namespace themes\clipone\views\financial\settings\bankaccount;
 use \packages\base\translator;
-
+use \packages\base\view\error;
 use \packages\userpanel;
-
 use \themes\clipone\viewTrait;
 use \themes\clipone\navigation;
 use \themes\clipone\views\listTrait;
 use \themes\clipone\views\formTrait;
 use \themes\clipone\navigation\menuItem;
-
 use \packages\financial\views\settings\bankaccount\listview as accounts_list;
-
 class listview extends accounts_list{
 	use viewTrait, listTrait, formTrait;
 	function __beforeLoad(){
@@ -22,6 +19,24 @@ class listview extends accounts_list{
 		));
 		$this->setButtons();
 		navigation::active("settings/financial/bankaccounts");
+		if(empty($this->getBankaccounts())){
+			$this->addNotFoundError();
+		}
+	}
+	private function addNotFoundError(){
+		$error = new error();
+		$error->setType(error::NOTICE);
+		$error->setCode('financial.settings.bankaccount.notfound');
+		if($this->canAdd){
+			$error->setData([
+				[
+					'type' => 'btn-success',
+					'txt' => translator::trans('bankaccount_add'),
+					'link' => userpanel\url('settings/financial/bankaccounts/add')
+				]
+			], 'btns');
+		}
+		$this->addError($error);
 	}
 	public function setButtons(){
 		$this->setButton('edit', $this->canEdit, array(

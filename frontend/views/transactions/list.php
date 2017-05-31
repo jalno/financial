@@ -1,13 +1,12 @@
 <?php
 namespace themes\clipone\views\transactions;
-use \packages\base\utility;
+use \packages\base\packages;
 use \packages\base\translator;
+use \packages\base\view\error;
 use \packages\base\db\dbObject;
 use \packages\base\frontend\theme;
-
 use \packages\userpanel;
 use \packages\userpanel\date;
-
 use \themes\clipone\viewTrait;
 use \themes\clipone\navigation;
 use \themes\clipone\views\listTrait;
@@ -30,6 +29,38 @@ class listview extends transactionsListView{
 		$this->setDates();
 		$this->addAssets();
 		navigation::active("transactions/list");
+		if(empty($this->getTransactions())){
+			$this->addNotFoundError();
+		}
+	}
+	private function addNotFoundError(){
+		$error = new error();
+		$error->setType(error::NOTICE);
+		$error->setCode('financial.transaction.notfound');
+		$btns = [];
+		if(packages::package('ticketing')){
+			$btns[] = [
+				'type' => 'btn-teal',
+				'txt' => translator::trans('ticketing.add'),
+				'link' => userpanel\url('ticketing/new')
+			];
+		}
+		if($this->canAdd){
+			$btns[] = [
+				'type' => 'btn-success',
+				'txt' => translator::trans('financial.transaction.add'),
+				'link' => userpanel\url('transactions/new')
+			];
+		}
+		if($this->canAddingCredit){
+			$btns[] = [
+				'type' => 'btn-success',
+				'txt' => translator::trans('transaction.adding_credit'),
+				'link' => userpanel\url('transactions/addingcredit')
+			];
+		}
+		$error->setData($btns, 'btns');
+		$this->addError($error);
 	}
 	private function addAssets(){
 		$this->addJSFile(theme::url('assets/js/pages/transaction.list.js'));

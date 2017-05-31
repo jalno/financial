@@ -1,19 +1,16 @@
 <?php
 namespace themes\clipone\views\financial\settings\gateways;
-
 use \packages\base\translator;
+use \packages\base\view\error;
 use \packages\base\frontend\theme;
-
 use \packages\userpanel;
 use \themes\clipone\viewTrait;
 use \themes\clipone\navigation;
 use \themes\clipone\views\listTrait;
 use \themes\clipone\views\formTrait;
 use \themes\clipone\navigation\menuItem;
-
 use \packages\financial\views\settings\gateways\search as gatewaysListview;
 use \packages\financial\payport as gateway;
-
 class search extends gatewaysListview{
 	use viewTrait, listTrait, formTrait;
 	private $categories;
@@ -21,6 +18,24 @@ class search extends gatewaysListview{
 		$this->setTitle(translator::trans("settings.financial.gateways"));
 		navigation::active("settings/financial/gateways");
 		$this->setButtons();
+		if(empty($this->getDataList())){
+			$this->addNotFoundError();
+		}
+	}
+	private function addNotFoundError(){
+		$error = new error();
+		$error->setType(error::NOTICE);
+		$error->setCode('financial.settings.payport.notfound');
+		if($this->canAdd){
+			$error->setData([
+				[
+					'type' => 'btn-success',
+					'txt' => translator::trans('settings.financial.gateways.add'),
+					'link' => userpanel\url('settings/financial/gateways/add')
+				]
+			], 'btns');
+		}
+		$this->addError($error);
 	}
 	public function getComparisonsForSelect(){
 		return array(

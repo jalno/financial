@@ -7,7 +7,7 @@ $this->the_header();
 ?>
 <div class="row">
 	<div class="col-md-12">
-		<!-- start: BASIC TABLE PANEL -->
+		<?php if(!empty($this->getTransactions())){ ?>
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<i class="clip-data"></i> <?php echo translator::trans('transactions'); ?>
@@ -41,7 +41,7 @@ $this->the_header();
 						</thead>
 						<tbody>
 							<?php
-							foreach($this->dataList as $row){
+							foreach($this->getTransactions() as $row){
 								$this->setButtonParam('transactions_view', 'link', userpanel\url("transactions/view/".$row->id));
 								$this->setButtonParam('transactions_edit', 'link', userpanel\url("transactions/edit/".$row->id));
 								$this->setButtonParam('transactions_delete', 'link', userpanel\url("transactions/delete/".$row->id));
@@ -78,7 +78,7 @@ $this->the_header();
 				<?php $this->paginator(); ?>
 			</div>
 		</div>
-		<!-- end: BASIC TABLE PANEL -->
+		<?php } ?>
 	</div>
 </div>
 <div class="modal fade" id="search" tabindex="-1" data-show="true" role="dialog">

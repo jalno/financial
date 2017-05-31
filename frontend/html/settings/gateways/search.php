@@ -7,6 +7,7 @@ $this->the_header();
 ?>
 <div class="row">
 	<div class="col-md-12">
+	<?php if(!empty($this->getDataList())){ ?>
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<i class="fa fa-rss"></i> <?php echo translator::trans("settings.financial.gateways"); ?>
@@ -72,6 +73,7 @@ $this->the_header();
 				<?php $this->paginator(); ?>
 			</div>
 		</div>
+	<?php } ?>
 	</div>
 </div>
 <div class="modal fade" id="search" tabindex="-1" data-show="true" role="dialog">

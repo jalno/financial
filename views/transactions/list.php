@@ -17,8 +17,10 @@ class listview extends  list_view{
 		$this->canEdit = authorization::is_accessed('transactions_edit');
 		$this->canDel = authorization::is_accessed('transactions_delete');
 	}
-
 	static function onSourceLoad(){
 		self::$navigation = authorization::is_accessed('transactions_list');
+	}
+	protected function getTransactions():array{
+		return $this->dataList;
 	}
 }
