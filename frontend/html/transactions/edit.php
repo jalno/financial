@@ -20,7 +20,7 @@ $this->the_header();
             </div>
             <div class="panel-body">
                 <div class="table-responsive">
-                    <form class="create_form" action="<?php echo userpanel\url('transactions/edit/'.$this->getTransactionData()->id) ?>" method="post">
+                    <form class="create_form form-horizontal" action="<?php echo userpanel\url('transactions/edit/'.$this->getTransactionData()->id) ?>" method="post">
                         <div class="col-sm-6">
 	                        <?php $this->createField([
 								'name' => 'title',

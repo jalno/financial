@@ -6,7 +6,7 @@ use \packages\userpanel\date;
 $this->the_header();
 ?>
 <div class="row">
-    <form class="create_form" action="<?php echo userpanel\url('transactions/new') ?>" method="post">
+    <form class="create_form form-horizontal" action="<?php echo userpanel\url('transactions/new') ?>" method="post">
         <div class="col-md-7">
 			<div class="panel panel-default">
                 <div class="panel-heading">
