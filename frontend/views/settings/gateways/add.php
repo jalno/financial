@@ -18,7 +18,7 @@ class add extends addView{
 	function __beforeLoad(){
 		$this->setTitle(translator::trans("settings.financial.gateways.add"));
 		$this->setNavigation();
-		$this->addAssets();
+		$this->addBodyClass('transaction-settings-gateway');
 	}
 	public function addAssets(){
 		$this->addJSFile(theme::url('assets/plugins/jquery-validation/dist/jquery.validate.min.js'));

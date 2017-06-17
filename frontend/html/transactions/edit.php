@@ -1,5 +1,4 @@
 <?php
-use \packages\base;
 use \packages\base\json;
 use \packages\base\translator;
 use \packages\userpanel;
@@ -7,7 +6,6 @@ use \themes\clipone\utility;
 use \packages\userpanel\date;
 use \packages\financial\transaction;
 use \packages\financial\transaction_pay;
-
 $this->the_header();
 ?>
 <div class="row">
@@ -22,20 +20,27 @@ $this->the_header();
             </div>
             <div class="panel-body">
                 <div class="table-responsive">
-                    <form class="create_form" action="<?php echo userpanel\url('transactions/edit/'.$this->getTransactionData()->id) ?>" method="post">
+                    <form class="create_form form-horizontal" action="<?php echo userpanel\url('transactions/edit/'.$this->getTransactionData()->id) ?>" method="post">
                         <div class="col-sm-6">
-	                        <?php $this->createField(array(
+	                        <?php $this->createField([
 								'name' => 'title',
 								'label' => translator::trans("transaction.title")
-							));
+							]);
 							?>
                         </div>
 						<div class="col-sm-6">
-							<input type="hidden" name="user" value="<?php echo $this->getTransactionData()->user->id; ?>">
-							<?php $this->createField(array(
+							<?php
+							$this->createField([
+								'name' => 'user',
+								'type' => 'hidden'
+							]);
+							?>
+							<?php
+							$this->createField([
 								'name' => 'user_name',
 								'label' => translator::trans("transaction.user")
-							)); ?>
+							]);
+							?>
 						</div>
 						<div class="col-sm-12">
 							<table class="table table-striped table-hover product-table">
@@ -58,14 +63,14 @@ $this->the_header();
 									<?php
 									$x = 1;
 									foreach($this->getTransactionData()->products as $product){
-										$data = array(
+										$data = [
 											'id' => $product->id,
 											'title' => $product->title,
 											'description' => $product->description,
 											'number' => $product->number,
 											'price' => $product->price,
 											'discount' => $product->discount
-										);
+										];
 										$this->setButtonParam('productEdit', 'link', '#product-edit');
 										$this->setButtonParam('productDelete', 'link', userpanel\url('transactions/product/delete/'.$product->id));
 									?>
@@ -117,16 +122,16 @@ $this->the_header();
 											$this->setButtonParam('pay_delete', 'link', userpanel\url("transactions/pay/delete/".$pay->id));
 										}
 										if($hastatus){
-											$statusClass = utility::switchcase($pay->status, array(
+											$statusClass = utility::switchcase($pay->status, [
 												'label label-danger' => transaction_pay::rejected,
 												'label label-success' => transaction_pay::accepted,
 												'label label-warning' => transaction_pay::pending
-											));
-											$statusTxt = utility::switchcase($pay->status, array(
+											]);
+											$statusTxt = utility::switchcase($pay->status, [
 												'pay.rejected' => transaction_pay::rejected,
 												'pay.accepted' => transaction_pay::accepted,
 												'pay.pending' => transaction_pay::pending
-											));
+											]);
 										}
 									?>
 									<tr>
@@ -172,34 +177,37 @@ $this->the_header();
 			<input type="hidden" name="product" value="">
 			<?php
 			$this->setHorizontalForm('sm-3','sm-9');
-			$feilds = array(
-				array(
-					'name' => 'title',
+			$feilds = [
+				[
+					'name' => 'product_title',
 					'label' => translator::trans("transaction.add.product")
-				),
-				array(
+				],
+				[
 					'name' => 'description',
 					'type' => 'textarea',
 					'label' => translator::trans("transaction.add.description")
-				),
-				array(
+				],
+				[
 					'name' => 'number',
 					'type' => 'number',
-					'label' => translator::trans("transaction.add.number")
-				),
-				array(
-					'name' => 'price',
+					'label' => translator::trans("transaction.add.number"),
+					'ltr' => true
+				],
+				[
+					'name' => 'product_price',
 					'type' => 'number',
-					'label' => translator::trans("transaction.add.price")
-				),
-				array(
+					'label' => translator::trans("transaction.add.price"),
+					'ltr' => true
+				],
+				[
 					'name' => 'discount',
 					'type' => 'number',
-					'label' => translator::trans("transaction.add.discount")
-				)
-			);
+					'label' => translator::trans("transaction.add.discount"),
+					'ltr' => true
+				]
+			];
 			foreach($feilds as $input){
-				echo $this->createField($input);
+				$this->createField($input);
 			}
 			?>
 		</form>
@@ -219,33 +227,36 @@ $this->the_header();
 		<form id="addproductform" action="" method="post" class="form-horizontal">
 			<?php
 			$this->setHorizontalForm('sm-3','sm-9');
-			$feilds = array(
-				array(
-					'name' => 'title',
+			$feilds = [
+				[
+					'name' => 'product_title',
 					'label' => translator::trans("transaction.add.product")
-				),
-				array(
+				],
+				[
 					'name' => 'description',
 					'label' => translator::trans("transaction.add.description")
-				),
-				array(
+				],
+				[
 					'name' => 'number',
 					'type' => 'number',
-					'label' => translator::trans("transaction.add.number")
-				),
-				array(
-					'name' => 'price',
+					'label' => translator::trans("transaction.add.number"),
+					'ltr' => true
+				],
+				[
+					'name' => 'product_price',
 					'type' => 'number',
-					'label' => translator::trans("transaction.add.price")
-				),
-				array(
+					'label' => translator::trans("transaction.add.price"),
+					'ltr' => true
+				],
+				[
 					'name' => 'discount',
 					'type' => 'number',
-					'label' => translator::trans("transaction.add.discount")
-				)
-			);
+					'label' => translator::trans("transaction.add.discount"),
+					'ltr' => true
+				]
+			];
 			foreach($feilds as $input){
-				echo $this->createField($input);
+				$this->createField($input);
 			}
 			?>
 		</form>

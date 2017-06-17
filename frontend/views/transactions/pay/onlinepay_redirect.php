@@ -1,7 +1,6 @@
 <?php
 namespace themes\clipone\views\transactions\pay\onlinepay;
 use \packages\base\translator;
-use \packages\base\frontend\theme;
 use \packages\userpanel;
 use \packages\userpanel\date;
 use \packages\financial\views\transactions\pay\onlinepay\redirect as redirectView;
@@ -10,7 +9,6 @@ use \themes\clipone\navigation;
 use \themes\clipone\navigation\menuItem;
 use \themes\clipone\viewTrait;
 use \themes\clipone\views\formTrait;
-
 class redirect extends redirectView{
 	use viewTrait,formTrait;
 	protected $transaction;
@@ -19,11 +17,10 @@ class redirect extends redirectView{
 		$this->setTitle(translator::trans('pay.redirect'));
 		$this->setShortDescription(translator::trans('transaction.number',array('number' =>  $this->transaction->id)));
 		$this->setNavigation();
-		$this->addJSFile(theme::url('assets/js/pages/transactions.pay.onlinepay.redirect.js'));
 	}
 	protected function createFormData(){
 		foreach($this->getRedirect()->data as $key => $value){
-			echo $this->createField(array(
+			$this->createField(array(
 				'type' => 'hidden',
 				'name' => $key,
 				'value' => $value

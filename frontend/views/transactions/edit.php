@@ -7,34 +7,26 @@ use \packages\financial\transaction;
 use \packages\financial\transaction_pay;
 use \packages\financial\payport_pay;
 use \packages\financial\views\transactions\edit as transactionsEdit;
-use \themes\clipone\breadcrumb;
 use \themes\clipone\navigation;
-use \themes\clipone\navigation\menuItem;
 use \themes\clipone\viewTrait;
 use \themes\clipone\views\listTrait;
 use \themes\clipone\views\formTrait;
 use \packages\base\translator;
-use \packages\base\frontend\theme;
-
 class edit extends transactionsEdit{
 	use viewTrait, formTrait, listTrait;
 	protected $transaction;
 	protected $pays;
-	protected $hasdesc;
 	function __beforeLoad(){
 		$this->setTitle(array(
 			translator::trans('edit'),
 			$this->getTransactionData()->id
 		));
 		$this->setShortDescription(translator::trans('transaction.edit'));
-		$this->addAssets();
 		$this->setPays();
 		$this->setNavigation();
 		$this->setButtons();
 		$this->setForm();
-	}
-	private function addAssets(){
-		$this->addJSFile(theme::url('assets/js/pages/transaction.edit.js'));
+		$this->addBodyClass('transaction-edit');
 	}
 	private function setNavigation(){
 		navigation::active("transactions/list");
@@ -48,21 +40,25 @@ class edit extends transactionsEdit{
 			}
 			$pay->date = date::format("Y/m/d H:i:s", $pay->date);
 			$pay->price = translator::trans('currency.rial', array('number' => $pay->price));
-			if($pay->method == transaction_pay::credit){
-				$pay->method = translator::trans('pay.method.credit');
-			}elseif($pay->method == transaction_pay::banktransfer){
-				if($bankaccount = bankaccount::byId($pay->param('bankaccount'))){
+			switch($pay->method){
+				case(transaction_pay::credit):
+					$pay->method = translator::trans('pay.method.credit');
+					break;
+				case(transaction_pay::banktransfer):
+					if($bankaccount = bankaccount::byId($pay->param('bankaccount'))){
 					$pay->method = translator::trans('pay.byBankTransfer.withbank', array('bankaccount' => $bankaccount->title));
-				}else{
-					$pay->method = translator::trans('pay.byBankTransfer');
-				}
-				$pay->description = translator::trans('pay.byBankTransfer.withfollowup', array('followup' => $pay->param('followup')));
-			}elseif($pay->method == transaction_pay::onlinepay){
-				if($payport_pay = payport_pay::byId($pay->param('payport_pay'))){
-					$pay->method = translator::trans('pay.byPayOnline.withpayport', array('payport' => $payport_pay->payport->title));
-				}else{
-					$pay->method = translator::trans('pay.byPayOnline');
-				}
+					}else{
+						$pay->method = translator::trans('pay.byBankTransfer');
+					}
+					$pay->description = translator::trans('pay.byBankTransfer.withfollowup', array('followup' => $pay->param('followup')));
+					break;
+				case(transaction_pay::onlinepay):
+					if($payport_pay = payport_pay::byId($pay->param('payport_pay'))){
+						$pay->method = translator::trans('pay.byPayOnline.withpayport', array('payport' => $payport_pay->payport->title));
+					}else{
+						$pay->method = translator::trans('pay.byPayOnline');
+					}
+					break;
 			}
 		}
 		if($needacceptbtn){
@@ -74,7 +70,7 @@ class edit extends transactionsEdit{
 			$this->setButton('pay_reject', ($this->canPayReject and $this->transaction->status == transaction::unpaid), array(
 				'title' => translator::trans('pay.reject'),
 				'icon' => 'fa fa-times',
-				'classes' => array('btn', 'btn-xs', 'btn-danger')
+				'classes' => array('btn', 'btn-xs', 'btn-tael')
 			));
 		}
 	}

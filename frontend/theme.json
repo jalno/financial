@@ -10,7 +10,13 @@
 	"languages":{
 		"fa_IR" : "langs/fa_IR.json"
 	},
-	"assets":[],
+	"assets":[
+		{"type":"package", "name":"jquery"},
+		{"type":"package", "name":"jquery-ui"},
+		{"type":"package", "name":"bootstrap"},
+		{"type":"package", "name":"webuilder"},
+		{"type":"ts", "file":"assets/ts/Main.ts"}
+	],
 	"events":[
 		{
 			"name":"\\themes\\clipone\\events\\initializeDashboard",
@@ -21,87 +27,87 @@
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\listview",
 			"parent":"\\packages\\financial\\views\\transactions\\listview",
-			"file":"transactions.list.php"
+			"file":"html/transactions/list.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\view",
 			"parent":"\\packages\\financial\\views\\transactions\\view",
-			"file":"transactions.view.php"
+			"file":"html/transactions/view.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\pay",
 			"parent":"\\packages\\financial\\views\\transactions\\pay",
-			"file":"transactions.pay.php"
+			"file":"html/transactions/pay.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\pay\\credit",
 			"parent":"\\packages\\financial\\views\\transactions\\pay\\credit",
-			"file":"transactions.pay.credit.php"
+			"file":"html/transactions/pay/credit.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\pay\\banktransfer",
 			"parent":"\\packages\\financial\\views\\transactions\\pay\\banktransfer",
-			"file":"transactions.pay.banktransfer.php"
+			"file":"html/transactions/pay/banktransfer.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\pay\\accept",
 			"parent":"\\packages\\financial\\views\\transactions\\pay\\accept",
-			"file":"transactions.pay.accept.php"
+			"file":"html/transactions/pay/accept.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\pay\\reject",
 			"parent":"\\packages\\financial\\views\\transactions\\pay\\reject",
-			"file":"transactions.pay.accept.php"
+			"file":"html/transactions/pay/accept.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\pay\\onlinepay",
 			"parent":"\\packages\\financial\\views\\transactions\\pay\\onlinepay",
-			"file":"transactions.pay.onlinepay.php"
+			"file":"html/transactions/pay/onlinepay.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\pay\\onlinepay\\error",
 			"parent":"\\packages\\financial\\views\\transactions\\pay\\onlinepay\\error",
-			"file":"transactions.pay.onlinepay.error.php"
+			"file":"html/transactions/pay/onlinepay/error.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\delete",
 			"parent":"\\packages\\financial\\views\\transactions\\delete",
-			"file":"transactions.delete.php"
+			"file":"html/transactions/delete.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\edit",
 			"parent":"\\packages\\financial\\views\\transactions\\edit",
-			"file":"transactions.edit.php"
+			"file":"html/transactions/edit.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\add",
 			"parent":"\\packages\\financial\\views\\transactions\\add",
-			"file":"transactions.add.php"
+			"file":"html/transactions/add.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\pay\\delete",
 			"parent":"\\packages\\financial\\views\\transactions\\pay\\delete",
-			"file":"transactions.pay.delete.php"
+			"file":"html/transactions/pay/delete.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\product_delete",
 			"parent":"\\packages\\financial\\views\\transactions\\product_delete",
-			"file":"transactions.product.delete.php"
+			"file":"html/transactions/product/delete.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\addingcredit",
 			"parent":"\\packages\\financial\\views\\transactions\\addingcredit",
-			"file":"transactions.addingcredit.php"
+			"file":"html/transactions/addingcredit.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\accept",
 			"parent":"\\packages\\financial\\views\\transactions\\accept",
-			"file":"transactions.accept.php"
+			"file":"html/transactions/accept.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\pay\\onlinepay\\redirect",
 			"parent":"\\packages\\financial\\views\\transactions\\pay\\onlinepay\\redirect",
-			"file":"transactions.pay.onlinepay.redirect.php"
+			"file":"html/transactions/pay/onlinepay/redirect.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\financial\\settings\\bankaccount\\listview",

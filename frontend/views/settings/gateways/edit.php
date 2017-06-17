@@ -1,30 +1,18 @@
 <?php
 namespace themes\clipone\views\financial\settings\gateways;
 use \packages\base\translator;
-use \packages\base\events;
-use \packages\base\frontend\theme;
 use \packages\base\options;
-
-use \packages\userpanel;
 use \packages\financial\payport as gateway;
 use \packages\financial\views\settings\gateways\edit as editView;
-
 use \themes\clipone\viewTrait;
 use \themes\clipone\navigation;
-use \themes\clipone\breadcrumb;
 use \themes\clipone\views\formTrait;
-
 class edit extends editView{
 	use viewTrait, formTrait;
 	function __beforeLoad(){
 		$this->setTitle(translator::trans("settings.financial.gateways.edit"));
 		$this->setNavigation();
-		$this->addAssets();
-	}
-	public function addAssets(){
-		$this->addJSFile(theme::url('assets/plugins/jquery-validation/dist/jquery.validate.min.js'));
-		$this->addJSFile(theme::url('assets/plugins/bootstrap-inputmsg/bootstrap-inputmsg.min.js'));
-		$this->addJSFile(theme::url('assets/js/pages/GateWays.js'));
+		$this->addBodyClass('transaction-settings-gateway');
 	}
 	private function setNavigation(){
 		navigation::active("settings/financial/gateways");

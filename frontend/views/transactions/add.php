@@ -1,12 +1,8 @@
 <?php
 namespace themes\clipone\views\transactions;
 use \packages\base\translator;
-use \packages\base\frontend\theme;
-
 use \packages\userpanel;
-
 use \packages\financial\views\transactions\add as transactionsAdd;
-use \packages\financial\transaction;
 use \themes\clipone\viewTrait;
 use \themes\clipone\views\formTrait;
 use \themes\clipone\breadcrumb;
@@ -18,17 +14,22 @@ class add extends transactionsAdd{
 	protected $pays;
 	protected $hasdesc;
 	function __beforeLoad(){
-		$this->setTitle(array(
+		$this->setTitle([
 			translator::trans('tranaction'),
 			translator::trans('add')
-		));
+		]);
 		$this->setShortDescription(translator::trans('transaction.add'));
-		$this->addAssets();
 		$this->setNavigation();
+		$this->FormDate();
+		$this->addBodyClass('transaction-add');
 	}
-	private function addAssets(){
-		$this->addJSFile(theme::url('assets/js/pages/transaction.add.js'));
-		$this->addCSSFile(theme::url('assets/css/transaction.add.css'));
+	private function FormDate(){
+		if(!$this->getDataForm('create_at')){
+			$this->setDataForm(userpanel\date::format('Y/m/d h:i:s', userpanel\date::time()), 'create_at');
+		}
+		if(!$this->getDataForm('expire_at')){
+			$this->setDataForm(userpanel\date::format('Y/m/d h:i:s', (userpanel\date::time() + 86400)), 'expire_at');
+		}
 	}
 	private function setNavigation(){
 		$item = new menuItem("transactions");
@@ -45,12 +46,12 @@ class add extends transactionsAdd{
 		navigation::active("transactions/list");
 	}
 	protected function getProductsForSelect(){
-		$products = array();
+		$products = [];
 		foreach($this->getProducts() as $product){
-			$products[] = array(
+			$products[] = [
 				'title' => $product->getTitle(),
 				'value' => $product->getName()
-			);
+			];
 		}
 		return $products;
 	}

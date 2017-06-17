@@ -27,7 +27,6 @@ class listview extends transactionsListView{
 		$this->setButtons();
 		$this->check_multiuser();
 		$this->setDates();
-		$this->addAssets();
 		navigation::active("transactions/list");
 		if(empty($this->getTransactions())){
 			$this->addNotFoundError();
@@ -62,9 +61,6 @@ class listview extends transactionsListView{
 		$error->setData($btns, 'btns');
 		$this->addError($error);
 	}
-	private function addAssets(){
-		$this->addJSFile(theme::url('assets/js/pages/transaction.list.js'));
-	}
 	public static function onSourceLoad(){
 		parent::onSourceLoad();
 		if(self::$navigation){
@@ -84,7 +80,7 @@ class listview extends transactionsListView{
 		$this->setButton('transactions_edit', $this->canEdit, [
 			'title' => translator::trans('transactions.edit'),
 			'icon' => 'fa fa-edit',
-			'classes' => ['btn', 'btn-xs', 'btn-warning']
+			'classes' => ['btn', 'btn-xs', 'btn-teal']
 		]);
 		$this->setButton('transactions_delete', $this->canDel, [
 			'title' => translator::trans('transactions.delete'),
