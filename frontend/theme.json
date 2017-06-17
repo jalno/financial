@@ -37,37 +37,37 @@
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\pay",
 			"parent":"\\packages\\financial\\views\\transactions\\pay",
-			"file":"transactions.pay.php"
+			"file":"html/transactions/pay.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\pay\\credit",
 			"parent":"\\packages\\financial\\views\\transactions\\pay\\credit",
-			"file":"transactions.pay.credit.php"
+			"file":"html/transactions/pay/credit.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\pay\\banktransfer",
 			"parent":"\\packages\\financial\\views\\transactions\\pay\\banktransfer",
-			"file":"transactions.pay.banktransfer.php"
+			"file":"html/transactions/pay/banktransfer.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\pay\\accept",
 			"parent":"\\packages\\financial\\views\\transactions\\pay\\accept",
-			"file":"transactions.pay.accept.php"
+			"file":"html/transactions/pay/accept.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\pay\\reject",
 			"parent":"\\packages\\financial\\views\\transactions\\pay\\reject",
-			"file":"transactions.pay.accept.php"
+			"file":"html/transactions/pay/accept.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\pay\\onlinepay",
 			"parent":"\\packages\\financial\\views\\transactions\\pay\\onlinepay",
-			"file":"transactions.pay.onlinepay.php"
+			"file":"html/transactions/pay/onlinepay.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\pay\\onlinepay\\error",
 			"parent":"\\packages\\financial\\views\\transactions\\pay\\onlinepay\\error",
-			"file":"transactions.pay.onlinepay.error.php"
+			"file":"html/transactions/pay/onlinepay/error.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\delete",
@@ -87,7 +87,7 @@
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\pay\\delete",
 			"parent":"\\packages\\financial\\views\\transactions\\pay\\delete",
-			"file":"transactions.pay.delete.php"
+			"file":"html/transactions/pay/delete.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\product_delete",
@@ -107,7 +107,7 @@
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\pay\\onlinepay\\redirect",
 			"parent":"\\packages\\financial\\views\\transactions\\pay\\onlinepay\\redirect",
-			"file":"transactions.pay.onlinepay.redirect.php"
+			"file":"html/transactions/pay/onlinepay/redirect.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\financial\\settings\\bankaccount\\listview",
