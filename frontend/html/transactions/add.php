@@ -1,13 +1,10 @@
 <?php
 use \packages\base;
 use \packages\base\translator;
-
 use \packages\userpanel;
 use \packages\userpanel\date;
-
 $this->the_header();
 ?>
-<!-- start: BASIC TABLE NEW TRANSACTION -->
 <div class="row">
     <form class="create_form" action="<?php echo userpanel\url('transactions/new') ?>" method="post">
         <div class="col-md-7">
@@ -17,33 +14,32 @@ $this->the_header();
                     <span><?php echo translator::trans("transaction.add"); ?></span>
                 </div>
                 <div class="panel-body">
-                    <input type="hidden" name="user" value="">
                     <?php
 					$this->setHorizontalForm('sm-4','sm-8');
-					$fields = array(
-						array(
+					$fields = [
+						[
 							'name' => 'title',
 							'label' => translator::trans("transaction.add.title"),
-							'class' => 'form-control space'
-						),
-						array(
+						],
+						[
+							'name' => 'user',
+							'type' => 'hidden'
+						],
+						[
 							'name' => 'user_name',
-							'label' => translator::trans("transaction.user"),
-							'class' => 'form-control space'
-						),
-						array(
+							'label' => translator::trans("transaction.user")
+						],
+						[
 							'name' => 'create_at',
 							'label' => translator::trans("transaction.add.create_at"),
-							'value' => date::format('Y/m/d H:i:s'),
-							'class' => 'form-control space'
-						),
-						array(
+							'ltr' => true
+						],
+						[
 							'name' => 'expire_at',
 							'label' => translator::trans("transaction.add.expire_at"),
-							'value' => date::format('Y/m/d H:i:s', time()+86400),
-							'class' => 'form-control space'
-						)
-					);
+							'ltr' => true
+						]
+					];
 					foreach($fields as $field){
 						$this->createField($field);
 					}
@@ -60,32 +56,32 @@ $this->the_header();
                 <div class="panel-body form-horizontal">
 					<?php
 					$this->setHorizontalForm('sm-9','sm-3');
-					$feilds = array(
-						array(
+					$feilds = [
+						[
 							'name' => 'notification',
 							'type' => 'checkbox',
 							'label' => translator::trans("transaction.add.notification"),
-							'options' => array(
-								array(
+							'options' => [
+								[
 									'value' => 1
-								)
-							),
+								]
+							],
 							'value' => 1
-						),
-						array(
+						],
+						[
 							'name' => 'notification_support',
 							'type' => 'checkbox',
 							'label' => translator::trans("transaction.add.notification.support"),
-							'options' => array(
-								array(
+							'options' => [
+								[
 									'value' => 1
-								)
-							),
+								]
+							],
 							'value' => 1
-						)
-					);
+						]
+					];
 					foreach($feilds as $input){
-						echo $this->createField($input);
+						$this->createField($input);
 					}
 					?>
 
@@ -130,33 +126,36 @@ $this->the_header();
 		<form id="addproductform" action="" method="post" class="form-horizontal">
 			<?php
 			$this->setHorizontalForm('sm-3','sm-9');
-			$feilds = array(
-				array(
+			$feilds = [
+				[
 					'name' => 'product_title',
 					'label' => translator::trans("transaction.add.product")
-				),
-				array(
+				],
+				[
 					'name' => 'description',
 					'label' => translator::trans("transaction.add.description")
-				),
-				array(
+				],
+				[
 					'name' => 'number',
 					'type' => 'number',
-					'label' => translator::trans("transaction.add.number")
-				),
-				array(
+					'label' => translator::trans("transaction.add.number"),
+					'ltr' => true
+				],
+				[
 					'name' => 'price',
 					'type' => 'number',
-					'label' => translator::trans("transaction.add.price")
-				),
-				array(
+					'label' => translator::trans("transaction.add.price"),
+					'ltr' => true
+				],
+				[
 					'name' => 'discount',
 					'type' => 'number',
-					'label' => translator::trans("transaction.add.discount")
-				)
-			);
+					'label' => translator::trans("transaction.add.discount"),
+					'ltr' => true
+				]
+			];
 			foreach($feilds as $input){
-				echo $this->createField($input);
+				$this->createField($input);
 			}
 			?>
 		</form>
@@ -166,6 +165,5 @@ $this->the_header();
 		<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo translator::trans('cancel'); ?></button>
 	</div>
 </div>
-<!-- end: BASIC TABLE NEW TRANSACTION -->
 <?php
 $this->the_footer();

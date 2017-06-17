@@ -106,7 +106,6 @@ var TransactionAdd = function () {
 		});
 	}
 	var serialize = function(){
-
 		var info = {
 			title: $('input[name=title]', form).val(),
 			user: $('input[name=user]', form).val(),
@@ -119,7 +118,6 @@ var TransactionAdd = function () {
 		$(".product-table tbody > tr").each(function(){
 			info.products.push($(this).data());
 		});
-
 		return info;
 	}
 	var runSubmitFormListener = function(){

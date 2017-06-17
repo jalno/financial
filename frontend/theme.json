@@ -82,7 +82,7 @@
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\add",
 			"parent":"\\packages\\financial\\views\\transactions\\add",
-			"file":"transactions.add.php"
+			"file":"html/transactions/add.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\pay\\delete",
