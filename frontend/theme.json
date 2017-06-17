@@ -77,7 +77,7 @@
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\edit",
 			"parent":"\\packages\\financial\\views\\transactions\\edit",
-			"file":"transactions.edit.php"
+			"file":"html/transactions/edit.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\add",
