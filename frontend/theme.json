@@ -97,7 +97,7 @@
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\addingcredit",
 			"parent":"\\packages\\financial\\views\\transactions\\addingcredit",
-			"file":"transactions.addingcredit.php"
+			"file":"html/transactions/addingcredit.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\accept",
