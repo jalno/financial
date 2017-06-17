@@ -80,7 +80,7 @@ class listview extends transactionsListView{
 		$this->setButton('transactions_edit', $this->canEdit, [
 			'title' => translator::trans('transactions.edit'),
 			'icon' => 'fa fa-edit',
-			'classes' => ['btn', 'btn-xs', 'btn-warning']
+			'classes' => ['btn', 'btn-xs', 'btn-teal']
 		]);
 		$this->setButton('transactions_delete', $this->canDel, [
 			'title' => translator::trans('transactions.delete'),

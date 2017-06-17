@@ -32,7 +32,7 @@
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\view",
 			"parent":"\\packages\\financial\\views\\transactions\\view",
-			"file":"transactions.view.php"
+			"file":"html/transactions/view.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\pay",
@@ -72,7 +72,7 @@
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\delete",
 			"parent":"\\packages\\financial\\views\\transactions\\delete",
-			"file":"transactions.delete.php"
+			"file":"html/transactions/delete.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\edit",
@@ -92,7 +92,7 @@
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\product_delete",
 			"parent":"\\packages\\financial\\views\\transactions\\product_delete",
-			"file":"transactions.product.delete.php"
+			"file":"html/transactions/product/delete.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\addingcredit",
@@ -102,7 +102,7 @@
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\accept",
 			"parent":"\\packages\\financial\\views\\transactions\\accept",
-			"file":"transactions.accept.php"
+			"file":"html/transactions/accept.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\pay\\onlinepay\\redirect",
