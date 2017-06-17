@@ -6,7 +6,7 @@ use \themes\clipone\utility;
 $this->the_header();
 ?>
 <div class="row">
-	<div class="col-md-12">
+	<div class="col-sm-12">
 		<?php if(!empty($this->getTransactions())){ ?>
 		<div class="panel panel-default">
 			<div class="panel-heading">
@@ -45,18 +45,18 @@ $this->the_header();
 								$this->setButtonParam('transactions_view', 'link', userpanel\url("transactions/view/".$row->id));
 								$this->setButtonParam('transactions_edit', 'link', userpanel\url("transactions/edit/".$row->id));
 								$this->setButtonParam('transactions_delete', 'link', userpanel\url("transactions/delete/".$row->id));
-								$statusClass = utility::switchcase($row->status, array(
+								$statusClass = utility::switchcase($row->status, [
 									'label label-danger' => transaction::unpaid,
 									'label label-success' => transaction::paid,
 									'label label-warning' => transaction::refund,
 									'label label-inverse' => transaction::expired
-								));
-								$statusTxt = utility::switchcase($row->status, array(
+								]);
+								$statusTxt = utility::switchcase($row->status, [
 									'transaction.unpaid' => transaction::unpaid,
 									'transaction.paid' => transaction::paid,
 									'transaction.refund' => transaction::refund,
 									'transaction.status.expired' => transaction::expired
-								));
+								]);
 							?>
 							<tr>
 								<td class="center"><?php echo $row->id; ?></td>
@@ -90,38 +90,46 @@ $this->the_header();
 	</div>
 	<div class="modal-body">
 		<form id="transactionsearch" class="form-horizontal" action="<?php echo userpanel\url("transactions"); ?>" method="GET" autocomplete="off">
-			<input type="hidden" name="user" value="">
 			<?php
 			$this->setHorizontalForm('sm-3','sm-9');
-			$feilds = array(
-				array(
+			$feilds = [
+				[
 					'name' => 'id',
 					'type' => 'number',
 					'label' => translator::trans("transaction.id")
-				),
-				array(
+				],
+				[
 					'name' => 'title',
 					'label' => translator::trans("transaction.title")
-				),
-				array(
-					'name' => 'user_name',
-					'label' => translator::trans("transaction.user")
-				),
-				array(
+				],
+				[
 					'type' => 'select',
 					'label' => translator::trans('transaction.status'),
 					'name' => 'status',
 					'options' => $this->getStatusForSelect()
-				),
-				array(
+				],
+				[
 					'type' => 'select',
 					'label' => translator::trans('search.comparison'),
 					'name' => 'comparison',
 					'options' => $this->getComparisonsForSelect()
-				)
-			);
+				]
+			];
+			if($this->multiuser){
+				$userSearch = [
+					[
+						'name' => 'user',
+						'type' => 'hidden'
+					],
+					[
+						'name' => 'user_name',
+						'label' => translator::trans("transaction.user")
+					],
+				];
+				array_splice($feilds, 2, 0, $userSearch);
+			}
 			foreach($feilds as $input){
-				echo $this->createField($input);
+				$this->createField($input);
 			}
 			?>
 		</form>

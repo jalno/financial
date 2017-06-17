@@ -10,7 +10,13 @@
 	"languages":{
 		"fa_IR" : "langs/fa_IR.json"
 	},
-	"assets":[],
+	"assets":[
+		{"type":"package", "name":"jquery"},
+		{"type":"package", "name":"jquery-ui"},
+		{"type":"package", "name":"bootstrap"},
+		{"type":"package", "name":"webuilder"},
+		{"type":"ts", "file":"assets/ts/Main.ts"}
+	],
 	"events":[
 		{
 			"name":"\\themes\\clipone\\events\\initializeDashboard",
@@ -21,7 +27,7 @@
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\listview",
 			"parent":"\\packages\\financial\\views\\transactions\\listview",
-			"file":"transactions.list.php"
+			"file":"html/transactions/list.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\view",
