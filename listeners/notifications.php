@@ -7,5 +7,6 @@ class notifications{
 		$events->add(financialEevents\transactions\add::class);
 		$events->add(financialEevents\transactions\edit::class);
 		$events->add(financialEevents\transactions\expire::class);
+		$events->add(financialEevents\transactions\pay::class);
 	}
 }

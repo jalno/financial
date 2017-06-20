@@ -602,6 +602,8 @@ class transactions extends controller{
 					}
 				}
 				$transaction->save();
+				$event = new events\transactions\edit($transaction);
+				$event->trigger();
 				$this->response->setStatus(true);
 				$this->response->Go(userpanel\url('transactions/edit/'.$transaction->id));
 			}catch(inputValidation $error){

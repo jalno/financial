@@ -31,6 +31,8 @@
 		"email.template.name.financial_transaction_edit":"ویرایش صورتحساب در بخش مالی",
 		"sms.template.name.financial_transaction_edit":"ویرایش صورتحساب در بخش مالی",
 		"email.template.name.financial_transaction_expire":"منقضی شدن صورتحساب در بخش مالی",
-		"sms.template.name.financial_transaction_expire":"منقضی شدن صورتحساب در بخش مالی"
+		"sms.template.name.financial_transaction_expire":"منقضی شدن صورتحساب در بخش مالی",
+		"email.template.name.financial_transaction_pay":"پرداخت صورتحساب در بخش مالی",
+		"sms.template.name.financial_transaction_pay":"پرداخت صورتحساب در بخش مالی"
 	}
 }
