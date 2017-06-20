@@ -236,6 +236,10 @@
 		{
 			"classes":["events\\transactions\\add"],
 			"file":"libraries/events/transactions/add.php"
+		},
+		{
+			"classes":["events\\transactions\\edit"],
+			"file":"libraries/events/transactions/edit.php"
 		}
 	]
 }
