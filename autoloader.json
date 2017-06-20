@@ -240,6 +240,10 @@
 		{
 			"classes":["events\\transactions\\edit"],
 			"file":"libraries/events/transactions/edit.php"
+		},
+		{
+			"classes":["events\\transactions\\expire"],
+			"file":"libraries/events/transactions/expire.php"
 		}
 	]
 }

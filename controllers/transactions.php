@@ -31,9 +31,6 @@ use \packages\financial\events;
 class transactions extends controller{
 	protected $authentication = true;
 	function listtransactions(){
-		$transaction = transaction::byId(37);
-		$event = new events\transactions\edit($transaction);
-		$event->trigger();
 		authorization::haveOrFail('transactions_list');
 		transaction::checkExpiration();
 		$view = view::byName("\\packages\\financial\\views\\transactions\\listview");
