@@ -228,6 +228,26 @@
 		{
 			"classes":["listeners\\search"],
 			"file":"listeners/search.php"
+		},
+		{
+			"classes":["listeners\\notifications"],
+			"file":"listeners/notifications.php"
+		},
+		{
+			"classes":["events\\transactions\\add"],
+			"file":"libraries/events/transactions/add.php"
+		},
+		{
+			"classes":["events\\transactions\\edit"],
+			"file":"libraries/events/transactions/edit.php"
+		},
+		{
+			"classes":["events\\transactions\\expire"],
+			"file":"libraries/events/transactions/expire.php"
+		},
+		{
+			"classes":["events\\transactions\\pay"],
+			"file":"libraries/events/transactions/pay.php"
 		}
 	]
 }

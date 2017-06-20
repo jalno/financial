@@ -15,6 +15,10 @@
 		{
 			"name":"\\packages\\userpanel\\events\\search",
 			"listener": "listeners\\search@find"
+		},
+		{
+			"name":"\\packages\\notifications\\events",
+			"listener": "listeners\\notifications@events"
 		}
 	]
 }

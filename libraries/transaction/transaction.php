@@ -2,6 +2,7 @@
 namespace packages\financial;
 use \packages\userpanel\date;
 use \packages\base\db\dbObject;
+use \packages\financial\events;
 class transaction extends dbObject{
 	const unpaid = 1;
 	const paid = 2;
@@ -184,6 +185,8 @@ class transaction extends dbObject{
 		foreach($transaction->get() as $transaction){
 			$transaction->status = self::expired;
 			$transaction->save();
+			$event = new events\transactions\expire($transaction);
+			$event->trigger();
 		}
 	}
 }
