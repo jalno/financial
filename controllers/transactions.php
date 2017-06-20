@@ -27,6 +27,7 @@ use \packages\financial\payport\redirect;
 use \packages\financial\payport\GatewayException;
 use \packages\financial\payport\VerificationException;
 use \packages\financial\payport\AlreadyVerified;
+use \packages\financial\events;
 class transactions extends controller{
 	protected $authentication = true;
 	function listtransactions(){
@@ -693,7 +694,8 @@ class transactions extends controller{
 				if(isset($inputs['description'])){
 					$transaction->setparam('description', $inputs['description']);
 				}
-
+				$event = new events\transactions\add($transaction);
+				$event->trigger();
 				$this->response->setStatus(true);
 				$this->response->Go(userpanel\url('transactions/view/'.$transaction->id));
 			}catch(inputValidation $error){
