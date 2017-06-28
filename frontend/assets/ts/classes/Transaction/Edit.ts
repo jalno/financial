@@ -36,7 +36,7 @@ export default class Edit{
 			});
 		});
 	}
-	private static rebuildProductsTable = function(){
+	private static rebuildProductsTable(){
 		let $trs = '';
 		Edit.productId = 0;
 		$("tbody > tr", Edit.table).each(function(){
@@ -126,7 +126,7 @@ export default class Edit{
 			Edit.rebuildProductsTable();
 		});
 	}
-	private static runSubmitFormListener = function(){
+	private static runSubmitFormListener(){
 		Edit.$form.on('submit', function(e){
 			e.preventDefault();
 			$(this).formAjax({
