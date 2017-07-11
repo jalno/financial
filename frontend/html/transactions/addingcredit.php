@@ -7,6 +7,7 @@ use \themes\clipone\utility;
 use \packages\userpanel\date;
 use \packages\financial\transaction;
 use \packages\financial\transaction_pay;
+use \packages\financial\authorization;
 
 $this->the_header();
 ?>
@@ -22,7 +23,7 @@ $this->the_header();
             <div class="panel-body">
                 <div class="table-responsive">
                     <form class="addingcredit_form" action="<?php echo userpanel\url('transactions/addingcredit'); ?>" method="post">
-					<?php if($multyUser = $this->getData('selectclient')){ ?> 
+					<?php if($multyUser = authorization::childrenTypes()){ ?> 
                         <div class="col-sm-6">
 							<?php
 							$this->createField([

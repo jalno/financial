@@ -802,7 +802,7 @@ class transactions extends controller{
 		authorization::haveOrFail('transactions_addingcredit');
 		$types = authorization::childrenTypes();
 		if($types){
-			$view->setData(true, 'selectclient');
+			$view->setClient(authentication::getID());
 		}
 		$inputsRules = array(
 			'price' => array(
@@ -818,7 +818,15 @@ class transactions extends controller{
 		if(http::is_post()){
 			try{
 				$inputs = $this->checkinputs($inputsRules);
-				$inputs['client'] = isset($inputs['client']) ? user::byId($inputs['client']) : authentication::getUser();
+				if(isset($inputs['client'])){
+					if($inputs['client']){
+						if(!$inputs['client'] = user::byId($inputs['client'])){
+							throw new inputValidation('client');
+						}
+					}else{
+						unset($inputs['client']);
+					}
+				}
 				if($inputs['price'] <= 0){
 					throw new inputValidation('price');
 				}
@@ -841,6 +849,8 @@ class transactions extends controller{
 			}catch(inputValidation $error){
 				$view->setFormError(FormError::fromException($error));
 			}
+			var_dump($this->inputsvalue($inputsRules));
+			$view->setDataForm($this->inputsvalue($inputsRules));
 		}else{
 			$this->response->setStatus(true);
 		}
