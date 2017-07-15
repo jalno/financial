@@ -754,7 +754,14 @@ class transactions extends controller{
 	}
 	public function pay_delete($data){
 		authorization::haveOrFail('transactions_pay_delete');
-		db::join("financial_transactions", "financial_transactions.id=financial_transactions_pays.transaction", "LEFT");
+		$types = authorization::childrenTypes();
+		db::join("financial_transactions", "financial_transactions.id=financial_transactions_pays.transaction", "INNER");
+		db::join("userpanel_users", "userpanel_users.id=financial_transactions.user", "INNER");
+		if($types){
+			db::where("userpanel_users.type", $types, 'in');
+		}else{
+			db::where("userpanel_users.id", authentication::getID());
+		}
 		$transaction_pay = new transaction_pay();
 		$transaction_pay->where("financial_transactions_pays.id", $data['id']);
 		$transaction_pay = $transaction_pay->getOne("financial_transactions_pays.*");
