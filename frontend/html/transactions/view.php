@@ -199,7 +199,7 @@ $this->the_header();
 							<tr>
 								<td><?php echo $x++; ?></td>
 								<td><?php echo $pay->date; ?></td>
-								<td class="hidden-480"><?php echo $pay->method; ?></td>
+								<td><?php echo $pay->method; ?></td>
 								<?php if($hasdesc){ ?><td><?php echo $pay->description; ?></td><?php } ?>
 								<td><?php echo $pay->price; ?></td>
 								<?php if($hastatus){ ?><td><span class="<?php echo $statusClass; ?>"><?php echo translator::trans($statusTxt); ?></td><?php } ?>

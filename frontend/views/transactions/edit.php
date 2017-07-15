@@ -59,6 +59,10 @@ class edit extends transactionsEdit{
 						$pay->method = translator::trans('pay.byPayOnline');
 					}
 					break;
+				case(transaction_pay::payaccepted):
+					$acceptor = userpanel\user::byId($pay->param('acceptor'));
+					$pay->method = translator::trans('pay.method.payaccepted', array('acceptor' => $acceptor->getFullName()));
+					break;
 			}
 		}
 		if($needacceptbtn){
