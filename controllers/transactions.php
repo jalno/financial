@@ -849,7 +849,6 @@ class transactions extends controller{
 			}catch(inputValidation $error){
 				$view->setFormError(FormError::fromException($error));
 			}
-			var_dump($this->inputsvalue($inputsRules));
 			$view->setDataForm($this->inputsvalue($inputsRules));
 		}else{
 			$this->response->setStatus(true);
@@ -870,7 +869,7 @@ class transactions extends controller{
 				$transaction->addPay(array(
 					'date' => time(),
 					'method' => transaction_pay::payaccepted,
-					'price' => $transaction->price,
+					'price' => $transaction->payablePrice(),
 					'status' => transaction_pay::accepted,
 					'params' => array(
 						'acceptor' => authentication::getID(),

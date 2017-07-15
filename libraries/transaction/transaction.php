@@ -150,16 +150,16 @@ class transaction extends dbObject{
 				$product->save();
 			}
 			$this->tmproduct = array();
-			foreach($this->tmpays as $pay){
-				$pay->transaction = $this->id;
-				$pay->save();
-			}
-			$this->tmpays = array();
 			foreach($this->tmparams as $param){
 				$param->transaction = $this->id;
 				$param->save();
 			}
 			$this->tmparams = array();
+			foreach($this->tmpays as $pay){
+				$pay->transaction = $this->id;
+				$pay->save();
+			}
+			$this->tmpays = array();
 		}
 		return $return;
 	}
