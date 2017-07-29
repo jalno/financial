@@ -463,7 +463,7 @@ class transactions extends controller{
 					try{
 						if($pay->verification() == payport_pay::success){
 							$pay->transaction->addPay(array(
-								'date' => $inputs['date'],
+								'date' => date::time(),
 								'method' => transaction_pay::onlinepay,
 								'price' => $pay->price,
 								'status' => transaction_pay::accepted,
