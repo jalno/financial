@@ -168,6 +168,8 @@
 		"financial.transaction.add": "افزودن صورتحساب",
 		"error.financial.settings.payport.notfound": "هیج پنل مالی یافت نشد، به محض افزودن پنل مالی جدید آن را در اینجا مشاهده خواهید کرد.",
 		"error.financial.settings.bankaccount.notfound": "هیج حساب بانکی یافت نشد، به محض افزودن حساب بانکی جدید آن را در اینجا مشاهده خواهید کرد.",
-		"transaction.status.expired": "منقضی شده"
+		"transaction.status.expired": "منقضی شده",
+		"error.financial.addingcredit.unAcceptedPrice": "مبلغ افزایش موجودی کمتر از حد مجاز پرداختی هست ",
+		"transaction.addingcredit.price": "مبلغ (ریال)"
 	}
 }

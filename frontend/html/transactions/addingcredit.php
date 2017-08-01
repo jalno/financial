@@ -44,7 +44,7 @@ $this->the_header();
 							<?php $this->createField([
 								'name' => 'price',
 								'type' => 'number',
-								'label' => translator::trans("transaction.price") . "(" . translator::trans("currency.rial") . ")",
+								'label' => translator::trans("transaction.addingcredit.price"),
 								'ltr' => true,
 								'placeholder' => 10000
 							]); ?>

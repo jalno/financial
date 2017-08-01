@@ -833,9 +833,14 @@ class transactions extends controller{
 					}else{
 						unset($inputs['client']);
 					}
+				}else{
+					$inputs['client'] = authentication::getUser();
 				}
 				if($inputs['price'] <= 0){
 					throw new inputValidation('price');
+				}
+				if($inputs['price'] < 1000){
+					throw new unAcceptedPrice();
 				}
 				$transaction = new transaction;
 				$transaction->title = translator::trans("transaction.adding_credit");
@@ -855,6 +860,10 @@ class transactions extends controller{
 				$this->response->Go(userpanel\url("transactions/view/".$transaction->id));
 			}catch(inputValidation $error){
 				$view->setFormError(FormError::fromException($error));
+			}catch(unAcceptedPrice $e){
+				$error = new error();
+				$error->setCode('financial.addingcredit.unAcceptedPrice');
+				$view->addError($error);
 			}
 			$view->setDataForm($this->inputsvalue($inputsRules));
 		}else{
@@ -926,3 +935,4 @@ class transactions extends controller{
 }
 class transactionNotFound extends NotFound{}
 class illegalTransaction extends \Exception{}
+class unAcceptedPrice extends \Exception{}
