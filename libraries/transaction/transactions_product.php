@@ -61,6 +61,9 @@ class transaction_product extends dbObject{
 		if(!isset($data['configure'])){
 			$newdata['configure'] = 1;
 		}
+		if(isset($data['type']) and $data['type'] and substr($data['type'], 0, 1) != "\\"){
+			$newdata['type'] = "\\".$data['type'];
+		}
 		return $newdata;
 	}
 	public function setParam($name, $value){
