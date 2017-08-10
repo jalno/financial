@@ -25,22 +25,7 @@ class add extends event implements notifiable{
 		];
 	}
 	public function getTargetUsers():array{
-		authentication::check();
-		$creator = authentication::getID();
-		if($creator == $this->transaction->user->id){
-			$parents = $this->transaction->user->parentTypes();
-			$users = [];
-			if($parents){
-				$user = new user();
-				$user->where("type", $parents, 'in');
-				foreach($user->get() as $user){
-					$users[$user->id] = $user;
-				}
-				unset($users[$creator]);
-			}
-		}else{
-			$users = [$this->transaction->user];
-		}
+		$users = [$this->transaction->user];
 		return $users;
 	}
 }
