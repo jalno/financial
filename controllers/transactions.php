@@ -171,9 +171,8 @@ class transactions extends controller{
 	private function getAvailablePayMethods($canPayByCredit = true){
 		$methods = array();
 		$bankaccounts = bankaccount::where("status", 1)->has();
-		$credit = authentication::getUser()->credit;
 		$payports = payport::where("status", 1)->has();
-		if($canPayByCredit and $credit > 0){
+		if($canPayByCredit){
 			$methods[] = 'credit';
 		}
 		if($bankaccounts){
@@ -197,7 +196,7 @@ class transactions extends controller{
 			}
 			if($transaction->status == transaction::unpaid){
 				$view->setTransaction($transaction);
-				foreach($this->getAvailablePayMethods($canPayByCredit) as $method){
+				foreach($this->getAvailablePayMethods(($canPayByCredit and $transaction->user->credit > 0)) as $method){
 					$view->setMethod($method);
 				}
 				$this->response->setStatus(true);
@@ -209,12 +208,22 @@ class transactions extends controller{
 		return $this->response;
 	}
 	public function payByCredit($data){
-		if(in_array('credit',$this->getAvailablePayMethods())){
+		$transaction = $this->getTransaction($data['transaction']);
+		$user = $transaction->user;
+		if(in_array('credit', $this->getAvailablePayMethods($user->credit > 0))){
 			if($view = view::byName("\\packages\\financial\\views\\transactions\\pay\\credit")){
-				$transaction = $this->getTransaction($data['transaction']);
 				if($transaction->status == transaction::unpaid){
-					$user = authentication::getUser();
 					$credit = $user->credit;
+					$canPayByCredit = true;
+					foreach($transaction->products as $product){
+						if($product->type == '\packages\financial\products\addingcredit'){
+							$canPayByCredit = false;
+							break;
+						}
+					}
+					if($credit < 1 or !$canPayByCredit){
+						throw new NotFound();
+					}
 					$view->setTransaction($transaction);
 					$view->setCredit($credit);
 					$this->response->setStatus(false);
