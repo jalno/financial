@@ -170,6 +170,9 @@
 		"error.financial.settings.bankaccount.notfound": "هیج حساب بانکی یافت نشد، به محض افزودن حساب بانکی جدید آن را در اینجا مشاهده خواهید کرد.",
 		"transaction.status.expired": "منقضی شده",
 		"error.financial.addingcredit.unAcceptedPrice": "مبلغ افزایش موجودی کمتر از حد مجاز پرداختی هست ",
-		"transaction.addingcredit.price": "مبلغ (ریال)"
+		"transaction.addingcredit.price": "مبلغ (ریال)",
+		"financial.transaction.pay.byCredit.user": "انتخاب کاربر پرداخت کننده",
+		"financial.transaction.pay.byCredit.user.owner": "پرداخت از موجودی کاربر",
+		"financial.transaction.pay.byCredit.user.my": "پرداخت از موجودی من"
 	}
 }

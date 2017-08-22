@@ -2,6 +2,7 @@ import List from "./Transaction/List";
 import Add from "./Transaction/Add";
 import Edit from "./Transaction/Edit";
 import Redirect from "./Transaction/Pay/OnlinePay/Redirect";
+import payByCredit from "./Transaction/Pay/byCredit";
 import Gateway from "./Transaction/Settings/GateWays";
 import Addingcredit from "./Transaction/Addingcredit";
 export default class Transaction{
@@ -12,6 +13,7 @@ export default class Transaction{
 		Redirect.initIfNeeded();
 		Addingcredit.initIfNeeded();
 		Gateway.initIfNeeded();
+		payByCredit.initIfNeeded();
 	}
 	
 }

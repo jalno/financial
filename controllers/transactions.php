@@ -28,6 +28,7 @@ use \packages\financial\payport\GatewayException;
 use \packages\financial\payport\VerificationException;
 use \packages\financial\payport\AlreadyVerified;
 use \packages\financial\events;
+use \packages\financial\views\transactions\pay as payView;
 class transactions extends controller{
 	protected $authentication = true;
 	function listtransactions(){
@@ -185,85 +186,106 @@ class transactions extends controller{
 	}
 
 	public function pay($data){
-		if($view = view::byName("\\packages\\financial\\views\\transactions\\pay")){
-			$transaction = $this->getTransaction($data['transaction']);
-			$canPayByCredit = true;
-			foreach($transaction->products as $product){
-				if($product->type == '\packages\financial\products\addingcredit'){
-					$canPayByCredit = false;
-					break;
-				}
-			}
-			if($transaction->status == transaction::unpaid){
-				$view->setTransaction($transaction);
-				foreach($this->getAvailablePayMethods(($canPayByCredit and $transaction->user->credit > 0)) as $method){
-					$view->setMethod($method);
-				}
-				$this->response->setStatus(true);
-				$this->response->setView($view);
-			}else{
-				throw new NotFound;
+		$transaction = $this->getTransaction($data['transaction']);
+		if($transaction->status != transaction::unpaid){
+			throw new NotFound;
+		}
+		$types = authorization::childrenTypes();
+		$view = view::byName(payView::class);
+		$canPayByCredit = true;
+		foreach($transaction->products as $product){
+			if($product->type == '\packages\financial\products\addingcredit'){
+				$canPayByCredit = false;
+				break;
 			}
 		}
+		$canPayByCredit = ($canPayByCredit and ($transaction->user->credit > 0 or ($types and authentication::getUser()->credit > 0)));
+		$view->setTransaction($transaction);
+		foreach($this->getAvailablePayMethods($canPayByCredit) as $method){
+			$view->setMethod($method);
+		}
+		$this->response->setStatus(true);
+		$this->response->setView($view);
 		return $this->response;
 	}
 	public function payByCredit($data){
 		$transaction = $this->getTransaction($data['transaction']);
 		$user = $transaction->user;
-		if(in_array('credit', $this->getAvailablePayMethods($user->credit > 0))){
-			if($view = view::byName("\\packages\\financial\\views\\transactions\\pay\\credit")){
-				if($transaction->status == transaction::unpaid){
-					$credit = $user->credit;
-					$canPayByCredit = true;
-					foreach($transaction->products as $product){
-						if($product->type == '\packages\financial\products\addingcredit'){
-							$canPayByCredit = false;
-							break;
-						}
-					}
-					if($credit < 1 or !$canPayByCredit){
-						throw new NotFound();
-					}
-					$view->setTransaction($transaction);
-					$view->setCredit($credit);
-					$this->response->setStatus(false);
-					if(http::is_post()){
-						$inputsRoles = array(
-							'credit' => array(
-								'type' => 'number',
-							)
-						);
-						try{
-							$inputs = $this->checkinputs($inputsRoles);
-							if($inputs['credit'] > 0 and $inputs['credit'] <= $transaction->payablePrice() and $inputs['credit'] <= $credit ){
-								if($transaction->addPay(array(
-									'method' => transaction_pay::credit,
-									'price' => $inputs['credit']
-								))){
-									$user->credit -= $inputs['credit'];
-									$user->save();
-									$this->response->setStatus(true);
-									$redirect = $this->redirectToConfig($transaction);
-									$this->response->Go($redirect ? $redirect : userpanel\url('transactions/view/'.$transaction->id));
-								}
-							}else{
-								throw new inputValidation('credit');
-							}
-						}catch(inputValidation $error){
-							$view->setFormError(FormError::fromException($error));
-						}
-					}else{
-						$view->setDataForm(min($transaction->payablePrice(), $credit), 'credit');
-						$this->response->setStatus(true);
-					}
-					$this->response->setView($view);
-				}else{
-					throw new NotFound;
-				}
-			}
-		}else{
+		$self = authentication::getUser();
+		$types = authorization::childrenTypes();
+		if($transaction->status != transaction::unpaid){
 			throw new NotFound;
 		}
+		$canPayByCredit = true;
+		foreach($transaction->products as $product){
+			if($product->type == '\packages\financial\products\addingcredit'){
+				$canPayByCredit = false;
+				break;
+			}
+		}
+		if(!$canPayByCredit){
+			throw new NotFound();
+		}
+		if(!in_array('credit', $this->getAvailablePayMethods($user->credit > 0 or ($types and $self->credit > 0)))){
+			throw new NotFound;			
+		}
+		$view = view::byName(payView\credit::class);
+		$view->setTransaction($transaction);
+		$this->response->setStatus(false);
+		if(http::is_post()){
+			$inputsRoles = [
+				'credit' => [
+					'type' => 'number',
+				]
+			];
+			if($types){
+				$inputsRoles['user'] = [
+					'type' => 'number',
+					'optional' => true,
+					'values' => [$user->id, $self->id]
+				];
+			}
+			try{
+				$inputs = $this->checkinputs($inputsRoles);
+				if($types){
+					switch($inputs['user']){
+						case($user->id):
+							$inputs['user'] = $user;
+							break;
+						case($self->id):
+							$inputs['user'] = $self;
+							break;
+					}
+				}else{
+					$inputs['user'] = $user;
+				}
+				if(!($inputs['credit'] > 0 and $inputs['credit'] <= $transaction->payablePrice() and $inputs['credit'] <= $inputs['user']->credit)){
+					throw new inputValidation('credit');
+				}
+				if($transaction->addPay(array(
+					'method' => transaction_pay::credit,
+					'price' => $inputs['credit'],
+					'params' => [
+						'user' => $inputs['user']->id
+					]
+				))){
+					$inputs['user']->credit -= $inputs['credit'];
+					$inputs['user']->save();
+					$this->response->setStatus(true);
+					$redirect = $this->redirectToConfig($transaction);
+					$this->response->Go($redirect ? $redirect : userpanel\url('transactions/view/'.$transaction->id));
+				}
+			}catch(inputValidation $error){
+				$view->setFormError(FormError::fromException($error));
+			}
+		}else{
+			$payer = (($types and $self->credit) ? $self : $user);
+			$view->setCredit($payer->credit);
+			$view->setDataForm($payer->id, 'user');
+			$view->setDataForm(min($transaction->payablePrice(), $payer->credit), 'credit');
+			$this->response->setStatus(true);
+		}
+		$this->response->setView($view);
 		return $this->response;
 	}
 	public function payByBankTransfer($data){

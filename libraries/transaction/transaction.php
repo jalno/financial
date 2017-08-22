@@ -47,7 +47,8 @@ class transaction extends dbObject{
 			return true;
 		}else{
 			$pay->transaction = $this->id;
-			return $pay->save();
+			$pay->save();
+			return $pay->id;
 		}
 	}
 	protected function payablePrice(){
