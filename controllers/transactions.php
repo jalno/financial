@@ -242,7 +242,8 @@ class transactions extends controller{
 				$inputsRoles['user'] = [
 					'type' => 'number',
 					'optional' => true,
-					'values' => [$user->id, $self->id]
+					'values' => [$user->id, $self->id],
+					'default' => $self->id
 				];
 			}
 			try{
