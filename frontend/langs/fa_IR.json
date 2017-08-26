@@ -173,6 +173,20 @@
 		"transaction.addingcredit.price": "مبلغ (ریال)",
 		"financial.transaction.pay.byCredit.user": "انتخاب کاربر پرداخت کننده",
 		"financial.transaction.pay.byCredit.user.owner": "پرداخت از موجودی کاربر",
-		"financial.transaction.pay.byCredit.user.my": "پرداخت از موجودی من"
+		"financial.transaction.pay.byCredit.user.my": "پرداخت از موجودی من",
+		"usertype.permissions.financial_settings_currencies_search": "جستجوی ارز ها در صورت حساب",
+		"usertype.permissions.financial_settings_currencies_add": "افزودن ارز در صورت حساب",
+		"usertype.permissions.financial_settings_currencies_edit": "ویرایش ارز در صورت حساب",
+		"usertype.permissions.financial_settings_currencies_delete": "حذف ارز در صورت حساب",
+		"settings.financial.currencies": "ارز ها",
+		"error.financial.settings.currency.notfound": "هیچ ارزی یافت نشد. بعد از افزودن ارز جدید، آن را در اینجا مشاهده خواهید کرد.",
+		"settings.financial.currency.add": "افزودن ارز",
+		"settings.financial.currency.edit": "ویرایش ارز",
+		"settings.financial.currency.delete": "حذف ارز",
+		"financial.settings.currency.title": "عنوان",
+		"financial.settings.currency.change": "تبدیل ارز",
+		"financial.settings.currency.price": "قیمت",
+		"financial.settings.currency": "ارز",
+		"financial.setting.currency.delete.warning": "لطفا دقت کنید هیچ راه برگشتی وجود ندارد، تمامی تبدیلات پاک خواهند شد ."
 	}
 }

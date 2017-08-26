@@ -248,6 +248,45 @@
 		{
 			"classes":["events\\transactions\\pay"],
 			"file":"libraries/events/transactions/pay.php"
+		},
+		{
+			"classes":["controllers\\settings\\currencies"],
+			"file":"controllers/settings/currencies.php"
+		},
+		{
+			"classes":["views\\settings\\currencies\\search"],
+			"file":"views/settings/currencies/search.php"
+		},
+		{
+			"classes":["Paramable"],
+			"file":"libraries/base/Paramable.php"
+		},
+		{
+			"classes":["currency"],
+			"file":"libraries/currencies/currency.php"
+		},
+		{
+			"classes":["currency\\param"],
+			"file":"libraries/currencies/param.php"
+		},
+		{
+			"classes":["currency\\rate"],
+			"file":"libraries/currencies/rate.php"
+		},
+		{
+			"classes":[
+				"views\\settings\\currencies\\add",
+				"views\\settings\\currencies\\currenciesTrait"
+			],
+			"file":"views/settings/currencies/add.php"
+		},
+		{
+			"classes":["views\\settings\\currencies\\edit"],
+			"file":"views/settings/currencies/edit.php"
+		},
+		{
+			"classes":["views\\settings\\currencies\\delete"],
+			"file":"views/settings/currencies/delete.php"
 		}
 	]
 }

@@ -106,5 +106,40 @@
 		"path": ["userpanel","transactions","config", {"type":"dynamic", "name":"id", "regex":"/^\\d+$/"}],
 		"controller": "controllers\\transactions@config",
 		"method":["get","post"]
+	},
+	{
+		"path": ["userpanel","settings", "financial", "currencies"],
+		"controller": "controllers\\settings\\currencies@search",
+		"method": "get"
+	},
+	{
+		"path": ["userpanel","settings", "financial", "currencies", "add"],
+		"controller": "controllers\\settings\\currencies@add",
+		"method": "get"
+	},
+	{
+		"path": ["userpanel","settings", "financial", "currencies", "add"],
+		"controller": "controllers\\settings\\currencies@store",
+		"method": "post"
+	},
+	{
+		"path": ["userpanel","settings", "financial", "currencies", "edit", {"type":"dynamic","name":"currency", "regex":"/^\\d+$/"}],
+		"controller": "controllers\\settings\\currencies@edit",
+		"method": "get"
+	},
+	{
+		"path": ["userpanel","settings", "financial", "currencies", "edit", {"type":"dynamic","name":"currency", "regex":"/^\\d+$/"}],
+		"controller": "controllers\\settings\\currencies@update",
+		"method": "post"
+	},
+	{
+		"path": ["userpanel","settings", "financial", "currencies", "delete", {"type":"dynamic","name":"currency", "regex":"/^\\d+$/"}],
+		"controller": "controllers\\settings\\currencies@delete",
+		"method": "get"
+	},
+	{
+		"path": ["userpanel","settings", "financial", "currencies", "delete", {"type":"dynamic","name":"currency", "regex":"/^\\d+$/"}],
+		"controller": "controllers\\settings\\currencies@terminate",
+		"method": "post"
 	}
 ]

@@ -15,6 +15,8 @@
 		{"type":"package", "name":"jquery-ui"},
 		{"type":"package", "name":"bootstrap"},
 		{"type":"package", "name":"webuilder"},
+		{"type":"package", "name":"jquery.growl"},
+		{"type":"package", "name":"bootstrap-inputmsg"},
 		{"type":"ts", "file":"assets/ts/Main.ts"}
 	],
 	"events":[
@@ -153,6 +155,26 @@
 			"name":"\\themes\\clipone\\views\\transactions\\product\\config",
 			"parent":"\\packages\\financial\\views\\transactions\\product\\config",
 			"file":"html/transactions/product/config.php"
+		},
+		{
+			"name":"\\themes\\clipone\\views\\financial\\settings\\currencies\\search",
+			"parent":"\\packages\\financial\\views\\settings\\currencies\\search",
+			"file":"html/settings/currencies/search.php"
+		},
+		{
+			"name":"\\themes\\clipone\\views\\financial\\settings\\currencies\\add",
+			"parent":"\\packages\\financial\\views\\settings\\currencies\\add",
+			"file":"html/settings/currencies/add.php"
+		},
+		{
+			"name":"\\themes\\clipone\\views\\financial\\settings\\currencies\\edit",
+			"parent":"\\packages\\financial\\views\\settings\\currencies\\edit",
+			"file":"html/settings/currencies/edit.php"
+		},
+		{
+			"name":"\\themes\\clipone\\views\\financial\\settings\\currencies\\delete",
+			"parent":"\\packages\\financial\\views\\settings\\currencies\\delete",
+			"file":"html/settings/currencies/delete.php"
 		}
 	]
 }

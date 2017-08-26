@@ -27,7 +27,12 @@ class usertype{
 			"settings_gateways_edit",
 			"settings_gateways_delete",
 
-			"transactions_product_config"
+			"transactions_product_config",
+
+			"settings_currencies_search",
+			"settings_currencies_add",
+			"settings_currencies_edit",
+			"settings_currencies_delete"
 
 		);
 		foreach($permissions as $permission){

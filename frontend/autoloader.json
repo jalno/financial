@@ -107,6 +107,22 @@
 		{
 			"classes":["views\\transactions\\product\\config"],
 			"file":"views/transactions/product/config.php"
+		},
+		{
+			"classes":["views\\financial\\settings\\currencies\\search"],
+			"file":"views/settings/currencies/search.php"
+		},
+		{
+			"classes":["views\\financial\\settings\\currencies\\add"],
+			"file":"views/settings/currencies/add.php"
+		},
+		{
+			"classes":["views\\financial\\settings\\currencies\\edit"],
+			"file":"views/settings/currencies/edit.php"
+		},
+		{
+			"classes":["views\\financial\\settings\\currencies\\delete"],
+			"file":"views/settings/currencies/delete.php"
 		}
 	]
 }
