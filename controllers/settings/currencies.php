@@ -1,6 +1,9 @@
 <?php
 namespace packages\financial\controllers\settings;
+use \packages\base\db;
 use \packages\base\NotFound;
+use \packages\base\translator;
+use \packages\base\view\error;
 use \packages\base\db\parenthesis;
 use \packages\base\views\FormError;
 use \packages\base\inputValidation;
@@ -10,6 +13,7 @@ use \packages\userpanel;
 use \packages\financial\view;
 use \packages\financial\usertype;
 use \packages\financial\controller;
+use \packages\financial\transaction;
 use \packages\financial\authorization;
 use \packages\financial\authentication;
 use \packages\financial\currency;
@@ -228,9 +232,17 @@ class currencies extends controller{
 			}
 			$currency->title = $inputs['title'];
 			if(isset($inputs['rates'])){
-				$ids = $inputs['ids'];
 				foreach($currency->rates as $rate){
-					if(!in_array($rate->id, $ids)){
+					if(!in_array($rate->changeTo->id, $inputs['ids'])){
+						$transaction = new transaction();
+						$changeTo = $rate->changeTo;
+						db::join('financial_transactions_products', 'financial_transactions_products.transaction=financial_transactions.id', "LEFT");
+						$transaction->where('financial_transactions.currency', $changeTo->id);
+						$transaction->where('financial_transactions.status', transaction::unpaid);
+						$transaction->where('financial_transactions_products.currency', $currency->id);
+						if($transaction->has()){
+							throw new dependenciesChangebleRateException($changeTo);
+						}
 						$rate->delete();
 					}
 				}
@@ -247,6 +259,11 @@ class currencies extends controller{
 			$view->setFormError(FormError::fromException($error));
 		}catch(duplicateRecord $error){
 			$view->setFormError(FormError::fromException($error));
+		}catch(dependenciesChangebleRateException $e){
+			$error = new error();
+			$error->setCode('financial.currencies.edit.dependenciesChangebleRateException');
+			$error->setMessage(translator::trans('error.financial.currencies.edit.dependenciesChangebleRateException', ['currency'=> $e->getCurrency()->title]));
+			$view->addError($error);
 		}
 		$view->setDataForm($this->inputsvalue($inputsRules));
 		$this->response->setView($view);
@@ -274,8 +291,27 @@ class currencies extends controller{
 		$view->setCurrency($currency);
 		try{
 			$this->response->setStatus(true);
+			$transaction = new transaction();
+			$transaction->where('currency', $currency->id);
+			if($transaction->has()){
+				throw new dependenciesTransactionException();
+			}
+			$userCurrency = $user->option('financial_transaction_currency');
+			if($userCurrency and $userCurrency == $currency->id){
+				throw new dependenciesUserCurrencyException();
+			}
 			$currency->delete();
 			$this->response->Go(userpanel\url('settings/financial/currencies'));
+		}catch(dependenciesTransactionException $e){
+			$this->response->setStatus(false);
+			$error = new error();
+			$error->setCode('financial.currencies.terminate.dependenciesTransactionException');
+			$view->addError($error);
+		}catch(dependenciesTransactionException $e){
+			$this->response->setStatus(false);
+			$error = new error();
+			$error->setCode('financial.currencies.terminate.dependenciesUserCurrencyException');
+			$view->addError($error);
 		}catch(inputValidation $error){
 			$this->response->setStatus(false);
 			$view->setFormError(FormError::fromException($error));
@@ -283,5 +319,16 @@ class currencies extends controller{
 		$view->setDataForm($this->inputsvalue($inputsRules));
 		$this->response->setView($view);
 		return $this->response;
+	}
+}
+class dependenciesTransactionException extends \Exception{}
+class dependenciesUserCurrencyException extends \Exception{}
+class dependenciesChangebleRateException extends \Exception{
+	private $currency;
+	public function __construct(currency $currency){
+		$this->currency = $currency;
+	}
+	public function getCurrency():currency{
+		return $this->currency;
 	}
 }

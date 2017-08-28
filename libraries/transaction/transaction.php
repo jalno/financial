@@ -1,8 +1,10 @@
 <?php
 namespace packages\financial;
+use \packages\base\options;
+use \packages\userpanel\user;
 use \packages\userpanel\date;
-use \packages\base\db\dbObject;
 use \packages\financial\events;
+use \packages\base\db\dbObject;
 class transaction extends dbObject{
 	const unpaid = 1;
 	const paid = 2;
@@ -16,14 +18,16 @@ class transaction extends dbObject{
 		'id' => array('type' => 'int'),
         'user' => array('type' => 'int', 'required' => true),
         'title' => array('type' => 'text', 'required' => true),
-        'price' => array('type' => 'int', 'required' => true),
+        'price' => array('type' => 'double', 'required' => true),
 		'create_at' => array('type' => 'int', 'required' => true),
 		'expire_at' => array('type' => 'int'),
 		'paid_at' => array('type' => 'int'),
+		'currency' => array('type' => 'int', 'required' => true),
 		'status' => array('type' => 'int', 'required' => true)
     );
 	protected $relations = array(
 		'user' => array('hasOne', 'packages\\userpanel\\user', 'user'),
+		'currency' => array('hasOne', 'packages\\financial\\currency', 'currency'),
 		'params' => array('hasMany', 'packages\\financial\\transaction_param', 'transaction'),
 		'products' => array('hasMany', 'packages\\financial\\transaction_product', 'transaction'),
 		'pays' => array('hasMany', 'packages\\financial\\transaction_pay', 'transaction')
@@ -52,7 +56,7 @@ class transaction extends dbObject{
 		}
 	}
 	protected function payablePrice(){
-		$payable = $this->price;
+		$payable = $this->totalPrice();
 		if($this->id){
 			unset($this->data['pays']);
 			foreach($this->pays as $pay){
@@ -95,6 +99,17 @@ class transaction extends dbObject{
 		if($data['status'] == self::unpaid and (!isset($data['expire_at']) or !$data['expire_at'])){
 			$data['expire_at'] = $data['create_at'] + (86400*2);
 		}
+		if(!isset($data['currency'])){
+			if(!$data['user'] instanceof dbObject){
+				$user = user::where('id', $data['user'])->getOne();
+			}else{
+				$user = $data['user'];
+			}
+			$data['currency'] = currency::getDefault($user);
+		}
+		if($data['currency'] instanceof dbObject){
+			$data['currency'] = $data['currency']->id;
+		}
 		$products = array();
 		if ($this->isNew){
 			$products = &$this->tmproduct;
@@ -103,7 +118,27 @@ class transaction extends dbObject{
 		}
 		$data['price'] = 0;
 		foreach($products as $product){
-			$data['price'] += (($product->price*$product->number) - $product->discount);
+			$price = $product->price;
+			$discount = $product->discount;
+			if(!$product->currency){
+				if(!$data['user'] instanceof dbObject){
+					$user = user::where('id', $data['user'])->getOne();
+				}else{
+					$user = $data['user'];
+				}
+				$product->currency = currency::getDefault($user);
+			}
+			if($data['currency'] != $product->currency->id){
+				$rate = new currency\rate();
+				$rate->where('currency', $product->currency->id);
+				$rate->where('changeTo', $data['currency']);
+				if(!$rate = $rate->getOne()){
+					throw new currency\UnChangableException($product->currency, $data['currency']);
+				}
+				$price *= $rate->price;
+				$discount *= $rate->price;
+			}
+			$data['price'] += (($price*$product->number) - $discount);
 		}
 		return $data;
 	}
@@ -190,4 +225,34 @@ class transaction extends dbObject{
 			$event->trigger();
 		}
 	}
+	public function afterPay(){
+		foreach($this->products as $product){
+			$currency = $this->currency;
+			$pcurrency = $product->currency;
+			if($pcurrency->id != $currency->id){
+				$rate = new currency\rate();
+				$rate->where('currency', $pcurrency->id);
+				$rate->where('changeTo', $currency->id);
+				$rate = $rate->getOne();
+				$product->price *= $rate->price;
+				$product->discount *= $rate->discount;
+				$product->currency = $currency->id;
+				$product->save();
+			}
+		}
+	}
+	public function totalPrice():float{
+		$currency = $this->currency;
+		$price = 0;
+		$needChange = false;
+		foreach($this->products as $product){
+			$pcurrency = $product->currency;
+			if($pcurrency->id != $currency->id){
+				$price += $pcurrency->changeTo($product->price * $product->number, $currency) - $product->discount;
+				$needChange = true;
+			}
+		}
+		return $needChange ? $price : $this->price;
+	}
 }
+class undefinedCurrencyException extends \Exception{}

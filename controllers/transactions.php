@@ -13,6 +13,7 @@ use \packages\userpanel;
 use \packages\userpanel\user;
 use \packages\userpanel\date;
 
+use \packages\financial\currency;
 use \packages\financial\authorization;
 use \packages\financial\authentication;
 use \packages\financial\controller;
@@ -129,12 +130,28 @@ class transactions extends controller{
 	}
 	function transaction_view($data){
 		$transaction = $this->getTransaction($data['id']);
-		if($view = view::byName("\\packages\\financial\\views\\transactions\\view")){
-			$view->setTransaction($transaction);
-			$this->response->setStatus(true);
-			$this->response->setView($view);
-			return $this->response;
+		$view = view::byName("\\packages\\financial\\views\\transactions\\view");
+		$view->setTransaction($transaction);
+		$this->response->setStatus(true);
+		try{
+			$currency = $transaction->currency;
+			$userCurrency = $transaction->user->option('financial_transaction_currency');
+			if($transaction->status == transaction::unpaid){
+				$transaction->currency = $userCurrency;
+				$transaction->price = $transaction->totalPrice();
+				$transaction->save();
+			}
+			$transaction->deleteParam('UnChangableException');
+		}catch(currency\UnChangableException $e){
+			$this->response->setStatus(false);
+			$error = new error();
+			$error->setCode('financial.transaction.currency.UnChangableException');
+			$view->addError($error);
+			$transaction->setParam('UnChangableException', true);
 		}
+		$this->response->setView($view);
+		return $this->response;
+		
 	}
 	private function getTransaction($id){
 		$types = authorization::childrenTypes();
@@ -184,12 +201,15 @@ class transactions extends controller{
 		}
 		return $methods;
 	}
-
-	public function pay($data){
+	private function getTransactionForPay($data):transaction{
 		$transaction = $this->getTransaction($data['transaction']);
-		if($transaction->status != transaction::unpaid){
+		if($transaction->status != transaction::unpaid or $transaction->param('UnChangableException')){
 			throw new NotFound;
 		}
+		return $transaction;
+	}
+	public function pay($data){
+		$transaction = $this->getTransactionForPay($data);
 		$types = authorization::childrenTypes();
 		$view = view::byName(payView::class);
 		$canPayByCredit = true;
@@ -209,7 +229,7 @@ class transactions extends controller{
 		return $this->response;
 	}
 	public function payByCredit($data){
-		$transaction = $this->getTransaction($data['transaction']);
+		$transaction = $this->getTransactionForPay($data);
 		$user = $transaction->user;
 		$self = authentication::getUser();
 		$types = authorization::childrenTypes();
@@ -292,7 +312,7 @@ class transactions extends controller{
 	public function payByBankTransfer($data){
 		if(in_array('banktransfer',$this->getAvailablePayMethods())){
 			if($view = view::byName("\\packages\\financial\\views\\transactions\\pay\\banktransfer")){
-				$transaction = $this->getTransaction($data['transaction']);
+				$transaction = $this->getTransactionForPay($data);
 				if($transaction->status == transaction::unpaid){
 					$view->setTransaction($transaction);
 					$view->setBankAccounts(bankaccount::where("status", 1)->get());
@@ -418,52 +438,68 @@ class transactions extends controller{
 	}
 	public function onlinePay($data){
 		if(in_array('onlinepay',$this->getAvailablePayMethods())){
+			$transaction = $this->getTransactionForPay($data);
 			$view = view::byName("\\packages\\financial\\views\\transactions\\pay\\onlinepay");
-			$transaction = $this->getTransaction($data['transaction']);
-			if($transaction->status == transaction::unpaid){
-				$payports = payport::where("status", payport::active)->get();
-				$view->setTransaction($transaction);
-				$view->setPayports($payports);
+			$payport = new payport();
+			$currency = $transaction->currency;
+			db::join('financial_payports_currencies', 'financial_payports_currencies.payport=financial_payports.id', "LEFT");
+			$payport->where('financial_payports_currencies.currency', $currency->id);
+			$payport->where('status', payport::active);
+			$payports = $payport->get(null, 'financial_payports.*');
+			$view->setTransaction($transaction);
+			$view->setPayports($payports);
 
-				$this->response->setStatus(false);
-				if(http::is_post()){
-					$inputsRoles = array(
-						'payport' => array(
-							'type' => 'number'
-						),
-						'price' => array(
-							'type' => 'number',
-						)
-					);
-					try{
-						$inputs = $this->checkinputs($inputsRoles);
-						if($payport = payport::byId($inputs['payport'])){
-							if($inputs['price'] > 0 and $inputs['price'] <= $transaction->payablePrice()){
-								$redirect = $payport->PaymentRequest($inputs['price'], $transaction);
-								if($redirect->method == redirect::get){
-									$this->response->Go($redirect->getURL());
-								}elseif($redirect->method == redirect::post){
-									$view = view::byName("\\packages\\financial\\views\\transactions\\pay\\onlinepay\\redirect");
-									$view->setTransaction($transaction);
-									$view->setRedirect($redirect);
-								}
-							}else{
-								throw new inputValidation("price");
-							}
-						}else{
-							throw new inputValidation("payport");
+			$this->response->setStatus(false);
+			if(http::is_post()){
+				$inputsRoles = array(
+					'payport' => array(
+						'type' => 'number'
+					),
+					'price' => array(
+						'type' => 'number',
+					)
+				);
+				try{
+					$inputs = $this->checkinputs($inputsRoles);
+					$payport = false;
+					foreach($payports as $payp){
+						if($inputs['payport'] == $payp->id){
+							$payport = $payp;
+							break;
 						}
-					}catch(inputValidation $error){
-						$view->setFormError(FormError::fromException($error));
 					}
-				}else{
-					$view->setDataForm($transaction->payablePrice(), 'price');
-					$this->response->setStatus(true);
+					if(!$payport){
+						throw new inputValidation("payport");
+					}
+					if(!$payport->getCurrency($transaction->currency->id)){
+						throw new payport\unSupportCurrencyTypeException($transaction->currency);
+					}
+					if($inputs['price'] > 0 and $inputs['price'] <= $transaction->payablePrice()){
+						$this->response->setStatus(true);
+						$redirect = $payport->PaymentRequest($inputs['price'], $transaction);
+						if($redirect->method == redirect::get){
+							$this->response->Go($redirect->getURL());
+						}elseif($redirect->method == redirect::post){
+							$view = view::byName("\\packages\\financial\\views\\transactions\\pay\\onlinepay\\redirect");
+							$view->setTransaction($transaction);
+							$view->setRedirect($redirect);
+						}
+					}else{
+						throw new inputValidation("price");
+					}
+				}catch(inputValidation $error){
+					$view->setFormError(FormError::fromException($error));
+				}catch(payport\unSupportCurrencyTypeException $e){
+					$error = new error();
+					$error->setCode('financial.transaction.payport.unSupportCurrencyTypeException');
+					$view->addError($error);
 				}
-				$this->response->setView($view);
+				$view->setDataForm($this->inputsvalue($inputsRoles));
 			}else{
-				throw new NotFound;
+				$view->setDataForm($transaction->payablePrice(), 'price');
+				$this->response->setStatus(true);
 			}
+			$this->response->setView($view);
 		}else{
 			throw new NotFound;
 		}
@@ -870,9 +906,6 @@ class transactions extends controller{
 				}
 				if($inputs['price'] <= 0){
 					throw new inputValidation('price');
-				}
-				if($inputs['price'] < 1000){
-					throw new unAcceptedPrice();
 				}
 				$transaction = new transaction;
 				$transaction->title = translator::trans("transaction.adding_credit");

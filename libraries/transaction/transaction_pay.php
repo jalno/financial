@@ -87,6 +87,7 @@ class transaction_pay extends dbObject{
 					$this->transaction->status = transaction::paid;
 					$this->transaction->expire_at = null;
 					$this->transaction->paid_at = time();
+					$this->transaction->afterPay();
 					$this->transaction->save();
 					$event = new events\transactions\pay($this->transaction);
 					$event->trigger();

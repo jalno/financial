@@ -23,13 +23,15 @@ class transaction_product extends dbObject{
 		'description' => array('type' => 'text'),
 		'type' => array('type' => 'text'),
 		'method' => array('type' => 'int'),
-		'price' => array('type' => 'int', 'required' => true),
-		'discount' => array('type' => 'int', 'required' => true),
+		'price' => array('type' => 'double', 'required' => true),
+		'discount' => array('type' => 'double', 'required' => true),
 		'number' => array('type' => 'int', 'required' => true),
+		'currency' => ['type' => 'int', 'required' => true],
 		'configure' => array('type' => 'bool', 'required' => true)
     );
 	protected $relations = array(
 		'transaction' => array('hasOne', 'packages\\financial\\transaction', 'transaction'),
+		'currency' => array('hasOne', 'packages\\financial\\currency', 'currency'),
 		'params' => array('hasMany', 'packages\\financial\\transactions_products_param', 'product')
 	);
 	function __construct($data = null, $connection = 'default'){

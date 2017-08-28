@@ -170,7 +170,7 @@
 		"error.financial.settings.bankaccount.notfound": "هیج حساب بانکی یافت نشد، به محض افزودن حساب بانکی جدید آن را در اینجا مشاهده خواهید کرد.",
 		"transaction.status.expired": "منقضی شده",
 		"error.financial.addingcredit.unAcceptedPrice": "مبلغ افزایش موجودی کمتر از حد مجاز پرداختی هست ",
-		"transaction.addingcredit.price": "مبلغ (ریال)",
+		"transaction.addingcredit.price": "مبلغ",
 		"financial.transaction.pay.byCredit.user": "انتخاب کاربر پرداخت کننده",
 		"financial.transaction.pay.byCredit.user.owner": "پرداخت از موجودی کاربر",
 		"financial.transaction.pay.byCredit.user.my": "پرداخت از موجودی من",
@@ -187,6 +187,11 @@
 		"financial.settings.currency.change": "تبدیل ارز",
 		"financial.settings.currency.price": "قیمت",
 		"financial.settings.currency": "ارز",
-		"financial.setting.currency.delete.warning": "لطفا دقت کنید هیچ راه برگشتی وجود ندارد، تمامی تبدیلات پاک خواهند شد ."
+		"financial.setting.currency.delete.warning": "لطفا دقت کنید هیچ راه برگشتی وجود ندارد، تمامی تبدیلات پاک خواهند شد .",
+		"error.financial.transaction.currency.UnChangableException": "صورت حساب شما در تبدیلات ارزی مشکل دارد . برای پیگیری و رفع خطا با ما تماس بگیرید.</br> از پرداخت صورت حساب جدا خودداری کنید.",
+		"error.financial.transaction.payport.unSupportCurrencyTypeException": "درگاه پرداختی نوع واحد پولی صورت حساب را پشتیبانی نمیکنید.",
+		"error.financial.currencies.terminate.dependenciesTransactionException": "صورت حساب هایی با این نوع واحد ارز وجود دارند، ابتدا صورتحساب ها را ویرایش کنید .",
+		"error.financial.currencies.edit.dependenciesChangebleRateException": "محصولاتی در صورت حساب ها نیاز به تبدیل ارز {currency} دارند .",
+		"error.financial.currencies.terminate.dependenciesUserCurrencyException": "کاربرانی با این نوع واحد ارز وجود دارند، ابتدا کابران را ویرایش کنید"
 	}
 }

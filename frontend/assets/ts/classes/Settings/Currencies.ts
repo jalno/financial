@@ -158,6 +158,18 @@ export default class Currencies{
 						}else{
 							$.growl.error($params);
 						}
+					}else if(error.hasOwnProperty('type') && error.type == 'fatal'){
+						const ErrorHtml = `
+							<div class="alert alert-block alert-danger ">
+								<button data-dismiss="alert" class="close" type="button">&times;</button>
+								<h4 class="alert-heading"><i class="fa fa-times-circle"></i> خطا</h4>
+								<p>${error.message}</p>
+							</div>
+						`;
+						if(!$('.errors .currencyError').length){
+							$('.errors').append('<div class="currencyError"></div>');
+						}
+						$('.errors .currencyError').html(ErrorHtml);
 					}else{
 						$.growl.error({
 							title:"خطا",

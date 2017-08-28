@@ -1,6 +1,7 @@
 <?php
 use \packages\base;
 use \packages\userpanel;
+use \packages\financial\currency;
 use \packages\financial\transaction;
 use \packages\financial\transaction_pay;
 use \packages\base\translator;
@@ -135,15 +136,25 @@ $this->the_header();
 						<?php
 						$x = 1;
 						foreach($this->transaction->products as $product){
-								?>
+							$currency = $this->transaction->currency;
+							$pcurrency = $product->currency;
+							$rate = false;
+							if($pcurrency->id != $currency->id){
+								$rate = new currency\rate();
+								$rate->where('currency', $pcurrency->id);
+								$rate->where('changeTo', $currency->id);
+								$rate = $rate->getOne();
+							}
+							$finalPrice = ($product->price * $product->number) - $product->discount;
+						?>
 							<tr>
 								<td><?php echo $x++; ?></td>
 								<td><?php echo $product->title; ?></td>
 								<td class="hidden-480"><?php echo $product->description; ?></td>
 								<td class="hidden-480"><?php echo $product->number; ?> عدد</td>
-								<td class="hidden-480"> <?php echo $product->price; ?> ریال</td>
-								<td class="hidden-480"> <?php echo $product->discount; ?> ریال</td>
-								<td><?php echo(($product->price*$product->number)-$product->discount); ?> ریال</td>
+								<td class="hidden-480"> <?php echo ($rate ? $product->price * $rate->price : $product->price).$currency->title; ?></td>
+								<td class="hidden-480"> <?php echo ($rate ? $product->discount * $rate->price : $product->discount).$currency->title; ?></td>
+								<td><?php echo ($rate ? $finalPrice * $rate->price : $finalPrice).$currency->title; ?></td>
 								<?php if($this->transaction->status == transaction::paid and !$product->configure){ ?>
 								<td><a href="<?php echo userpanel\url("transactions/config/".$product->id); ?>" class="btn btn-sm btn-teal"><i class="fa fa-cog"></i> <?php echo translator::trans("financial.configure"); ?></a></td>
 								<?php } ?>
@@ -222,10 +233,10 @@ $this->the_header();
 			<div class="row">
 				<div class="col-sm-12 invoice-block">
 					<ul class="list-unstyled amounts">
-						<li><strong>جمع کل:</strong> <?php echo(number_format($this->transaction->price)); ?> ریال</li>
-						<li><strong>تخفیف:</strong><?php echo(number_format($this->Discounts())); ?> ریال</li>
-						<li><strong>مالیات:</strong> 0 ریال</li>
-						<li><strong>مبلغ قابل پرداخت:</strong><?php echo(number_format($this->transaction->payablePrice())); ?> ریال</li>
+						<li><strong>جمع کل:</strong> <?php echo(number_format($this->transaction->price).$currency->title); ?></li>
+						<li><strong>تخفیف:</strong><?php echo(number_format($this->Discounts()).$currency->title); ?></li>
+						<li><strong>مالیات:</strong> 0 <?php echo $currency->title; ?></li>
+						<li><strong>مبلغ قابل پرداخت:</strong><?php echo(number_format($this->transaction->payablePrice()).$currency->title); ?></li>
 					</ul>
 					<br>
 					<a onclick="javascript:window.print();" class="btn btn-lg btn-teal hidden-print">چاپ<i class="fa fa-print"></i></a>

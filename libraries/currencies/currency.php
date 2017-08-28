@@ -1,7 +1,8 @@
 <?php
 namespace packages\financial;
-use \packages\base\db\dbObject;
+use \packages\userpanel\user;
 use \packages\userpanel\date;
+use \packages\base\db\dbObject;
 class currency extends dbObject{
 	use Paramable;
 	protected $dbTable = "financial_currencies";
@@ -40,14 +41,38 @@ class currency extends dbObject{
 			}
 		}
 	}
-	public function hasRate():bool{
+	public function hasRate(int $with = 0):bool{
 		$rate = new currency\rate();
 		$rate->where('currency', $this->id);
+		if($with){
+			$rate->where('changeTo', $with);
+		}
 		return $rate->has();
+	}
+	public function changeTo(float $price, currency $other):float{
+		$rate = new currency\rate();
+		$rate->where('currency', $this->id);
+		$rate->where('changeTo', $other->id);
+		if(!$rate = $rate->getOne()){
+			throw new currency\UnChangableException($other, $this);
+		}
+		return $price * $rate->price;
 	}
 	public function getCountRates():int{
 		$rate = new currency\rate();
 		$rate->where('currency', $this->id);
 		return $rate->count();
+	}
+	public static function getDefault(user $user):currency{
+		$currency = $user->option('financial_transaction_currency');
+		if(!$currency){
+			if(!$currency = options::get('packages.financial.defaultCurrency')){
+				throw new currency\undefinedCurrencyException();
+			}
+			$user->option('financial_transaction_currency', $currency);
+		}
+		$return  = new currency();
+		$return->where('id', $currency);
+		return $return->getOne();
 	}
 }
