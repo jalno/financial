@@ -119,7 +119,10 @@
 			"file":"libraries/payports/pay_param.php"
 		},
 		{
-			"classes":["payport\\gateway"],
+			"classes":[
+				"payport\\gateway",
+				"payport\\unSupportCurrencyTypeException"
+			],
 			"file":"libraries/payports/gateway.php"
 		},
 		{
@@ -275,6 +278,14 @@
 		},
 		{
 			"classes":[
+				"currency\\currencyException",
+				"currency\\UnChangableException",
+				"currency\\undefinedCurrencyException"
+			],
+			"file":"libraries/currencies/Exceptions.php"
+		},
+		{
+			"classes":[
 				"views\\settings\\currencies\\add",
 				"views\\settings\\currencies\\currenciesTrait"
 			],
@@ -287,6 +298,14 @@
 		{
 			"classes":["views\\settings\\currencies\\delete"],
 			"file":"views/settings/currencies/delete.php"
+		},
+		{
+			"classes":["listeners\\userpanel\\settings"],
+			"file":"listeners/userpanel/settings.php"
+		},
+		{
+			"classes":["controllers\\userpanel\\settings"],
+			"file":"controllers/userpanel/settings.php"
 		}
 	]
 }
