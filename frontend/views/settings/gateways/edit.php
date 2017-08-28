@@ -52,4 +52,14 @@ class edit extends editView{
 		}
 		return $numbers;
 	}
+	protected function getCurrenciesForSelect():array{
+		$currencies = [];
+		foreach($this->getCurrencies() as $currency){
+			$currencies[] = [
+				'label' => $currency->title,
+				'value' => $currency->id
+			];
+		}
+		return $currencies;
+	}
 }

@@ -52,4 +52,14 @@ class add extends addView{
 		);
 		return $options;
 	}
+	protected function getCurrenciesForSelect():array{
+		$currencies = [];
+		foreach($this->getCurrencies() as $currency){
+			$currencies[] = [
+				'label' => $currency->title,
+				'value' => $currency->id
+			];
+		}
+		return $currencies;
+	}
 }

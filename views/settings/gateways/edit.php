@@ -21,8 +21,15 @@ class edit extends form{
 				break;
 			}
 		}
+		$this->setDataForm(array_column($gateway->getCurrencies(), 'currency'), 'currency');
 	}
 	protected function getGateway(){
 		return $this->getData('gateway');
+	}
+	public function setCurrencies(array $currencies){
+		$this->setData($currencies, 'currencies');
+	}
+	protected function getCurrencies():array{
+		return $this->getData('currencies');
 	}
 }

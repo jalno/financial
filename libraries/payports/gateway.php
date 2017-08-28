@@ -30,3 +30,10 @@ class VerificationException extends \Exception{}
 class AlreadyVerified extends VerificationException{
 	protected $message = 'alreadyverified';
 }
+class unSupportCurrencyTypeException extends \Exception{
+	private $currency;
+	public function __construct($currency, string $message = ''){
+		$this->currency = $currency;
+		parent::__construct($message);
+	}
+}

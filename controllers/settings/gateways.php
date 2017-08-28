@@ -18,6 +18,7 @@ use \packages\userpanel\user;
 use \packages\userpanel\date;
 
 use \packages\financial\view;
+use \packages\financial\currency;
 use \packages\financial\authentication;
 use \packages\financial\controller;
 use \packages\financial\authorization;
@@ -121,6 +122,7 @@ class gateways extends controller{
 		$gateways = new gatewaysEvent();
 		events::trigger($gateways);
 		$view->setGateways($gateways);
+		$view->setCurrencies(currency::get());
 		if(http::is_post()){
 			$inputsRules = array(
 				'title' => array(
@@ -133,11 +135,30 @@ class gateways extends controller{
 				'status' => array(
 					'type' => 'number',
 					'values' => array(gateway::active, gateway::deactive)
-				)
+				),
+				'currency' => [
+					'optional' => true
+				]
 			);
 			$this->response->setStatus(true);
 			try{
 				$inputs = $this->checkinputs($inputsRules);
+				if(isset($inputs['currency'])){
+					if($inputs['currency']){
+						if(!is_array($inputs['currency'])){
+							throw new inputValidation('currency');
+						}
+					}else{
+						unset($inputs['currency']);
+					}
+				}
+				if(isset($inputs['currency'])){
+					foreach($inputs['currency'] as $key => $currency){
+						if(!currency::byId($currency)){
+							throw new inputValidation("currency[{$key}]");
+						}
+					}
+				}
 				$gateway =  $gateways->getByName($inputs['gateway']);
 				if($GRules = $gateway->getInputs()){
 					$GRules = $inputsRules = array_merge($inputsRules, $GRules);
@@ -156,6 +177,11 @@ class gateways extends controller{
 					}
 				}
 				$gatewayObj->save();
+				if(isset($inputs['currency'])){
+					foreach($inputs['currency'] as $currency){
+						$gatewayObj->setCurrency($currency);
+					}
+				}
 				$this->response->setStatus(true);
 				$this->response->Go(userpanel\url('settings/financial/gateways/edit/'.$gatewayObj->id));
 			}catch(inputValidation $error){
@@ -200,6 +226,7 @@ class gateways extends controller{
 		events::trigger($gateways);
 		$view->setGateways($gateways->get());
 		$view->setGateway($gatewayObj);
+		$view->setCurrencies(currency::get());
 		if(http::is_post()){
 			$inputsRules = array(
 				'title' => array(
@@ -212,11 +239,30 @@ class gateways extends controller{
 				'status' => array(
 					'type' => 'number',
 					'values' => array(gateway::active, gateway::deactive)
-				)
+				),
+				'currency' => [
+					'optional' => true
+				]
 			);
 			$this->response->setStatus(true);
 			try{
 				$inputs = $this->checkinputs($inputsRules);
+				if(isset($inputs['currency'])){
+					if($inputs['currency']){
+						if(!is_array($inputs['currency'])){
+							throw new inputValidation("currency");
+						}
+					}else{
+						unset($inputs['currency']);
+					}
+				}
+				if(isset($inputs['currency'])){
+					foreach($inputs['currency'] as $key => $currency){
+						if(!currency::byId($currency)){
+							throw new inputValidation("currency[{$key}]");
+						}
+					}
+				}
 				$gateway =  $gateways->getByName($inputs['gateway']);
 				if($GRules = $gateway->getInputs()){
 					$GRules = $inputsRules = array_merge($inputsRules, $GRules);
@@ -231,6 +277,19 @@ class gateways extends controller{
 				foreach($gateway->getInputs() as $input){
 					if(isset($ginputs[$input['name']])){
 						$gatewayObj->setParam($input['name'],$ginputs[$input['name']]);
+					}
+				}
+				
+				if(isset($inputs['currency'])){
+					foreach($gatewayObj->getCurrencies() as $currency){
+						if(($key = array_search($currency['currency'], $inputs['currency'])) !== false){
+							unset($inputs['currency'][$key]);
+						}else{
+							$gatewayObj->deleteCurrency($currency['currency']);
+						}
+					}
+					foreach($inputs['currency'] as $key => $currency){
+						$gatewayObj->setCurrency($currency);
 					}
 				}
 				$gatewayObj->save();

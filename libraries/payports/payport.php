@@ -1,5 +1,6 @@
 <?php
 namespace packages\financial;
+use \packages\base\db;
 use \packages\base\db\dbObject;
 use \packages\financial\payport\param;
 
@@ -126,5 +127,25 @@ class payport extends dbObject{
 			}
 			return false;
 		}
+	}
+	public function setCurrency(int $currency){
+		db::insert('financial_payports_currencies', [
+			'currency' => $currency,
+			'payport' => $this->id
+		]);
+	}
+	public function getCurrency(int $currency){
+		db::where('payport', $this->id);
+		db::where('currency', $currency);
+		return db::getOne('financial_payports_currencies');
+	}
+	public function getCurrencies(){
+		db::where('payport', $this->id);
+		return db::get('financial_payports_currencies', null, 'financial_payports_currencies.*');
+	}
+	public function deleteCurrency(int $currency){
+		db::where('payport', $this->id);
+		db::where('currency', $currency);
+		return db::delete('financial_payports_currencies');
 	}
 }

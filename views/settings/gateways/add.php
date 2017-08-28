@@ -9,4 +9,10 @@ class add extends form{
 	protected function getGateways(){
 		return $this->getData('gateways');
 	}
+	public function setCurrencies(array $currencies){
+		$this->setData($currencies, 'currencies');
+	}
+	protected function getCurrencies():array{
+		return $this->getData('currencies');
+	}
 }
