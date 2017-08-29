@@ -44,7 +44,7 @@ class currency extends dbObject{
 	public function hasRate(int $with = 0):bool{
 		$rate = new currency\rate();
 		$rate->where('currency', $this->id);
-		if($with){
+		if($with > 0){
 			$rate->where('changeTo', $with);
 		}
 		return $rate->has();

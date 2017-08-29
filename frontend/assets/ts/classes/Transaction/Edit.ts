@@ -15,15 +15,17 @@ export default class Edit{
 	}
 	private static productEditListener(){
 		$(".product-table .product-edit").on('click', function(){
-			let tr = $(this).parents("tr");
-			let product = tr.data('product');
-			let ModalEditProduct = $("#product-edit");
+			const tr = $(this).parents("tr");
+			const product = tr.data('product');
+			console.log(product);
+			const ModalEditProduct = $("#product-edit");
 			$("input[name=product]", ModalEditProduct).val(product.id);
 			$("input[name=product_title]", ModalEditProduct).val(product.title);
 			$("textarea[name=description]", ModalEditProduct).val(product.description);
 			$("input[name=number]", ModalEditProduct).val(product.number);
 			$("input[name=product_price]", ModalEditProduct).val(product.price);
 			$("input[name=discount]", ModalEditProduct).val(product.discount);
+			$("select[name=product_currency]", ModalEditProduct).val(product.currency);
 			Edit.link = $(".product-delete").attr("href");
 		});
 	};
@@ -57,15 +59,18 @@ export default class Edit{
 		if(!product.discount){
 			product.discount = 0;
 		}
-		var finalPrice = ((product.price*product.number)-product.discount);
-		var code = '<tr data-product=\''+JSON.stringify(product)+'\'>';
-		code += '<td>'+(Edit.productId)+'</td>';
-		code += '<td>'+product.title+'</td>';
-		code += '<td>'+product.description+'</td>';
-		code += '<td>'+product.number+' عدد</td>';
-		code += '<td>'+product.price+' ریال</td>';
-		code += '<td>'+product.discount+' ریال</td>';
-		code += '<td>'+finalPrice+' ریال</td> <td class="center">';
+		const finalPrice = ((product.price*product.number)-product.discount);
+		let code = `
+			<tr data-product='${JSON.stringify(product)}'>
+				<td>${Edit.productId}</td>
+				<td>${product.title}</td>
+				<td>${product.description}</td>
+				<td>${product.number} عدد</td>
+				<td>${product.price} ${product.currency_title}</td>
+				<td>${product.discount} ${product.currency_title}</td>
+				<td>${finalPrice} ${product.currency_title}</td>
+				<td class="center">
+		`;
 		let clas:string = '';
 		if(product.id){
 			Edit.link = Router.url("userpanel/transactions/product/delete/" + product.id);
@@ -88,9 +93,10 @@ export default class Edit{
 				description: $("textarea[name=description]", this).val(),
 				number: $("input[name=number]", this).val(),
 				price: $("input[name=product_price]", this).val(),
-				discount: $("input[name=discount]", this).val()
+				discount: $("input[name=discount]", this).val(),
+				currency: $("select[name=product_currency] option:selected", this).val(),
+				currency_title: $("select[name=product_currency] option:selected", this).data('title')
 			}
-			console.log(this);
 			$("tbody > tr", Edit.table).each(function(){
 				$(this).data('product', newdata);
 				return false;
@@ -100,9 +106,10 @@ export default class Edit{
 		});
 	}
 	private static serialize(){
-		var info = {
+		let info = {
 			title: $('input[name=title]', Edit.$form).val(),
 			user: $('input[name=user]', Edit.$form).val(),
+			currency: $('select[name=currency] option:selected', Edit.$form).val(),
 			products: []
 		}
 		$("tbody > tr", Edit.table).each(function(){
@@ -136,7 +143,6 @@ export default class Edit{
 						title:"موفق",
 						message:"انجام شد ."
 					});
-					window.location.href = data.redirect;
 				},
 				error: function(error:webuilder.AjaxError){
 					if(error.error == 'data_duplicate' || error.error == 'data_validation'){
@@ -153,6 +159,18 @@ export default class Edit{
 						}else{
 							$.growl.error($params);
 						}
+					}else if(error.hasOwnProperty('type') && error.type == 'fatal'){
+						const ErrorHtml = `
+							<div class="alert alert-block alert-danger ">
+								<button data-dismiss="alert" class="close" type="button">&times;</button>
+								<h4 class="alert-heading"><i class="fa fa-times-circle"></i> خطا</h4>
+								<p>${error.message}</p>
+							</div>
+						`;
+						if(!$('.errors .currencyError').length){
+							$('.errors').append('<div class="currencyError"></div>');
+						}
+						$('.errors .currencyError').html(ErrorHtml);
 					}else{
 						$.growl.error({
 							title:"خطا",

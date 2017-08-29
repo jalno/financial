@@ -18,7 +18,7 @@ export default class Add{
 		}
 	}
 	private static addProductTocode(product){
-		//product.title, product.price, product.number, product.discount, product.desc
+		//product.title, product.price, product.number, product.discount, product.desc, product.currency, product.currency_title
 		if(!product.number.length){
 			product.number = 1;
 		}
@@ -28,18 +28,21 @@ export default class Add{
 		if(!product.discount.length){
 			product.discount = 0;
 		}
-		let finalPrice = (product.number*product.price)-product.discount;
-		let $table = Add.getProductsCode();
-		let id = $('tr', $table).length;
-		let code = '<tr>';
-		code += '<td>'+id+'</td>';
-		code += '<td>'+product.title+'</td>';
-		code += '<td>'+product.description+'</td>';
-		code += '<td>'+product.number+' عدد</td>';
-		code += '<td>'+product.price+' ریال</td>';
-		code += '<td>'+product.discount+' ریال</td>';
-		code += '<td>'+finalPrice+' ریال</td> <td><a href="#" class="btn btn-xs btn-bricky btn-remove tooltips" title="حذف"><i class="fa fa-times fa fa-white"></i></a></td> </tr>';
-		let $row = $(code).appendTo($('tbody', $table));
+		const finalPrice = (product.number*product.price)-product.discount;
+		const $table = Add.getProductsCode();
+		const id = $('tr', $table).length;
+		const code = `
+			<tr>
+				<td>${id}/td>
+				<td>${product.title}</td>
+				<td>${product.description}</td>
+				<td>${product.number} عدد</td>
+				<td>${product.price} ${product.currency_title}</td>
+				<td>${product.discount} ${product.currency_title}</td>
+				<td>${finalPrice} ${product.currency_title}</td> <td><a href="#" class="btn btn-xs btn-bricky btn-remove tooltips" title="حذف"><i class="fa fa-times fa fa-white"></i></a></td>
+			</tr>
+		`
+		const $row = $(code).appendTo($('tbody', $table));
 		$row.data(product);
 		$(".btn-remove", $row ).click(Add.productRemove);
 		$table.css("display", "table");
@@ -67,7 +70,7 @@ export default class Add{
 			create_at: $('input[name=create_at]', Add.$form).val(),
 			expire_at: $('input[name=expire_at]', Add.$form).val(),
 			notification: $('input[name=notification]', Add.$form).val(),
-			notification_support: $('input[name=expire_at]', Add.$form).val(),
+			notification_support: $('input[name=notification_support]', Add.$form).val(),
 			products: []
 		}
 		$(".product-table tbody > tr").each(function(){
@@ -115,12 +118,14 @@ export default class Add{
 	private static transactionProduct() {
 		$('#addproductform').on('submit', function(e){
 			e.preventDefault();
-			var product = {
+			const product = {
 				title: $('input[name=product_title]', this).val(),
 				description: $('input[name=description]', this).val(),
 				number: $('input[name=number]', this).val(),
 				price: $('input[name=price]', this).val(),
-				discount: $('input[name=discount]', this).val()
+				discount: $('input[name=discount]', this).val(),
+				currency: $('select[name=currency] option:selected', this).val(),
+				currency_title: $('select[name=currency] option:selected', this).data('title')
 			}
 			$(this).parents(".modal").modal("hide");
 			$(".no-product").hide();

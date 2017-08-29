@@ -152,6 +152,12 @@ $this->the_header();
 					'type' => 'number',
 					'label' => translator::trans("transaction.add.discount"),
 					'ltr' => true
+				],
+				[
+					'name' => 'currency',
+					'type' => 'select',
+					'label' => translator::trans("financial.settings.currency"),
+					'options' => $this->getCurrenciesForSelect()
 				]
 			];
 			foreach($feilds as $input){

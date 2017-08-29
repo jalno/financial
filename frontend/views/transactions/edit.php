@@ -121,4 +121,17 @@ class edit extends transactionsEdit{
 			}
 		}
 	}
+	protected function getCurrenciesForSelect():array{
+		$currencies = [];
+		foreach($this->getCurrencies() as $currency){
+			$currencies[] = [
+				'title' => $currency->title,
+				'value' => $currency->id,
+				'data' => [
+					'title' => $currency->title
+				]
+			];
+		}
+		return $currencies;
+	}
 }

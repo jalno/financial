@@ -22,4 +22,10 @@ class edit extends form{
 	public function getTransactionData():transaction{
 		return $this->getData('transaction');
 	}
+	public function setCurrencies(array $currencies){
+		$this->setData($currencies, 'currencies');
+	}
+	protected function getCurrencies():array{
+		return $this->getData('currencies');
+	}
 }

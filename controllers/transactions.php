@@ -594,12 +594,17 @@ class transactions extends controller{
 		$transaction = $this->checkData($data);
 
 		$view->setTransactionData($transaction);
+		$view->setCurrencies(currency::get());
 		$inputsRules = [
 			'title' => [
 				'type' => 'string',
 				'optional' => true
 			],
 			'user' => [
+				'type' => 'number',
+				'optional' => true
+			],
+			'currency' => [
 				'type' => 'number',
 				'optional' => true
 			],
@@ -616,6 +621,13 @@ class transactions extends controller{
 						throw new inputValidation("user");
 					}
 				}
+				if(isset($inputs['currency'])){
+					if(!$inputs['currency'] = currency::byId($inputs['currency'])){
+						throw new inputValidation('currency');
+					}
+				}else{
+					$inputs['currency'] = $transaction->currency;
+				}
 				if(isset($inputs['products'])){
 					if(!is_array($inputs['products'])){
 						throw new inputValidation('products');
@@ -626,19 +638,26 @@ class transactions extends controller{
 								throw new inputValidation("product");
 							}
 						}
+						foreach(['price', 'currency'] as $item){
+							if(!isset($product[$item])){
+								throw new inputValidation("product_{$item}");
+							}
+						}
+						if(isset($product['discount']) and $product['discount'] < 0){
+							throw new inputValidation('discount');
+						}
 						if($product['price'] < 0){
-							throw new inputValidation("price");
+							throw new inputValidation('product_price');
 						}
-						if($product['discount'] < 0){
-							throw new inputValidation("discount");
+						if(!$product['currency'] = currency::byId($product['currency'])){
+							throw new inputValidation("product_currency");
 						}
-
+						if($inputs['currency']->id != $product['currency']->id and !$product['currency']->hasRate($inputs['currency']->id)){
+							throw new currency\UnChangableException($product['currency'], $inputs['currency']);
+						}
 					}
 				}
 				if(isset($inputs['products'])){
-					if(!is_array($inputs['products'])){
-						throw new inputValidation('products');
-					}
 					foreach($inputs['products'] as $row){
 						if(isset($row['id'])){
 							$product = transaction_product::byId($row['id']);
@@ -652,14 +671,17 @@ class transactions extends controller{
 						$product->number = $row['number'];
 						$product->price = $row['price'];
 						$product->discount = $row['discount'];
+						$product->currency = $row['currency'];
 						$product->save();
-
 					}
 				}
 				foreach(['title', 'user'] as $item){
 					if(isset($inputs[$item])){
 						$transaction->$item = $inputs[$item];
 					}
+				}
+				if(isset($inputs['currency'])){
+					$transaction->currency = $inputs['currency']->id;
 				}
 				if(isset($inputs['description'])){
 					$transaction->setparam('description', $inputs['description']);
@@ -673,9 +695,16 @@ class transactions extends controller{
 				$event = new events\transactions\edit($transaction);
 				$event->trigger();
 				$this->response->setStatus(true);
-				$this->response->Go(userpanel\url('transactions/edit/'.$transaction->id));
 			}catch(inputValidation $error){
 				$view->setFormError(FormError::fromException($error));
+			}catch(currency\UnChangableException $e){
+				$error = new error();
+				$error->setCode('financial.transaction.edit.currency.UnChangableException');
+				$error->setMessage(translator::trans('error.financial.transaction.edit.currency.UnChangableException', [
+					'currency' => $e->getCurrency()->title,
+					'changeTo' => $e->getChangeTo()->title
+				]));
+				$view->addError($error);
 			}
 		}else{
 			$this->response->setStatus(true);
@@ -685,6 +714,7 @@ class transactions extends controller{
 	}
 	public function add(){
 		$view = view::byName("\\packages\\financial\\views\\transactions\\add");
+		$view->setCurrencies(currency::get());
 		authorization::haveOrFail('transactions_add');
 		$inputsRules = array(
 			'title' => array(
@@ -712,6 +742,7 @@ class transactions extends controller{
 				if(!$inputs['user']){
 					throw new inputValidation("user");
 				}
+				$inputs['currency'] = currency::getDefault($inputs['user']);
 				if($inputs['create_at'] <= 0){
 					throw new inputValidation("create_at");
 				}
@@ -725,6 +756,13 @@ class transactions extends controller{
 					}
 					if(!isset($product['price']) or $product['price'] <= 0){
 						throw new inputValidation("products[$x][price]");
+					}
+					if(isset($product['currency'])){
+						if(!$product['currency'] = currency::byId($product['currency'])){
+							throw new inputValidation("products[$x][currency]");
+						}
+					}else{
+						$inputs['products'][$x]['currency'] = $inputs['currency'];
 					}
 					if(isset($product['discount'])){
 						if($product['discount'] < 0){
@@ -740,25 +778,19 @@ class transactions extends controller{
 					}else{
 						$product['number'] = 1;
 					}
-					$products[] = array(
-						'title' => $product['title'],
-						'price' => $product['price'],
-						'discount' => $product['discount'],
-						'description' => $product['description'],
-						'number' => $product['number'],
-						'method' => transaction_product::other
-					);
-
+					$product['currency'] = $product['currency']->id;
+					$product['method'] = transaction_product::other;
+					$products[] = $product;
 				}
 
 				$transaction = new transaction;
 				foreach($products as $product){
 					$transaction->addProduct($product);
 				}
-				$transaction->title = $inputs['title'];
 				$transaction->user = $inputs['user']->id;
-				$transaction->create_at = $inputs['create_at'];
-				$transaction->expire_at = $inputs['expire_at'];
+				foreach(['title', 'create_at', 'currency'] as $item){
+					$transaction->$item = $inputs[$item];
+				}
 
 				$transaction->save();
 				if(isset($inputs['description'])){

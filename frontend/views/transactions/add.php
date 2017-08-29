@@ -45,14 +45,17 @@ class add extends transactionsAdd{
 		breadcrumb::addItem($item);
 		navigation::active("transactions/list");
 	}
-	protected function getProductsForSelect(){
-		$products = [];
-		foreach($this->getProducts() as $product){
-			$products[] = [
-				'title' => $product->getTitle(),
-				'value' => $product->getName()
+	protected function getCurrenciesForSelect():array{
+		$currencies = [];
+		foreach($this->getCurrencies() as $currency){
+			$currencies[] = [
+				'title' => $currency->title,
+				'value' => $currency->id,
+				'data' => [
+					'title' => $currency->title
+				]
 			];
 		}
-		return $products;
+		return $currencies;
 	}
 }
