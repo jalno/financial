@@ -306,6 +306,18 @@
 		{
 			"classes":["controllers\\userpanel\\settings"],
 			"file":"controllers/userpanel/settings.php"
+		},
+		{
+			"classes":["processes\\transactions"],
+			"file":"processes/transactions.php"
+		},
+		{
+			"classes":["events\\transactions\\reminder"],
+			"file":"libraries/events/transactions/reminder.php"
+		},
+		{
+			"classes":["listeners\\cronjob"],
+			"file":"listeners/cronjob.php"
 		}
 	]
 }

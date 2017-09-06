@@ -34,6 +34,9 @@
 		"sms.template.name.financial_transaction_expire":"منقضی شدن صورتحساب در بخش مالی",
 		"email.template.name.financial_transaction_pay":"پرداخت صورتحساب در بخش مالی",
 		"sms.template.name.financial_transaction_pay":"پرداخت صورتحساب در بخش مالی",
-		"financial.usersettings.transaction.currency": "واحد پول"
+		"financial.usersettings.transaction.currency": "واحد پول",
+		"cronjob.task.name.financial_task_reminder": "یادآور پرداخت صورتحساب ها",
+		"email.template.name.financial_transaction_reminder": "یادآور پرداخت صورتحساب ها در بخش مالی",
+		"sms.template.name.financial_transaction_reminder": "یادآور پرداخت صورتحساب ها در بخش مالی"
 	}
 }
