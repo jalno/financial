@@ -18,14 +18,16 @@ $this->the_header();
 				<form class="currency-edit-form" action="<?php echo userpanel\url("settings/financial/currencies/edit/{$this->currency->id}"); ?>" method="post">
 					<div class="row">
 						<div class="col-sm-6">
-							<?php
-							$this->createField(array(
+							<?php $this->createField(array(
 								'name' => 'title',
 								'label' => translator::trans("financial.settings.currency.title")
-							));
-							?>
-							<?php
-							$this->createField(array(
+							)); ?>
+							<?php $this->createField(array(
+								'name' => 'update_at',
+								'label' => translator::trans("financial.settings.currency.update_at"),
+								'ltr' => true
+							)); ?>
+							<?php $this->createField(array(
 								'name' => 'change',
 								'type' => 'checkbox',
 								'options' => [
@@ -37,8 +39,7 @@ $this->the_header();
 										]
 									]
 								]
-							));
-							?>
+							)); ?>
 						</div>
 						<div class="col-sm-6">
 							<div class="panel panel-white" data-currencies='<?php echo json\encode($this->geCurrenciesForSelect()); ?>'>

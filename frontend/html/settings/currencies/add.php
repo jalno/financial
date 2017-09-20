@@ -18,12 +18,15 @@ $this->the_header();
 				<form class="currency-add-form" action="<?php echo userpanel\url('settings/financial/currencies/add'); ?>" method="post">
 					<div class="row">
 						<div class="col-sm-6">
-							<?php
-							$this->createField(array(
+							<?php $this->createField(array(
 								'name' => 'title',
 								'label' => translator::trans("financial.settings.currency.title")
-							));
-							?>
+							)); ?>
+							<?php $this->createField(array(
+								'name' => 'update_at',
+								'label' => translator::trans("financial.settings.currency.update_at"),
+								'ltr' => true
+							)); ?>
 							<?php
 							$this->createField(array(
 								'name' => 'change',

@@ -1,5 +1,6 @@
 <?php
 namespace themes\clipone\views\financial\settings\currencies;
+use \packages\userpanel\date;
 use \packages\base\translator;
 use \themes\clipone\viewTrait;
 use \themes\clipone\navigation;
@@ -17,6 +18,12 @@ class add extends currenciesADD{
 		navigation::active("settings/financial/currencies");
 		$this->addBodyClass('financial-settings');
 		$this->addBodyClass('currencies-add');
+		$this->setFormData();
+	}
+	private function setFormData(){
+		if(!$this->getDataForm('update_at')){
+			$this->setDataForm(date::format('Y/m/d H:i:s'), 'update_at');
+		}
 	}
 	protected function geCurrenciesForSelect():array{
 		$currencies = [];

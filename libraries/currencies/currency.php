@@ -9,7 +9,8 @@ class currency extends dbObject{
 	protected $dbTable = "financial_currencies";
 	protected $primaryKey = "id";
 	protected $dbFields = [
-        'title' => ['type' => 'text', 'required' => true]
+        'title' => ['type' => 'text', 'required' => true],
+        'update_at' => ['type' => 'int', 'required' => true]
     ];
 	protected $relations = [
 		'params' => ['hasMany', 'packages\\financial\\currency\\param', 'currency'],
@@ -64,13 +65,18 @@ class currency extends dbObject{
 		$rate->where('currency', $this->id);
 		return $rate->count();
 	}
-	public static function getDefault(user $user):currency{
-		$currency = $user->option('financial_transaction_currency');
+	public static function getDefault(user $user = null):currency{
+		$currency = null;
+		if($user){
+			$currency = $user->option('financial_transaction_currency');
+		}
 		if(!$currency){
 			if(!$currency = options::get('packages.financial.defaultCurrency')){
 				throw new currency\undefinedCurrencyException();
 			}
-			$user->option('financial_transaction_currency', $currency);
+			if($user){
+				$user->option('financial_transaction_currency', $currency);
+			}
 		}
 		$return  = new currency();
 		$return->where('id', $currency);

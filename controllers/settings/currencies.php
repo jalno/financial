@@ -10,6 +10,7 @@ use \packages\base\inputValidation;
 use \packages\base\db\duplicateRecord;
 
 use \packages\userpanel;
+use \packages\userpanel\date;
 use \packages\financial\view;
 use \packages\financial\usertype;
 use \packages\financial\controller;
@@ -105,6 +106,9 @@ class currencies extends controller{
 			],
 			'rates' => [
 				'optional' => true
+			],
+			'update_at' => [
+				'type' => 'date'
 			]
 		];
 		try{
@@ -114,7 +118,11 @@ class currencies extends controller{
 			if($currency->has()){
 				throw new duplicateRecord('title');
 			}
-			if(!isset($inputs['change']) or $inputs['change']){
+			$inputs['update_at'] = date::strtotime($inputs['update_at']);
+			if($inputs['update_at'] < 0){
+				throw new inputValidation('update_at');
+			}
+			if(!isset($inputs['change']) or !$inputs['change']){
 				unset($inputs['rates']);	
 			}
 			if(isset($inputs['rates'])){
@@ -140,6 +148,7 @@ class currencies extends controller{
 			}
 			$currency = new currency();
 			$currency->title = $inputs['title'];
+			$currency->update_at = $inputs['update_at'];
 			$currency->save();
 			if(isset($inputs['rates'])){
 				foreach($inputs['rates'] as $key => $rate){
@@ -186,13 +195,18 @@ class currencies extends controller{
 		$this->response->setStatus(false);
 		$inputsRules = [
 			'title' => [
-				'type' => 'string'
+				'type' => 'string',
+				'optional' => true
 			],
 			'change' => [
 				'type' => 'bool',
 				'optional' => true
 			],
 			'rates' => [
+				'optional' => true
+			],
+			'update_at' => [
+				'type' => 'date',
 				'optional' => true
 			]
 		];
@@ -204,8 +218,23 @@ class currencies extends controller{
 			if($currencyObj->has()){
 				throw new duplicateRecord('title');
 			}
+			if(isset($inputs['title']) and !$inputs['title']){
+				unset($inputs['title']);
+			}
+			if(isset($inputs['update_at'])){
+				if($inputs['update_at']){
+					$inputs['update_at'] = date::strtotime($inputs['update_at']);
+				}else{
+					unset($inputs['update_at']);
+				}
+			}
 			if(!isset($inputs['change']) or !$inputs['change']){
 				unset($inputs['rates']);
+			}
+			if(isset($inputs['update_at'])){
+				if($inputs['update_at'] < 0){
+					throw new inputValidation('update_at');
+				}
 			}
 			if(isset($inputs['rates'])){
 				if(!is_array($inputs['rates'])){
@@ -230,7 +259,12 @@ class currencies extends controller{
 					$inputs['rates'][$key]['currency'] = $rate['currency'];
 				}
 			}
-			$currency->title = $inputs['title'];
+			if(isset($inputs['title'])){
+				$currency->title = $inputs['title'];
+			}
+			if(isset($inputs['update_at'])){
+				$currency->update_at = $inputs['update_at'];
+			}
 			if(isset($inputs['rates'])){
 				foreach($currency->rates as $rate){
 					if(!in_array($rate->changeTo->id, $inputs['ids'])){
@@ -252,7 +286,6 @@ class currencies extends controller{
 			}else{
 				$currency->deleteRate();
 			}
-
 			$currency->save();
 			$this->response->setStatus(true);
 		}catch(inputValidation $error){
