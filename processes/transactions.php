@@ -15,7 +15,14 @@ class transactions extends process{
 		$log->info('get remind day from options');
 		$days = options::get('packages.financial.transactions.reminder');
 		$log->reply("done");
-
+		$log->info('sorting days in DESC (bigger to smaller)');
+		usort($days, function($a, $b){
+			if($a == $b){
+				return 0;
+			}
+			return $b - $a;
+		});
+		$log->reply("done");
 		$log->info('get unpaid transactions');
 		$transaction = new transaction();
 		$transaction->where('status', transaction::unpaid);
@@ -30,6 +37,7 @@ class transactions extends process{
 					$event = new events\transactions\reminder($transaction);
 					$event->trigger();
 					$log->reply("done");
+					break;
 				}
 			}
 		}
