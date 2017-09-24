@@ -21,6 +21,7 @@ class transactions extends process{
 		$log->info('get unpaid transactions');
 		$transaction = new transaction();
 		$transaction->where('status', transaction::unpaid);
+		$transaction->where('expire_at', null, "is not");
 		$transaction->where('expire_at', date::time() + max($days), "<");
 		$transactions = $transaction->get(null, "financial_transactions.*");
 		$log->reply(count($transactions), " trasnaction found");
