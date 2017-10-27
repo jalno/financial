@@ -248,10 +248,10 @@ class transaction extends dbObject{
 		foreach($this->products as $product){
 			$pcurrency = $product->currency;
 			if($pcurrency->id != $currency->id){
-				$price += $pcurrency->changeTo($product->price * $product->number, $currency) - $product->discount;
+				$price += $pcurrency->changeTo(($product->price * $product->number) - $product->discount, $currency);
 				$needChange = true;
 			}else{
-				$price += $product->price * $product->number;
+				$price += ($product->price * $product->number) - $product->discount;
 			}
 		}
 		return $needChange ? $price : $this->price;
