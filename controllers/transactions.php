@@ -135,9 +135,8 @@ class transactions extends controller{
 		$this->response->setStatus(true);
 		try{
 			$currency = $transaction->currency;
-			$userCurrency = $transaction->user->option('financial_transaction_currency');
 			if($transaction->status == transaction::unpaid){
-				$transaction->currency = $userCurrency;
+				$transaction->currency = currency::getDefault($transaction->user);
 				$transaction->price = $transaction->totalPrice();
 				$transaction->save();
 			}
