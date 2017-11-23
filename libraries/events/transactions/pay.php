@@ -34,7 +34,6 @@ class pay extends event implements notifiable{
 				$users[$user->id] = $user;
 			}
 		}
-		unset($users[$this->transaction->user->id]);
 		return $users;
 	}
 }
