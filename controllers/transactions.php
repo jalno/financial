@@ -396,14 +396,27 @@ class transactions extends controller{
 							$inputs = $this->checkinputs($inputsRoles);
 							if($inputs['confrim']){
 								$pay->status = $newstatus;
+
+								$log = new log();
+								$log->user = authentication::getUser();
+								$log->type = logs\transactions\pay::class;
+
 								if($newstatus == transaction_pay::accepted){
 									$pay->setParam('acceptor', authentication::getID());
 									$pay->setParam('accept_date', date::time());
+									$log->title = translator::trans("financial.logs.transaction.pay.accept", ["transaction_id" => $transaction->id, 'pay_id' => $pay->id]);
 								}elseif($newstatus == transaction_pay::rejected){
 									$pay->setParam('rejector', authentication::getID());
 									$pay->setParam('reject_date', date::time());
+									$log->title = translator::trans("financial.logs.transaction.pay.reject", ["transaction_id" => $transaction->id, 'pay_id' => $pay->id]);
 								}
 								$pay->save();
+
+								$parameters['pay'] = $pay;
+								$parameters['currency'] = $transaction->currency;
+								$log->parameters = $parameters;
+								$log->save();
+
 								$this->response->setStatus(true);
 								$this->response->Go(userpanel\url("transactions/view/".$transaction->id));
 							}else{
