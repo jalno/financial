@@ -194,6 +194,7 @@
 		"error.financial.currencies.edit.dependenciesChangebleRateException": "محصولاتی در صورت حساب ها نیاز به تبدیل ارز {currency} دارند .",
 		"error.financial.currencies.terminate.dependenciesUserCurrencyException": "کاربرانی با این نوع واحد ارز وجود دارند، ابتدا کابران را ویرایش کنید",
 		"error.financial.transaction.edit.currency.UnChangableException": "برای این صورت حساب تبدید ارز {currency} به {changeTo} نیاز هست . لطفا ابتدا تبدیل را انجام دهید.",
-		"financial.settings.currency.update_at": "زمان بروزرسانی"	
+		"financial.settings.currency.update_at": "زمان بروزرسانی",
+		"financial.logs.transaction.add": "صورتحساب #{transaction_id} را ایجاد کرد"
 	}
 }

@@ -1,35 +1,10 @@
 <?php
 namespace packages\financial\controllers;
-use \packages\base;
-use \packages\base\db;
-use \packages\base\http;
-use \packages\base\NotFound;
-use \packages\base\translator;
-use \packages\base\view\error;
-use \packages\base\inputValidation;
-use \packages\base\views\FormError;
-
+use \packages\base\{db, http, NotFound, translator, view\error, inputValidation, views\FormError};
 use \packages\userpanel;
-use \packages\userpanel\user;
-use \packages\userpanel\date;
+use \packages\userpanel\{user, date, log};
+use \packages\financial\{logs, view, transaction, currency, authorization, authentication, controller, transaction_product, transaction_pay, bankaccount, payport, payport_pay, payport\redirect, payport\GatewayException, payport\VerificationException, payport\AlreadyVerified, events, views\transactions\pay as payView};
 
-use \packages\financial\currency;
-use \packages\financial\authorization;
-use \packages\financial\authentication;
-use \packages\financial\controller;
-use \packages\financial\view;
-use \packages\financial\transaction;
-use \packages\financial\transaction_product;
-use \packages\financial\transaction_pay;
-use \packages\financial\bankaccount;
-use \packages\financial\payport;
-use \packages\financial\payport_pay;
-use \packages\financial\payport\redirect;
-use \packages\financial\payport\GatewayException;
-use \packages\financial\payport\VerificationException;
-use \packages\financial\payport\AlreadyVerified;
-use \packages\financial\events;
-use \packages\financial\views\transactions\pay as payView;
 class transactions extends controller{
 	protected $authentication = true;
 	function listtransactions(){
@@ -798,6 +773,13 @@ class transactions extends controller{
 				}
 				$event = new events\transactions\add($transaction);
 				$event->trigger();
+
+				$log = new log();
+				$log->user = authentication::getUser();
+				$log->type = logs\transactions\add::class;
+				$log->title = translator::trans("financial.logs.transaction.add", ["transaction_id" => $transaction->id]);
+				$log->save();
+				
 				$this->response->setStatus(true);
 				$this->response->Go(userpanel\url('transactions/view/'.$transaction->id));
 			}catch(inputValidation $error){
