@@ -199,6 +199,9 @@
 		"financial.logs.transaction.edit": "صورتحساب #{transaction_id} را ویرایش کرد",
 		"financial.logs.transaction.information": "مشخصات",
 		"financial.logs.transaction.products": "محصولات",
-		"financial.logs.transaction.delete": "صورتحساب #{transaction_id} را حذف کرد"
+		"financial.logs.transaction.delete": "صورتحساب #{transaction_id} را حذف کرد",
+		"financial.logs.transaction.pay": "صورتحساب #{transaction_id} را پرداخت کرد",
+		"financial.pay.information": "مشخصات پرداخت",
+		"financial.pay.id": "شناسه پرداخت"
 	}
 }

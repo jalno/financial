@@ -330,6 +330,10 @@
 		{
 			"classes":["logs\\transactions\\delete"],
 			"file":"logs/transactions/delete.php"
+		},
+		{
+			"classes":["logs\\transactions\\pay"],
+			"file":"logs/transactions/pay.php"
 		}
 	]
 }

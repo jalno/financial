@@ -258,7 +258,7 @@ class transactions extends controller{
 				if(!($inputs['credit'] > 0 and $inputs['credit'] <= $transaction->payablePrice() and $inputs['credit'] <= $inputs['user']->credit)){
 					throw new inputValidation('credit');
 				}
-				if($transaction->addPay(array(
+				if($pay = $transaction->addPay(array(
 					'method' => transaction_pay::credit,
 					'price' => $inputs['credit'],
 					'params' => [
@@ -267,6 +267,16 @@ class transactions extends controller{
 				))){
 					$inputs['user']->credit -= $inputs['credit'];
 					$inputs['user']->save();
+					
+					$log = new log();
+					$log->user = authentication::getUser();
+					$log->type = logs\transactions\pay::class;
+					$log->title = translator::trans("financial.logs.transaction.pay", ["transaction_id" => $transaction->id]);
+					$parameters['pay'] = transaction_pay::byId($pay);
+					$parameters['currency'] = $transaction->currency;
+					$log->parameters = $parameters;
+					$log->save();
+					
 					$this->response->setStatus(true);
 					$redirect = $this->redirectToConfig($transaction);
 					$this->response->Go($redirect ? $redirect : userpanel\url('transactions/view/'.$transaction->id));
@@ -312,7 +322,7 @@ class transactions extends controller{
 							if($bankaccount = bankaccount::where("status", bankaccount::active)->byId($inputs['bankaccount'])){
 								if($inputs['price'] > 0 and $inputs['price'] <= $transaction->payablePrice()){
 									if(($inputs['date'] = date::strtotime($inputs['date'])) > date::time() - (86400*30)){
-										if($transaction->addPay(array(
+										if($pay = $transaction->addPay(array(
 											'date' => $inputs['date'],
 											'method' => transaction_pay::banktransfer,
 											'price' => $inputs['price'],
@@ -322,6 +332,16 @@ class transactions extends controller{
 												'followup' => $inputs['followup']
 											)
 										))){
+
+											$log = new log();
+											$log->user = authentication::getUser();
+											$log->type = logs\transactions\pay::class;
+											$log->title = translator::trans("financial.logs.transaction.pay", ["transaction_id" => $transaction->id]);
+											$parameters['pay'] = transaction_pay::byId($pay);
+											$parameters['currency'] = $transaction->currency;
+											$log->parameters = $parameters;
+											$log->save();
+
 											$this->response->setStatus(true);
 											$this->response->Go(userpanel\url('transactions/view/'.$transaction->id));
 										}
@@ -505,7 +525,7 @@ class transactions extends controller{
 					$view->setPay($pay);
 					try{
 						if($pay->verification() == payport_pay::success){
-							$pay->transaction->addPay(array(
+							$tPay = $pay->transaction->addPay(array(
 								'date' => date::time(),
 								'method' => transaction_pay::onlinepay,
 								'price' => $pay->price,
@@ -514,6 +534,16 @@ class transactions extends controller{
 									'payport_pay' => $pay->id,
 								)
 							));
+
+							$log = new log();
+							$log->user = authentication::getUser();
+							$log->type = logs\transactions\pay::class;
+							$log->title = translator::trans("financial.logs.transaction.pay", ["transaction_id" => $pay->transaction->id]);
+							$parameters['pay'] = transaction_pay::byId($tPay);
+							$parameters['currency'] = $pay->transaction->currency;
+							$log->parameters = $parameters;
+							$log->save();
+
 							$this->response->setStatus(true);
 							$redirect = $this->redirectToConfig($pay->transaction);
 							$this->response->Go($redirect ? $redirect : userpanel\url('transactions/view/'.$pay->transaction->id));
@@ -986,7 +1016,7 @@ class transactions extends controller{
 		$view->setTransactionData($transaction);
 		if(http::is_post()){
 			try{
-				$transaction->addPay(array(
+				$pay = $transaction->addPay(array(
 					'date' => time(),
 					'method' => transaction_pay::payaccepted,
 					'price' => $transaction->payablePrice(),
@@ -998,6 +1028,16 @@ class transactions extends controller{
 				));
 				$transaction->status = transaction::paid;
 				$transaction->save();
+
+				$log = new log();
+				$log->user = authentication::getUser();
+				$log->type = logs\transactions\pay::class;
+				$log->title = translator::trans("financial.logs.transaction.pay", ["transaction_id" => $transaction->id]);
+				$parameters['pay'] = transaction_pay::byId($pay);
+				$parameters['currency'] = $transaction->currency;
+				$log->parameters = $parameters;
+				$log->save();
+
 				$this->response->setStatus(true);
 				$this->response->Go(userpanel\url("transactions/view/".$transaction->id));
 			}catch(inputValidation $error){
