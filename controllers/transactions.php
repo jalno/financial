@@ -554,6 +554,12 @@ class transactions extends controller{
 		$view->setTransactionData($transaction);
 		$this->response->setStatus(false);
 		if(http::is_post()){
+			$log = new log();
+			$log->user = authentication::getUser();
+			$log->type = logs\transactions\delete::class;
+			$log->title = translator::trans("financial.logs.transaction.delete", ["transaction_id" => $transaction->id]);
+			$log->parameters = ['transaction' => $transaction];
+			$log->save();
 			$transaction->delete();
 			$this->response->setStatus(true);
 			$this->response->Go(userpanel\url('transactions'));

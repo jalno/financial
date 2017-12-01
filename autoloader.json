@@ -326,6 +326,10 @@
 		{
 			"classes":["logs\\transactions\\edit"],
 			"file":"logs/transactions/edit.php"
+		},
+		{
+			"classes":["logs\\transactions\\delete"],
+			"file":"logs/transactions/delete.php"
 		}
 	]
 }

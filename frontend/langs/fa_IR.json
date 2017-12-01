@@ -198,6 +198,7 @@
 		"financial.logs.transaction.add": "صورتحساب #{transaction_id} را ایجاد کرد",
 		"financial.logs.transaction.edit": "صورتحساب #{transaction_id} را ویرایش کرد",
 		"financial.logs.transaction.information": "مشخصات",
-		"financial.logs.transaction.products": "محصولات"
+		"financial.logs.transaction.products": "محصولات",
+		"financial.logs.transaction.delete": "صورتحساب #{transaction_id} را حذف کرد"
 	}
 }
