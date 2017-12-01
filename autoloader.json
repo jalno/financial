@@ -322,6 +322,10 @@
 		{
 			"classes":["logs\\transactions\\add"],
 			"file":"logs/transactions/add.php"
+		},
+		{
+			"classes":["logs\\transactions\\edit"],
+			"file":"logs/transactions/edit.php"
 		}
 	]
 }

@@ -592,7 +592,7 @@ class transactions extends controller{
 			try{
 				$inputs = $this->checkinputs($inputsRules);
 				if(isset($inputs['user'])){
-					if(!user::byId($inputs['user'])){
+					if(!$inputs['user'] =user::byId($inputs['user'])){
 						throw new inputValidation("user");
 					}
 				}
@@ -650,13 +650,16 @@ class transactions extends controller{
 						$product->save();
 					}
 				}
-				foreach(['title', 'user'] as $item){
-					if(isset($inputs[$item])){
-						$transaction->$item = $inputs[$item];
-					}
+				$parameters = ['oldData' => []];
+				if(isset($inputs['title']) and $transaction->title != $inputs['title']){
+					$parameters['oldData']['title'] = $transaction->title;
+					$transaction->title = $inputs['title'];
 				}
-				if(isset($inputs['currency'])){
-					$transaction->currency = $inputs['currency']->id;
+				foreach(['currency', 'user'] as $item){
+					if(isset($inputs[$item]) and $inputs[$item]->id != $transaction->$item->id){
+						$parameters['oldData'][$item] = $transaction->$item;
+						$transaction->$item = $inputs[$item]->id;
+					}
 				}
 				if(isset($inputs['description'])){
 					$transaction->setparam('description', $inputs['description']);
@@ -669,6 +672,14 @@ class transactions extends controller{
 				$transaction->save();
 				$event = new events\transactions\edit($transaction);
 				$event->trigger();
+
+				$log = new log();
+				$log->user = authentication::getUser();
+				$log->type = logs\transactions\edit::class;
+				$log->title = translator::trans("financial.logs.transaction.edit", ["transaction_id" => $transaction->id]);
+				$log->parameters = $parameters;
+				$log->save();
+
 				$this->response->setStatus(true);
 			}catch(inputValidation $error){
 				$view->setFormError(FormError::fromException($error));
@@ -820,6 +831,14 @@ class transactions extends controller{
 				if(count($transaction->products) < 2){
 					throw new illegalTransaction();
 				}
+
+				$log = new log();
+				$log->user = authentication::getUser();
+				$log->type = logs\transactions\edit::class;
+				$log->title = translator::trans("financial.logs.transaction.edit", ["transaction_id" => $transaction->id]);
+				$log->parameters = ['oldData' => ['products' => [$transaction_product]]];
+				$log->save();
+
 				$transaction_product->delete();
 				$this->response->setStatus(true);
 				$this->response->Go(userpanel\url('transactions/edit/'.$transaction->id));

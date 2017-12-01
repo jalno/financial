@@ -195,6 +195,9 @@
 		"error.financial.currencies.terminate.dependenciesUserCurrencyException": "کاربرانی با این نوع واحد ارز وجود دارند، ابتدا کابران را ویرایش کنید",
 		"error.financial.transaction.edit.currency.UnChangableException": "برای این صورت حساب تبدید ارز {currency} به {changeTo} نیاز هست . لطفا ابتدا تبدیل را انجام دهید.",
 		"financial.settings.currency.update_at": "زمان بروزرسانی",
-		"financial.logs.transaction.add": "صورتحساب #{transaction_id} را ایجاد کرد"
+		"financial.logs.transaction.add": "صورتحساب #{transaction_id} را ایجاد کرد",
+		"financial.logs.transaction.edit": "صورتحساب #{transaction_id} را ویرایش کرد",
+		"financial.logs.transaction.information": "مشخصات",
+		"financial.logs.transaction.products": "محصولات"
 	}
 }
