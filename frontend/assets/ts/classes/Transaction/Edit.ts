@@ -17,7 +17,6 @@ export default class Edit{
 		$(".product-table .product-edit").on('click', function(){
 			const tr = $(this).parents("tr");
 			const product = tr.data('product');
-			console.log(product);
 			const ModalEditProduct = $("#product-edit");
 			$("input[name=product]", ModalEditProduct).val(product.id);
 			$("input[name=product_title]", ModalEditProduct).val(product.title);
@@ -109,6 +108,7 @@ export default class Edit{
 		let info = {
 			title: $('input[name=title]', Edit.$form).val(),
 			user: $('input[name=user]', Edit.$form).val(),
+			expire_at: $('input[name=expire_at]', Edit.$form).val(),
 			currency: $('select[name=currency] option:selected', Edit.$form).val(),
 			products: []
 		}

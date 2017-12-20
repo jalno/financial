@@ -3,6 +3,7 @@ namespace packages\financial\views\transactions;
 use \packages\financial\views\form;
 use \packages\financial\transaction;
 use \packages\financial\authorization;
+use \packages\userpanel\date;
 class edit extends form{
 	protected $canPayAccept;
 	protected $canPayReject;
@@ -18,6 +19,9 @@ class edit extends form{
 	public function setTransactionData(transaction $transaction){
 		$this->setData($transaction, 'transaction');
 		$this->setDataForm($transaction->toArray());
+		if ($transaction->expire_at !== null) {
+			$this->setDataForm(date::format("Y/m/d H:i:s", $transaction->expire_at), "expire_at");
+		}
 	}
 	public function getTransactionData():transaction{
 		return $this->getData('transaction');

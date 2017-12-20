@@ -13,17 +13,24 @@ $this->the_header();
         <div class="panel panel-default">
             <div class="panel-heading">
                 <i class="fa fa-edit"></i>
-                <span><?php echo translator::trans("tranaction").' #'.$this->getTransactionData()->id; ?></span>
+                <span><?php echo translator::trans("tranaction").' #'.$this->transaction->id; ?></span>
 				<div class="panel-tools">
 					<a class="btn btn-xs btn-link tooltips" title="<?php echo translator::trans('add'); ?>" href="#product-add" data-toggle="modal" data-original-title=""><i class="fa fa-plus"></i></a>
 				</div>
             </div>
             <div class="panel-body">
-				<form class="create_form" action="<?php echo userpanel\url('transactions/edit/'.$this->getTransactionData()->id) ?>" method="post">
+				<form class="create_form" action="<?php echo userpanel\url('transactions/edit/'.$this->transaction->id) ?>" method="post">
 					<div class="col-sm-6">
 						<?php $this->createField([
 							'name' => 'title',
 							'label' => translator::trans("transaction.title")
+						]);
+						?>
+						<?php $this->createField([
+							'name' => 'expire_at',
+							'label' => translator::trans("transaction.expire_at"),
+							"placeholder" => date::format("Y/m/d H:i:s", $this->transaction->expire_at),
+							"ltr" => true,
 						]);
 						?>
 					</div>
@@ -67,7 +74,7 @@ $this->the_header();
 							<tbody>
 								<?php
 								$x = 1;
-								foreach($this->getTransactionData()->products as $product){
+								foreach($this->transaction->products as $product){
 									$data = [
 										'id' => $product->id,
 										'title' => $product->title,

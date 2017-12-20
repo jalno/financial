@@ -632,6 +632,10 @@ class transactions extends controller{
 				'type' => 'number',
 				'optional' => true
 			],
+			'expire_at' => [
+				'type' => 'date',
+				'optional' => true
+			],
 			'products' => [
 				'optional' => true
 			]
@@ -640,6 +644,14 @@ class transactions extends controller{
 		if(http::is_post()){
 			try{
 				$inputs = $this->checkinputs($inputsRules);
+				var_dump($inputs['expire_at']);
+				if(isset($inputs['expire_at'])){
+					if($inputs['expire_at']){
+						$inputs['expire_at'] = date::strtotime($inputs['expire_at']);
+					}else{
+						unset($inputs['expire_at']);
+					}
+				}
 				if(isset($inputs['user'])){
 					if(!$inputs['user'] =user::byId($inputs['user'])){
 						throw new inputValidation("user");
@@ -651,6 +663,11 @@ class transactions extends controller{
 					}
 				}else{
 					$inputs['currency'] = $transaction->currency;
+				}
+				if(isset($inputs["expire_at"])){
+					if($inputs["expire_at"] < $transaction->create_at){
+						throw new inputValidation("expire_at");
+					}
 				}
 				if(isset($inputs['products'])){
 					if(!is_array($inputs['products'])){
@@ -700,9 +717,11 @@ class transactions extends controller{
 					}
 				}
 				$parameters = ['oldData' => []];
-				if(isset($inputs['title']) and $transaction->title != $inputs['title']){
-					$parameters['oldData']['title'] = $transaction->title;
-					$transaction->title = $inputs['title'];
+				foreach(["title", "expire_at"] as $item){
+					if(isset($inputs[$item]) and $transaction->$item != $inputs[$item]){
+						$parameters['oldData'][$item] = $transaction->$item;
+						$transaction->$item = $inputs[$item];
+					}
 				}
 				foreach(['currency', 'user'] as $item){
 					if(isset($inputs[$item]) and $inputs[$item]->id != $transaction->$item->id){
@@ -719,6 +738,7 @@ class transactions extends controller{
 					}
 				}
 				$transaction->save();
+				var_dump($inputs['expire_at']);
 				$event = new events\transactions\edit($transaction);
 				$event->trigger();
 

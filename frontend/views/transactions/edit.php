@@ -17,9 +17,10 @@ class edit extends transactionsEdit{
 	protected $transaction;
 	protected $pays;
 	function __beforeLoad(){
+		$this->transaction = $this->getTransactionData();
 		$this->setTitle(array(
 			translator::trans('edit'),
-			$this->getTransactionData()->id
+			$this->transaction->id
 		));
 		$this->setShortDescription(translator::trans('transaction.edit'));
 		$this->setPays();
@@ -33,7 +34,7 @@ class edit extends transactionsEdit{
 	}
 	protected function setPays(){
 		$needacceptbtn = false;
-		$this->pays = $this->getTransactionData()->pays;
+		$this->pays = $this->transaction->pays;
 		foreach($this->pays as $pay){
 			if($pay->status == transaction_pay::pending){
 				$needacceptbtn = true;

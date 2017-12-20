@@ -1,7 +1,7 @@
 <?php
 namespace packages\financial\logs\transactions;
 use \packages\base\{view, translator};
-use \packages\userpanel\{logs\panel, logs};
+use \packages\userpanel\{logs\panel, logs, date};
 class edit extends logs{
 	public function getColor():string{
 		return "circle-teal";
@@ -33,6 +33,13 @@ class edit extends logs{
 				$html .= '<div class="col-xs-8">'.$oldData['currency']->title.'</div>';
 				$html .= "</div>";
 				unset($oldData['currency']);
+			}
+			if(isset($oldData['expire_at'])){
+				$html .= '<div class="form-group">';
+				$html .= '<label class="col-xs-4 control-label">'.translator::trans("transaction.expire_at").': </label>';
+				$html .= '<div class="col-xs-8 ltr">'.date::format("Y/m/d H:i:s", $oldData['expire_at']).'</div>';
+				$html .= "</div>";
+				unset($oldData['expire_at']);
 			}
 			foreach($oldData as $field => $val){
 				$html .= '<div class="form-group">';
