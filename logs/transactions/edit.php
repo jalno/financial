@@ -41,6 +41,13 @@ class edit extends logs{
 				$html .= "</div>";
 				unset($oldData['expire_at']);
 			}
+			if(isset($oldData['create_at'])){
+				$html .= '<div class="form-group">';
+				$html .= '<label class="col-xs-4 control-label">'.translator::trans("transaction.add.create_at").': </label>';
+				$html .= '<div class="col-xs-8 ltr">'.date::format("Y/m/d H:i:s", $oldData['create_at']).'</div>';
+				$html .= "</div>";
+				unset($oldData['create_at']);
+			}
 			foreach($oldData as $field => $val){
 				$html .= '<div class="form-group">';
 				$html .= '<label class="col-xs-4 control-label">'.translator::trans("transaction.{$field}").': </label>';

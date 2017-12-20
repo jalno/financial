@@ -1,11 +1,9 @@
 <?php
-use \packages\base\json;
-use \packages\base\translator;
 use \packages\userpanel;
 use \themes\clipone\utility;
 use \packages\userpanel\date;
-use \packages\financial\transaction;
-use \packages\financial\transaction_pay;
+use \packages\base\{json, translator};
+use \packages\financial\{transaction, transaction_pay};
 $this->the_header();
 ?>
 <div class="row">
@@ -14,96 +12,109 @@ $this->the_header();
             <div class="panel-heading">
                 <i class="fa fa-edit"></i>
                 <span><?php echo translator::trans("tranaction").' #'.$this->transaction->id; ?></span>
-				<div class="panel-tools">
-					<a class="btn btn-xs btn-link tooltips" title="<?php echo translator::trans('add'); ?>" href="#product-add" data-toggle="modal" data-original-title=""><i class="fa fa-plus"></i></a>
-				</div>
+				<div class="panel-tools"></div>
             </div>
             <div class="panel-body">
 				<form class="create_form" action="<?php echo userpanel\url('transactions/edit/'.$this->transaction->id) ?>" method="post">
-					<div class="col-sm-6">
-						<?php $this->createField([
-							'name' => 'title',
-							'label' => translator::trans("transaction.title")
-						]);
-						?>
-						<?php $this->createField([
-							'name' => 'expire_at',
-							'label' => translator::trans("transaction.expire_at"),
-							"placeholder" => date::format("Y/m/d H:i:s", $this->transaction->expire_at),
-							"ltr" => true,
-						]);
-						?>
-					</div>
-					<div class="col-sm-6">
-						<?php
-						$this->createField([
-							'name' => 'user',
-							'type' => 'hidden'
-						]);
-						?>
-						<?php
-						$this->createField([
-							'name' => 'user_name',
-							'label' => translator::trans("transaction.user")
-						]);
-						$this->createField([
-							'name' => 'currency',
-							'type' => 'select',
-							'label' => translator::trans("financial.settings.currency"),
-							'options' => $this->getCurrenciesForSelect()
-						]);
-						?>
-					</div>
-					<div class="col-sm-12">
-						<table class="table table-striped table-hover product-table">
-							<?php
-							$hasButtons = $this->hasButtons();
+					<div class="row">
+						<div class="col-sm-6 col-xs-12">
+							<?php $this->createField([
+								'name' => 'title',
+								'label' => translator::trans("transaction.title")
+							]);
+							$this->createField([
+								'name' => 'create_at',
+								'label' => translator::trans("transaction.add.create_at"),
+								"placeholder" => date::format("Y/m/d H:i:s", $this->transaction->create_at),
+								"ltr" => true,
+							]);
 							?>
-							<thead>
-								<tr>
-									<th> # </th>
-									<th><?php echo translator::trans('financial.transaction.product'); ?></th>
-									<th class="hidden-480"><?php echo translator::trans('financial.transaction.product.decription'); ?></th>
-									<th class="hidden-480"><?php echo translator::trans('financial.transaction.product.number'); ?></th>
-									<th class="hidden-480"><?php echo translator::trans('financial.transaction.product.price.base'); ?></th>
-									<th><?php echo translator::trans('financial.transaction.product.discount'); ?></th>
-									<th><?php echo translator::trans('financial.transaction.product.price.final'); ?></th>
-									<?php if($hasButtons){ ?><th></th><?php } ?>
-								</tr>
-							</thead>
-							<tbody>
-								<?php
-								$x = 1;
-								foreach($this->transaction->products as $product){
-									$data = [
-										'id' => $product->id,
-										'title' => $product->title,
-										'description' => $product->description,
-										'number' => $product->number,
-										'price' => $product->price,
-										'currency' => $product->currency->id,
-										'discount' => $product->discount
-									];
-									$this->setButtonParam('productEdit', 'link', '#product-edit');
-									$this->setButtonParam('productDelete', 'link', userpanel\url('transactions/product/delete/'.$product->id));
-								?>
-									<tr data-product='<?php echo json\encode($data); ?>'>
-										<td><?php echo $x++; ?></td>
-										<td><?php echo $product->title; ?></td>
-										<td class="hidden-480"><?php echo $product->description; ?></td>
-										<td class="hidden-480"><?php echo translator::trans('financial.number', ['number'=>$product->number]); ?></td>
-										<td class="hidden-480"><?php echo $product->price.$product->currency->title; ?></td>
-										<td class="hidden-480"><?php echo ($product->disscount ? $product->disscount : 0).$product->currency->title; ?></td>
-										<td><?php echo (($product->price*$product->number)-$product->discount).$product->currency->title; ?></td>
+						</div>
+						<div class="col-sm-6 col-xs-12">
+							<?php
+							$this->createField([
+								'name' => 'user',
+								'type' => 'hidden'
+							]);
+							?>
+							<?php
+							$this->createField([
+								'name' => 'user_name',
+								'label' => translator::trans("transaction.user")
+							]);
+							if ($this->transaction->status != transaction::paid) {
+								$this->createField([
+									'name' => 'expire_at',
+									'label' => translator::trans("transaction.expire_at"),
+									"placeholder" => date::format("Y/m/d H:i:s", $this->transaction->expire_at),
+									"ltr" => true,
+								]);
+							}
+							?>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-12">
+							<h3 class="text-muted"><?php echo translator::trans("financial.transaction.products"); ?></h3>
+							<div class="table-responsive">
+								<table class="table table-striped table-hover product-table">
+									<?php
+									$hasButtons = $this->hasButtons();
+									?>
+									<thead>
+										<tr>
+											<th> # </th>
+											<th><?php echo translator::trans('financial.transaction.product'); ?></th>
+											<th class="hidden-xs"><?php echo translator::trans('financial.transaction.product.decription'); ?></th>
+											<th><?php echo translator::trans('financial.transaction.product.number'); ?></th>
+											<th><?php echo translator::trans('financial.transaction.product.price.base'); ?></th>
+											<th><?php echo translator::trans('financial.transaction.product.discount'); ?></th>
+											<th><?php echo translator::trans('financial.transaction.product.price.final'); ?></th>
+											<?php if($hasButtons){ ?>
+											<th>
+												<a class="btn btn-xs btn-link tooltips pull-left" title="<?php echo translator::trans('add'); ?>" href="#product-add" data-toggle="modal">
+													<i class="fa fa-plus"></i>
+												</a>
+											</th>
+											<?php } ?>
+										</tr>
+									</thead>
+									<tbody>
 										<?php
-											if($hasButtons){
-												echo("<td class=\"center\">".$this->genButtons(['productEdit', 'productDelete'])."</td>");
-											}
+										$x = 1;
+										foreach($this->transaction->products as $product){
+											$data = [
+												'id' => $product->id,
+												'title' => $product->title,
+												'description' => $product->description,
+												'number' => $product->number,
+												'price' => $product->price,
+												'currency' => $product->currency->id,
+												'discount' => $product->discount,
+												"currency_title" => $product->currency->title,
+											];
+											$this->setButtonParam('productEdit', 'link', '#product-edit');
+											$this->setButtonParam('productDelete', 'link', userpanel\url('transactions/product/delete/'.$product->id));
 										?>
-									</tr>
-								<?php } ?>
-							</tbody>
-						</table>
+											<tr data-product='<?php echo json\encode($data); ?>'>
+												<td><?php echo $x++; ?></td>
+												<td><?php echo $product->title; ?></td>
+												<td class="hidden-xs"><?php echo $product->description; ?></td>
+												<td><?php echo translator::trans('financial.number', ['number'=>$product->number]); ?></td>
+												<td><?php echo $product->price.$product->currency->title; ?></td>
+												<td><?php echo ($product->disscount ? $product->disscount : 0).$product->currency->title; ?></td>
+												<td><?php echo (($product->price*$product->number)-$product->discount).$product->currency->title; ?></td>
+												<?php
+													if($hasButtons){
+														echo("<td class=\"center\">".$this->genButtons(['productEdit', 'productDelete'])."</td>");
+													}
+												?>
+											</tr>
+										<?php } ?>
+									</tbody>
+								</table>
+							</div>
+						</div>
 					</div>
 					<?php
 					if($this->pays){
@@ -111,68 +122,73 @@ $this->the_header();
 						$hastatus = $this->paysHasStatus();
 						$hasButtons = $this->hasButtons();
 					?>
-					<h3><?php echo translator::trans('pays'); ?></h3>
-					<div class="col-xs-12">
-						<table class="table table-striped table-hover">
-							<thead>
-								<tr>
-									<th> # </th>
-									<th> <?php echo translator::trans('date&time'); ?> </th>
-									<th> <?php echo translator::trans('pay.method'); ?> </th>
-									<?php if($hasdesc){ ?><th> <?php echo translator::trans('description'); ?> </th><?php } ?>
-									<th> <?php echo translator::trans('transaction.price'); ?> </th>
-									<?php if($hastatus){ ?><th> <?php echo translator::trans('pay.status'); ?> </th><?php } ?>
-									<?php if($hasButtons){ ?><th></th><?php } ?>
-								</tr>
-							</thead>
-							<tbody>
-								<?php
-								$x = 1;
-								foreach($this->pays as $pay){
-									if($hasButtons){
-										$this->setButtonParam('pay_accept', 'link', userpanel\url("transactions/pay/accept/".$pay->id));
-										$this->setButtonParam('pay_reject', 'link', userpanel\url("transactions/pay/reject/".$pay->id));
-										$this->setButtonParam('pay_delete', 'link', userpanel\url("transactions/pay/delete/".$pay->id));
-									}
-									if($hastatus){
-										$statusClass = utility::switchcase($pay->status, [
-											'label label-danger' => transaction_pay::rejected,
-											'label label-success' => transaction_pay::accepted,
-											'label label-warning' => transaction_pay::pending
-										]);
-										$statusTxt = utility::switchcase($pay->status, [
-											'pay.rejected' => transaction_pay::rejected,
-											'pay.accepted' => transaction_pay::accepted,
-											'pay.pending' => transaction_pay::pending
-										]);
-									}
-								?>
-								<tr>
-									<td><?php echo $x++; ?></td>
-									<td><?php echo $pay->date; ?></td>
-									<td class="hidden-480"><?php echo $pay->method; ?></td>
-									<?php if($hasdesc){ ?><td><?php echo $pay->description; ?></td><?php } ?>
-									<td><?php echo $pay->price; ?></td>
-									<?php if($hastatus){ ?><td><span class="<?php echo $statusClass; ?>"><?php echo translator::trans($statusTxt); ?></td><?php } ?>
-									<?php
-									if($hasButtons){
-										echo("<td class=\"center\">".$this->genButtons(['pay_accept', 'pay_reject', 'pay_delete'])."</td>");
-									}
-									?>
-								</tr>
-							<?php } ?>
-							</tbody>
-						</table>
+					<div class="row">
+						<div class="col-xs-12">
+							<h3 class="text-muted"><?php echo translator::trans('pays'); ?></h3>
+							<div class="table-responsive">
+								<table class="table table-striped table-hover">
+									<thead>
+										<tr>
+											<th> # </th>
+											<th> <?php echo translator::trans('date&time'); ?> </th>
+											<th> <?php echo translator::trans('pay.method'); ?> </th>
+											<?php if($hasdesc){ ?><th> <?php echo translator::trans('description'); ?> </th><?php } ?>
+											<th> <?php echo translator::trans('transaction.price'); ?> </th>
+											<?php if($hastatus){ ?><th> <?php echo translator::trans('pay.status'); ?> </th><?php } ?>
+											<?php if($hasButtons){ ?><th></th><?php } ?>
+										</tr>
+									</thead>
+									<tbody>
+										<?php
+										$x = 1;
+										foreach($this->pays as $pay){
+											if($hasButtons){
+												$this->setButtonParam('pay_accept', 'link', userpanel\url("transactions/pay/accept/".$pay->id));
+												$this->setButtonParam('pay_reject', 'link', userpanel\url("transactions/pay/reject/".$pay->id));
+												$this->setButtonParam('pay_delete', 'link', userpanel\url("transactions/pay/delete/".$pay->id));
+											}
+											if($hastatus){
+												$statusClass = utility::switchcase($pay->status, [
+													'label label-danger' => transaction_pay::rejected,
+													'label label-success' => transaction_pay::accepted,
+													'label label-warning' => transaction_pay::pending
+												]);
+												$statusTxt = utility::switchcase($pay->status, [
+													'pay.rejected' => transaction_pay::rejected,
+													'pay.accepted' => transaction_pay::accepted,
+													'pay.pending' => transaction_pay::pending
+												]);
+											}
+										?>
+										<tr>
+											<td><?php echo $x++; ?></td>
+											<td class="ltr"><?php echo $pay->date; ?></td>
+											<td class="hidden-480"><?php echo $pay->method; ?></td>
+											<?php if($hasdesc){ ?><td><?php echo $pay->description; ?></td><?php } ?>
+											<td><?php echo $pay->price; ?></td>
+											<?php if($hastatus){ ?><td><span class="<?php echo $statusClass; ?>"><?php echo translator::trans($statusTxt); ?></td><?php } ?>
+											<?php
+											if($hasButtons){
+												echo("<td class=\"center\">".$this->genButtons(['pay_accept', 'pay_reject', 'pay_delete'])."</td>");
+											}
+											?>
+										</tr>
+									<?php } ?>
+									</tbody>
+								</table>
+							</div>
+						</div>
 					</div>
 					<?php
 					}
 					?>
-					<div class="col-sm-12">
-						<hr>
-						<p>
-							<a href="<?php echo userpanel\url('transactions'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-right"></i> <?php echo translator::trans('return'); ?></a>
-							<button type="submit" class="btn btn-teal"><i class="fa fa-check-square-o"></i> <?php echo translator::trans("update") ?></button>
-						</p>
+					<div class="row">
+						<div class="col-sm-12">
+							<p>
+								<a href="<?php echo userpanel\url('transactions'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-right"></i> <?php echo translator::trans('return'); ?></a>
+								<button type="submit" class="btn btn-teal"><i class="fa fa-check-square-o"></i> <?php echo translator::trans("update") ?></button>
+							</p>
+						</div>
 					</div>
 				</form>
             </div>
@@ -254,6 +270,7 @@ $this->the_header();
 				],
 				[
 					'name' => 'description',
+					'type' => 'textarea',
 					'label' => translator::trans("transaction.add.description")
 				],
 				[
@@ -275,6 +292,12 @@ $this->the_header();
 					'label' => translator::trans("transaction.add.discount"),
 					'ltr' => true,
 					'step' => 0.001
+				],
+				[
+					'name' => 'product_currency',
+					'type' => 'select',
+					'label' => translator::trans("financial.settings.currency"),
+					'options' => $this->getCurrenciesForSelect()
 				]
 			];
 			foreach($feilds as $input){

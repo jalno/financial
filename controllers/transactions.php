@@ -628,8 +628,8 @@ class transactions extends controller{
 				'type' => 'number',
 				'optional' => true
 			],
-			'currency' => [
-				'type' => 'number',
+			'create_at' => [
+				'type' => 'date',
 				'optional' => true
 			],
 			'expire_at' => [
@@ -644,12 +644,18 @@ class transactions extends controller{
 		if(http::is_post()){
 			try{
 				$inputs = $this->checkinputs($inputsRules);
-				var_dump($inputs['expire_at']);
 				if(isset($inputs['expire_at'])){
 					if($inputs['expire_at']){
 						$inputs['expire_at'] = date::strtotime($inputs['expire_at']);
 					}else{
 						unset($inputs['expire_at']);
+					}
+				}
+				if(isset($inputs['create_at'])){
+					if($inputs['create_at']){
+						$inputs['create_at'] = date::strtotime($inputs['create_at']);
+					}else{
+						unset($inputs['create_at']);
 					}
 				}
 				if(isset($inputs['user'])){
@@ -665,8 +671,25 @@ class transactions extends controller{
 					$inputs['currency'] = $transaction->currency;
 				}
 				if(isset($inputs["expire_at"])){
-					if($inputs["expire_at"] < $transaction->create_at){
-						throw new inputValidation("expire_at");
+					if(isset($inputs["create_at"])) {
+						if($inputs["expire_at"] < $inputs["create_at"]){
+							throw new inputValidation("expire_at");
+						}
+					}else{
+						if($inputs["expire_at"] < $transaction->create_at){
+							throw new inputValidation("expire_at");
+						}
+					}
+				}
+				if(isset($inputs["create_at"])){
+					if(isset($inputs['expire_at'])){
+						if ($inputs["create_at"] > $inputs['expire_at']) {
+							throw new inputValidation("create_at");
+						}
+					}else{
+						if ($inputs["create_at"] > $transaction->expire_at) {
+							throw new inputValidation("create_at");
+						}
 					}
 				}
 				if(isset($inputs['products'])){
@@ -708,7 +731,7 @@ class transactions extends controller{
 							$product->method  = transaction_product::other;
 						}
 						$product->title = $row['title'];
-						$product->description = $row['description'];
+						$product->description = isset($row['description']) ? $row['description'] : null;
 						$product->number = $row['number'];
 						$product->price = $row['price'];
 						$product->discount = $row['discount'];
@@ -717,11 +740,20 @@ class transactions extends controller{
 					}
 				}
 				$parameters = ['oldData' => []];
-				foreach(["title", "expire_at"] as $item){
-					if(isset($inputs[$item]) and $transaction->$item != $inputs[$item]){
-						$parameters['oldData'][$item] = $transaction->$item;
-						$transaction->$item = $inputs[$item];
+				if(isset($inputs['title']) and $transaction->title != $inputs['title']){
+					$parameters['oldData']['title'] = $transaction->title;
+					$transaction->title = $inputs['title'];
+				}
+				if (isset($inputs['expire_at']) and $transaction->expire_at != $inputs['expire_at']) {
+					$parameters['oldData']['expire_at'] = $transaction->expire_at;
+					$transaction->expire_at = $inputs['expire_at'];
+					if ($transaction->status == transaction::expired and $inputs['expire_at'] > date::time()) {
+						$transaction->status = transaction::unpaid;
 					}
+				}
+				if (isset($inputs['create_at']) and $transaction->create_at != $inputs['create_at']) {
+					$parameters['oldData']['create_at'] = $transaction->create_at;
+					$transaction->create_at = $inputs['create_at'];
 				}
 				foreach(['currency', 'user'] as $item){
 					if(isset($inputs[$item]) and $inputs[$item]->id != $transaction->$item->id){
@@ -738,7 +770,6 @@ class transactions extends controller{
 					}
 				}
 				$transaction->save();
-				var_dump($inputs['expire_at']);
 				$event = new events\transactions\edit($transaction);
 				$event->trigger();
 

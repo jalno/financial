@@ -22,6 +22,9 @@ class edit extends form{
 		if ($transaction->expire_at !== null) {
 			$this->setDataForm(date::format("Y/m/d H:i:s", $transaction->expire_at), "expire_at");
 		}
+		if ($transaction->create_at !== null) {
+			$this->setDataForm(date::format("Y/m/d H:i:s", $transaction->create_at), "create_at");
+		}
 	}
 	public function getTransactionData():transaction{
 		return $this->getData('transaction');

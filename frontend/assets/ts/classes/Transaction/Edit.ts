@@ -8,8 +8,6 @@ export default class Edit{
 	private static $form = $('body.transaction-edit .create_form');
 	private static table = $(".product-table", Edit.$form);
 	private static productEdit:string = '<a class="btn btn-xs btn-teal product-edit" href="#product-edit" data-toggle="modal" data-original-title=""><i class="fa fa-edit"></i></a>';
-	private static link:string;
-	private static productId:number;
 	private static runUserSearch(){
 		$('input[name=user_name]', Edit.$form).userAutoComplete();
 	}
@@ -25,7 +23,7 @@ export default class Edit{
 			$("input[name=product_price]", ModalEditProduct).val(product.price);
 			$("input[name=discount]", ModalEditProduct).val(product.discount);
 			$("select[name=product_currency]", ModalEditProduct).val(product.currency);
-			Edit.link = $(".product-delete").attr("href");
+			$("#editproductform", ModalEditProduct).data("tr", tr);
 		});
 	};
 	private static RmoveProduct(){
@@ -39,16 +37,14 @@ export default class Edit{
 	}
 	private static rebuildProductsTable(){
 		let $trs = '';
-		Edit.productId = 0;
-		$("tbody > tr", Edit.table).each(function(){
-			Edit.productId++;
-			$trs += Edit.buildProductRow($(this).data('product'));
+		$("tbody > tr", Edit.table).each(function(index){
+			$trs += Edit.buildProductRow($(this).data('product'), index+1);
 		});
 		$('tbody', Edit.table).html($trs);
 		Edit.RmoveProduct();
 		Edit.productEditListener();
 	}
-	private static buildProductRow(product){
+	private static buildProductRow(product, index: number){
 		if(!product.number){
 			product.number = 1;
 		}
@@ -61,7 +57,7 @@ export default class Edit{
 		const finalPrice = ((product.price*product.number)-product.discount);
 		let code = `
 			<tr data-product='${JSON.stringify(product)}'>
-				<td>${Edit.productId}</td>
+				<td>${index}</td>
 				<td>${product.title}</td>
 				<td>${product.description}</td>
 				<td>${product.number} عدد</td>
@@ -70,23 +66,31 @@ export default class Edit{
 				<td>${finalPrice} ${product.currency_title}</td>
 				<td class="center">
 		`;
-		let clas:string = '';
+		let className:string = '';
+		let link = "";
 		if(product.id){
-			Edit.link = Router.url("userpanel/transactions/product/delete/" + product.id);
+			link = Router.url("userpanel/transactions/product/delete/" + product.id);
 			code += Edit.productEdit + ' ';
 		}else{
-			Edit.link = '#';
-			clas = 'delete';
+			link = '#';
+			className = 'delete';
 		}
-		code += '<a href="' + Edit.link + '" class="btn btn-xs btn-bricky product-delete ' + clas + '" title="حذف"><i class="fa fa-times fa fa-white"></i></a></td></tr>';
+		code += '<a href="' + link + '" class="btn btn-xs btn-bricky product-delete ' + className + '" title="حذف"><i class="fa fa-times fa fa-white"></i></a></td></tr>';
 
 		return code;
 	}
 	private static ModalSubmitListener(){
 		$("#editproductform").on('submit', function(e){
 			e.preventDefault();
+			if ($("input[name=product_title]", this).val() === "" || $("input[name=product_price]", this).val() === "") {
+				$.growl.error({
+					title:"خطا",
+					message:"نام محصول و یا مبلغ محصول مشخص نشده است"
+				});
+				return;
+			}
 			$(this).parents(".modal").modal("hide");
-			let newdata = {
+			const newdata = {
 				id: $("input[name=product]", this).val(),
 				title: $("input[name=product_title]", this).val(),
 				description: $("textarea[name=description]", this).val(),
@@ -96,11 +100,8 @@ export default class Edit{
 				currency: $("select[name=product_currency] option:selected", this).val(),
 				currency_title: $("select[name=product_currency] option:selected", this).data('title')
 			}
-			$("tbody > tr", Edit.table).each(function(){
-				$(this).data('product', newdata);
-				return false;
-
-			});
+			const $tr = $(this).data("tr");
+			$tr.data('product', newdata);
 			Edit.rebuildProductsTable();
 		});
 	}
@@ -108,8 +109,8 @@ export default class Edit{
 		let info = {
 			title: $('input[name=title]', Edit.$form).val(),
 			user: $('input[name=user]', Edit.$form).val(),
+			create_at: $('input[name=create_at]', Edit.$form).val(),
 			expire_at: $('input[name=expire_at]', Edit.$form).val(),
-			currency: $('select[name=currency] option:selected', Edit.$form).val(),
 			products: []
 		}
 		$("tbody > tr", Edit.table).each(function(){
@@ -120,13 +121,22 @@ export default class Edit{
 	private static ADDproductListener() {
 		$("#addproductform").on('submit', function(e){
 			e.preventDefault();
+			if ($("input[name=product_title]", this).val() === "" || $("input[name=product_price]", this).val() === "") {
+				$.growl.error({
+					title:"خطا",
+					message:"نام محصول و یا مبلغ محصول مشخص نشده است"
+				});
+				return;
+			}
 			$(this).parents(".modal").modal("hide");
-			let newdata = {
+			const newdata = {
 				title: $("input[name=product_title]", this).val(),
-				description: $("input[name=description]", this).val(),
+				description: $("textarea[name=description]", this).val(),
 				number: $("input[name=number]", this).val(),
 				price: $("input[name=product_price]", this).val(),
-				discount: $("input[name=discount]", this).val()
+				discount: $("input[name=discount]", this).val(),
+				currency: $("select[name=product_currency] option:selected", this).val(),
+				currency_title: $("select[name=product_currency] option:selected", this).data('title')
 			}
 			let $tr = $('<tr></tr>').appendTo($("tbody", Edit.table));
 			$tr.data('product', newdata);
