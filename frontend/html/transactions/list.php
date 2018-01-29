@@ -41,17 +41,17 @@ $this->the_header();
 						</thead>
 						<tbody>
 							<?php
-							foreach($this->getTransactions() as $row){
-								$this->setButtonParam('transactions_view', 'link', userpanel\url("transactions/view/".$row->id));
-								$this->setButtonParam('transactions_edit', 'link', userpanel\url("transactions/edit/".$row->id));
-								$this->setButtonParam('transactions_delete', 'link', userpanel\url("transactions/delete/".$row->id));
-								$statusClass = utility::switchcase($row->status, [
+							foreach($this->getTransactions() as $transaction){
+								$this->setButtonParam('transactions_view', 'link', userpanel\url("transactions/view/".$transaction->id));
+								$this->setButtonParam('transactions_edit', 'link', userpanel\url("transactions/edit/".$transaction->id));
+								$this->setButtonParam('transactions_delete', 'link', userpanel\url("transactions/delete/".$transaction->id));
+								$statusClass = utility::switchcase($transaction->status, [
 									'label label-danger' => transaction::unpaid,
 									'label label-success' => transaction::paid,
 									'label label-warning' => transaction::refund,
 									'label label-inverse' => transaction::expired
 								]);
-								$statusTxt = utility::switchcase($row->status, [
+								$statusTxt = utility::switchcase($transaction->status, [
 									'transaction.unpaid' => transaction::unpaid,
 									'transaction.paid' => transaction::paid,
 									'transaction.refund' => transaction::refund,
@@ -59,11 +59,11 @@ $this->the_header();
 								]);
 							?>
 							<tr>
-								<td class="center"><?php echo $row->id; ?></td>
-								<td><?php echo $row->title; ?></td>
-								<td><?php echo $row->price." ریال"; ?></td>
-								<?php if($this->multiuser){ ?><td><a href="<?php echo userpanel\url('users/view/'.$row->user->id); ?>"><?php echo $row->user->name.' '.$row->user->lastname; ?></a></td><?php } ?>
-								<td><?php echo $row->create_at; ?></td>
+								<td class="center"><?php echo $transaction->id; ?></td>
+								<td><?php echo $transaction->title; ?></td>
+								<td><?php echo $transaction->price . " " . $transaction->currency->title; ?></td>
+								<?php if($this->multiuser){ ?><td><a href="<?php echo userpanel\url('users/view/'.$transaction->user->id); ?>"><?php echo $transaction->user->name.' '.$transaction->user->lastname; ?></a></td><?php } ?>
+								<td><?php echo $transaction->create_at; ?></td>
 								<td class="hidden-xs"><span class="<?php echo $statusClass; ?>"><?php echo translator::trans($statusTxt); ?></span></td>
 								<?php
 								if($hasButtons){
