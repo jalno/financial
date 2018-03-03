@@ -180,7 +180,7 @@ $this->the_header();
 								<th> <?php echo translator::trans('date&time'); ?> </th>
 								<th> <?php echo translator::trans('pay.method'); ?> </th>
 								<?php if($hasdesc){ ?><th> <?php echo translator::trans('description'); ?> </th><?php } ?>
-								<th> <?php echo translator::trans('transaction.price'); ?> </th>
+								<th> <?php echo translator::trans('pay.price'); ?> </th>
 								<?php if($hastatus){ ?><th> <?php echo translator::trans('pay.status'); ?> </th><?php } ?>
 								<?php if($hasButtons){ ?><th></th><?php } ?>
 							</tr>

@@ -19,7 +19,7 @@ class payport extends dbObject{
 		'status' => array('type' => 'int', 'required' => true)
     );
 	protected $relations = array(
-		'params' => array('hasMany', 'packages\\financial\\payport\\param', 'payport')
+		'params' => array('hasMany', 'packages\\financial\\payport\\param', 'payport'),
 	);
 	function __construct($data = null, $connection = 'default'){
 		$data = $this->processData($data);
@@ -52,11 +52,12 @@ class payport extends dbObject{
 		}
 		return false;
 	}
-	public function PaymentRequest($price, transaction $transaction, $ip = null){
+	public function PaymentRequest($price, transaction $transaction, currency $currency, $ip = null){
 		$pay = new payport_pay();
 		$pay->price = $price;
 		$pay->payport = $this->id;
 		$pay->transaction = $transaction->id;
+		$pay->currency = $currency->id;
 		if($ip){
 			$pay->ip = $ip;
 		}

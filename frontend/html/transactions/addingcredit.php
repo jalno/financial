@@ -1,13 +1,9 @@
 <?php
-use \packages\base;
-use \packages\base\json;
-use \packages\base\translator;
-use \packages\userpanel;
+use \packages\base\{json, translator};
 use \themes\clipone\utility;
+use \packages\userpanel;
 use \packages\userpanel\date;
-use \packages\financial\transaction;
-use \packages\financial\transaction_pay;
-use \packages\financial\authorization;
+use \packages\financial\{transaction, currency, transaction_pay, authorization, authentication};
 
 $this->the_header();
 ?>
@@ -46,7 +42,15 @@ $this->the_header();
 								'type' => 'number',
 								'label' => translator::trans("transaction.addingcredit.price"),
 								'ltr' => true,
-								'placeholder' => 10000
+								'placeholder' => 10000,
+								"input-group" => [
+									"right" => [
+										[
+											"type" => "addon",
+											"text" => currency::getDefault(authentication::getUser())->title,
+										]
+									]
+								]
 							]); ?>
 						</div>
 						<div class="col-sm-12">

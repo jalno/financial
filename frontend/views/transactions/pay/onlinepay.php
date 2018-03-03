@@ -1,9 +1,9 @@
 <?php
 namespace themes\clipone\views\transactions\pay;
-use \packages\base\translator;
+use \packages\base\{translator, json};
 use \packages\userpanel;
 use \packages\userpanel\date;
-use \packages\financial\views\transactions\pay\onlinepay as onlinepayView;
+use \packages\financial\{views\transactions\pay\onlinepay as onlinepayView, payport, currency};
 use \themes\clipone\breadcrumb;
 use \themes\clipone\navigation;
 use \themes\clipone\navigation\menuItem;
@@ -51,11 +51,26 @@ class onlinepay extends onlinepayView{
 	}
 	protected function getPayportsForSelect(){
 		$options = array();
+		$userCurrency = $this->transaction->currency;
 		foreach($this->getPayports() as $payport){
-			$options[] = array(
+			$option = array(
 				'title' => $payport->title,
 				'value' => $payport->id
 			);
+			$payPortCurrencies = array_column($payport->getCurrencies(), "currency");
+			if (!in_array($userCurrency->id, $payPortCurrencies)) {
+				$rate = new currency\rate();
+				$rate->where("currency", $userCurrency->id);
+				$rate->where("changeTo", $payPortCurrencies, "in");
+				if ($rate = $rate->getOne()){
+					$option["data"] = [
+						"price" => $this->transaction->payablePrice() * $rate->price,
+						"title" => $rate->changeTo->title,
+						"currency" => $rate->changeTo->id,
+					];
+				}
+			}
+			$options[] = $option;
 		}
 		return $options;
 	}

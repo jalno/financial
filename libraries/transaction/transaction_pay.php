@@ -16,12 +16,14 @@ class transaction_pay extends dbObject{
         'transaction' => array('type' => 'int', 'required' => true),
         'method' => array('type' => 'int', 'required' => true),
         'date' => array('type' => 'int', 'required' => true),
-        'price' => array('type' => 'int', 'required' => true),
-        'status' => array('type' => 'int', 'required' => true)
+		'price' => array('type' => 'double', 'required' => true),
+		"currency" => array("type" => "int", "required" => true),
+        'status' => array('type' => 'int', 'required' => true),
 	);
 	protected $relations = array(
 		'transaction' => array('hasOne', 'packages\\financial\\transaction', 'transaction'),
-		'params' => array('hasMany', 'packages\\financial\\transaction_pay_param', 'pay')
+		'params' => array('hasMany', 'packages\\financial\\transaction_pay_param', 'pay'),
+		"currency" => array("hasOne", currency::class, "currency")
 	);
 	function __construct($data = null, $connection = 'default'){
 		$data = $this->processData($data);
@@ -110,5 +112,11 @@ class transaction_pay extends dbObject{
 			}
 			return false;
 		}
+	}
+	protected function convertPrice() {
+		if ($this->currency->id == $this->transaction->currency->id) {
+			return $this->price;
+		}
+		return $this->currency->changeTo($this->price, $this->transaction->currency);
 	}
 }

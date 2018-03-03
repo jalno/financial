@@ -12,14 +12,16 @@ class payport_pay extends dbObject{
         'payport' => array('type' => 'int', 'required' => true),
         'transaction' => array('type' => 'int', 'required' => true),
         'date' => array('type' => 'int', 'required' => true),
-        'price' => array('type' => 'int', 'required' => true),
+		'price' => array('type' => 'double', 'required' => true),
+		"currency" => array("type" => "int", "required" => true),
         'ip' => array('type' => 'text'),
 		'status' => array('type' => 'int', 'required' => true)
     );
 	protected $relations = array(
 		'payport' => array('hasOne', 'packages\\financial\\payport', 'payport'),
 		'transaction' => array('hasOne', 'packages\\financial\\transaction', 'transaction'),
-		'params' => array('hasMany', 'packages\\financial\\payport_pay_param', 'pay')
+		'params' => array('hasMany', 'packages\\financial\\payport_pay_param', 'pay'),
+		"currency" => array("hasOne", currency::class, "currency"),
 	);
 	function __construct($data = null, $connection = 'default'){
 		$data = $this->processData($data);

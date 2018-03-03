@@ -1,6 +1,6 @@
 <?php
 namespace packages\financial\controllers;
-use \packages\base\{db, http, NotFound, translator, view\error, inputValidation, views\FormError};
+use \packages\base\{db, http, NotFound, translator, view\error, inputValidation, views\FormError, db\parenthesis};
 use \packages\userpanel;
 use \packages\userpanel\{user, date, log};
 use \packages\financial\{logs, view, transaction, currency, authorization, authentication, controller, transaction_product, transaction_pay, bankaccount, payport, payport_pay, payport\redirect, payport\GatewayException, payport\VerificationException, payport\AlreadyVerified, events, views\transactions\pay as payView};
@@ -261,6 +261,7 @@ class transactions extends controller{
 				if($pay = $transaction->addPay(array(
 					'method' => transaction_pay::credit,
 					'price' => $inputs['credit'],
+					"currency" => $transaction->currency->id,
 					'params' => [
 						'user' => $inputs['user']->id
 					]
@@ -327,6 +328,7 @@ class transactions extends controller{
 											'method' => transaction_pay::banktransfer,
 											'price' => $inputs['price'],
 											'status' => transaction_pay::pending,
+											"currency" => $transaction->currency->id,
 											'params' => array(
 												'bankaccount' => $bankaccount->id,
 												'followup' => $inputs['followup']
@@ -450,10 +452,17 @@ class transactions extends controller{
 			$view = view::byName("\\packages\\financial\\views\\transactions\\pay\\onlinepay");
 			$payport = new payport();
 			$currency = $transaction->currency;
-			db::join('financial_payports_currencies', 'financial_payports_currencies.payport=financial_payports.id', "LEFT");
-			$payport->where('financial_payports_currencies.currency', $currency->id);
-			$payport->where('status', payport::active);
+			db::join('financial_payports_currencies', 'financial_payports_currencies.payport=financial_payports.id', "INNER");
+			db::join('financial_currencies', 'financial_currencies.id=financial_payports_currencies.currency', "INNER");
+			db::join('financial_currencies_rates', 'financial_currencies_rates.currency=financial_currencies.id', "INNER");
+			$parenthesis = new parenthesis();
+			$parenthesis->where("financial_payports_currencies.currency", $currency->id, "=", "OR");
+			$parenthesis->where("financial_currencies_rates.changeTo", $currency->id, "=", "OR");
+			$payport->where($parenthesis);
+			$payport->where('financial_payports.status', payport::active);
+			$payport->setQueryOption("DISTINCT");
 			$payports = $payport->get(null, 'financial_payports.*');
+
 			$view->setTransaction($transaction);
 			$view->setPayports($payports);
 
@@ -465,7 +474,10 @@ class transactions extends controller{
 					),
 					'price' => array(
 						'type' => 'number',
-					)
+					),
+					"currency" => array(
+						"type" => "number",
+					),
 				);
 				try{
 					$inputs = $this->checkinputs($inputsRoles);
@@ -479,12 +491,17 @@ class transactions extends controller{
 					if(!$payport){
 						throw new inputValidation("payport");
 					}
-					if(!$payport->getCurrency($transaction->currency->id)){
-						throw new payport\unSupportCurrencyTypeException($transaction->currency);
+					if(!$inputs["currency"] = $payport->getCurrency($inputs["currency"])){
+						throw new payport\unSupportCurrencyTypeException($inputs["currency"]);
 					}
-					if($inputs['price'] > 0 and $inputs['price'] <= $transaction->payablePrice()){
+					$inputs["currency"] = currency::byId($inputs["currency"]["currency"]);
+					$payablePrice = $transaction->payablePrice();
+					if ($inputs["currency"]->id != $transaction->currency->id) {
+						$payablePrice = $transaction->currency->changeTo($payablePrice, $inputs["currency"]);
+					}
+					if($inputs['price'] > 0 and $inputs['price'] <= $payablePrice){
 						$this->response->setStatus(true);
-						$redirect = $payport->PaymentRequest($inputs['price'], $transaction);
+						$redirect = $payport->PaymentRequest($inputs['price'], $transaction, $inputs["currency"]);
 						if($redirect->method == redirect::get){
 							$this->response->Go($redirect->getURL());
 						}elseif($redirect->method == redirect::post){
@@ -504,7 +521,6 @@ class transactions extends controller{
 				}
 				$view->setDataForm($this->inputsvalue($inputsRoles));
 			}else{
-				$view->setDataForm($transaction->payablePrice(), 'price');
 				$this->response->setStatus(true);
 			}
 			$this->response->setView($view);
@@ -542,6 +558,7 @@ class transactions extends controller{
 								'date' => date::time(),
 								'method' => transaction_pay::onlinepay,
 								'price' => $pay->price,
+								"currency" => $pay->currency,
 								'status' => transaction_pay::accepted,
 								'params' => array(
 									'payport_pay' => $pay->id,
@@ -553,7 +570,7 @@ class transactions extends controller{
 							$log->type = logs\transactions\pay::class;
 							$log->title = translator::trans("financial.logs.transaction.pay", ["transaction_id" => $pay->transaction->id]);
 							$parameters['pay'] = transaction_pay::byId($tPay);
-							$parameters['currency'] = $pay->transaction->currency;
+							$parameters['currency'] = $pay->currency;
 							$log->parameters = $parameters;
 							$log->save();
 
@@ -1085,6 +1102,7 @@ class transactions extends controller{
 					'method' => transaction_pay::payaccepted,
 					'price' => $transaction->payablePrice(),
 					'status' => transaction_pay::accepted,
+					"currency" => $transaction->currency->id,
 					'params' => array(
 						'acceptor' => authentication::getID(),
 						'accept_date' => time(),

@@ -56,7 +56,7 @@ class view extends transactionsView{
 				$needacceptbtn = true;
 			}
 			$pay->date = date::format("Y/m/d H:i:s", $pay->date);
-			$pay->price = translator::trans('currency.rial', array('number' => $pay->price));
+			$pay->price = $pay->price . " " . $pay->currency->title;
 			if($pay->method == transaction_pay::credit){
 				$pay->method = translator::trans('pay.method.credit');
 			}elseif($pay->method == transaction_pay::banktransfer){

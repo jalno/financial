@@ -17,10 +17,14 @@ $this->the_header();
 			</div>
 			<div class="panel-body">
 				<form action="<?php echo userpanel\url('transactions/pay/onlinepay/'.$this->transaction->id); ?>" method="POST" role="form" class="pay_credit_form">
+					<?php $this->createField([
+						"name" => "currency",
+						"type" => "hidden",
+					]); ?>
 					<div class="row">
 						<div class="col-xs-12">
 							<?php
-							echo $this->createField(array(
+							$this->createField(array(
 								'type' => 'select',
 								'name' => 'payport',
 								'label' => translator::trans("pay.online.payport"),
@@ -32,10 +36,18 @@ $this->the_header();
 					<div class="row">
 						<div class="col-xs-12">
 							<?php
-							echo $this->createField(array(
+							$this->createField(array(
 								'type' => 'number',
 								'name' => 'price',
-								'label' => translator::trans("pay.price")
+								'label' => translator::trans("pay.price"),
+								"input-group" => [
+									"right" => [
+										[
+											"type" => "addon",
+											"text" => $this->transaction->currency->title,
+										]
+									]
+								]
 							));
 							?>
 						</div>

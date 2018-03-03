@@ -30,7 +30,7 @@ class transaction extends dbObject{
 		'currency' => array('hasOne', 'packages\\financial\\currency', 'currency'),
 		'params' => array('hasMany', 'packages\\financial\\transaction_param', 'transaction'),
 		'products' => array('hasMany', 'packages\\financial\\transaction_product', 'transaction'),
-		'pays' => array('hasMany', 'packages\\financial\\transaction_pay', 'transaction')
+		'pays' => array('hasMany', 'packages\\financial\\transaction_pay', 'transaction'),
 	);
 	protected $tmproduct = array();
 	protected $tmpays = array();
@@ -57,11 +57,11 @@ class transaction extends dbObject{
 	}
 	protected function payablePrice(){
 		$payable = $this->totalPrice();
-		if($this->id){
+		if(!$this->isNew){
 			unset($this->data['pays']);
 			foreach($this->pays as $pay){
 				if($pay->status == transaction_pay::accepted){
-					$payable -= $pay->price;
+					$payable -= $pay->convertPrice();
 				}
 			}
 		}
@@ -241,10 +241,10 @@ class transaction extends dbObject{
 			}
 		}
 	}
-	public function totalPrice():float{
+	public function totalPrice(): float{
 		$currency = $this->currency;
-		$price = 0;
 		$needChange = false;
+		$price = 0;
 		foreach($this->products as $product){
 			$pcurrency = $product->currency;
 			if($pcurrency->id != $currency->id){
