@@ -236,7 +236,7 @@ $this->the_header();
 						<li><strong>جمع کل:</strong> <?php echo(number_format($this->transaction->price).$currency->title); ?></li>
 						<li><strong>تخفیف:</strong><?php echo(number_format($this->Discounts()).$currency->title); ?></li>
 						<li><strong>مالیات:</strong> 0 <?php echo $currency->title; ?></li>
-						<li><strong>مبلغ قابل پرداخت:</strong><?php echo(number_format($this->transaction->payablePrice()).$currency->title); ?></li>
+						<li><strong>مبلغ قابل پرداخت:</strong><?php echo $this->transaction->payablePrice(). " " .$currency->title; ?></li>
 					</ul>
 					<br>
 					<a onclick="javascript:window.print();" class="btn btn-lg btn-teal hidden-print">چاپ<i class="fa fa-print"></i></a>

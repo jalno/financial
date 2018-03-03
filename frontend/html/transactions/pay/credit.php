@@ -65,7 +65,7 @@ $this->the_header();
 									$this->createField(array(
 										'name' => 'currentcredit',
 										'label' => translator::trans("currentcredit"),
-										'value' => translator::trans("currency.rial", array('number' => $this->getCredit())),
+										'value' => $this->getCredit(),
 										'disabled' => true
 									));
 									?>
