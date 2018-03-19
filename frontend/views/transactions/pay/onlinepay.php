@@ -55,7 +55,12 @@ class onlinepay extends onlinepayView{
 		foreach($this->getPayports() as $payport){
 			$option = array(
 				'title' => $payport->title,
-				'value' => $payport->id
+				'value' => $payport->id,
+				"data" => [
+					"price" => $this->transaction->payablePrice(),
+					"title" => $userCurrency->title,
+					"currency" => $userCurrency->id,
+				],
 			);
 			$payPortCurrencies = array_column($payport->getCurrencies(), "currency");
 			if (!in_array($userCurrency->id, $payPortCurrencies)) {
