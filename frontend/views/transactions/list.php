@@ -69,6 +69,22 @@ class listview extends transactionsListView{
 			$item->setURL(userpanel\url('transactions'));
 			$item->setIcon('fa fa-money');
 			navigation::addItem($item);
+			if (packages::package("dakhl")) {
+				$invoices = navigation::getByName("invoices");
+				$bankAccounts = navigation::getByName("bankAccounts");
+				$dakhl = new menuItem("dakhl");
+				$dakhl->setTitle("دخل");
+				$dakhl->setIcon("fa fa-tachometer");
+				navigation::addItem($dakhl);
+				if ($invoices) {
+					navigation::removeItem($invoices);
+					$dakhl->addItem($invoices);
+				}
+				if ($bankAccounts) {
+					navigation::removeItem($bankAccounts);
+					$dakhl->addItem($bankAccounts);
+				}
+			}
 		}
 	}
 	public function setButtons(){
