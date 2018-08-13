@@ -1,18 +1,8 @@
 <?php
 namespace packages\financial\controllers\settings;
-use \packages\base;
-use \packages\base\http;
-use \packages\base\NotFound;
-use \packages\base\views\FormError;
-use \packages\base\inputValidation;
-
-use \packages\userpanel;
-use \packages\financial\view;
-use \packages\financial\usertype;
-use \packages\financial\controller;
-use \packages\financial\authorization;
-use \packages\financial\authentication;
-use \packages\financial\bankaccount;
+use packages\userpanel;
+use packages\base\{http, NotFound, views\FormError, inputValidation, view\error};
+use packages\financial\{view, usertype, controller, authorization, authentication, bankaccount, payport};
 
 /**
   * Handler for usertypes
@@ -49,6 +39,11 @@ class bankaccounts extends controller{
 				'optional' => true,
 				'empty' => true,
 			),
+			"shaba" => array(
+				"type" => "string",
+				"optional" => true,
+				"empty" => true,
+			),
 			'word' => array(
 				'type' => 'string',
 				'optional' => true,
@@ -71,7 +66,7 @@ class bankaccounts extends controller{
 			}
 
 			//notmal search
-			foreach(array('id', 'bank') as $item){
+			foreach(array('id', 'bank', "shaba") as $item){
 				if(isset($inputs[$item]) and $inputs[$item]){
 					$comparison = $inputs['comparison'];
 					if(in_array($item, array('id'))){
@@ -108,12 +103,23 @@ class bankaccounts extends controller{
 		$view->setBankaccount($bankaccount);
 		$this->response->setStatus(false);
 		if(http::is_post()){
-			try{
+			try {
+				$payport = new payport();
+				$payport->where("account", $bankaccount->id);
+				$payport->where("status", payport::active);
+				if ($payport->has()) {
+					throw new payportDependencies();
+				}
 				$bankaccount->delete();
 				$this->response->setStatus(true);
 				$this->response->GO(userpanel\url("settings/bankaccounts"));
-			}catch(inputValidation $error){
+			} catch (inputValidation $error) {
 				$view->setFormError(FormError::fromException($error));
+			} catch (payportDependencies $error) {
+				$error = new error();
+				$error->setType(error::FATAL);
+				$error->setCode("financial.settings.bankaccount.gatewayDependencies");
+				$view->addError($error);
 			}
 		}else{
 			$this->response->setStatus(true);
@@ -143,6 +149,10 @@ class bankaccounts extends controller{
 				'optional' => true,
 				'empty' => true
 			),
+			"shaba" => array(
+				"type" => "string",
+				"optional" => true
+			),
 			'owner' => array(
 				'type' => 'string',
 				'optional' => true
@@ -157,6 +167,11 @@ class bankaccounts extends controller{
 		if(http::is_post()){
 			try{
 				$inputs = $this->checkinputs($inputsRules);
+				if (isset($inputs["shaba"])) {
+					if (!preg_match("/^IR\d{24}$/", $inputs["shaba"])) {
+						throw new inputValidation("shaba");
+					}
+				}
 				if(isset($inputs['title'])){
 					$bankaccount->title = $inputs['title'];
 				}
@@ -166,10 +181,21 @@ class bankaccounts extends controller{
 				if(isset($inputs['cart']) and $inputs['cart']){
 					$bankaccount->cart = $inputs['cart'];
 				}
+				if(isset($inputs["shaba"])){
+					$bankaccount->shaba = $inputs["shaba"];
+				}
 				if(isset($inputs['owner'])){
 					$bankaccount->owner = $inputs['owner'];
 				}
 				if(isset($inputs['status'])){
+					if ($inputs["status"] == bankaccount::deactive) {
+						$payport = new payport();
+						$payport->where("account", $bankaccount->id);
+						$payport->where("status", payport::active);
+						if ($payport->has()) {
+							throw new payportDependencies();
+						}
+					}
 					$bankaccount->status = $inputs['status'];
 				}
 				$bankaccount->save();
@@ -177,6 +203,11 @@ class bankaccounts extends controller{
 				$this->response->GO(userpanel\url("settings/financial/bankaccounts/edit/".$bankaccount->id));
 			}catch(inputValidation $error){
 				$view->setFormError(FormError::fromException($error));
+			} catch (payportDependencies $error) {
+				$error = new error();
+				$error->setType(error::FATAL);
+				$error->setCode("financial.settings.bankaccount.gatewayDependencies");
+				$view->addError($error);
 			}
 			$view->setDataForm($this->inputsvalue($inputsRules));
 		}else{
@@ -200,6 +231,9 @@ class bankaccounts extends controller{
 				'optional' => true,
 				'empty' => true
 			),
+			"shaba" => array(
+				"type" => "string",
+			),
 			'owner' => array(
 				'type' => 'string',
 			),
@@ -212,12 +246,16 @@ class bankaccounts extends controller{
 		if(http::is_post()){
 			try{
 				$inputs = $this->checkinputs($inputsRules);
+				if (!preg_match("/^IR\d{24}$/", $inputs["shaba"])) {
+					throw new inputValidation("shaba");
+				}
 				$bankaccount = new bankaccount();
 				$bankaccount->title = $inputs['title'];
 				$bankaccount->account = $inputs['account'];
 				if(isset($inputs['cart']) and $inputs['cart']){
 					$bankaccount->cart = $inputs['cart'];
 				}
+				$bankaccount->shaba = $inputs["shaba"];
 				$bankaccount->owner = $inputs['owner'];
 				$bankaccount->status = $inputs['status'];
 				$bankaccount->save();
@@ -234,3 +272,5 @@ class bankaccounts extends controller{
 		return $this->response;
 	}
 }
+
+class payportDependencies extends \Exception {}

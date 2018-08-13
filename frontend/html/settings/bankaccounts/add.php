@@ -24,11 +24,13 @@ use \packages\base\translator;
 							));
 							$this->createField(array(
 								'name' => 'account',
-								'label' => translator::trans('bankaccount.account')
+								'label' => translator::trans('bankaccount.account'),
+								"ltr" => true,
 							));
 							$this->createField(array(
 								'name' => 'cart',
-								'label' => translator::trans('bankaccount.cart')
+								'label' => translator::trans('bankaccount.cart'),
+								"ltr" => true,
 							));
 							?>
 						</div>
@@ -37,6 +39,12 @@ use \packages\base\translator;
 							$this->createField(array(
 								'name' => 'owner',
 								'label' => translator::trans('bankaccount.owner')
+							));
+							$this->createField(array(
+								"name" => "shaba",
+								"label" => translator::trans("financial.bankaccount.shaba"),
+								"ltr" => true,
+								"placeholder" => "IR123456789101112131415161"
 							));
 							$this->createField(array(
 								'name' => 'status',

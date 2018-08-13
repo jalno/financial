@@ -10,6 +10,7 @@ class bankaccount extends dbObject{
         'title' => array('type' => 'text', 'required' => true),
         'account' => array('type' => 'text', 'required' => true),
 		'cart' => array('type' => 'text'),
+		"shaba" => array("type" => "text", "required" => true),
 		'owner' => array('type' => 'text', 'required' => true),
 		'status' => array('type' => 'int', 'required' => true)
     );

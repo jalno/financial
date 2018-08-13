@@ -40,6 +40,12 @@ $account = $this->getBankaccount();
 								'label' => translator::trans('bankaccount.owner')
 							));
 							$this->createField(array(
+								"name" => "shaba",
+								"label" => translator::trans("financial.bankaccount.shaba"),
+								"ltr" => true,
+								"placeholder" => "IR123456789101112131415161"
+							));
+							$this->createField(array(
 								'name' => 'status',
 								'type' => 'select',
 								'label' => translator::trans('bankaccount.status'),
