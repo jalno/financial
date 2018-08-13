@@ -1,7 +1,8 @@
 <?php
 namespace packages\financial\views\settings\gateways;
-use \packages\financial\payport as gateway;
-use \packages\userpanel\views\form;
+use packages\userpanel\views\form;
+use packages\financial\{payport as gateway, bankaccount};
+
 class edit extends form{
 	public function setGateways($gateways){
 		$this->setData($gateways, "gateways");
@@ -31,5 +32,10 @@ class edit extends form{
 	}
 	protected function getCurrencies():array{
 		return $this->getData('currencies');
+	}
+	protected function getAccounts(): array {
+		$account = new bankaccount();
+		$account->where("status", bankaccount::active);
+		return $account->get();
 	}
 }

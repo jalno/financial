@@ -34,6 +34,12 @@ $this->the_header();
 								'options' => $this->getGatewaysForSelect()
 							));
 							$this->createField(array(
+								"name" => "account",
+								"type" => "select",
+								"label" => translator::trans("financial.gateway.account"),
+								"options" => $this->getAccountsForSelect()
+							));
+							$this->createField(array(
 								'name' => 'status',
 								'type' => 'select',
 								'label' => translator::trans("financial.gateway.status"),

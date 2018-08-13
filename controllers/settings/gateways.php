@@ -1,31 +1,9 @@
 <?php
 namespace packages\financial\controllers\settings;
-use \packages\base;
-use \packages\base\frontend\theme;
-use \packages\base\NotFound;
-use \packages\base\http;
-use \packages\base\db;
-use \packages\base\db\parenthesis;
-use \packages\base\db\duplicateRecord;
-use \packages\base\views\FormError;
-use \packages\base\view\error;
-use \packages\base\inputValidation;
-use \packages\base\events;
-use \packages\base\options;
-
 use \packages\userpanel;
-use \packages\userpanel\user;
-use \packages\userpanel\date;
-
-use \packages\financial\view;
-use \packages\financial\currency;
-use \packages\financial\authentication;
-use \packages\financial\controller;
-use \packages\financial\authorization;
-use \packages\financial\payport as gateway;
-use \packages\financial\events\gateways as gatewaysEvent;
-
-use \packages\financial\api;
+use \packages\userpanel\{user, date};
+use \packages\base\{NotFound, http, db, db\parenthesis, db\duplicateRecord, views\FormError, view\error, inputValidation, events, options};
+use packages\financial\{api, view, currency, authentication, controller, authorization, payport as gateway, events\gateways as gatewaysEvent, bankaccount};
 
 class gateways extends controller{
 	protected $authentication = true;
@@ -50,6 +28,11 @@ class gateways extends controller{
 				'type' => 'string',
 				'optional' =>true,
 				'empty' => true
+			),
+			"account" => array(
+				"type" => "string",
+				"optional" =>true,
+				"empty" => true
 			),
 			'status' => array(
 				'type' => 'number',
@@ -80,11 +63,19 @@ class gateways extends controller{
 					throw new inputValidation("gateway");
 				}
 			}
+			if (isset($inputs["account"]) and $inputs["account"]) {
+				$bankaccount = new bankaccount();
+				$bankaccount->where("status", bankaccount::active);
+				$bankaccount->where("id", $inputs["account"]);
+				if (!$bankaccount->has()) {
+					throw new inputValidation("account");
+				}
+			}
 
-			foreach(array('id', 'title', 'gateway', 'status') as $item){
+			foreach(array('id', 'title', 'gateway', "account", 'status') as $item){
 				if(isset($inputs[$item]) and $inputs[$item]){
 					$comparison = $inputs['comparison'];
-					if(in_array($item, array('id','gateway', 'status'))){
+					if(in_array($item, array('id','gateway', "account", 'status'))){
 						$comparison = 'equals';
 						if($item == 'gateway'){
 							$inputs[$item] = $gateways->getByName($inputs[$item]);
@@ -132,6 +123,9 @@ class gateways extends controller{
 					'type' => 'string',
 					'values' => $gateways->getGatewayNames()
 				),
+				"account" => array(
+					"type" => "number",
+				),
 				'status' => array(
 					'type' => 'number',
 					'values' => array(gateway::active, gateway::deactive)
@@ -143,6 +137,12 @@ class gateways extends controller{
 			$this->response->setStatus(true);
 			try{
 				$inputs = $this->checkinputs($inputsRules);
+				$bankaccount = new bankaccount();
+				$bankaccount->where("status", bankaccount::active);
+				$bankaccount->where("id", $inputs["account"]);
+				if (!$bankaccount->has()) {
+					throw new inputValidation("account");
+				}
 				if(isset($inputs['currency'])){
 					if($inputs['currency']){
 						if(!is_array($inputs['currency'])){
@@ -169,6 +169,7 @@ class gateways extends controller{
 				}
 				$gatewayObj = new gateway();
 				$gatewayObj->title = $inputs['title'];
+				$gatewayObj->account = $inputs["account"];
 				$gatewayObj->controller = $gateway->getHandler();
 				$gatewayObj->status = $inputs['status'];
 				foreach($gateway->getInputs() as $input){
@@ -227,26 +228,45 @@ class gateways extends controller{
 		$view->setGateways($gateways->get());
 		$view->setGateway($gatewayObj);
 		$view->setCurrencies(currency::get());
-		if(http::is_post()){
+		if (http::is_post()) {
 			$inputsRules = array(
 				'title' => array(
-					'type' => 'string'
+					'type' => 'string',
+					'optional' => true,
 				),
 				'gateway' => array(
 					'type' => 'string',
-					'values' => $gateways->getGatewayNames()
+					'values' => $gateways->getGatewayNames(),
+					'optional' => true,
+				),
+				"account" => array(
+					"type" => "number",
+					'optional' => true,
 				),
 				'status' => array(
 					'type' => 'number',
-					'values' => array(gateway::active, gateway::deactive)
+					'values' => array(gateway::active, gateway::deactive),
+					'optional' => true,
 				),
 				'currency' => [
-					'optional' => true
+					'optional' => true,
 				]
 			);
 			$this->response->setStatus(true);
 			try{
 				$inputs = $this->checkinputs($inputsRules);
+				if (isset($inputs["account"])) {
+					if ($inputs["account"]) {
+						$bankaccount = new bankaccount();
+						$bankaccount->where("status", bankaccount::active);
+						$bankaccount->where("id", $inputs["account"]);
+						if (!$bankaccount->has()) {
+							throw new inputValidation("account");
+						}
+					} else {
+						unset($inputs["gateway"]);
+					}
+				}
 				if(isset($inputs['currency'])){
 					if($inputs['currency']){
 						if(!is_array($inputs['currency'])){
@@ -263,20 +283,37 @@ class gateways extends controller{
 						}
 					}
 				}
-				$gateway =  $gateways->getByName($inputs['gateway']);
-				if($GRules = $gateway->getInputs()){
-					$GRules = $inputsRules = array_merge($inputsRules, $GRules);
-					$ginputs = $this->checkinputs($GRules);
+				if (isset($inputs["gateway"])) {
+					if ($inputs["gateway"]) {
+						$gateway =  $gateways->getByName($inputs['gateway']);
+						if($GRules = $gateway->getInputs()){
+							$GRules = $inputsRules = array_merge($inputsRules, $GRules);
+							$ginputs = $this->checkinputs($GRules);
+						}
+						if($GRules = $gateway->getInputs()){
+							$gateway->callController($ginputs);
+						}
+					} else {
+						unset($inputs["gateway"]);
+					}
 				}
-				if($GRules = $gateway->getInputs()){
-					$gateway->callController($ginputs);
+				if (isset($inputs["title"])) {
+					$gatewayObj->title = $inputs['title'];
 				}
-				$gatewayObj->title = $inputs['title'];
-				$gatewayObj->controller = $gateway->getHandler();
-				$gatewayObj->status = $inputs['status'];
-				foreach($gateway->getInputs() as $input){
-					if(isset($ginputs[$input['name']])){
-						$gatewayObj->setParam($input['name'],$ginputs[$input['name']]);
+				if (isset($inputs["account"])) {
+					$gatewayObj->account = $inputs["account"];
+				}
+				if (isset($inputs["gateway"])) {
+					$gatewayObj->controller = $gateway->getHandler();
+				}
+				if (isset($inputs["status"])) {
+					$gatewayObj->status = $inputs['status'];
+				}
+				if (isset($inputs["gateway"])) {
+					foreach($gateway->getInputs() as $input){
+						if(isset($ginputs[$input['name']])){
+							$gatewayObj->setParam($input['name'],$ginputs[$input['name']]);
+						}
 					}
 				}
 				

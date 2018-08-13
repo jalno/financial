@@ -62,4 +62,14 @@ class add extends addView{
 		}
 		return $currencies;
 	}
+	protected function getAccountsForSelect(): array {
+		$accounts = array();
+		foreach ($this->getAccounts() as $account) {
+			$accounts[] = array(
+				"title" => $account->title . " - " . $account->shaba,
+				"value" => $account->id,
+			);
+		}
+		return $accounts;
+	}
 }

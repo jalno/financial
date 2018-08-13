@@ -15,11 +15,13 @@ class payport extends dbObject{
 	private $controllerClass;
 	protected $dbFields = array(
         'title' => array('type' => 'text', 'required' => true),
+        "account" => array("type" => "int", "required" => true),
         'controller' => array('type' => 'text', 'required' => true),
 		'status' => array('type' => 'int', 'required' => true)
     );
 	protected $relations = array(
 		'params' => array('hasMany', 'packages\\financial\\payport\\param', 'payport'),
+		"account" => array("hasOne", bankaccount::class, "account"),
 	);
 	function __construct($data = null, $connection = 'default'){
 		$data = $this->processData($data);

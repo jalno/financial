@@ -206,6 +206,7 @@
 		"financial.logs.transaction.pay.accept": "پرداخت #{pay_id} از صورتحساب #{transaction_id} را تایید کرد ",
 		"financial.logs.transaction.pay.reject": "پرداخت #{pay_id} از صورتحساب #{transaction_id} را تایید نکرد ",
 		"financial.bankaccount.shaba": "شماره شبا",
-		"error.financial.settings.bankaccount.gatewayDependencies": "بعضی از درگاه های پرداخت به این حساب بانکی متصل هستند. لطفا ابتدا وضعیت درگاه ها را مشخص کنید"
+		"error.financial.settings.bankaccount.gatewayDependencies": "بعضی از درگاه های پرداخت به این حساب بانکی متصل هستند. لطفا ابتدا وضعیت درگاه ها را مشخص کنید",
+		"financial.gateway.account": "حساب بانکی"
 	}
 }
