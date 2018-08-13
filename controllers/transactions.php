@@ -359,6 +359,7 @@ class transactions extends controller{
 						}catch(inputValidation $error){
 							$view->setFormError(FormError::fromException($error));
 						}
+						$view->setDataForm($this->inputsvalue($inputsRoles));
 					}else{
 						$view->setDataForm($transaction->payablePrice(), 'price');
 						$view->setDataForm(date::format("Y/m/d H:i:s"), 'date');

@@ -62,6 +62,7 @@ $this->the_header();
 								'type' => 'number',
 								'name' => 'price',
 								'label' => translator::trans("pay.banktransfer.price"),
+								"ltr" => true,
 							));
 							?>
 						</div>
@@ -73,7 +74,7 @@ $this->the_header();
 								'type' => 'select',
 								'name' => 'bankaccount',
 								'label' => translator::trans("pay.banktransfer.bankaccount"),
-								'options' => $this->getBankAccountsForSelect()
+								'options' => $this->getBankAccountsForSelect(),
 							));
 							?>
 						</div>
@@ -84,6 +85,7 @@ $this->the_header();
 							echo $this->createField(array(
 								'name' => 'date',
 								'label' => translator::trans("pay.banktransfer.date"),
+								"ltr" => true,
 							));
 							?>
 						</div>
@@ -95,6 +97,7 @@ $this->the_header();
 								'type' => 'number',
 								'name' => 'followup',
 								'label' => translator::trans("pay.banktransfer.followup"),
+								"ltr" => true,
 							));
 							?>
 						</div>
