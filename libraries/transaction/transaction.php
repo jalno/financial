@@ -229,9 +229,18 @@ class transaction extends dbObject{
 		$dakhlPackage = packages::package("dakhl");
 		$dakhl;
 		$invoice;
+		$dcurrency;
 		if ($dakhlPackage) {
+			$ocurrency = options::get("packages.dakhl.currency");
+			if (!$dcurrency = currency::where("id", $ocurrency)->getOne()) {
+				throw new \Exception("notfound dakhl currency");
+			}
 			$dakhl = new dakhl();
-			$invoice = $dakhl->addIncomeInvoice($this->title, $this->user, $this->price);
+			$price = $this->price;
+			if ($this->currency->id != $dcurrency->id) {
+				$price = $this->currency->changeTo($this->price, $dcurrency);
+			}
+			$invoice = $dakhl->addIncomeInvoice($this->title, $this->user, $price);
 		}
 		foreach($this->products as $product){
 			$currency = $this->currency;
@@ -250,7 +259,13 @@ class transaction extends dbObject{
 				if (!$product->description) {
 					$product->description = "";
 				}
-				$dakhl->addInvoiceProduct($invoice, $product->title, $product->number, $product->price, $product->discount, $product->description);
+				$price = $product->price;
+				$discount = $product->discount;
+				if ($product->currency->id != $dcurrency->id) {
+					$price = $product->currency->changeTo($product->price, $dcurrency);
+					$discount = $product->currency->changeTo($product->discount, $dcurrency);
+				}
+				$dakhl->addInvoiceProduct($invoice, $product->title, $product->number, $price, $discount, $product->description);
 			}
 		}
 		if ($dakhlPackage) {
@@ -286,7 +301,11 @@ class transaction extends dbObject{
 					continue;
 				}
 				$dakhlaccount = $dakhl->getBankAccount($account->title, $account->shaba);
-				$dakhl->addInvoicePay($invoice, $dakhlaccount, $pay->price, $pay->date, $description);
+				$price = $pay->price;
+				if ($pay->currency->id != $dcurrency->id) {
+					$price = $pay->currency->changeTo($pay->price, $dcurrency);
+				}
+				$dakhl->addInvoicePay($invoice, $dakhlaccount, $price, $pay->date, $description);
 			}
 		}
 	}
