@@ -1,10 +1,10 @@
 <?php
 namespace packages\financial;
-use \packages\base\options;
-use \packages\userpanel\user;
-use \packages\userpanel\date;
-use \packages\financial\events;
-use \packages\base\db\dbObject;
+use packages\base\{options, db\dbObject, packages, translator};
+use packages\userpanel\{user, date};
+use packages\financial\events;
+use packages\dakhl\API as dakhl;
+
 class transaction extends dbObject{
 	const unpaid = 1;
 	const paid = 2;
@@ -226,6 +226,13 @@ class transaction extends dbObject{
 		}
 	}
 	public function afterPay(){
+		$dakhlPackage = packages::package("dakhl");
+		$dakhl;
+		$invoice;
+		if ($dakhlPackage) {
+			$dakhl = new dakhl();
+			$invoice = $dakhl->addIncomeInvoice($this->title, $this->user, $this->price);
+		}
 		foreach($this->products as $product){
 			$currency = $this->currency;
 			$pcurrency = $product->currency;
@@ -238,6 +245,48 @@ class transaction extends dbObject{
 				$product->discount *= $rate->discount;
 				$product->currency = $currency->id;
 				$product->save();
+			}
+			if ($dakhlPackage) {
+				if (!$product->description) {
+					$product->description = "";
+				}
+				$dakhl->addInvoiceProduct($invoice, $product->title, $product->number, $product->price, $product->discount, $product->description);
+			}
+		}
+		if ($dakhlPackage) {
+			$pay = new transaction_pay();
+			$pay->where("transaction", $this->id);
+			$pay->where("status", transaction_pay::accepted);
+			$pay->where("method", array(transaction_pay::onlinepay, transaction_pay::banktransfer), "in");
+			foreach ($pay->get() as $pay) {
+				$account;
+				$description = "";
+				if ($pay->method == transaction_pay::onlinepay) {
+					$payparam = $pay->param("payport_pay");
+					if ($payparam) {
+						$payportpay = payport_pay::where("id", $payparam)->getOne();
+						if ($payportpay) {
+							$payport = $payportpay->payport;
+							$account = $payport->account;
+							$description = translator::trans("financial.pay.online", array("payport" => $payport->title));
+						}
+					}
+				} else if ($pay->method == transaction_pay::banktransfer) {
+					$payparam = $pay->param("bankaccount");
+					if ($payparam) {
+						$account = bankaccount::where("id", $payparam)->getOne();
+						$description = translator::trans("financial.pay.bankTransfer");
+						$followup = $pay->param("followup");
+						if ($followup) {
+							$description .= " - " . translator::trans("financial.pay.bankTransfer.followup", array("followup" => $pay->param("followup")));
+						}
+					}
+				}
+				if (!$account) {
+					continue;
+				}
+				$dakhlaccount = $dakhl->getBankAccount($account->title, $account->shaba);
+				$dakhl->addInvoicePay($invoice, $dakhlaccount, $pay->price, $pay->date, $description);
 			}
 		}
 	}
