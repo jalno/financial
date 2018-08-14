@@ -230,17 +230,25 @@ class transaction extends dbObject{
 		$dakhl;
 		$invoice;
 		$dcurrency;
+		$pays = array();
 		if ($dakhlPackage) {
-			$ocurrency = options::get("packages.dakhl.currency");
-			if (!$dcurrency = currency::where("id", $ocurrency)->getOne()) {
-				throw new \Exception("notfound dakhl currency");
+			$pay = new transaction_pay();
+			$pay->where("transaction", $this->id);
+			$pay->where("status", transaction_pay::accepted);
+			$pay->where("method", array(transaction_pay::onlinepay, transaction_pay::banktransfer), "in");
+			$pays = $pay->get();
+			if ($pays) {
+				$ocurrency = options::get("packages.dakhl.currency");
+				if (!$dcurrency = currency::where("id", $ocurrency)->getOne()) {
+					throw new \Exception("notfound dakhl currency");
+				}
+				$dakhl = new dakhl();
+				$price = $this->price;
+				if ($this->currency->id != $dcurrency->id) {
+					$price = $this->currency->changeTo($this->price, $dcurrency);
+				}
+				$invoice = $dakhl->addIncomeInvoice($this->title, $this->user, $price);
 			}
-			$dakhl = new dakhl();
-			$price = $this->price;
-			if ($this->currency->id != $dcurrency->id) {
-				$price = $this->currency->changeTo($this->price, $dcurrency);
-			}
-			$invoice = $dakhl->addIncomeInvoice($this->title, $this->user, $price);
 		}
 		foreach($this->products as $product){
 			$currency = $this->currency;
@@ -255,7 +263,7 @@ class transaction extends dbObject{
 				$product->currency = $currency->id;
 				$product->save();
 			}
-			if ($dakhlPackage) {
+			if ($invoice) {
 				if (!$product->description) {
 					$product->description = "";
 				}
@@ -268,12 +276,8 @@ class transaction extends dbObject{
 				$dakhl->addInvoiceProduct($invoice, $product->title, $product->number, $price, $discount, $product->description);
 			}
 		}
-		if ($dakhlPackage) {
-			$pay = new transaction_pay();
-			$pay->where("transaction", $this->id);
-			$pay->where("status", transaction_pay::accepted);
-			$pay->where("method", array(transaction_pay::onlinepay, transaction_pay::banktransfer), "in");
-			foreach ($pay->get() as $pay) {
+		if ($invoice) {
+			foreach ($pays as $pay) {
 				$account;
 				$description = "";
 				if ($pay->method == transaction_pay::onlinepay) {
