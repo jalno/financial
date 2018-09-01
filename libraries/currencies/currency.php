@@ -57,7 +57,10 @@ class currency extends dbObject{
 		$rate->where('changeTo', $changeTo);
 		return $rate->getOne();
 	}
-	public function changeTo(float $price, currency $other):float{
+	public function changeTo(float $price, currency $other): float {
+		if ($other->id == $this->id) {
+			return $price;
+		}
 		$rate = new currency\rate();
 		$rate->where('currency', $this->id);
 		$rate->where('changeTo', $other->id);
