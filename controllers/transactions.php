@@ -1,16 +1,35 @@
 <?php
 namespace packages\financial\controllers;
-use \packages\base\{db, http, NotFound, translator, view\error, inputValidation, views\FormError, db\parenthesis};
+use \packages\base\{db, http, NotFound, translator, view\error, inputValidation, views\FormError, db\parenthesis, response};
 use \packages\userpanel;
 use \packages\userpanel\{user, date, log};
-use \packages\financial\{logs, view, transaction, currency, authorization, authentication, controller, transaction_product, transaction_pay, bankaccount, payport, payport_pay, payport\redirect, payport\GatewayException, payport\VerificationException, payport\AlreadyVerified, events, views\transactions\pay as payView};
+use \packages\financial\{logs, view, views, transaction, currency, authorization, authentication, controller, transaction_product, transaction_pay, bankaccount, payport, payport_pay, payport\redirect, payport\GatewayException, payport\VerificationException, payport\AlreadyVerified, events, views\transactions\pay as payView};
 
 class transactions extends controller{
 	protected $authentication = true;
+	public function __construct(){
+		$this->response = new response();
+		if (authentication::check()) {
+			$this->page = http::getURIData('page');
+			$this->items_per_page = http::getURIData('ipp');
+			if ($this->page < 1) $this->page = 1;
+			if ($this->items_per_page < 1) $this->items_per_page = 25;
+			db::pageLimit($this->items_per_page);
+			$this->response = new response();
+		} else if ($token = http::getURIData("token")) {
+			$transaction = new transaction();
+			$transaction->where("token", $token);
+			if (!$transaction = $transaction->getOne()) {
+				parent::response(authentication::FailResponse());
+			}
+		} else {
+			parent::response(authentication::FailResponse());
+		}
+	}
 	function listtransactions(){
 		authorization::haveOrFail('transactions_list');
 		transaction::checkExpiration();
-		$view = view::byName("\\packages\\financial\\views\\transactions\\listview");
+		$view = view::byName(views\transactions\listview::class);
 		$types = authorization::childrenTypes();
 		$transaction = new transaction;
 		$inputsRules = array(
@@ -126,17 +145,20 @@ class transactions extends controller{
 		}
 		$this->response->setView($view);
 		return $this->response;
-		
 	}
 	private function getTransaction($id){
-		$types = authorization::childrenTypes();
 		db::join("userpanel_users", "userpanel_users.id=financial_transactions.user", "LEFT");
-		if($types){
-			db::where("userpanel_users.type", $types, 'in');
-		}else{
-			db::where("userpanel_users.id", authentication::getID());
-		}
 		$transaction = new transaction();
+		if (authentication::check()) {
+			$types = authorization::childrenTypes();
+			if($types){
+				$transaction->where("userpanel_users.type", $types, 'in');
+			}else{
+				$transaction->where("userpanel_users.id", authentication::getID());
+			}
+		} else if ($token = http::getURIData("token")) {
+			$transaction->where("financial_transactions.token", $token);
+		}
 		$transaction->where("financial_transactions.id", $id);
 		$transaction = $transaction->getOne("financial_transactions.*");
 		if(!$transaction){
@@ -185,16 +207,20 @@ class transactions extends controller{
 	}
 	public function pay($data){
 		$transaction = $this->getTransactionForPay($data);
-		$types = authorization::childrenTypes();
 		$view = view::byName(payView::class);
-		$canPayByCredit = true;
-		foreach($transaction->products as $product){
-			if($product->type == '\packages\financial\products\addingcredit'){
-				$canPayByCredit = false;
-				break;
+		if (authentication::check()) {
+			$types = authorization::childrenTypes();
+			$canPayByCredit = true;
+			foreach($transaction->products as $product){
+				if($product->type == '\packages\financial\products\addingcredit'){
+					$canPayByCredit = false;
+					break;
+				}
 			}
+			$canPayByCredit = ($canPayByCredit and ($transaction->user->credit > 0 or ($types and authentication::getUser()->credit > 0)));
+		} else {
+			$canPayByCredit = false;
 		}
-		$canPayByCredit = ($canPayByCredit and ($transaction->user->credit > 0 or ($types and authentication::getUser()->credit > 0)));
 		$view->setTransaction($transaction);
 		foreach($this->getAvailablePayMethods($canPayByCredit) as $method){
 			$view->setMethod($method);
@@ -268,16 +294,16 @@ class transactions extends controller{
 				))){
 					$inputs['user']->credit -= $inputs['credit'];
 					$inputs['user']->save();
-					
-					$log = new log();
-					$log->user = authentication::getUser();
-					$log->type = logs\transactions\pay::class;
-					$log->title = translator::trans("financial.logs.transaction.pay", ["transaction_id" => $transaction->id]);
-					$parameters['pay'] = transaction_pay::byId($pay);
-					$parameters['currency'] = $transaction->currency;
-					$log->parameters = $parameters;
-					$log->save();
-					
+					if (authentication::check()) { 
+						$log = new log();
+						$log->user = authentication::getUser();
+						$log->type = logs\transactions\pay::class;
+						$log->title = translator::trans("financial.logs.transaction.pay", ["transaction_id" => $transaction->id]);
+						$parameters['pay'] = transaction_pay::byId($pay);
+						$parameters['currency'] = $transaction->currency;
+						$log->parameters = $parameters;
+						$log->save();
+					}
 					$this->response->setStatus(true);
 					$redirect = $this->redirectToConfig($transaction);
 					$this->response->Go($redirect ? $redirect : userpanel\url('transactions/view/'.$transaction->id));
@@ -334,18 +360,22 @@ class transactions extends controller{
 												'followup' => $inputs['followup']
 											)
 										))){
-
-											$log = new log();
-											$log->user = authentication::getUser();
-											$log->type = logs\transactions\pay::class;
-											$log->title = translator::trans("financial.logs.transaction.pay", ["transaction_id" => $transaction->id]);
-											$parameters['pay'] = transaction_pay::byId($pay);
-											$parameters['currency'] = $transaction->currency;
-											$log->parameters = $parameters;
-											$log->save();
-
+											if (authentication::check()) {
+												$log = new log();
+												$log->user = authentication::getUser();
+												$log->type = logs\transactions\pay::class;
+												$log->title = translator::trans("financial.logs.transaction.pay", ["transaction_id" => $transaction->id]);
+												$parameters['pay'] = transaction_pay::byId($pay);
+												$parameters['currency'] = $transaction->currency;
+												$log->parameters = $parameters;
+												$log->save();
+											}
 											$this->response->setStatus(true);
-											$this->response->Go(userpanel\url('transactions/view/'.$transaction->id));
+											$parameter = array();
+											if ($token = http::getURIData("token")) {
+												$parameter["token"] = $token;
+											}
+											$this->response->Go(userpanel\url('transactions/view/'.$transaction->id, $parameter));
 										}
 									}else{
 										throw new inputValidation("date");
@@ -454,8 +484,8 @@ class transactions extends controller{
 			$payport = new payport();
 			$currency = $transaction->currency;
 			db::join('financial_payports_currencies', 'financial_payports_currencies.payport=financial_payports.id', "INNER");
-			db::join('financial_currencies', 'financial_currencies.id=financial_payports_currencies.currency', "INNER");
-			db::join('financial_currencies_rates', 'financial_currencies_rates.currency=financial_currencies.id', "INNER");
+			db::join('financial_currencies', 'financial_currencies.id=financial_payports_currencies.currency', "LEFT");
+			db::join('financial_currencies_rates', 'financial_currencies_rates.currency=financial_currencies.id', "LEFT");
 			$parenthesis = new parenthesis();
 			$parenthesis->where("financial_payports_currencies.currency", $currency->id, "=", "OR");
 			$parenthesis->where("financial_currencies_rates.changeTo", $currency->id, "=", "OR");
@@ -463,7 +493,6 @@ class transactions extends controller{
 			$payport->where('financial_payports.status', payport::active);
 			$payport->setQueryOption("DISTINCT");
 			$payports = $payport->get(null, 'financial_payports.*');
-
 			$view->setTransaction($transaction);
 			$view->setPayports($payports);
 
@@ -565,19 +594,23 @@ class transactions extends controller{
 									'payport_pay' => $pay->id,
 								)
 							));
-
-							$log = new log();
-							$log->user = authentication::getUser();
-							$log->type = logs\transactions\pay::class;
-							$log->title = translator::trans("financial.logs.transaction.pay", ["transaction_id" => $pay->transaction->id]);
-							$parameters['pay'] = transaction_pay::byId($tPay);
-							$parameters['currency'] = $pay->currency;
-							$log->parameters = $parameters;
-							$log->save();
-
+							if (authentication::check()) {
+								$log = new log();
+								$log->user = authentication::getUser();
+								$log->type = logs\transactions\pay::class;
+								$log->title = translator::trans("financial.logs.transaction.pay", ["transaction_id" => $pay->transaction->id]);
+								$parameters['pay'] = transaction_pay::byId($tPay);
+								$parameters['currency'] = $pay->currency;
+								$log->parameters = $parameters;
+								$log->save();
+							}
 							$this->response->setStatus(true);
 							$redirect = $this->redirectToConfig($pay->transaction);
-							$this->response->Go($redirect ? $redirect : userpanel\url('transactions/view/'.$pay->transaction->id));
+							$parameter = array();
+							if ($token = http::getURIData("token")) {
+								$parameter["token"] = $token;
+							}
+							$this->response->Go($redirect ? $redirect : userpanel\url('transactions/view/'.$pay->transaction->id, $parameter));
 						}else{
 							$view->setError('verification');
 						}
@@ -609,8 +642,8 @@ class transactions extends controller{
 		return ($transaction ? $transaction : new transactionNotFound);
 	}
 	public function delete($data){
-		$view = view::byName("\\packages\\financial\\views\\transactions\\delete");
 		authorization::haveOrFail('transactions_delete');
+		$view = view::byName("\\packages\\financial\\views\\transactions\\delete");
 		$transaction = $this->checkData($data);
 		$view->setTransactionData($transaction);
 		$this->response->setStatus(false);
@@ -631,8 +664,8 @@ class transactions extends controller{
 		return $this->response;
 	}
 	public function edit($data){
-		$view = view::byName("\\packages\\financial\\views\\transactions\\edit");
 		authorization::haveOrFail('transactions_edit');
+		$view = view::byName("\\packages\\financial\\views\\transactions\\edit");
 		$transaction = $this->checkData($data);
 
 		$view->setTransactionData($transaction);
@@ -790,14 +823,12 @@ class transactions extends controller{
 				$transaction->save();
 				$event = new events\transactions\edit($transaction);
 				$event->trigger();
-
 				$log = new log();
 				$log->user = authentication::getUser();
 				$log->type = logs\transactions\edit::class;
 				$log->title = translator::trans("financial.logs.transaction.edit", ["transaction_id" => $transaction->id]);
 				$log->parameters = $parameters;
 				$log->save();
-
 				$this->response->setStatus(true);
 			}catch(inputValidation $error){
 				$view->setFormError(FormError::fromException($error));
@@ -902,13 +933,11 @@ class transactions extends controller{
 				}
 				$event = new events\transactions\add($transaction);
 				$event->trigger();
-
 				$log = new log();
 				$log->user = authentication::getUser();
 				$log->type = logs\transactions\add::class;
 				$log->title = translator::trans("financial.logs.transaction.add", ["transaction_id" => $transaction->id]);
 				$log->save();
-				
 				$this->response->setStatus(true);
 				$this->response->Go(userpanel\url('transactions/view/'.$transaction->id));
 			}catch(inputValidation $error){
@@ -949,14 +978,12 @@ class transactions extends controller{
 				if(count($transaction->products) < 2){
 					throw new illegalTransaction();
 				}
-
 				$log = new log();
 				$log->user = authentication::getUser();
 				$log->type = logs\transactions\edit::class;
 				$log->title = translator::trans("financial.logs.transaction.edit", ["transaction_id" => $transaction->id]);
 				$log->parameters = ['oldData' => ['products' => [$transaction_product]]];
 				$log->save();
-
 				$transaction_product->delete();
 				$this->response->setStatus(true);
 				$this->response->Go(userpanel\url('transactions/edit/'.$transaction->id));

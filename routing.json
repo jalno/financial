@@ -35,8 +35,8 @@
 		"controller": "controllers\\transactions@onlinePay"
 	},
 	{
-		"path": ["userpanel","transactions","pay", "onlinepay", "callback", {"type":"dynamic", "name":"pay", "regex":"/^\\d+$/"}],
-		"controller": "controllers\\transactions@onlinePay_callback"
+		"path": ["transactions","pay", "onlinepay", "callback", {"type":"dynamic", "name":"pay", "regex":"/^\\d+$/"}],
+		"controller": "controllers\\transaction\\OnlinePay@callBack"
 	},
 	{
 		"path": ["userpanel","transactions","delete", {"type":"dynamic", "name":"id", "regex":"/^\\d+$/"}],

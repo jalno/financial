@@ -1,7 +1,8 @@
 <?php
 namespace packages\financial;
-use \packages\base\db\dbObject;
+use \packages\base\{db\dbObject, packages};
 use \packages\financial\events;
+
 class transaction_pay extends dbObject{
 	const accepted = 1;
 	const rejected = 0;
@@ -91,8 +92,10 @@ class transaction_pay extends dbObject{
 					$this->transaction->paid_at = time();
 					$this->transaction->afterPay();
 					$this->transaction->save();
-					$event = new events\transactions\pay($this->transaction);
-					$event->trigger();
+					if (packages::package("notifications")) {
+						$event = new events\transactions\pay($this->transaction);
+						$event->trigger();
+					}
 					if($this->transaction->isConfigured()){
 						$this->transaction->trigger_paid();
 					}

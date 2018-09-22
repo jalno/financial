@@ -20,7 +20,7 @@ class onlinepay extends onlinepayView{
 		));
 		$this->setShortDescription(translator::trans('transaction.number',array('number' =>  $this->transaction->id)));
 		$this->setNavigation();
-
+		$this->addBodyClass("transaction-pay-online");
 	}
 	private function setNavigation(){
 		$item = new menuItem("transactions");
