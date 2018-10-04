@@ -7,7 +7,7 @@ use \packages\financial\{logs, view, views, transaction, currency, authorization
 
 class transactions extends controller{
 	protected $authentication = true;
-	public function __construct(){
+	public function __construct() {
 		$this->response = new response();
 		if (authentication::check()) {
 			$this->page = http::getURIData('page');
@@ -31,6 +31,7 @@ class transactions extends controller{
 		transaction::checkExpiration();
 		$view = view::byName(views\transactions\listview::class);
 		$types = authorization::childrenTypes();
+		$anonymous = authorization::is_accessed("transactions_anonymous");
 		$transaction = new transaction;
 		$inputsRules = array(
 			'id' => array(
@@ -100,17 +101,25 @@ class transactions extends controller{
 				$searched = true;
 				$transaction->where($parenthesis);
 			}
-		}catch(inputValidation $error){
+		} catch(inputValidation $error){
 			$view->setFormError(FormError::fromException($error));
 			$this->response->setStatus(false);
 		}
-		db::join("userpanel_users", "userpanel_users.id=financial_transactions.user", "LEFT");
-		if($types){
-			db::where("userpanel_users.type", $types, 'in');
-		}else{
-			db::where("userpanel_users.id", authentication::getID());
+		if($anonymous){
+			db::join("userpanel_users", "userpanel_users.id=financial_transactions.user", "LEFT");
+			$parenthesis = new parenthesis();
+			$parenthesis->where("userpanel_users.type",  $types, "in");
+			$parenthesis->where("financial_transactions.user", null, "is","or");
+			db::where($parenthesis);
+		} else {
+			db::join("userpanel_users", "userpanel_users.id=financial_transactions.user", "INNER");
+			if ($types) {
+				db::where("userpanel_users.type", $types, "in");
+			} else {
+				db::where("userpanel_users.id", authentication::getID());
+			}
 		}
-		if(!$searched){
+		if (!$searched) {
 			$transaction->where('financial_transactions.status', transaction::expired, '!=');
 		}
 		$transaction->orderBy('id', ' DESC');
@@ -147,18 +156,26 @@ class transactions extends controller{
 		return $this->response;
 	}
 	private function getTransaction($id){
-		db::join("userpanel_users", "userpanel_users.id=financial_transactions.user", "LEFT");
 		$transaction = new transaction();
+		$parenthesis = new parenthesis();
+		if(authorization::is_accessed("transactions_anonymous")) {
+			$parenthesis->where("financial_transactions.user", null, "is", "or");
+		}
 		if (authentication::check()) {
 			$types = authorization::childrenTypes();
-			if($types){
-				$transaction->where("userpanel_users.type", $types, 'in');
-			}else{
-				$transaction->where("userpanel_users.id", authentication::getID());
+			db::join("userpanel_users", "userpanel_users.id=financial_transactions.user", "LEFT");
+			if ($types) {
+				$parenthesis->where("userpanel_users.type", $types, 'in', "or");
+			} else {
+				$parenthesis->where("userpanel_users.id", authentication::getID(), "=", "or");
 			}
+			$transaction->where($parenthesis);
 		} else if ($token = http::getURIData("token")) {
 			$transaction->where("financial_transactions.token", $token);
+		} else {
+			throw new NotFound();
 		}
+		$transaction->where($parenthesis);
 		$transaction->where("financial_transactions.id", $id);
 		$transaction = $transaction->getOne("financial_transactions.*");
 		if(!$transaction){
