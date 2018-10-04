@@ -63,7 +63,12 @@ class edit extends editView{
 		return $currencies;
 	}
 	protected function getAccountsForSelect(): array {
-		$accounts = array();
+		$accounts = array(
+			array(
+				"title" => "هیچ کدام",
+				"value" => "",
+			),
+		);
 		foreach ($this->getAccounts() as $account) {
 			$accounts[] = array(
 				"title" => $account->title . " - " . $account->shaba,
