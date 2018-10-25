@@ -1,9 +1,15 @@
 <?php
 use \packages\userpanel;
-use \packages\base\translator;
+use \packages\base\{translator, http};
 use \themes\clipone\utility;
+use packages\financial\authentication;
 
-$this->the_header();
+$parameter = array();
+if ($token = http::getURIData("token")) {
+	$parameter["token"] = $token;
+}
+$isLogin = authentication::check();
+$this->the_header(!$isLogin ? "logedout" : "");
 ?>
 <!-- start: PAGE CONTENT -->
 <div class="row">
@@ -54,7 +60,7 @@ $this->the_header();
 				</div>
 			</div>
 			<div class="panel-body">
-				<form action="<?php echo userpanel\url('transactions/pay/banktransfer/'.$this->transaction->id); ?>" method="POST" role="form" class="pay_banktransfer_form">
+				<form action="<?php echo userpanel\url('transactions/pay/banktransfer/'.$this->transaction->id, $parameter); ?>" method="POST" role="form" class="pay_banktransfer_form">
 					<div class="row">
 						<div class="col-xs-12">
 							<?php
@@ -112,5 +118,4 @@ $this->the_header();
 		</div>
 	</div>
 </div>
-<?php
-$this->the_footer();
+<?php $this->the_footer(!$isLogin ? "logedout" : "");

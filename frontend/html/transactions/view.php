@@ -1,13 +1,12 @@
 <?php
 use \packages\base;
-use \packages\userpanel;
-use \packages\financial\currency;
-use \packages\financial\transaction;
-use \packages\financial\transaction_pay;
-use \packages\base\translator;
+use \packages\base\{translator, http};
 use \themes\clipone\utility;
-use \packages\userpanel\date;
-$this->the_header();
+use \packages\financial\{currency, transaction, transaction_pay, authentication};
+use \packages\userpanel;
+use \packages\userpanel\{date, user};
+$isLogin = authentication::check();
+$this->the_header(!$isLogin ? "logedout" : "");
 ?>
 <div class="row">
 	<div class="col-xs-12">
@@ -45,15 +44,42 @@ $this->the_header();
 					</div>
 				</div>
 			</div>
-			<?php } ?>
+			<?php
+			}
+			if (!$this->transaction->user) {
+				$firstname = $this->transaction->param("firstname");
+				$lastname = $this->transaction->param("lastname");
+				$email = $this->transaction->param("email");
+				$cellphone = $this->transaction->param("cellphone");
+				if ($firstname or $lastname or $email or $cellphone) {
+					$user = new user();
+					if ($firstname) {
+						$user->name = $firstname;
+					}
+					if ($lastname) {
+						$user->lastname = $lastname;
+					}
+					if ($email) {
+						$user->email = $email;
+					}
+					if ($cellphone) {
+						$user->cellphone = $cellphone;
+					}
+					$this->transaction->user = $user;
+				}
+			}
+			?>
 			<div class="row">
+			<?php if ($this->transaction->user) { ?>
 				<div class="col-sm-4">
 					<h4>خریدار:</h4>
 					<div class="well">
 						<address>
+							<?php if ($this->transaction->user->name or $this->transaction->user->lastname) { ?>
 							<strong><?php echo $this->transaction->user->getFullName(); ?></strong>
 							<br>
 							<?php
+							}
 							if($this->transaction->user->address){
 								echo $this->transaction->user->address;
 							?>
@@ -77,12 +103,18 @@ $this->the_header();
 							<?php } ?>
 						</address>
 						<address>
+							<?php if ($this->transaction->user->email) { ?>
 							<strong>ایمیل: </strong>
 							<br>
+							<?php
+							}
+							if ($this->transaction->user->email) { ?>
 							<a href="<?php echo "mailto:".$this->transaction->user->email; ?>"><?php echo $this->transaction->user->email; ?></a>
+							<?php } ?>
 						</address>
 					</div>
 				</div>
+			<?php } ?>
 				<div class="col-sm-4 pull-left">
 					<h4>اطلاعات فاکتور:</h4>
 					<ul class="list-unstyled invoice-details">
@@ -135,8 +167,8 @@ $this->the_header();
 						<tbody>
 						<?php
 						$x = 1;
+						$currency = $this->transaction->currency;
 						foreach($this->transaction->products as $product){
-							$currency = $this->transaction->currency;
 							$pcurrency = $product->currency;
 							$rate = false;
 							if($pcurrency->id != $currency->id){
@@ -240,11 +272,18 @@ $this->the_header();
 					</ul>
 					<br>
 					<a onclick="javascript:window.print();" class="btn btn-lg btn-teal hidden-print">چاپ<i class="fa fa-print"></i></a>
-					<?php if($this->transaction->status == transaction::unpaid){ ?><a class="btn btn-lg btn-green hidden-print btn-pay" href="<?php echo userpanel\url('transactions/pay/'.$this->transaction->id);?>">پرداخت صورتحساب<i class="fa fa-check"></i></a><?php } ?>
+					<?php
+					if ($this->transaction->status == transaction::unpaid) {
+						$parameter = array();
+						if ($token = http::getURIData("token")) {
+							$parameter["token"] = $token;
+						}
+					?>
+						<a class="btn btn-lg btn-green hidden-print btn-pay" href="<?php echo userpanel\url('transactions/pay/'.$this->transaction->id, $parameter);?>">پرداخت صورتحساب<i class="fa fa-check"></i></a>
+					<?php } ?>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
-<?php
-$this->the_footer();
+<?php $this->the_footer(!$isLogin ? "logedout" : "");

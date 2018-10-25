@@ -1,6 +1,6 @@
 <?php
 namespace packages\financial\payport;
-use packages\userpanel;
+use packages\base;
 use packages\financial\payport;
 use packages\financial\payport_pay;
 
@@ -9,7 +9,7 @@ abstract class gateway{
 	abstract public function PaymentRequest(payport_pay $pay);
 	abstract public function PaymentVerification(payport_pay $pay);
 	protected function callbackURL(payport_pay $pay){
-		return userpanel\url("transactions/pay/onlinepay/callback/".$pay->id, array(), true);
+		return base\url("transactions/pay/onlinepay/callback/".$pay->id, array(), true);
 	}
 }
 class redirect{

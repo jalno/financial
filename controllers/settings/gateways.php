@@ -125,6 +125,8 @@ class gateways extends controller{
 				),
 				"account" => array(
 					"type" => "number",
+					"optional" => true,
+					"empty" => true,
 				),
 				'status' => array(
 					'type' => 'number',
@@ -137,11 +139,17 @@ class gateways extends controller{
 			$this->response->setStatus(true);
 			try{
 				$inputs = $this->checkinputs($inputsRules);
-				$bankaccount = new bankaccount();
-				$bankaccount->where("status", bankaccount::active);
-				$bankaccount->where("id", $inputs["account"]);
-				if (!$bankaccount->has()) {
-					throw new inputValidation("account");
+				if (isset($inputs["account"])) {
+					if ($inputs["account"]) {
+						$bankaccount = new bankaccount();
+						$bankaccount->where("status", bankaccount::active);
+						$bankaccount->where("id", $inputs["account"]);
+						if (!$bankaccount->has()) {
+							throw new inputValidation("account");
+						}
+					} else {
+						unset($inputs["account"]);
+					}
 				}
 				if(isset($inputs['currency'])){
 					if($inputs['currency']){
@@ -169,7 +177,9 @@ class gateways extends controller{
 				}
 				$gatewayObj = new gateway();
 				$gatewayObj->title = $inputs['title'];
-				$gatewayObj->account = $inputs["account"];
+				if (isset($inputs["account"])) {
+					$gatewayObj->account = $inputs["account"];
+				}
 				$gatewayObj->controller = $gateway->getHandler();
 				$gatewayObj->status = $inputs['status'];
 				foreach($gateway->getInputs() as $input){
@@ -242,6 +252,7 @@ class gateways extends controller{
 				"account" => array(
 					"type" => "number",
 					'optional' => true,
+					"empty" => true,
 				),
 				'status' => array(
 					'type' => 'number',

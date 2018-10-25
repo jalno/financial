@@ -8,11 +8,7 @@ use \packages\userpanel;
 use \packages\userpanel\user;
 use \packages\userpanel\date;
 
-use \packages\financial\bankaccount;
-use \packages\financial\transaction;
-use \packages\financial\payport_pay;
-use \packages\financial\transaction_pay;
-use \packages\financial\views\transactions\view as transactionsView;
+use \packages\financial\{bankaccount, transaction, payport_pay, transaction_pay, views\transactions\view as transactionsView};
 
 use \themes\clipone\viewTrait;
 use \themes\clipone\breadcrumb;
@@ -35,7 +31,7 @@ class view extends transactionsView{
 		$this->setNavigation();
 		$this->SetNoteBox();
 		$this->setPays();
-
+		$this->addBodyClass("transaction-view");
 	}
 	private function setNavigation(){
 		navigation::active("transactions/list");

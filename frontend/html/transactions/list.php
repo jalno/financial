@@ -62,7 +62,17 @@ $this->the_header();
 								<td class="center"><?php echo $transaction->id; ?></td>
 								<td><?php echo $transaction->title; ?></td>
 								<td><?php echo $transaction->price . " " . $transaction->currency->title; ?></td>
-								<?php if($this->multiuser){ ?><td><a href="<?php echo userpanel\url('users/view/'.$transaction->user->id); ?>"><?php echo $transaction->user->name.' '.$transaction->user->lastname; ?></a></td><?php } ?>
+								<?php if($this->multiuser){ ?>
+								<td>
+									<?php if ($transaction->user) { ?>
+									<a href="<?php echo userpanel\url('users/view/'.$transaction->user->id); ?>"><?php echo $transaction->user->name.' '.$transaction->user->lastname; ?></a>
+									<?php
+									} else {
+										echo "-";
+									}
+									?>
+								</td>
+								<?php } ?>
 								<td><?php echo $transaction->create_at; ?></td>
 								<td class="hidden-xs"><span class="<?php echo $statusClass; ?>"><?php echo translator::trans($statusTxt); ?></span></td>
 								<?php

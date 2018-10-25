@@ -20,7 +20,7 @@ class banktransfer extends banktransferView{
 		));
 		$this->setShortDescription(translator::trans('transaction.number',array('number' =>  $this->transaction->id)));
 		$this->setNavigation();
-
+		$this->addBodyClass("transaction-pay-bankaccount");
 	}
 	private function setNavigation(){
 		$item = new menuItem("transactions");

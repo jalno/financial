@@ -1,13 +1,18 @@
 <?php
 use \packages\userpanel;
-use \packages\base\translator;
+use \packages\base\{translator, http};
 use \themes\clipone\utility;
-
-$this->the_header();
+use packages\financial\authentication;
+$parameter = array();
+if ($token = http::getURIData("token")) {
+	$parameter["token"] = $token;
+}
+$isLogin = authentication::check();
+$this->the_header(!$isLogin ? "logedout" : "");
 ?>
 <!-- start: PAGE CONTENT -->
 <div class="row">
-	<div class="col-sm-12">
+	<div class="<?php echo !$isLogin ? "col-sm-6 col-sm-offset-3 col-xs-12" : "col-xs-12"; ?>">
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<i class="clip-phone-3"></i> <?php echo translator::trans('pay.online.select'); ?>
@@ -16,7 +21,7 @@ $this->the_header();
 				</div>
 			</div>
 			<div class="panel-body">
-				<form action="<?php echo userpanel\url('transactions/pay/onlinepay/'.$this->transaction->id); ?>" method="POST" role="form" class="pay_credit_form">
+				<form action="<?php echo userpanel\url('transactions/pay/onlinepay/'.$this->transaction->id, $parameter); ?>" method="POST" role="form" class="pay_credit_form">
 					<?php $this->createField([
 						"name" => "currency",
 						"type" => "hidden",
@@ -62,5 +67,4 @@ $this->the_header();
 		</div>
 	</div>
 </div>
-<?php
-$this->the_footer();
+<?php $this->the_footer(!$isLogin ? "logedout" : "");

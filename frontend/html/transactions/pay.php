@@ -1,13 +1,14 @@
 <?php
 use \packages\userpanel;
-use \packages\base\translator;
+use \packages\base\{translator, http};
 use \themes\clipone\utility;
-
-$this->the_header();
+use packages\financial\authentication;
+$isLogin = authentication::check();
+$this->the_header(!$isLogin ? "logedout" : "");
 ?>
 <!-- start: PAGE CONTENT -->
 <div class="row">
-	<div class="col-sm-12">
+	<div class="<?php echo !$isLogin ? "col-sm-6 col-sm-offset-3 col-xs-12" : "col-xs-12"; ?>">
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<i class="fa fa-money"></i> <?php echo translator::trans('pay.methods'); ?>
@@ -19,6 +20,10 @@ $this->the_header();
 				<div class="row">
 					<?php
 					$first = true;
+					$parameter = array();
+					if ($token = http::getURIData("token")) {
+						$parameter["token"] = $token;
+					}
 					foreach($this->methods as $method){
 						$icon = utility::switchcase($method, array(
 							'fa fa-university' => 'banktransfer',
@@ -27,7 +32,7 @@ $this->the_header();
 						));
 					?>
 					<div class="col-sm-<?php echo ($this->getColumnWidth());if($first)echo(' col-sm-offset-3'); ?>">
-						<a href="<?php echo userpanel\url('transactions/pay/'.$method.'/'.$this->transaction->id); ?>" class="btn btn-icon btn-block"><i class="<?php echo $icon; ?>"></i> <?php echo translator::trans('pay.method.'.$method); ?></a>
+						<a href="<?php echo userpanel\url('transactions/pay/'.$method.'/'.$this->transaction->id, $parameter); ?>" class="btn btn-icon btn-block"><i class="<?php echo $icon; ?>"></i> <?php echo translator::trans('pay.method.'.$method); ?></a>
 					</div>
 					<?php
 						if($first){
@@ -49,5 +54,4 @@ $this->the_header();
 		</div>
 	</div>
 </div>
-<?php
-$this->the_footer();
+<?php $this->the_footer(!$isLogin ? "logedout" : "");

@@ -12,11 +12,20 @@ class transaction extends dbObject{
 	const expired = 4;
 	const host = 1;
 	const domain = 2;
+	public static function generateToken(int $length = 15): string {
+		$numberChar = "0123456789";
+		$pw = "";
+		while (strlen($pw) < $length) {
+			$pw .= substr($numberChar, rand(0, 9), 1);
+		}
+		return $pw;
+	}
 	protected $dbTable = "financial_transactions";
 	protected $primaryKey = "id";
 	protected $dbFields = array(
 		'id' => array('type' => 'int'),
-        'user' => array('type' => 'int', 'required' => true),
+        'token' => array('type' => "text", "required" => true, "unique" => true),
+        'user' => array('type' => 'int'),
         'title' => array('type' => 'text', 'required' => true),
         'price' => array('type' => 'double', 'required' => true),
 		'create_at' => array('type' => 'int', 'required' => true),
@@ -100,10 +109,13 @@ class transaction extends dbObject{
 			$data['expire_at'] = $data['create_at'] + (86400*2);
 		}
 		if(!isset($data['currency'])){
-			if(!$data['user'] instanceof dbObject){
-				$user = user::where('id', $data['user'])->getOne();
-			}else{
-				$user = $data['user'];
+			$user = null;
+			if (isset($data['user'])) {
+				if (!($data['user'] instanceof dbObject)) {
+					$user = user::where('id', $data['user'])->getOne();
+				} else {
+					$user = $data['user'];
+				}
 			}
 			$data['currency'] = currency::getDefault($user);
 		}
@@ -139,6 +151,9 @@ class transaction extends dbObject{
 				$discount *= $rate->price;
 			}
 			$data['price'] += (($price*$product->number) - $discount);
+		}
+		if (!isset($data["token"])) {
+			$data["token"] = transaction::generateToken();
 		}
 		return $data;
 	}
@@ -227,9 +242,9 @@ class transaction extends dbObject{
 	}
 	public function afterPay(){
 		$dakhlPackage = packages::package("dakhl");
-		$dakhl;
-		$invoice;
-		$dcurrency;
+		$dakhl = false;
+		$invoice = false;
+		$dcurrency = false;
 		$pays = array();
 		if ($dakhlPackage) {
 			$pay = new transaction_pay();

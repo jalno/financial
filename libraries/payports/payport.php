@@ -15,7 +15,7 @@ class payport extends dbObject{
 	private $controllerClass;
 	protected $dbFields = array(
         'title' => array('type' => 'text', 'required' => true),
-        "account" => array("type" => "int", "required" => true),
+        "account" => array("type" => "int"),
         'controller' => array('type' => 'text', 'required' => true),
 		'status' => array('type' => 'int', 'required' => true)
     );

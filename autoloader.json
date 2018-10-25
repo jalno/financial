@@ -334,6 +334,10 @@
 		{
 			"classes":["logs\\transactions\\pay"],
 			"file":"logs/transactions/pay.php"
+		},
+		{
+			"classes":["controllers\\transaction\\OnlinePay"],
+			"file":"controllers/OnlinePay.php"
 		}
 	]
 }

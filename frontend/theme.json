@@ -17,7 +17,8 @@
 		{"type":"package", "name":"webuilder"},
 		{"type":"package", "name":"jquery.growl"},
 		{"type":"package", "name":"bootstrap-inputmsg"},
-		{"type":"ts", "file":"assets/ts/Main.ts"}
+		{"type":"ts", "file":"assets/ts/Main.ts"},
+		{"type":"less", "file":"assets/less/notLogged.less"}
 	],
 	"events":[
 		{

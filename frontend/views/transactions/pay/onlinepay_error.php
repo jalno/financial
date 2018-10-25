@@ -22,7 +22,7 @@ class error extends errorView{
 		));
 		$this->setShortDescription(translator::trans('transaction.number',array('number' =>  $this->transaction->id)));
 		$this->setNavigation();
-
+		$this->addBodyClass("transaction-pay-callback");
 	}
 	private function setNavigation(){
 		$item = new menuItem("transactions");
