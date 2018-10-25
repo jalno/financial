@@ -20,18 +20,22 @@ $this->the_header();
             </div>
             <div class="panel-body">
 				<form class="create_form" action="<?php echo userpanel\url('transactions/config/'.$this->product->id); ?>" method="post">
-					<div class="col-xs-8 col-xs-ofsset-2">
-						<?php
-						foreach($this->product->getFields() as $field){
-							$this->createField($field);
-						}
-						?>
+					<div class="row">
+						<div class="col-sm-8 col-sm-offset-2 col-xs-12">
+							<?php
+							foreach($this->product->getFields() as $field){
+								$this->createField($field);
+							}
+							?>
+						</div>
 					</div>
-					<div class="col-xs-12 text-left">
-						<p>
-							<a href="<?php echo userpanel\url('transactions/view/'.$this->product->transaction->id); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-right"></i> <?php echo translator::trans('financial.return'); ?></a>
-							<button type="submit" class="btn btn-success"><i class="fa fa-check-square-o"></i> <?php echo translator::trans("financial.submit"); ?></button>
-						</p>
+					<div class="row">
+						<div class="col-xs-12 text-left">
+							<p>
+								<a href="<?php echo userpanel\url('transactions/view/'.$this->product->transaction->id); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-right"></i> <?php echo translator::trans('financial.return'); ?></a>
+								<button type="submit" class="btn btn-success"><i class="fa fa-check-square-o"></i> <?php echo translator::trans("financial.submit"); ?></button>
+							</p>
+						</div>
 					</div>
 				</form>
             </div>
@@ -40,3 +44,4 @@ $this->the_header();
 </div>
 <?php
 $this->the_footer();
+
