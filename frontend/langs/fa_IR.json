@@ -115,9 +115,7 @@
 		"paided": "پرداخت شده",
 		"transaction.accept.warning": "آیا شما از تایید صورتحساب به شناسه #{transaction_id} اطمینان دارید؟",
 		"pay.method.payaccepted": "تایید شده توسط: {acceptor}",
-		"shortcut.transactions.title": "فاکتور ها",
-		"shortcut.transactions.text": "لیست فاکتور ها را بررسی کنید، شاید تاریخ انقضای فاکتوری در نزدیکی باشد و شما از وجود آن بی خبر باشید.",
-		"shortcut.transactions.link": "لیست فاکتور ها",
+		"shortcut.transactions.link": "لیست صورتحساب ها",
 		"pay.redirect":"ارجاع به درگاه پرداخت",
 		"pay.redirect.wait" : "لطفا صبر کنید...",
 		"pay.redirect.text" : "شما در حال انتقال به درگاه پرداخت هستید، لطفا چند لحظه صبر کنید...",
@@ -209,6 +207,10 @@
 		"error.financial.settings.bankaccount.gatewayDependencies": "بعضی از درگاه های پرداخت به این حساب بانکی متصل هستند. لطفا ابتدا وضعیت درگاه ها را مشخص کنید",
 		"financial.gateway.account": "حساب بانکی",
 		"pay.online.success": "تراکنش موفق",
-		"pay.online.success.text": "صورتحساب #{transaction_id} با موفقیت پرداخت شد."
+		"pay.online.success.text": "صورتحساب #{transaction_id} با موفقیت پرداخت شد.",
+		"shortcut.transactions.user.credit": "موجودی حساب کاربری شما",
+		"shortcut.transactions.unpaid.transaction": "صورتحساب پرداخت نشده دارید",
+		"shortcut.transactions.user.credit.iszero": "موجودی کاربری شما صفر است",
+		"shortcut.transactions.unpaid.transaction.iszere": "صورتحساب پرداخت نشده ندارید"
 	}
 }
