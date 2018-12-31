@@ -25,7 +25,7 @@ class settings{
 	}
 	public function settings_list(settingsEvent $settings){
 		$tuning = new settingsEvent\tuning("financial");
-		$tuning->setController(controller::class."@store");
+		$tuning->setController(controller::class);
 		$tuning->addInput([
 			'name' => 'financial_transaction_currency',
 			'type' => 'number',

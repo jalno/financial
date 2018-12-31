@@ -1,31 +1,27 @@
 <?php
 namespace packages\financial\controllers\userpanel;
-use \packages\userpanel\user;
-use \packages\financial\currency;
-use \packages\financial\controller;
-use \packages\base\inputValidation;
-class settings extends controller{
-	protected $authentication = true;
-	public function store(array $inputs, user $user){
-		if(isset($inputs['financial_transaction_currency'])){
-			if(!$currency = $user->option('financial_transaction_currency')){
-				$currency = currency::getDefault();
+use packages\base\{inputValidation, translator};
+use packages\financial\currency;
+use packages\userpanel\{user, events\settings\Controller, events\settings\Log};
+
+class settings implements Controller {
+	public function store(array $inputs, user $user): array {
+		if (isset($inputs["financial_transaction_currency"])) {
+			$currency = currency::getDefault($user);
+			$newCurrency = currency::byId($inputs["financial_transaction_currency"]);
+			if (!$newCurrency) {
+				throw new inputValidation("financial_transaction_currency");
 			}
-			if(!$currency instanceof dbObject){
-				$currency = currency::byId($currency);
-			}
-			if($user->credit > 0 and $currency->id != $inputs['financial_transaction_currency']){
-				$rate = new currency\rate();
-				$rate->where('currency', $currency->id);
-				$rate->where('changeTo', $inputs['financial_transaction_currency']);
-				if(!$rate = $rate->getOne()){
-					throw new inputValidation('financial_transaction_currency');
-				}
-				$user->credit *= $rate->price;
+			$logs = array();
+			if ($user->credit > 0 and $currency->id != $newCurrency->id) {
+				$user->credit = $currency->changeTo($user->credit, $newCurrency);
 				$user->save();
 			}
-
-			$user->setOption('financial_transaction_currency', $inputs['financial_transaction_currency']);
+			if ($currency->id != $newCurrency->id) {
+				$logs[] = new Log("financial_transaction_currency", $currency->title, $newCurrency->title, translator::trans("financial.usersettings.transaction.currency"));
+				$user->setOption("financial_transaction_currency", $inputs["financial_transaction_currency"]);
+			}
+			return $logs;
 		}
 	}
 }
