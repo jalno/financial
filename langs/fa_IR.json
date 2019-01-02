@@ -8,7 +8,7 @@
 		"transaction.title.adding_credit": "افزایش موجودی",
 		"transaction.adding_credit": "افزایش موجودی به مبلغ {price} ریال",
 		"financial.transactions": "صورتحساب {title}",
-		"financial.transactions.description": "ساخته شده در: {create_at} کاربر: {user}",
+		"financial.transactions.description": "شناسه: #{id} ساخته شده در: {create_at} کاربر: {user}",
 		"error.illegalTransaction": "شما نمیتوانید تمام محصولات صورتحساب را پاک کنید! باید حداقل یک محصول موجود باشد",
 		"email.template.name.financial_transaction_add":"ایجاد صورتحساب جدید در بخش مالی",
 		"email.template.variable.transaction->id":"شناسه صورتحساب",
