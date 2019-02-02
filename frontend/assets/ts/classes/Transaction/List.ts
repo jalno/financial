@@ -1,9 +1,9 @@
 import * as $ from "jquery";
-import "../jquery.userAutoComplete";
+import "../jquery.financialUserAutoComplete";
 export default class List{
 	private static $form = $('#transactionsearch');
 	private static runUserSearch(){
-		$('input[name=user_name]', List.$form).userAutoComplete();
+		$('input[name=user_name]', List.$form).financialUserAutoComplete();
 	}
 	public static init(){
 		if($('input[name=user_name]', List.$form).length){

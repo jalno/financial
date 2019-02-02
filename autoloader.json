@@ -338,6 +338,10 @@
 		{
 			"classes":["controllers\\transaction\\OnlinePay"],
 			"file":"controllers/OnlinePay.php"
+		},
+		{
+			"classes":["controllers\\userpanel\\Users"],
+			"file": "controllers/userpanel/Users.php"
 		}
 	]
 }

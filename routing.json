@@ -141,5 +141,10 @@
 		"path": ["userpanel","settings", "financial", "currencies", "delete", {"type":"dynamic","name":"currency", "regex":"/^\\d+$/"}],
 		"controller": "controllers\\settings\\currencies@terminate",
 		"method": "post"
+	},
+	{
+		"path": ["userpanel", "financial", "users"],
+		"controller": "controllers\\userpanel\\Users@search",
+		"method": "get"
 	}
 ]

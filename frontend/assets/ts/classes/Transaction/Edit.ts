@@ -1,5 +1,5 @@
 import * as $ from "jquery";
-import "../jquery.userAutoComplete";
+import "../jquery.financialUserAutoComplete";
 import "bootstrap";
 import { Router , webuilder } from "webuilder";
 import "jquery.growl";
@@ -9,7 +9,7 @@ export default class Edit{
 	private static table = $(".product-table", Edit.$form);
 	private static productEdit:string = '<a class="btn btn-xs btn-teal product-edit" href="#product-edit" data-toggle="modal" data-original-title=""><i class="fa fa-edit"></i></a>';
 	private static runUserSearch(){
-		$('input[name=user_name]', Edit.$form).userAutoComplete();
+		$('input[name=user_name]', Edit.$form).financialUserAutoComplete();
 	}
 	private static productEditListener(){
 		$(".product-table .product-edit").on('click', function(){
