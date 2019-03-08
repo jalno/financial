@@ -6,7 +6,9 @@
 		"name" : "Jeyserver",
 		"website" : "http://www.jeyserver.com/"
 	},
-	"autoload":"autoloader.json",
+	"autoload": {
+		"directories": ["listeners", "views"]
+	},
 	"languages":{
 		"fa_IR" : "langs/fa_IR.json"
 	},
