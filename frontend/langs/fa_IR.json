@@ -211,6 +211,25 @@
 		"shortcut.transactions.user.credit": "موجودی حساب کاربری شما",
 		"shortcut.transactions.unpaid.transaction": "صورتحساب پرداخت نشده دارید",
 		"shortcut.transactions.user.credit.iszero": "موجودی کاربری شما صفر است",
-		"shortcut.transactions.unpaid.transaction.iszere": "صورتحساب پرداخت نشده ندارید"
+		"shortcut.transactions.unpaid.transaction.iszere": "صورتحساب پرداخت نشده ندارید",
+		"usertype.permissions.financial_settings_banks_search": "جستجوی بانک ها",
+		"usertype.permissions.financial_settings_banks_add": "افزودن بانک جدید",
+		"usertype.permissions.financial_settings_banks_edit": "ویرایش بانک",
+		"usertype.permissions.financial_settings_banks_delete": "حذف بانک",
+		"packages.financial.banks": "بانک ها",
+		"packages.financial.bank.id": "شناسه",
+		"packages.financial.bank.title": "عنوان",
+		"packages.financial.bank.status": "وضعیت",
+		"packages.financial.bank.status.Active": "فعال",
+		"packages.financial.bank.status.Deactive": "غیرفعال",
+		"packages.financial.choose": "انتخاب کنید..",
+		"packages.financial.search": "جستجو",
+		"packages.financial.cancel": "انصراف",
+		"packages.financial.search.comparison": "نحوه مقایسه",
+		"packages.financial.banks.notfound": "هیچ بانکی برای نمایش یافت نشد.",
+		"packages.financial.add": "افزودن",
+		"packages.financial.edit": "ویرایش",
+		"packages.financial.delete": "حذف",
+		"packages.financial.actions": "اقدامات"
 	}
 }

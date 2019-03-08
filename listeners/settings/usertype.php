@@ -19,6 +19,11 @@ class usertype{
 			'transactions_product_edit',
 			'transactions_product_delete',
 
+			"settings_banks_search",
+			"settings_banks_add",
+			"settings_banks_edit",
+			"settings_banks_delete",
+
 			'settings_bankaccounts_list',
 			'settings_bankaccounts_add',
 			'settings_bankaccounts_delete',
@@ -34,8 +39,7 @@ class usertype{
 			"settings_currencies_search",
 			"settings_currencies_add",
 			"settings_currencies_edit",
-			"settings_currencies_delete"
-
+			"settings_currencies_delete",
 		);
 		foreach($permissions as $permission){
 			permissions::add('financial_'.$permission);

@@ -146,5 +146,25 @@
 		"path": ["userpanel", "financial", "users"],
 		"controller": "controllers\\userpanel\\Users@search",
 		"method": "get"
+	},
+	{
+		"path": "userpanel/settings/financial/banks",
+		"controller": "controllers/settings/Banks@search",
+		"method": "get"
+	},
+	{
+		"path": "userpanel/settings/financial/banks/add",
+		"controller": "controllers/settings/Banks@store",
+		"method": "post"
+	},
+	{
+		"path": "userpanel/settings/financial/banks/:bank/edit",
+		"controller": "controllers/settings/Banks@update",
+		"method": "post"
+	},
+	{
+		"path": "userpanel/settings/financial/banks/:bank/delete",
+		"controller": "controllers/settings/Banks@terminate",
+		"method": "post"
 	}
 ]
