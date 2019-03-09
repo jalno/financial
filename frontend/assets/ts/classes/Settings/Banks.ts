@@ -1,5 +1,6 @@
 import "bootstrap";
 import * as $ from "jquery";
+import Accounts from "./Banks/Accounts";
 import Add from "./Banks/Add";
 import Delete from "./Banks/Delete";
 import Edit from "./Banks/Edit";
@@ -31,6 +32,7 @@ export default class Banks {
 				Delete.run($("tbody tr", Banks.$table));
 			}
 		}
+		Accounts.initIfNeeded();
 	}
 	public static prependBank(bank: IBank) {
 		const tr = `<tr>

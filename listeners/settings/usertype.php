@@ -24,10 +24,11 @@ class usertype{
 			"settings_banks_edit",
 			"settings_banks_delete",
 
-			'settings_bankaccounts_list',
-			'settings_bankaccounts_add',
-			'settings_bankaccounts_delete',
-			'settings_bankaccounts_edit',
+			"settings_banks_accounts_search",
+			"settings_banks_accounts_add",
+			"settings_banks_accounts_accept",
+			"settings_banks_accounts_edit",
+			"settings_banks_accounts_delete",
 			
 			"settings_gateways_search",
 			"settings_gateways_add",

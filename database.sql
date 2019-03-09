@@ -6,15 +6,24 @@ CREATE TABLE `financial_banks` (
 	UNIQUE KEY `title_fa` (`title`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `financial_bankaccounts` (
+CREATE TABLE `financial_banks_accounts` (
 	`id` int(11) NOT NULL AUTO_INCREMENT,
-	`title` varchar(255) COLLATE utf8_persian_ci NOT NULL,
-	`account` varchar(100) COLLATE utf8_persian_ci NOT NULL,
-	`cart` varchar(19) COLLATE utf8_persian_ci DEFAULT NULL,
-	`shaba` varchar(26) COLLATE utf8_persian_ci NOT NULL,
+	`bank_id` int(11) NOT NULL,
+	`user_id` int(11) NOT NULL,
 	`owner` varchar(255) COLLATE utf8_persian_ci NOT NULL,
+	`account` varchar(100) COLLATE utf8_persian_ci DEFAULT NULL,
+	`cart` varchar(19) COLLATE utf8_persian_ci DEFAULT NULL,
+	`shaba` varchar(26) COLLATE utf8_persian_ci DEFAULT NULL,
+	`reject_reason` varchar(255) COLLATE utf8_persian_ci DEFAULT NULL,
+	`oprator_id` int(11) DEFAULT NULL,
 	`status` tinyint(4) NOT NULL,
-	PRIMARY KEY (`id`)
+	PRIMARY KEY (`id`),
+	KEY `bank_id` (`bank_id`),
+	KEY `user_id` (`user_id`),
+	KEY `oprator_id` (`oprator_id`),
+	CONSTRAINT `financial_banks_accounts_ibfk_1` FOREIGN KEY (`bank_id`) REFERENCES `financial_banks` (`id`) ON DELETE CASCADE,
+	CONSTRAINT `financial_banks_accounts_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `userpanel_users` (`id`) ON DELETE CASCADE,
+	CONSTRAINT `financial_banks_accounts_ibfk_3` FOREIGN KEY (`oprator_id`) REFERENCES `userpanel_users` (`id`) ON DELETE SET NULL ON UPDATE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_persian_ci;
 
 CREATE TABLE `financial_currencies` (
