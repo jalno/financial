@@ -1,7 +1,7 @@
 <?php
-use \packages\userpanel;
-use \packages\base\{translator, http};
-use \themes\clipone\utility;
+use packages\userpanel;
+use packages\base\http;
+use themes\clipone\utility;
 use packages\financial\authentication;
 
 $parameter = array();
@@ -16,7 +16,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 	<div class="col-md-7">
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<i class="fa fa-university"></i> <?php echo translator::trans('bankaccounts'); ?>
+				<i class="fa fa-university"></i> <?php echo t("packages.financial.banks.accounts"); ?>
 				<div class="panel-tools">
 					<a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
 				</div>
@@ -26,10 +26,10 @@ $this->the_header(!$isLogin ? "logedout" : "");
 					<table class="table table-hover">
 						<thead>
 							<tr>
-								<th><?php echo translator::trans("bankaccount.title"); ?></th>
-								<th><?php echo translator::trans("bankaccount.account"); ?></th>
-								<th><?php echo translator::trans("bankaccount.cart"); ?></th>
-								<th><?php echo translator::trans("bankaccount.owner"); ?></th>
+								<th><?php echo t("packages.financial.banks.account.title"); ?></th>
+								<th><?php echo t("packages.financial.banks.account.account"); ?></th>
+								<th><?php echo t("packages.financial.banks.account.cart"); ?></th>
+								<th><?php echo t("packages.financial.banks.account.owner"); ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -37,9 +37,9 @@ $this->the_header(!$isLogin ? "logedout" : "");
 						foreach($this->getBankAccounts() as $account){
 						?>
 						<tr>
-							<td><?php echo $account->title; ?></td>
-							<td><?php echo $account->account; ?></td>
-							<td><?php echo $account->cart; ?></td>
+							<td><?php echo $account->bank->title; ?></td>
+							<td><?php echo $account->account ? $account->account : "-"; ?></td>
+							<td><?php echo $account->cart ? $account->cart : "-"; ?></td>
 							<td><?php echo $account->owner; ?></td>
 						</tr>
 						<?php
@@ -54,7 +54,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 	<div class="col-md-5">
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<i class="clip-banknote"></i> <?php echo translator::trans('pay.byBankTransfer'); ?>
+				<i class="clip-banknote"></i> <?php echo t('pay.byBankTransfer'); ?>
 				<div class="panel-tools">
 					<a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
 				</div>
@@ -67,7 +67,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							echo $this->createField(array(
 								'type' => 'number',
 								'name' => 'price',
-								'label' => translator::trans("pay.banktransfer.price"),
+								'label' => t("pay.banktransfer.price"),
 								"ltr" => true,
 							));
 							?>
@@ -79,7 +79,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							echo $this->createField(array(
 								'type' => 'select',
 								'name' => 'bankaccount',
-								'label' => translator::trans("pay.banktransfer.bankaccount"),
+								'label' => t("pay.banktransfer.bankaccount"),
 								'options' => $this->getBankAccountsForSelect(),
 							));
 							?>
@@ -90,7 +90,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							<?php
 							echo $this->createField(array(
 								'name' => 'date',
-								'label' => translator::trans("pay.banktransfer.date"),
+								'label' => t("pay.banktransfer.date"),
 								"ltr" => true,
 							));
 							?>
@@ -102,7 +102,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							echo $this->createField(array(
 								'type' => 'number',
 								'name' => 'followup',
-								'label' => translator::trans("pay.banktransfer.followup"),
+								'label' => t("pay.banktransfer.followup"),
 								"ltr" => true,
 							));
 							?>
@@ -110,7 +110,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 					</div>
 					<div class="row" style="margin-top: 20px;margin-bottom: 20px;">
 						<div class="col-md-offset-4 col-md-4">
-							<button class="btn btn-teal btn-block" type="submit"><i class="fa fa-arrow-circle-left"></i> <?php echo translator::trans('submit'); ?></button>
+							<button class="btn btn-teal btn-block" type="submit"><i class="fa fa-arrow-circle-left"></i> <?php echo t('submit'); ?></button>
 						</div>
 					</div>
 				</form>

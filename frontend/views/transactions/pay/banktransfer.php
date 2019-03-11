@@ -51,10 +51,10 @@ class banktransfer extends banktransferView{
 	}
 	protected function getBankAccountsForSelect(){
 		$options = array();
-		foreach($this->getBankAccounts() as $account){
+		foreach ($this->getBankAccounts() as $account){
 			$options[] = array(
-				'title' => $account->title,
-				'value' => $account->id
+				"title" => $account->bank->title . "[{$account->cart}]",
+				"value" => $account->id
 			);
 		}
 		return $options;

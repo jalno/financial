@@ -3,7 +3,7 @@ namespace themes\clipone\views\transactions;
 use packages\base\{options, packages};
 use packages\userpanel;
 use packages\userpanel\{user, date};
-use packages\financial\{bankaccount, transaction, payport_pay, transaction_pay, views\transactions\view as transactionsView};
+use packages\financial\{Bank\Account, transaction, payport_pay, transaction_pay, views\transactions\view as transactionsView};
 use themes\clipone\{viewTrait, views\listTrait, views\formTrait, breadcrumb, navigation, navigation\menuItem};
 
 class view extends transactionsView {
@@ -44,8 +44,8 @@ class view extends transactionsView {
 			if($pay->method == transaction_pay::credit){
 				$pay->method = t("pay.method.credit");
 			}elseif($pay->method == transaction_pay::banktransfer){
-				if($bankaccount = bankaccount::byId($pay->param("bankaccount"))){
-					$pay->method = t("pay.byBankTransfer.withbank", array("bankaccount" => $bankaccount->title));
+				if($bankaccount = Account::byId($pay->param("bankaccount"))){
+					$pay->method = t("pay.byBankTransfer.withbank", array("bankaccount" => $bankaccount->bank->title . "[{$bankaccount->cart}]"));
 				}else{
 					$pay->method = t("pay.byBankTransfer");
 				}
