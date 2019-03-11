@@ -239,6 +239,21 @@
 		"packages.financial.return": "بازگشت",
 		"packages.financial.banks.account.accept": "تایید حساب",
 		"packages.financial.banks.account.reject": "رد حساب",
-		"packages.financial.account.reject.reason": "دلیل رد حساب را بنویسید."
+		"packages.financial.account.reject.reason": "دلیل رد حساب را بنویسید.",
+		"usertype.permissions.financial_transactions_anonymous": "مدیریت صورتحساب های بدون کاربر",
+		"usertype.permissions.financial_transactions_refund": "ایجاد درخواست تسویه حساب",
+		"usertype.permissions.financial_transactions_refund_accept": "تایید درخواست های تسویه حساب",
+		"packages.financial.refund.request": "درخواست تسویه حساب",
+		"packages.financial.refund.price": "مبلغ",
+		"packages.financial.refund.bank.account": "حساب بانکی",
+		"packages.financial.refund.banks.account.notfound": "برای ایجاد درخواست تسویه حساب باید در قسمت شماره حساب ها یک حساب ایجاد کنید.",
+		"packages.financial.create": "ایجاد",
+		"packages.financial.refund.user": "کاربر",
+		"packages.financial.refund.accept": "تایید پرداخت",
+		"packages.financial.refund.reject": "عدم تایید صورتحساب",
+		"packages.financial.refund.pay.info": "اطلاعات پرداخت",
+		"packages.financial.submit": "تایید",
+		"packages.financial.transaction.status.rejected": "رد شده",
+		"packages.financial.view": "مشاهده"
 	}
 }

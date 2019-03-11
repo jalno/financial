@@ -9,6 +9,7 @@ export interface IUser {
 	lastname: string;
 	email: string;
 	cellphone: string;
+	credit: number;
 	currency: string;
 }
 interface ISearchResponse extends webuilder.AjaxResponse {

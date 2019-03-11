@@ -10,8 +10,7 @@ class transaction extends dbObject{
 	const paid = 2;
 	const refund = 3;
 	const expired = 4;
-	const host = 1;
-	const domain = 2;
+	const rejected = 5;
 	public static function generateToken(int $length = 15): string {
 		$numberChar = "0123456789";
 		$pw = "";
@@ -330,18 +329,16 @@ class transaction extends dbObject{
 	}
 	public function totalPrice(): float{
 		$currency = $this->currency;
-		$needChange = false;
 		$price = 0;
 		foreach($this->products as $product){
 			$pcurrency = $product->currency;
 			if($pcurrency->id != $currency->id){
 				$price += $pcurrency->changeTo(($product->price * $product->number) - $product->discount, $currency);
-				$needChange = true;
 			}else{
 				$price += ($product->price * $product->number) - $product->discount;
 			}
 		}
-		return $needChange ? $price : $this->price;
+		return $price;
 	}
 }
 class undefinedCurrencyException extends \Exception{}

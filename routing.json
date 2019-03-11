@@ -195,5 +195,20 @@
 		"path": "userpanel/settings/financial/banks/accounts/:account/reject",
 		"controller": "controllers\\settings\\banks\\Accounts@reject",
 		"method": "post"
+	},
+	{
+		"path": "userpanel/transactions/refund/add",
+		"controller": "controllers/transactions@refund",
+		"method": "post"
+	},
+	{
+		"path": "userpanel/transactions/:transaction/refund/accept",
+		"controller": "controllers/transactions@refundAccept",
+		"method": "post"
+	},
+	{
+		"path": "userpanel/transactions/:transaction/refund/reject",
+		"controller": "controllers/transactions@refundReject",
+		"method": "post"
 	}
 ]
