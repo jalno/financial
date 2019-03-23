@@ -210,5 +210,14 @@
 		"path": "userpanel/transactions/:transaction/refund/reject",
 		"controller": "controllers/transactions@refundReject",
 		"method": "post"
+	},
+	{
+		"paths": [
+			"transactions/"
+		],
+		"exceptions":[
+			"packages/base/NotFound"
+		],
+		"handler": "packages/userpanel/controllers/dashboard@notfound"
 	}
 ]
