@@ -1,9 +1,9 @@
 <?php
 namespace packages\financial;
-use \packages\base\options;
-use \packages\userpanel\user;
-use \packages\userpanel\date;
-use \packages\base\db\dbObject;
+
+use packages\base\{options, db, db\dbObject};
+use packages\userpanel\user;
+
 class currency extends dbObject{
 	use Paramable;
 	protected $dbTable = "financial_currencies";
