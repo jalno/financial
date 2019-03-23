@@ -17,4 +17,18 @@ class onlinepay  extends form{
 	public function getPayports(){
 		return $this->getData("payports");
 	}
+	public function export() {
+		return array(
+			'data' => array(
+				'payports' => array_map(function($payport) {
+					return array(
+						'id' => $payport->id,
+						'title' => $payport->title,
+					);
+				}, $this->getPayports()),
+				'payablePrice' => $this->getTransaction()->payablePrice(),
+				'currency' => $this->getTransaction()->currency->toArray(false),
+			)
+		);
+	}
 }

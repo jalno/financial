@@ -39,6 +39,7 @@ class OnlinePay extends controller {
 		$view->setPay($pay);
 		try {
 			if($pay->verification() == payport_pay::success){
+				$this->response->setStatus(true);
 				$transaction = $pay->transaction;
 				$tPay = $transaction->addPay(array(
 					"date" => date::time(),
