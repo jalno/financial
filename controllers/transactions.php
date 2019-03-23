@@ -180,7 +180,9 @@ class transactions extends controller{
 		} else {
 			throw new NotFound();
 		}
-		$transaction->where($parenthesis);
+		if (!$parenthesis->isEmpty()) {
+			$transaction->where($parenthesis);
+		}
 		$transaction->where("financial_transactions.id", $id);
 		$transaction = $transaction->getOne("financial_transactions.*");
 		if(!$transaction){
