@@ -1,7 +1,7 @@
 <?php
 namespace packages\financial\views\settings\gateways;
 use packages\userpanel\views\form;
-use packages\financial\{events\gateways, bankaccount};
+use packages\financial\{events\gateways, Bank};
 
 class add extends form{
 	public function setGateways(gateways $gateways){
@@ -17,8 +17,8 @@ class add extends form{
 		return $this->getData('currencies');
 	}
 	protected function getAccounts(): array {
-		$account = new bankaccount();
-		$account->where("status", bankaccount::active);
+		$account = new Bank\Account();
+		$account->where("status", Bank\Account::Active);
 		return $account->get();
 	}
 }
