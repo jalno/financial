@@ -9,7 +9,11 @@ abstract class gateway{
 	abstract public function PaymentRequest(payport_pay $pay);
 	abstract public function PaymentVerification(payport_pay $pay);
 	protected function callbackURL(payport_pay $pay){
-		return base\url("transactions/pay/onlinepay/callback/".$pay->id, array(), true);
+		$query = array(
+			'token' => $pay->transaction->token
+		);
+		echo base\url("transactions/pay/onlinepay/callback/".$pay->id, $query, true);
+		return base\url("transactions/pay/onlinepay/callback/".$pay->id, $query, true);
 	}
 }
 class redirect{
