@@ -63,7 +63,7 @@ CREATE TABLE `financial_payports` (
 	`status` tinyint(1) NOT NULL,
 	PRIMARY KEY (`id`),
 	KEY `account` (`account`),
-	CONSTRAINT `financial_payports_ibfk_1` FOREIGN KEY (`account`) REFERENCES `financial_bankaccounts` (`id`) ON DELETE CASCADE
+	CONSTRAINT `financial_payports_ibfk_1` FOREIGN KEY (`account`) REFERENCES `financial_banks_accounts` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_persian_ci;
 
 CREATE TABLE `financial_payports_currencies` (
