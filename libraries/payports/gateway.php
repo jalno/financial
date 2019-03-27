@@ -12,7 +12,6 @@ abstract class gateway{
 		$query = array(
 			'token' => $pay->transaction->token
 		);
-		echo base\url("transactions/pay/onlinepay/callback/".$pay->id, $query, true);
 		return base\url("transactions/pay/onlinepay/callback/".$pay->id, $query, true);
 	}
 }
