@@ -6,19 +6,21 @@
 		"name" : "Jeyserver",
 		"website" : "http://www.jeyserver.com/"
 	},
-	"autoload":"autoloader.json",
+	"autoload": {
+		"directories": ["listeners", "views"]
+	},
 	"languages":{
 		"fa_IR" : "langs/fa_IR.json"
 	},
 	"assets":[
 		{"type":"package", "name":"jquery"},
-		{"type":"package", "name":"jquery-ui"},
+		{"type":"package", "name":"jquery-ui", "version": "^1.12.1"},
 		{"type":"package", "name":"bootstrap", "version": "=3.3.7"},
 		{"type":"package", "name":"webuilder"},
 		{"type":"package", "name":"jquery.growl"},
 		{"type":"package", "name":"bootstrap-inputmsg"},
 		{"type":"ts", "file":"assets/ts/Main.ts"},
-		{"type":"less", "file":"assets/less/notLogged.less"}
+		{"type":"less", "file":"assets/less/Main.less"}
 	],
 	"events":[
 		{
@@ -111,26 +113,6 @@
 			"name":"\\themes\\clipone\\views\\transactions\\pay\\onlinepay\\redirect",
 			"parent":"\\packages\\financial\\views\\transactions\\pay\\onlinepay\\redirect",
 			"file":"html/transactions/pay/onlinepay/redirect.php"
-		},
-		{
-			"name":"\\themes\\clipone\\views\\financial\\settings\\bankaccount\\listview",
-			"parent":"\\packages\\financial\\views\\settings\\bankaccount\\listview",
-			"file":"html/settings/bankaccounts/list.php"
-		},
-		{
-			"name":"\\themes\\clipone\\views\\financial\\settings\\bankaccount\\delete",
-			"parent":"\\packages\\financial\\views\\settings\\bankaccount\\delete",
-			"file":"html/settings/bankaccounts/delete.php"
-		},
-		{
-			"name":"\\themes\\clipone\\views\\financial\\settings\\bankaccount\\edit",
-			"parent":"\\packages\\financial\\views\\settings\\bankaccount\\edit",
-			"file":"html/settings/bankaccounts/edit.php"
-		},
-		{
-			"name":"\\themes\\clipone\\views\\financial\\settings\\bankaccount\\add",
-			"parent":"\\packages\\financial\\views\\settings\\bankaccount\\add",
-			"file":"html/settings/bankaccounts/add.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\financial\\settings\\gateways\\search",

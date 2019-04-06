@@ -2,7 +2,7 @@
 namespace packages\financial\controllers\transaction;
 use packages\base;
 use packages\base\{controller, view, response, translator, date, NotFound, http, db};
-use packages\financial\{views, logs, payport_pay, payport\VerificationException, payport\GatewayException, transaction_pay, authorization, authentication};
+use packages\financial\{views, logs, payport_pay, payport\VerificationException, payport\GatewayException, transaction, transaction_pay, authorization, authentication};
 use packages\userpanel\log;
 
 class OnlinePay extends controller {
@@ -15,7 +15,7 @@ class OnlinePay extends controller {
 			if ($this->items_per_page < 1) $this->items_per_page = 25;
 			db::pageLimit($this->items_per_page);
 			$this->response = new response();
-		} else if ($token = http::getURIData("token")) {
+		} elseif ($token = http::getURIData("token")) {
 			$transaction = new transaction();
 			$transaction->where("token", $token);
 			if (!$transaction = $transaction->getOne()) {
@@ -39,6 +39,7 @@ class OnlinePay extends controller {
 		$view->setPay($pay);
 		try {
 			if($pay->verification() == payport_pay::success){
+				$this->response->setStatus(true);
 				$transaction = $pay->transaction;
 				$tPay = $transaction->addPay(array(
 					"date" => date::time(),

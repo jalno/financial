@@ -1,9 +1,9 @@
 <?php
-use \packages\userpanel;
-use \packages\base\translator;
-use \themes\clipone\utility;
+use packages\base\translator;
+use packages\userpanel\authentication;
 
-$this->the_header();
+$isLogin = authentication::check();
+$this->the_header(!$isLogin ? "logedout" : "");
 $redirect = $this->getRedirect();
 ?>
 <div class="row">
@@ -22,4 +22,4 @@ $redirect = $this->getRedirect();
 	</div>
 </div>
 <?php
-$this->the_footer();
+$this->the_footer(!$isLogin ? "logedout" : "");

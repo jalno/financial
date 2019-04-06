@@ -8,7 +8,7 @@
 		"transaction.title.adding_credit": "افزایش موجودی",
 		"transaction.adding_credit": "افزایش موجودی به مبلغ {price} ریال",
 		"financial.transactions": "صورتحساب {title}",
-		"financial.transactions.description": "ساخته شده در: {create_at} کاربر: {user}",
+		"financial.transactions.description": "شناسه: #{id} ساخته شده در: {create_at} کاربر: {user}",
 		"error.illegalTransaction": "شما نمیتوانید تمام محصولات صورتحساب را پاک کنید! باید حداقل یک محصول موجود باشد",
 		"email.template.name.financial_transaction_add":"ایجاد صورتحساب جدید در بخش مالی",
 		"email.template.variable.transaction->id":"شناسه صورتحساب",
@@ -40,6 +40,9 @@
 		"sms.template.name.financial_transaction_reminder": "یادآور پرداخت صورتحساب ها در بخش مالی",
 		"financial.pay.online":"پرداخت آنلاین درگاه {payport}",
 		"financial.pay.bankTransfer" : "پرداخت از طریق واریز بانکی",
-		"financial.pay.bankTransfer.followup" : "شماره پیگیری تراکنش:‌ {followup}"
+		"financial.pay.bankTransfer.followup" : "شماره پیگیری تراکنش:‌ {followup}",
+		"packages.financial.transactions.title.refund": "صورتحساب تسویه حساب",
+		"packages.financial.transactions.product.title.refund": "مشخصات تسویه حساب",
+		"packages.financial.transactions.refund.description": "شماره حساب {account_account}<br>شماره کارت {account_cart}<br>شماره شبا {account_shaba}<br>نام صاحب حساب {account_owner}"
 	}
 }

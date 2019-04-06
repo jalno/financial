@@ -1,5 +1,4 @@
 import * as $ from "jquery";
-import "../jquery.userAutoComplete";
 import { webuilder } from "webuilder";
 import "jquery.growl";
 import "bootstrap-inputmsg";

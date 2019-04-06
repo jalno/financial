@@ -1,12 +1,12 @@
 import * as $ from "jquery";
-import "../jquery.userAutoComplete";
+import "../jquery.financialUserAutoComplete";
 import { webuilder } from "webuilder";
 import "jquery.growl";
 import "bootstrap-inputmsg";
 export default class Add{
 	private static $form = $('body.transaction-add .create_form');
 	private static runUserSearch(){
-		$('input[name=user_name]', Add.$form).userAutoComplete();
+		$('input[name=user_name]', Add.$form).financialUserAutoComplete();
 	}
 	private static getProductsCode(){
 		let code = '<table class="table table-striped table-hover product-table"> <thead> <tr> <th> # </th> <th> محصول </th> <th class="hidden-480"> توضیحات </th> <th class="hidden-480"> تعداد </th> <th class="hidden-480"> قیمت واحد </th> <th>تخفیف</th> <th> قیمت نهایی </th> <th></th> </tr> </thead> <tbody> </tbody></table> ';

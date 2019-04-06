@@ -18,8 +18,8 @@ class transaction_product extends dbObject{
 	protected $dbTable = "financial_transactions_products";
 	protected $primaryKey = "id";
 	protected $dbFields = array(
-        'title' => array('type' => 'text', 'required' => true),
-        'transaction' => array('type' => 'int', 'required' => true),
+		'title' => array('type' => 'text', 'required' => true),
+		'transaction' => array('type' => 'int', 'required' => true),
 		'description' => array('type' => 'text'),
 		'type' => array('type' => 'text'),
 		'method' => array('type' => 'int'),
@@ -28,7 +28,7 @@ class transaction_product extends dbObject{
 		'number' => array('type' => 'int', 'required' => true),
 		'currency' => ['type' => 'int', 'required' => true],
 		'configure' => array('type' => 'bool', 'required' => true)
-    );
+	);
 	protected $relations = array(
 		'transaction' => array('hasOne', 'packages\\financial\\transaction', 'transaction'),
 		'currency' => array('hasOne', 'packages\\financial\\currency', 'currency'),

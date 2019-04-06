@@ -17,6 +17,7 @@ class redirect extends redirectView{
 		$this->setTitle(translator::trans('pay.redirect'));
 		$this->setShortDescription(translator::trans('transaction.number',array('number' =>  $this->transaction->id)));
 		$this->setNavigation();
+		$this->addBodyClass("transaction-pay-online");
 		$this->addBodyClass("transaction-pay-redirect");
 	}
 	protected function createFormData(){

@@ -1,14 +1,15 @@
-import List from "./Transaction/List";
 import Add from "./Transaction/Add";
-import Edit from "./Transaction/Edit";
-import Redirect from "./Transaction/Pay/OnlinePay/Redirect";
-import OnlinePay from "./Transaction/Pay/OnlinePay";
-import payByCredit from "./Transaction/Pay/byCredit";
-import Gateway from "./Transaction/Settings/GateWays";
 import Addingcredit from "./Transaction/Addingcredit";
+import Edit from "./Transaction/Edit";
+import List from "./Transaction/List";
+import payByCredit from "./Transaction/Pay/byCredit";
+import OnlinePay from "./Transaction/Pay/OnlinePay";
+import Redirect from "./Transaction/Pay/OnlinePay/Redirect";
+import Gateway from "./Transaction/Settings/GateWays";
+import View from "./Transaction/View";
 
-export default class Transaction{
-	public static initIfNeeded(){
+export default class Transaction {
+	public static initIfNeeded() {
 		List.initIfNeeded();
 		Add.initIfNeeded();
 		Edit.initIfNeeded();
@@ -17,6 +18,6 @@ export default class Transaction{
 		Gateway.initIfNeeded();
 		payByCredit.initIfNeeded();
 		OnlinePay.initIfNeeded();
+		View.initIfNeeded();
 	}
-	
 }

@@ -151,4 +151,23 @@ class payport extends dbObject{
 		db::where('currency', $currency);
 		return db::delete('financial_payports_currencies');
 	}
+	public function getCompatilbeCurrency(int $currency): ?int {
+		$currencies = array_column($this->getCurrencies(), 'currency');
+		if (empty($currencies)) {
+			return null;
+		}
+		foreach ($currencies as $supportedCurrency) {
+			if ($supportedCurrency == $currency) {
+				return $supportedCurrency;
+			}
+		}
+		$rate = (new Currency\Rate)
+					->where("currency", $currency->id)
+					->where("changeTo", $currencies, "IN")
+					->getOne();
+		if (!$rate) {
+			return null;
+		}
+		return $rate->id;
+	}
 }

@@ -18,4 +18,11 @@ class error extends view{
 	public function getError(){
 		return $this->getData('error');
 	}
+	public function export() {
+		return array(
+			'data' => array(
+				'error' => $this->getError(),
+			)
+		);
+	}
 }

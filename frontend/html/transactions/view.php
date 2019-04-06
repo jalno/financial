@@ -6,6 +6,7 @@ use \packages\financial\{currency, transaction, transaction_pay, authentication}
 use \packages\userpanel;
 use \packages\userpanel\{date, user};
 $isLogin = authentication::check();
+$refundTransaction = false;
 $this->the_header(!$isLogin ? "logedout" : "");
 ?>
 <div class="row">
@@ -27,20 +28,24 @@ $this->the_header(!$isLogin ? "logedout" : "");
 				</div>
 			</div>
 			<hr>
-			<?php
-			if($this->hasdesc){
-			?>
+		<?php if ($this->hasdesc or $refundInfo = $this->transaction->param("refund_pay_info")) { ?>
 			<div class="row">
 				<div class="col-md-12">
 					<div class="box-note">
-						<?php
-						foreach($this->transaction->products as $product){
-							if($product->param('description')){
-						?>
+					<?php
+					if ($this->hasdesc) {
+						foreach ($this->transaction->products as $product) {
+							if ($product->param('description')) {
+					?>
 						<p><b><?php echo $product->title ?></b>: <br><?php echo $product->param('description') ?></p>
 					<?php
 							}
-						}?>
+						}
+					}
+					if ($refundInfo) {
+					?>
+						<p><b><?php echo t("packages.financial.refund.pay.info"); ?></b>: <br> <?php echo nl2br($refundInfo); ?></p>
+					<?php } ?>
 					</div>
 				</div>
 			</div>
@@ -131,18 +136,22 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							<strong>تاریخ انقضا:</strong> <?php echo date::format("Y/m/d H:i:s", $this->transaction->expire_at); ?>
 						</li>
 						<li>
-							<?php
-							$statusClass = utility::switchcase($this->transaction->status, array(
-								'label label-danger' => transaction::unpaid,
-								'label label-success' => transaction::paid,
-								'label label-warning' => transaction::refund
-							));
-							$statusTxt = utility::switchcase($this->transaction->status, array(
-								'transaction.unpaid' => transaction::unpaid,
-								'transaction.paid' => transaction::paid,
-								'transaction.refund' => transaction::refund
-							));
-							 ?>
+						<?php
+						$statusClass = utility::switchcase($this->transaction->status, array(
+							'label label-danger' => transaction::unpaid,
+							'label label-success' => transaction::paid,
+							'label label-warning' => transaction::refund,
+							"label label-inverse" => transaction::expired,
+							"label label-danger label-rejected" => transaction::rejected,
+						));
+						$statusTxt = utility::switchcase($this->transaction->status, array(
+							'transaction.unpaid' => transaction::unpaid,
+							'transaction.paid' => transaction::paid,
+							'transaction.refund' => transaction::refund,
+							"transaction.status.expired" => transaction::expired,
+							"packages.financial.transaction.status.rejected" => transaction::rejected,
+						));
+						?>
 							<strong>وضعیت :</strong> <span class="<?php echo $statusClass; ?>"><?php echo translator::trans($statusTxt); ?></span>
 						</li>
 					</ul>
@@ -177,6 +186,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 								$rate->where('changeTo', $currency->id);
 								$rate = $rate->getOne();
 							}
+							$product->price = abs($product->price);
 							$finalPrice = ($product->price * $product->number) - $product->discount;
 						?>
 							<tr>
@@ -265,25 +275,84 @@ $this->the_header(!$isLogin ? "logedout" : "");
 			<div class="row">
 				<div class="col-sm-12 invoice-block">
 					<ul class="list-unstyled amounts">
-						<li><strong>جمع کل:</strong> <?php echo(number_format($this->transaction->price).$currency->title); ?></li>
+						<li><strong>جمع کل:</strong> <?php echo(number_format(abs($this->transaction->price)).$currency->title); ?></li>
 						<li><strong>تخفیف:</strong><?php echo(number_format($this->Discounts()).$currency->title); ?></li>
 						<li><strong>مالیات:</strong> 0 <?php echo $currency->title; ?></li>
-						<li><strong>مبلغ قابل پرداخت:</strong><?php echo $this->transaction->payablePrice(). " " .$currency->title; ?></li>
+						<li>
+							<strong>مبلغ قابل پرداخت:</strong>
+						<?php
+						$payablePrice = $this->transaction->payablePrice();
+						echo abs($payablePrice). " " .$currency->title;
+						?>
+						</li>
 					</ul>
 					<br>
 					<a onclick="javascript:window.print();" class="btn btn-lg btn-teal hidden-print">چاپ<i class="fa fa-print"></i></a>
 					<?php
 					if ($this->transaction->status == transaction::unpaid) {
-						$parameter = array();
-						if ($token = http::getURIData("token")) {
-							$parameter["token"] = $token;
-						}
+						if ($payablePrice > 0) {
+							$parameter = array();
+							if ($token = http::getURIData("token")) {
+								$parameter["token"] = $token;
+							}
 					?>
 						<a class="btn btn-lg btn-green hidden-print btn-pay" href="<?php echo userpanel\url('transactions/pay/'.$this->transaction->id, $parameter);?>">پرداخت صورتحساب<i class="fa fa-check"></i></a>
-					<?php } ?>
+					<?php
+					} else if ($this->canAcceptRefund) {
+						$refundTransaction = true;
+					?>
+						<a class="btn btn-lg btn-success hidden-print" href="#refund-accept-modal" data-toggle="modal">
+							<div class="btn-icons"> <i class="fa fa-check-square-o"></i> </div>
+							<?php echo t("packages.financial.refund.accept"); ?>
+						</a>
+						<a class="btn btn-lg btn-danger hidden-print" href="#refund-reject-modal" data-toggle="modal">
+							<div class="btn-icons"> <i class="fa fa-times-circle"></i> </div>
+							<?php echo t("packages.financial.refund.reject"); ?>
+						</a>
+					<?php
+						}
+					}
+					?>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
+<?php if ($refundTransaction) { ?>
+<div class="modal fade" id="refund-accept-modal" tabindex="-1" data-show="true" role="dialog">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h4 class="modal-title text-success"><?php echo t("packages.financial.refund.accept"); ?></h4>
+	</div>
+	<div class="modal-body">
+		<form id="refund-accept-form" action="<?php echo userpanel\url("transactions/{$this->transaction->id}/refund/accept"); ?>" method="POST" autocomplete="off">
+		<?php $this->createField(array(
+			"type" => "textarea",
+			"name" => "refund_pay_info",
+			"label" => t("packages.financial.refund.pay.info"),
+			"rows" => 4,
+		)); ?>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="submit" form="refund-accept-form" class="btn btn-success"><?php echo t("packages.financial.submit"); ?></button>
+		<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo t("packages.financial.cancel"); ?></button>
+	</div>
+</div>
+<div class="modal fade" id="refund-reject-modal" tabindex="-1" data-show="true" role="dialog">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h4 class="modal-title text-danger"><?php echo t("packages.financial.refund.reject"); ?></h4>
+	</div>
+	<div class="modal-body">
+		<form id="refund-reject-form" class="form-horizontal" action="<?php echo userpanel\url("transactions/{$this->transaction->id}/refund/reject"); ?>" method="POST" autocomplete="off">
+			<p>آیا از عدم تایید این صورتحساب اطمینان دارید؟</p>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button type="submit" form="refund-reject-form" class="btn btn-danger"><?php echo t("packages.financial.submit"); ?></button>
+		<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo t("packages.financial.cancel"); ?></button>
+	</div>
+</div>
+<?php } ?>
 <?php $this->the_footer(!$isLogin ? "logedout" : "");

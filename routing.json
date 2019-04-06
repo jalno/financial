@@ -67,22 +67,6 @@
 		"controller": "controllers\\transactions@accepted"
 	},
 	{
-		"path": ["userpanel", "settings", "financial", "bankaccounts"],
-		"controller": "controllers\\settings\\bankaccounts@listAcoounts"
-	},
-	{
-		"path": ["userpanel", "settings", "financial", "bankaccounts", "delete", {"type":"dynamic","name":"id", "regex":"/^(\\d+)$/"}],
-		"controller": "controllers\\settings\\bankaccounts@delete"
-	},
-	{
-		"path": ["userpanel", "settings", "financial", "bankaccounts", "edit", {"type":"dynamic","name":"id", "regex":"/^(\\d+)$/"}],
-		"controller": "controllers\\settings\\bankaccounts@edit"
-	},
-	{
-		"path": ["userpanel", "settings", "financial", "bankaccounts", "add"],
-		"controller": "controllers\\settings\\bankaccounts@add"
-	},
-	{
 		"path":["userpanel","settings", "financial","gateways"],
 		"controller": "controllers\\settings\\gateways@listgateways",
 		"method":"get"
@@ -141,5 +125,99 @@
 		"path": ["userpanel","settings", "financial", "currencies", "delete", {"type":"dynamic","name":"currency", "regex":"/^\\d+$/"}],
 		"controller": "controllers\\settings\\currencies@terminate",
 		"method": "post"
+	},
+	{
+		"path": ["userpanel", "financial", "users"],
+		"controller": "controllers\\userpanel\\Users@search",
+		"method": "get"
+	},
+	{
+		"path": "userpanel/settings/financial/banks",
+		"controller": "controllers/settings/Banks@search",
+		"method": "get"
+	},
+	{
+		"path": "userpanel/settings/financial/banks/add",
+		"controller": "controllers/settings/Banks@store",
+		"method": "post"
+	},
+	{
+		"path": "userpanel/settings/financial/banks/:bank/edit",
+		"controller": "controllers/settings/Banks@update",
+		"method": "post"
+	},
+	{
+		"path": "userpanel/settings/financial/banks/:bank/delete",
+		"controller": "controllers/settings/Banks@terminate",
+		"method": "post"
+	},
+	{
+		"path": "userpanel/settings/financial/banks/accounts",
+		"controller": "controllers\\settings\\banks\\Accounts@search",
+		"method": "get"
+	},
+	{
+		"path": "userpanel/settings/financial/banks/accounts/add",
+		"controller": "controllers\\settings\\banks\\Accounts@add",
+		"method": "get"
+	},
+	{
+		"path": "userpanel/settings/financial/banks/accounts/add",
+		"controller": "controllers\\settings\\banks\\Accounts@store",
+		"method": "post"
+	},
+	{
+		"path": "userpanel/settings/financial/banks/accounts/edit/:account",
+		"controller": "controllers\\settings\\banks\\Accounts@edit",
+		"method": "get"
+	},
+	{
+		"path": "userpanel/settings/financial/banks/accounts/:account/edit",
+		"controller": "controllers\\settings\\banks\\Accounts@update",
+		"method": "post"
+	},
+	{
+		"path": "userpanel/settings/financial/banks/accounts/delete/:account",
+		"controller": "controllers\\settings\\banks\\Accounts@delete",
+		"method": "get"
+	},
+	{
+		"path": "userpanel/settings/financial/banks/accounts/:account/delete",
+		"controller": "controllers\\settings\\banks\\Accounts@terminate",
+		"method": "post"
+	},
+	{
+		"path": "userpanel/settings/financial/banks/accounts/:account/accept",
+		"controller": "controllers\\settings\\banks\\Accounts@accept",
+		"method": "post"
+	},
+	{
+		"path": "userpanel/settings/financial/banks/accounts/:account/reject",
+		"controller": "controllers\\settings\\banks\\Accounts@reject",
+		"method": "post"
+	},
+	{
+		"path": "userpanel/transactions/refund/add",
+		"controller": "controllers/transactions@refund",
+		"method": "post"
+	},
+	{
+		"path": "userpanel/transactions/:transaction/refund/accept",
+		"controller": "controllers/transactions@refundAccept",
+		"method": "post"
+	},
+	{
+		"path": "userpanel/transactions/:transaction/refund/reject",
+		"controller": "controllers/transactions@refundReject",
+		"method": "post"
+	},
+	{
+		"paths": [
+			"transactions/"
+		],
+		"exceptions":[
+			"packages/base/NotFound"
+		],
+		"handler": "packages/userpanel/controllers/dashboard@notfound"
 	}
 ]

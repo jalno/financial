@@ -32,4 +32,11 @@ class pay  extends \packages\financial\view{
 	public function getMethods(){
 		return $this->getData('methods');
 	}
+	public function export() {
+		return array(
+			'data' => array(
+				'methods' => $this->getMethods(),
+			)
+		);
+	}
 }
