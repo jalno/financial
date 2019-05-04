@@ -1,8 +1,8 @@
 <?php
 namespace packages\financial;
+
 use packages\base\{options, db\dbObject, packages, translator};
 use packages\userpanel\{user, date};
-use packages\financial\events;
 use packages\dakhl\API as dakhl;
 
 class transaction extends dbObject{
@@ -307,8 +307,8 @@ class transaction extends dbObject{
 				} else if ($pay->method == transaction_pay::banktransfer) {
 					$payparam = $pay->param("bankaccount");
 					if ($payparam) {
-						$account = bankaccount::where("id", $payparam)->getOne();
-						$description = translator::trans("financial.pay.bankTransfer");
+						$account = (new Bank\Account)->byID($payparam);
+						$description = t("financial.pay.bankTransfer");
 						$followup = $pay->param("followup");
 						if ($followup) {
 							$description .= " - " . translator::trans("financial.pay.bankTransfer.followup", array("followup" => $pay->param("followup")));

@@ -442,70 +442,60 @@ class transactions extends controller{
 		return $this->response;
 	}
 	private function accept_handler($data, $newstatus){
-		if(authorization::is_accessed('transactions_pays_accept')){
-			$action = '';
-			if($newstatus == transaction_pay::accepted){
-				$action = 'accept';
-			}elseif($newstatus == transaction_pay::rejected){
-				$action = 'reject';
-			}
-			if($view = view::byName("\\packages\\financial\\views\\transactions\\pay\\".$action)){
-				$pay = $this->getPay($data['pay']);
-				$transaction = $pay->transaction;
-				if($pay->status == transaction_pay::pending and $transaction->status == transaction::unpaid){
-					$view->setPay($pay);
-					$this->response->setStatus(false);
-					if(http::is_post()){
-						$inputsRoles = array(
-							'confrim' => array(
-								'type' => 'bool'
-							)
-						);
-						try{
-							$inputs = $this->checkinputs($inputsRoles);
-							if($inputs['confrim']){
-								$pay->status = $newstatus;
-
-								$log = new log();
-								$log->user = authentication::getUser();
-								$log->type = logs\transactions\pay::class;
-
-								if($newstatus == transaction_pay::accepted){
-									$pay->setParam('acceptor', authentication::getID());
-									$pay->setParam('accept_date', date::time());
-									$log->title = t("financial.logs.transaction.pay.accept", ["transaction_id" => $transaction->id, 'pay_id' => $pay->id]);
-								}elseif($newstatus == transaction_pay::rejected){
-									$pay->setParam('rejector', authentication::getID());
-									$pay->setParam('reject_date', date::time());
-									$log->title = t("financial.logs.transaction.pay.reject", ["transaction_id" => $transaction->id, 'pay_id' => $pay->id]);
-								}
-								$pay->save();
-
-								$parameters['pay'] = $pay;
-								$parameters['currency'] = $transaction->currency;
-								$log->parameters = $parameters;
-								$log->save();
-
-								$this->response->setStatus(true);
-								$this->response->Go(userpanel\url("transactions/view/".$transaction->id));
-							}else{
-								throw new inputValidation("confrim");
-							}
-						}catch(inputValidation $error){
-							$view->setFormError(FormError::fromException($error));
-						}
-					}else{
-						$this->response->setStatus(true);
-					}
-					$this->response->setView($view);
-				}else{
-					throw new NotFound;
-				}
-			}
-			return $this->response;
-		}else{
-			return authorization::FailResponse();
+		Authorization::haveOrFail("transactions_pays_accept");
+		$action = '';
+		if ($newstatus == Transaction_pay::accepted) {
+			$action = 'accept';
+		} elseif($newstatus == Transaction_pay::rejected) {
+			$action = 'reject';
 		}
+		$view = View::byName(views\transactions\pay::class . $action);
+		$this->response->setView($view);
+		$pay = $this->getPay($data['pay']);
+		$transaction = $pay->transaction;
+		if ($pay->status == transaction_pay::pending and $transaction->status == transaction::unpaid) {
+			throw new NotFound;
+		}
+		$view->setPay($pay);
+		if(!http::is_post()){
+			$this->response->setStatus(true);
+			return $this->response;
+		}
+		$this->response->setStatus(false);
+		$inputsRoles = array(
+			'confrim' => array(
+				'type' => 'bool'
+			)
+		);
+		$inputs = $this->checkinputs($inputsRoles);
+		if (!$inputs['confrim']) {
+			throw new InputValidationException("confrim");
+		}
+		$pay->status = $newstatus;
+
+		$log = new log();
+		$log->user = Authentication::getUser();
+		$log->type = logs\transactions\pay::class;
+
+		if($newstatus == transaction_pay::accepted){
+			$pay->setParam('acceptor', Authentication::getID());
+			$pay->setParam('accept_date', date::time());
+			$log->title = t("financial.logs.transaction.pay.accept", ["transaction_id" => $transaction->id, 'pay_id' => $pay->id]);
+		}elseif($newstatus == transaction_pay::rejected){
+			$pay->setParam('rejector', Authentication::getID());
+			$pay->setParam('reject_date', date::time());
+			$log->title = t("financial.logs.transaction.pay.reject", ["transaction_id" => $transaction->id, 'pay_id' => $pay->id]);
+		}
+		$pay->save();
+
+		$parameters['pay'] = $pay;
+		$parameters['currency'] = $transaction->currency;
+		$log->parameters = $parameters;
+		$log->save();
+
+		$this->response->setStatus(true);
+		$this->response->Go(userpanel\url("transactions/view/".$transaction->id));
+		return $this->response;
 	}
 	public function acceptPay($data){
 		return $this->accept_handler($data, transaction_pay::accepted);
