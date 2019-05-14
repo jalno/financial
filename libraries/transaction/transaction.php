@@ -11,6 +11,7 @@ class transaction extends dbObject{
 	const refund = 3;
 	const expired = 4;
 	const rejected = 5;
+
 	public static function generateToken(int $length = 15): string {
 		$numberChar = "0123456789";
 		$pw = "";
@@ -18,6 +19,23 @@ class transaction extends dbObject{
 			$pw .= substr($numberChar, rand(0, 9), 1);
 		}
 		return $pw;
+	}
+
+	public static function autoExpire(){
+		$transactions = (new static)->where('status', self::unpaid)
+									->where('expire_at', date::time(), '<')
+									->get();
+		foreach ($transactions as $transaction) {
+			$transaction->status = self::expired;
+			$transaction->save();
+			try {
+				$transaction->returnPaymentsToCredit();
+			} catch (Currency\UnChangableException $e) {
+
+			}
+			$event = new events\transactions\expire($transaction);
+			$event->trigger();
+		}
 	}
 	protected $dbTable = "financial_transactions";
 	protected $primaryKey = "id";
@@ -42,6 +60,20 @@ class transaction extends dbObject{
 	);
 	protected $tmproduct = array();
 	protected $tmpays = array();
+
+	/**
+	 * @throws Currency\UnChangableException
+	 */
+	public function returnPaymentsToCredit(array $methods = [Transaction_pay::credit]) {
+		$userCurrency = Currency::getDefault($this->user);
+		foreach ($this->pays as $pay) {
+			if (in_array($pay->method, $methods)) {
+				$price = $pay->currency->changeTo($pay->price, $userCurrency);
+				$this->user->credit += $price;
+			}
+		}
+		$this->user->save();
+	}
 	protected function addProduct($productdata){
 		$product = new transaction_product($productdata);
 		if ($this->isNew){
@@ -227,17 +259,6 @@ class transaction extends dbObject{
 			}
 		}
 		return true;
-	}
-	public static function checkExpiration(){
-		$transaction = new transaction();
-		$transaction->where('status', self::unpaid);
-		$transaction->where('expire_at', date::time(), '<');
-		foreach($transaction->get() as $transaction){
-			$transaction->status = self::expired;
-			$transaction->save();
-			$event = new events\transactions\expire($transaction);
-			$event->trigger();
-		}
 	}
 	public function afterPay(){
 		$dakhlPackage = packages::package("dakhl");

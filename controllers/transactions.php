@@ -33,7 +33,7 @@ class transactions extends controller{
 	}
 	public function listtransactions(){
 		authorization::haveOrFail('transactions_list');
-		transaction::checkExpiration();
+		transaction::autoExpire();
 		$view = view::byName(views\transactions\listview::class);
 		$types = authorization::childrenTypes();
 		$anonymous = authorization::is_accessed("transactions_anonymous");

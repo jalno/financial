@@ -213,6 +213,11 @@ $this->the_header(!$isLogin ? "logedout" : "");
 				$hasButtons = $this->hasButtons();
 			?>
 			<h3><?php echo translator::trans('pays'); ?></h3>
+			<?php if ($this->transaction->status == Transaction::expired) { ?>
+			<div class="alert alert-info text-center">
+				مبالغ پرداخت شما در این صورتحساب به موجودی کاربری شما مرجوع شده است.
+			</div>
+			<?php } ?>
 			<div class="row">
 				<div class="col-xs-12">
 					<table class="table table-striped table-hover">
