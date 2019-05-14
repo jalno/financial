@@ -28,10 +28,19 @@ class transaction extends dbObject{
 		foreach ($transactions as $transaction) {
 			$transaction->status = self::expired;
 			$transaction->save();
-			try {
-				$transaction->returnPaymentsToCredit();
-			} catch (Currency\UnChangableException $e) {
+			$payablePrice = $transaction->payablePrice();
+			if ($payablePrice < 0) {
+				$payablePrice *= -1;
+				$userCurrency = Currency::getDefault($transaction->user);
+				$price = $transaction->currency->changeTo($payablePrice, $userCurrency);
+				$transaction->user->credit += $price;
+				$transaction->user->save();
+			} else {
+				try {
+					$transaction->returnPaymentsToCredit();
+				} catch (Currency\UnChangableException $e) {
 
+				}
 			}
 			$event = new events\transactions\expire($transaction);
 			$event->trigger();
