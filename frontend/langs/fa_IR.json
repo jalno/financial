@@ -254,6 +254,8 @@
 		"packages.financial.refund.pay.info": "اطلاعات پرداخت",
 		"packages.financial.submit": "تایید",
 		"packages.financial.transaction.status.rejected": "رد شده",
-		"packages.financial.view": "مشاهده"
+		"packages.financial.view": "مشاهده",
+		"packages.financial.refunded-expired-refund-transaction": "مبلغ صورتحساب به موجودی کاربری شما مرجوع گردیده است.",
+		"packages.financial.refunded-expired-buy-transaction": "مبالغ پرداخت شما در این صورتحساب به موجودی کاربری شما مرجوع شده است."
 	}
 }
