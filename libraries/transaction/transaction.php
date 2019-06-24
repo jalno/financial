@@ -322,7 +322,7 @@ class transaction extends dbObject{
 		}
 		if ($invoice) {
 			foreach ($pays as $pay) {
-				$account;
+				$account = null;
 				$description = "";
 				if ($pay->method == transaction_pay::onlinepay) {
 					$payparam = $pay->param("payport_pay");
@@ -348,7 +348,7 @@ class transaction extends dbObject{
 				if (!$account) {
 					continue;
 				}
-				$dakhlaccount = $dakhl->getBankAccount($account->title, $account->shaba);
+				$dakhlaccount = $dakhl->getBankAccount($account->bank->title, $account->shaba);
 				$price = $pay->price;
 				if ($pay->currency->id != $dcurrency->id) {
 					$price = $pay->currency->changeTo($pay->price, $dcurrency);
