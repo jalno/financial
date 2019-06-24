@@ -453,7 +453,7 @@ class transactions extends controller{
 		$this->response->setView($view);
 		$pay = $this->getPay($data['pay']);
 		$transaction = $pay->transaction;
-		if ($pay->status == transaction_pay::pending and $transaction->status == transaction::unpaid) {
+		if ($pay->status != transaction_pay::pending or $transaction->status != transaction::unpaid) {
 			throw new NotFound;
 		}
 		$view->setPay($pay);
