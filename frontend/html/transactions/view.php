@@ -18,7 +18,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 					<?php if($logoPath){ ?>
 					<div class="col-sm-6">
 						<a href="<?php echo base\url(); ?>" target="_blank" >
-							<img src="<?php echo($logoPath); ?>" height="244" width="221"/>
+							<img src="<?php echo($logoPath); ?>"/>
 						</a>
 					</div>
 					<?php } ?>
