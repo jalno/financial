@@ -449,7 +449,7 @@ class transactions extends controller{
 		} elseif($newstatus == Transaction_pay::rejected) {
 			$action = 'reject';
 		}
-		$view = View::byName(views\transactions\pay::class . $action);
+		$view = View::byName(views\transactions\pay::class . '\\' . $action);
 		$this->response->setView($view);
 		$pay = $this->getPay($data['pay']);
 		$transaction = $pay->transaction;
