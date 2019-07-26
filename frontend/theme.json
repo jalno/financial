@@ -13,11 +13,11 @@
 		"fa_IR" : "langs/fa_IR.json"
 	},
 	"assets":[
-		{"type":"package", "name":"jquery"},
+		{"type":"package", "name":"jquery", "version": "^3.2.1"},
 		{"type":"package", "name":"jquery-ui", "version": "^1.12.1"},
-		{"type":"package", "name":"bootstrap", "version": "=3.3.7"},
-		{"type":"package", "name":"webuilder"},
-		{"type":"package", "name":"jquery.growl"},
+		{"type":"package", "name":"bootstrap", "version": "^3.3.7"},
+		{"type":"package", "name":"webuilder", "version": "^1.0.6"},
+		{"type":"package", "name":"jquery.growl", "version": "^1.3.1"},
 		{"type":"package", "name":"bootstrap-inputmsg"},
 		{"type":"ts", "file":"assets/ts/Main.ts"},
 		{"type":"less", "file":"assets/less/Main.less"}
