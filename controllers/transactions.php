@@ -1254,12 +1254,16 @@ class transactions extends controller{
 		if ($inputs["refund_price"] <= 0 or $inputs["refund_price"] > $inputs["refund_user"]->credit) {
 			throw new inputValidation("refund_price");
 		}
+		$expire = Options::get("packages.financial.refund_expire");
+		if (!$expire) {
+			$expire = 432000;
+		}
 		$currency = currency::getDefault($inputs["refund_user"]);
 		$transaction = new transaction;
 		$transaction->title = t("packages.financial.transactions.title.refund");
 		$transaction->user = $inputs["refund_user"]->id;
 		$transaction->create_at = date::time();
-		$transaction->expire_at = date::time() + 432000;
+		$transaction->expire_at = date::time() + $expire;
 		$transaction->currency = $currency->id;
 		$transaction->addProduct(array(
 			"title" => t("packages.financial.transactions.product.title.refund"),
