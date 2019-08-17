@@ -92,10 +92,8 @@ class transaction_pay extends dbObject{
 					$this->transaction->paid_at = time();
 					$this->transaction->afterPay();
 					$this->transaction->save();
-					if (packages::package("notifications")) {
-						$event = new events\transactions\pay($this->transaction);
-						$event->trigger();
-					}
+					$event = new events\transactions\pay($this->transaction);
+					$event->trigger();
 					if($this->transaction->isConfigured()){
 						$this->transaction->trigger_paid();
 					}
