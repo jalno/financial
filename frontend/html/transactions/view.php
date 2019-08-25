@@ -98,7 +98,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 										echo("ایران");
 										break;
 									default:
-										echo($this->transaction->country->name);
+										echo($this->transaction->user->country->name);
 										break;
 								}
 							}
