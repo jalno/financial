@@ -3,12 +3,10 @@ namespace packages\financial\controllers;
 use \packages\base\{db, http, NotFound, translator, view\error, inputValidation, InputValidationException, views\FormError, db\parenthesis, response, options};
 use \packages\userpanel;
 use \packages\userpanel\{user, date, log};
-use \packages\financial\{logs, view, views, transaction, currency,
-						authorization, authentication, controller,
-						transaction_product, transaction_pay, payport,
-						payport_pay, payport\redirect, payport\GatewayException,
-						payport\VerificationException, payport\AlreadyVerified, events,
-						views\transactions\pay as payView, Bank\Account};
+use packages\financial\{Bank\Account, Authentication, Authorization, Controller, Currency, Events,
+						Logs, Transaction, Transaction_product, Transaction_pay, View, Views, Payport, Payport_pay,
+						views\transactions\pay as payView, views\transactions as financialViews};
+use packages\financial\payport\{AlreadyVerified, GatewayException, Redirect, VerificationException};
 
 class transactions extends controller{
 	protected $authentication = true;
@@ -883,108 +881,104 @@ class transactions extends controller{
 		$this->response->setView($view);
 		return $this->response;
 	}
-	public function add(){
-		$view = view::byName("\\packages\\financial\\views\\transactions\\add");
-		$view->setCurrencies(currency::get());
-		authorization::haveOrFail('transactions_add');
-		$inputsRules = array(
-			'title' => array(
-				'type' => 'string'
-			),
-			'user' => array(
-				'type' => 'number'
-			),
-			'create_at' => array(
-				'type' => 'date'
-			),
-			'expire_at' => array(
-				'type' => 'date'
-			),
-			'products' => array()
-		);
-		$this->response->setStatus(false);
-		if(http::is_post()){
-			try{
-				$inputs = $this->checkinputs($inputsRules);
-				$inputs['user'] = user::byId($inputs['user']);
-				$inputs['create_at'] = date::strtotime($inputs['create_at']);
-				$inputs['expire_at'] = date::strtotime($inputs['expire_at']);
-
-				if(!$inputs['user']){
-					throw new inputValidation("user");
-				}
-				$inputs['currency'] = currency::getDefault($inputs['user']);
-				if($inputs['create_at'] <= 0){
-					throw new inputValidation("create_at");
-				}
-				if($inputs['expire_at'] < $inputs['create_at']){
-					throw new inputValidation("expire_at");
-				}
-				$products = array();
-				foreach($inputs['products'] as $x => $product){
-					if(!isset($product['title'])){
-						throw new inputValidation("products[$x][title]");
-					}
-					if(!isset($product['price']) or $product['price'] == 0){
-						throw new inputValidation("products[$x][price]");
-					}
-					if(isset($product['currency'])){
-						if(!$product['currency'] = currency::byId($product['currency'])){
-							throw new inputValidation("products[$x][currency]");
-						}
-					}else{
-						$inputs['products'][$x]['currency'] = $inputs['currency'];
-					}
-					if(isset($product['discount'])){
-						if($product['discount'] < 0){
-							throw new inputValidation("products[$x][discount]");
-						}
-					}else{
-						$product['discount'] = 0;
-					}
-					if(isset($product['number'])){
-						if($product['number'] < 0){
-							throw new inputValidation("products[$x][number]");
-						}
-					}else{
-						$product['number'] = 1;
-					}
-					$product['currency'] = $product['currency']->id;
-					$product['method'] = transaction_product::other;
-					$products[] = $product;
-				}
-
-				$transaction = new transaction;
-				foreach($products as $product){
-					$transaction->addProduct($product);
-				}
-				$transaction->user = $inputs['user']->id;
-				foreach(['title', 'create_at', 'currency'] as $item){
-					$transaction->$item = $inputs[$item];
-				}
-
-				$transaction->save();
-				if(isset($inputs['description'])){
-					$transaction->setparam('description', $inputs['description']);
-				}
-				$event = new events\transactions\add($transaction);
-				$event->trigger();
-				$log = new log();
-				$log->user = authentication::getUser();
-				$log->type = logs\transactions\add::class;
-				$log->title = t("financial.logs.transaction.add", ["transaction_id" => $transaction->id]);
-				$log->save();
-				$this->response->setStatus(true);
-				$this->response->Go(userpanel\url('transactions/view/'.$transaction->id));
-			}catch(inputValidation $error){
-				$view->setFormError(FormError::fromException($error));
-			}
-		}else{
-			$this->response->setStatus(true);
-		}
+	public function add() {
+		Authorization::haveOrFail('transactions_add');
+		$view = View::byName(financialViews\Add::class);
+		$view->setCurrencies(Currency::get());
 		$this->response->setView($view);
+		$this->response->setStatus(true);
 		return $this->response;
 	}
+
+	public function store() {
+		$this->response->setStatus(false);
+		Authorization::haveOrFail('transactions_add');
+		$view = View::byName(financialViews\Add::class);
+		$view->setCurrencies(Currency::get());
+		$this->response->setView($view);
+		$inputsRules = array(
+			'title' => array(
+				'type' => 'string',
+			),
+			'user' => array(
+				'type' => User::class,
+			),
+			'create_at' => array(
+				'type' => 'date',
+				'min' => 0,
+			),
+			'expire_at' => array(
+				'type' => 'date',
+				'min' => 0,
+			),
+			'products' => array(),
+		);
+		$inputs = $this->checkinputs($inputsRules);
+		$inputs['create_at'] = Date::strtotime($inputs['create_at']);
+		$inputs['expire_at'] = Date::strtotime($inputs['expire_at']);
+		$inputs['currency'] = Currency::getDefault($inputs['user']);
+
+		if ($inputs['expire_at'] < $inputs['create_at']) {
+			throw new InputValidationException("expire_at");
+		}
+		$products = array();
+		foreach ($inputs['products'] as $x => $product) {
+			if (!isset($product['title'])) {
+				throw new InputValidationException("products[$x][title]");
+			}
+			if (!isset($product['price']) or $product['price'] == 0) {
+				throw new InputValidationException("products[$x][price]");
+			}
+			if (isset($product['currency'])) {
+				if (!$product['currency'] = currency::byId($product['currency'])) {
+					throw new InputValidationException("products[$x][currency]");
+				}
+			} else {
+				$inputs['products'][$x]['currency'] = $inputs['currency'];
+			}
+			if (isset($product['discount'])) {
+				if ($product['discount'] < 0) {
+					throw new InputValidationException("products[$x][discount]");
+				}
+			} else {
+				$product['discount'] = 0;
+			}
+			if (isset($product['number'])) {
+				if ($product['number'] < 0) {
+					throw new InputValidationException("products[$x][number]");
+				}
+			} else {
+				$product['number'] = 1;
+			}
+			$product['currency'] = $product['currency']->id;
+			$product['method'] = Transaction_product::other;
+			$products[] = $product;
+		}
+		$transaction = new Transaction;
+		$transaction->user = $inputs['user']->id;
+		$transaction->status = Transaction::unpaid;
+		foreach($products as $product){
+			$transaction->addProduct($product);
+		}
+		foreach(['title', 'currency', 'create_at', 'expire_at'] as $item){
+			$transaction->$item = $inputs[$item];
+		}
+		$transaction->save();
+		if(isset($inputs['description'])){
+			$transaction->setparam('description', $inputs['description']);
+		}
+		$event = new events\transactions\Add($transaction);
+		$event->trigger();
+		$log = new Log();
+		$log->user = Authentication::getUser();
+		$log->type = logs\transactions\Add::class;
+		$log->title = t("financial.logs.transaction.add", ["transaction_id" => $transaction->id]);
+		$log->save();
+		$this->response->setStatus(true);
+		$this->response->Go(userpanel\url('transactions/view/'.$transaction->id));
+		return $this->response;
+	}
+
 	private function getProduct($data){
 		$types = authorization::childrenTypes();
 		db::join("financial_transactions", "financial_transactions.id=financial_transactions_products.transaction", "inner");

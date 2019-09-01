@@ -48,7 +48,13 @@
 	},
 	{
 		"path": ["userpanel","transactions","new"],
-		"controller": "controllers\\transactions@add"
+		"controller": "controllers/transactions@add",
+		"method": "get"
+	},
+	{
+		"path": ["userpanel","transactions","new"],
+		"controller": "controllers/transactions@store",
+		"method": "post"
 	},
 	{
 		"path": ["userpanel","transactions","pay", "delete", {"type":"dynamic", "name":"id", "regex":"/^\\d+$/"}],
