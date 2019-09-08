@@ -20,7 +20,13 @@
 	},
 	{
 		"path": ["userpanel","transactions","pay", "banktransfer", {"type":"dynamic", "name":"transaction", "regex":"/^(\\d+)$/"}],
-		"controller": "controllers\\transactions@payByBankTransfer"
+		"controller": "controllers/transactions@payByBankTransferView",
+		"method":"get"
+	},
+	{
+		"path": ["userpanel","transactions","pay", "banktransfer", {"type":"dynamic", "name":"transaction", "regex":"/^(\\d+)$/"}],
+		"controller": "controllers/transactions@payByBankTransfer",
+		"method" :"post"
 	},
 	{
 		"path": ["userpanel","transactions","pay", "accept", {"type":"dynamic", "name":"pay", "regex":"/^(\\d+)$/"}],
