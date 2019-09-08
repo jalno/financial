@@ -413,8 +413,10 @@ class Transactions extends Controller {
 		);
 		$inputs = $this->checkinputs($inputsRules);
 		$found = false;
+		$inputBankAccount = null;
 		foreach ($accounts as $account) {
 			if ($account->id == $inputs["bankaccount"]) {
+				$inputBankAccount = $account;
 				$found = true;
 				break;
 			}
@@ -428,6 +430,29 @@ class Transactions extends Controller {
 		$inputs["date"] = Date::strtotime($inputs["date"]);
 		if (!Authorization::is_accessed("transactions_pays_accept") and $inputs["date"] <= Date::time() - ( 86400 * 30)) {
 			throw new InputValidationException("date");
+		}
+		$bankaccounts = new Account();
+		$bankaccounts->where("bank_id", $inputBankAccount->bank_id);
+		$bankaccounts = $bankaccounts->get();
+		$bankaccount_ids = array();
+		foreach ($bankaccounts as $ba) {
+			$bankaccount_ids[] = $ba->id;
+		}
+		//	SELECT * FROM `financial_transactions_pays`
+		//		INNER JOIN `financial_transactions_pays_params` `params1` ON `params1`.`pay` = `financial_transactions_pays`.`id`
+		//			AND `params1`.`name` = "bankaccount" and `params1`.`value` IN ($bankaccount_ids)
+		//		INNER JOIN `financial_transactions_pays_params` `params2` ON `params2`.`pay` = `financial_transactions_pays`.`id`
+		//			AND `params2`.`name` = "followup" and `params1`.`value`="$inputs['followup]" 
+		$banktransferPays = new transaction_pay();
+		db::join("financial_transactions_pays_params params1", "params1.pay=financial_transactions_pays.id", "INNER");
+		db::joinWhere("financial_transactions_pays_params params1", "params1.name", "bankaccount");
+		db::joinWhere("financial_transactions_pays_params params1", "params1.value", $bankaccount_ids, "IN", "AND");
+		db::join("financial_transactions_pays_params params2", "params2.pay=financial_transactions_pays.id", "INNER");
+		db::joinWhere("financial_transactions_pays_params params2", "params2.name", "followup");
+		db::joinWhere("financial_transactions_pays_params params2", "params2.value", $inputs["followup"], "=", "AND");
+		$banktransferPays = $banktransferPays->get();
+		if ($banktransferPays) {			
+			throw new InputValidationException("followup");
 		}
 		$newPay = array(
 			"date" => $inputs["date"],
