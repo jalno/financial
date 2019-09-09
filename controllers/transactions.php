@@ -369,6 +369,13 @@ class Transactions extends Controller {
 			$account->where("financial_banks_accounts.id", $userBankAccounts, "IN");
 		}
 		$accounts = $account->get(null, array("financial_banks_accounts.*", "userpanel_users.*", "financial_banks.*"));
+		$transaction_pay = new Transaction_pay();
+		$transaction_pay->where("transaction", $transaction->id);
+		$transaction_pay->where("method", Transaction_pay::banktransfer);
+		$transaction_pay = $transaction_pay->get();
+		if ($transaction_pay) {
+			$view->setBanktransferPays($transaction_pay);
+		}
 		$view->setBankAccounts($accounts);
 		$view->setDataForm($transaction->payablePrice(), 'price');
 		$view->setDataForm(Date::format("Y/m/d H:i:s"), 'date');
@@ -461,7 +468,11 @@ class Transactions extends Controller {
 			if ($token = Http::getURIData("token")) {
 				$parameter["token"] = $token;
 			}
-			$this->response->Go(userpanel\url('transactions/view/' . $transaction->id, $parameter));
+			$url = '';
+			$url = ($transaction->payablePrice() > 0) ? 'pay/banktransfer/' : 'view/';
+			$this->response->Go(userpanel\url('transactions/'  . $url . $transaction->id, $parameter));
+		} else {
+			$this->response->setStatus(false);
 		}
 		$this->response->setStatus(true);		
 		return $this->response;
