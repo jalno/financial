@@ -438,18 +438,13 @@ class Transactions extends Controller {
 		foreach ($bankaccounts as $ba) {
 			$bankaccount_ids[] = $ba->id;
 		}
-		//	SELECT * FROM `financial_transactions_pays`
-		//		INNER JOIN `financial_transactions_pays_params` `params1` ON `params1`.`pay` = `financial_transactions_pays`.`id`
-		//			AND `params1`.`name` = "bankaccount" and `params1`.`value` IN ($bankaccount_ids)
-		//		INNER JOIN `financial_transactions_pays_params` `params2` ON `params2`.`pay` = `financial_transactions_pays`.`id`
-		//			AND `params2`.`name` = "followup" and `params1`.`value`="$inputs['followup]" 
 		$banktransferPays = new transaction_pay();
 		db::join("financial_transactions_pays_params params1", "params1.pay=financial_transactions_pays.id", "INNER");
 		db::joinWhere("financial_transactions_pays_params params1", "params1.name", "bankaccount");
-		db::joinWhere("financial_transactions_pays_params params1", "params1.value", $bankaccount_ids, "IN", "AND");
+		db::joinWhere("financial_transactions_pays_params params1", "params1.value", $bankaccount_ids, "IN");
 		db::join("financial_transactions_pays_params params2", "params2.pay=financial_transactions_pays.id", "INNER");
 		db::joinWhere("financial_transactions_pays_params params2", "params2.name", "followup");
-		db::joinWhere("financial_transactions_pays_params params2", "params2.value", $inputs["followup"], "=", "AND");
+		db::joinWhere("financial_transactions_pays_params params2", "params2.value", $inputs["followup"]);
 		$banktransferPays = $banktransferPays->get();
 		if ($banktransferPays) {			
 			throw new InputValidationException("followup");
