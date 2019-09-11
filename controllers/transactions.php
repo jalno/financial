@@ -1,7 +1,7 @@
 <?php
 namespace packages\financial\controllers;
 
-use packages\base\{DB, view\Error, views\FormError, Http, inputValidation, InputValidationException, NotFound, Options, db\Parenthesis, Response, Translator};
+use packages\base\{DB, db\duplicateRecord, view\Error, views\FormError, Http, inputValidation, InputValidationException, NotFound, Options, db\Parenthesis, Response, Translator};
 use packages\userpanel;
 use packages\userpanel\{Date, Log, User};
 use packages\financial\{Bank\Account, Authentication, Authorization, Controller, Currency, Events, Logs, Transaction, Transaction_product, Transaction_pay, View, Views, Payport, Payport_pay};
@@ -447,7 +447,7 @@ class Transactions extends Controller {
 		db::joinWhere("financial_transactions_pays_params params2", "params2.value", $inputs["followup"]);
 		$banktransferPays = $banktransferPays->get();
 		if ($banktransferPays) {			
-			throw new InputValidationException("followup");
+			throw new duplicateRecord("followup");
 		}
 		$newPay = array(
 			"date" => $inputs["date"],
