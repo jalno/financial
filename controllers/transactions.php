@@ -1,7 +1,7 @@
 <?php
 namespace packages\financial\controllers;
 
-use packages\base\{DB, view\Error, views\FormError, Http, inputValidation, InputValidationException, NotFound, Options, db\Parenthesis, Response, Translator};
+use packages\base\{DB, db\duplicateRecord, view\Error, views\FormError, Http, inputValidation, InputValidationException, NotFound, Options, db\Parenthesis, Response, Translator};
 use packages\userpanel;
 use packages\userpanel\{Date, Log, User};
 use packages\financial\{Bank\Account, Authentication, Authorization, Controller, Currency, Events, Logs, Transaction, Transaction_product, Transaction_pay, View, Views, Payport, Payport_pay};
@@ -420,8 +420,10 @@ class Transactions extends Controller {
 		);
 		$inputs = $this->checkinputs($inputsRules);
 		$found = false;
+		$inputBankAccount = null;
 		foreach ($accounts as $account) {
 			if ($account->id == $inputs["bankaccount"]) {
+				$inputBankAccount = $account;
 				$found = true;
 				break;
 			}
@@ -435,6 +437,24 @@ class Transactions extends Controller {
 		$inputs["date"] = Date::strtotime($inputs["date"]);
 		if (!Authorization::is_accessed("transactions_pays_accept") and $inputs["date"] <= Date::time() - ( 86400 * 30)) {
 			throw new InputValidationException("date");
+		}
+		$bankaccounts = new Account();
+		$bankaccounts->where("bank_id", $inputBankAccount->bank_id);
+		$bankaccounts = $bankaccounts->get();
+		$bankaccount_ids = array();
+		foreach ($bankaccounts as $ba) {
+			$bankaccount_ids[] = $ba->id;
+		}
+		$banktransferPays = new transaction_pay();
+		db::join("financial_transactions_pays_params params1", "params1.pay=financial_transactions_pays.id", "INNER");
+		db::joinWhere("financial_transactions_pays_params params1", "params1.name", "bankaccount");
+		db::joinWhere("financial_transactions_pays_params params1", "params1.value", $bankaccount_ids, "IN");
+		db::join("financial_transactions_pays_params params2", "params2.pay=financial_transactions_pays.id", "INNER");
+		db::joinWhere("financial_transactions_pays_params params2", "params2.name", "followup");
+		db::joinWhere("financial_transactions_pays_params params2", "params2.value", $inputs["followup"]);
+		$banktransferPays = $banktransferPays->get();
+		if ($banktransferPays) {			
+			throw new duplicateRecord("followup");
 		}
 		$newPay = array(
 			"date" => $inputs["date"],
