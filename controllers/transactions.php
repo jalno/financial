@@ -414,6 +414,10 @@ class Transactions extends Controller {
 			"followup" => array(
 				"type" => "string"
 			),
+			"description" => array(
+				"type" => "string",
+				"optional" => true,
+			),
 			"date" => array(
 				"type" => "date"
 			)
@@ -467,6 +471,9 @@ class Transactions extends Controller {
 				"followup" => $inputs["followup"]
 			)
 		);
+		if (isset($inputs['description']) and $inputs['description']) {
+			$newPay['params']['description'] = $inputs['description'];
+		}
 		if (Authorization::is_accessed("transactions_pays_accept")) {
 			$newPay['status'] = Transaction_pay::accepted;
 		}

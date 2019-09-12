@@ -49,7 +49,15 @@ class view extends transactionsView {
 				}else{
 					$pay->method = t("pay.byBankTransfer");
 				}
-				$pay->description = t("pay.byBankTransfer.withfollowup", array("followup" => $pay->param("followup")));
+				$description = "";
+				if ($pay->param("followup")) {
+					$description = t("pay.byBankTransfer.withfollowup", array("followup" => $pay->param("followup")));
+				}
+				if ($pay->param("description")) {
+					$description .= "\n<br>" . t("financial.transaction.banktransfer.description") . ": " . $pay->param("description");
+				}
+				$pay->description = $description;
+				
 			}elseif($pay->method == transaction_pay::onlinepay){
 				if($payport_pay = payport_pay::byId($pay->param("payport_pay"))){
 					$pay->method = t("pay.byPayOnline.withpayport", array("payport" => $payport_pay->payport->title));

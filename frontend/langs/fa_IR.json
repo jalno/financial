@@ -158,6 +158,7 @@
 		"financial.return": "بازگشت",
 		"financial.submit": "تایید",
 		"financial.transaction.accept": "تایید پرداخت صورت حساب",
+		"financial.transaction.banktransfer.description": "توضیحات کاربر",
 		"financial.transaction.product": "محصول",
 		"financial.transaction.product.decription": "توضیحات",
 		"financial.transaction.product.number": "تعداد",
