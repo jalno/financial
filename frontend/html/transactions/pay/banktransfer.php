@@ -144,12 +144,19 @@ $this->the_header(!$isLogin ? "logedout" : "");
 					<div class="row">
 						<div class="col-xs-12">
 							<?php
-							echo $this->createField(array(
+							$this->createField(array(
 								'name' => 'followup',
 								'label' => t("pay.banktransfer.followup"),
 								'type' => 'number',
 								'min' => 0,
 								"ltr" => true,
+							));
+							$this->createField(array(
+								'name' => 'description',
+								'label' => t("description"),
+								'type' => 'textarea',
+								'class' => 'form-control banktransfer-description',
+								'rows' => 2
 							));
 							?>
 						</div>
