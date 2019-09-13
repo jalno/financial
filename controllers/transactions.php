@@ -9,6 +9,45 @@ use packages\financial\{views\transactions\pay as PayView, views\transactions as
 use packages\financial\payport\{AlreadyVerified, GatewayException, Redirect, VerificationException};
 
 class Transactions extends Controller {
+
+	public static function getAvailablePayMethods($canPayByCredit = true) {
+		$methods = array();
+		$userBankAccounts = options::get("packages.financial.pay.tansactions.banka.accounts");
+		$account = new Account();
+		$account->where("status", Account::Active);
+		if ($userBankAccounts) {
+			$account->where("id", $userBankAccounts, "IN");
+		}
+		$bankaccounts = $account->has();
+		$payports = payport::where("status", 1)->has();
+		if($canPayByCredit){
+			$methods[] = 'credit';
+		}
+		if($bankaccounts){
+			$methods[] = 'banktransfer';
+		}
+		if($payports){
+			$methods[] = 'onlinepay';
+		}
+		return $methods;
+	}
+	public static function checkBanktransferFollowup(int $bank, string $code) {
+		$account = new Account();
+		$account->where("bank_id", $bank);
+		$accounts = array_column($account->get(null, "id"), "id");
+		if (!$accounts) {
+			return false;
+		}
+		$banktransferPays = new transaction_pay();
+		db::join("financial_transactions_pays_params params1", "params1.pay=financial_transactions_pays.id", "INNER");
+		db::joinWhere("financial_transactions_pays_params params1", "params1.name", "bankaccount");
+		db::joinWhere("financial_transactions_pays_params params1", "params1.value", $accounts, "IN");
+		db::join("financial_transactions_pays_params params2", "params2.pay=financial_transactions_pays.id", "INNER");
+		db::joinWhere("financial_transactions_pays_params params2", "params2.name", "followup");
+		db::joinWhere("financial_transactions_pays_params params2", "params2.value", $code);
+		return $banktransferPays->has();
+	}
+
 	protected $authentication = true;
 	public function __construct() {
 		$this->response = new response();
@@ -205,27 +244,6 @@ class Transactions extends Controller {
 			throw new NotFound;
 		}
 	}
-	private function getAvailablePayMethods($canPayByCredit = true) {
-		$methods = array();
-		$userBankAccounts = options::get("packages.financial.pay.tansactions.banka.accounts");
-		$account = new Account();
-		$account->where("status", Account::Active);
-		if ($userBankAccounts) {
-			$account->where("id", $userBankAccounts, "IN");
-		}
-		$bankaccounts = $account->has();
-		$payports = payport::where("status", 1)->has();
-		if($canPayByCredit){
-			$methods[] = 'credit';
-		}
-		if($bankaccounts){
-			$methods[] = 'banktransfer';
-		}
-		if($payports){
-			$methods[] = 'onlinepay';
-		}
-		return $methods;
-	}
 	private function getTransactionForPay($data):transaction{
 		$transaction = $this->getTransaction($data['transaction']);
 		if($transaction->status != transaction::unpaid or $transaction->param('UnChangableException') or $transaction->payablePrice() < 0){
@@ -250,7 +268,7 @@ class Transactions extends Controller {
 			$canPayByCredit = false;
 		}
 		$view->setTransaction($transaction);
-		foreach($this->getAvailablePayMethods($canPayByCredit) as $method){
+		foreach(self::getAvailablePayMethods($canPayByCredit) as $method){
 			$view->setMethod($method);
 		}
 		$this->response->setStatus(true);
@@ -275,7 +293,7 @@ class Transactions extends Controller {
 		if(!$canPayByCredit){
 			throw new NotFound();
 		}
-		if(!in_array('credit', $this->getAvailablePayMethods($user->credit > 0 or ($types and $self->credit > 0)))){
+		if(!in_array('credit', self::getAvailablePayMethods($user->credit > 0 or ($types and $self->credit > 0)))){
 			throw new NotFound;			
 		}
 		$view = view::byName(payView\credit::class);
@@ -350,7 +368,7 @@ class Transactions extends Controller {
 		return $this->response;
 	}
 	public function payByBankTransferView($data) {
-		if(!in_array('banktransfer', $this->getAvailablePayMethods())){
+		if(!in_array('banktransfer', self::getAvailablePayMethods())){
 			throw new NotFound();
 		}
 		$view = View::byName(PayView\Banktransfer::class);
@@ -383,7 +401,7 @@ class Transactions extends Controller {
 	} // payByBankTransferView
 
 	public function payByBankTransfer($data){
-		if(!in_array('banktransfer', $this->getAvailablePayMethods())){
+		if(!in_array('banktransfer', self::getAvailablePayMethods())){
 			throw new NotFound();
 		}
 		$view = View::byName(PayView\Banktransfer::class);
@@ -438,22 +456,7 @@ class Transactions extends Controller {
 		if (!Authorization::is_accessed("transactions_pays_accept") and $inputs["date"] <= Date::time() - ( 86400 * 30)) {
 			throw new InputValidationException("date");
 		}
-		$bankaccounts = new Account();
-		$bankaccounts->where("bank_id", $inputBankAccount->bank_id);
-		$bankaccounts = $bankaccounts->get();
-		$bankaccount_ids = array();
-		foreach ($bankaccounts as $ba) {
-			$bankaccount_ids[] = $ba->id;
-		}
-		$banktransferPays = new transaction_pay();
-		db::join("financial_transactions_pays_params params1", "params1.pay=financial_transactions_pays.id", "INNER");
-		db::joinWhere("financial_transactions_pays_params params1", "params1.name", "bankaccount");
-		db::joinWhere("financial_transactions_pays_params params1", "params1.value", $bankaccount_ids, "IN");
-		db::join("financial_transactions_pays_params params2", "params2.pay=financial_transactions_pays.id", "INNER");
-		db::joinWhere("financial_transactions_pays_params params2", "params2.name", "followup");
-		db::joinWhere("financial_transactions_pays_params params2", "params2.value", $inputs["followup"]);
-		$banktransferPays = $banktransferPays->get();
-		if ($banktransferPays) {			
+		if (self::checkBanktransferFollowup()) {			
 			throw new duplicateRecord("followup");
 		}
 		$newPay = array(
@@ -561,7 +564,7 @@ class Transactions extends Controller {
 		return $this->accept_handler($data, transaction_pay::rejected);
 	}
 	public function onlinePay($data) {
-		if (!in_array('onlinepay',$this->getAvailablePayMethods())) {
+		if (!in_array('onlinepay',self::getAvailablePayMethods())) {
 			throw new NotFound;
 		}
 		$transaction = $this->getTransactionForPay($data);
