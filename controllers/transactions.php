@@ -456,7 +456,7 @@ class Transactions extends Controller {
 		if (!Authorization::is_accessed("transactions_pays_accept") and $inputs["date"] <= Date::time() - ( 86400 * 30)) {
 			throw new InputValidationException("date");
 		}
-		if (self::checkBanktransferFollowup()) {			
+		if (self::checkBanktransferFollowup($inputBankAccount->bank_id, $inputs['followup'])) {			
 			throw new duplicateRecord("followup");
 		}
 		$newPay = array(
