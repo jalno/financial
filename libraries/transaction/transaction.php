@@ -23,6 +23,7 @@ class transaction extends dbObject{
 
 	public static function autoExpire(){
 		$transactions = (new static)->where('status', self::unpaid)
+									->where('expire_at', null, 'IS NOT')
 									->where('expire_at', date::time(), '<')
 									->get();
 		foreach ($transactions as $transaction) {
@@ -144,9 +145,6 @@ class transaction extends dbObject{
 		}
 		if(!isset($data['create_at']) or !$data['create_at']){
 			$data['create_at'] = time();
-		}
-		if($data['status'] == self::unpaid and (!isset($data['expire_at']) or !$data['expire_at'])){
-			$data['expire_at'] = $data['create_at'] + (86400*2);
 		}
 		if(!isset($data['currency'])){
 			$user = null;
