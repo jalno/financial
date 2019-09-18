@@ -43,6 +43,15 @@
 		"financial.pay.bankTransfer.followup" : "شماره پیگیری تراکنش:‌ {followup}",
 		"packages.financial.transactions.title.refund": "صورتحساب تسویه حساب",
 		"packages.financial.transactions.product.title.refund": "مشخصات تسویه حساب",
-		"packages.financial.transactions.refund.description": "شماره حساب {account_account}<br>شماره کارت {account_cart}<br>شماره شبا {account_shaba}<br>نام صاحب حساب {account_owner}"
+		"packages.financial.transactions.refund.description": "شماره حساب {account_account}<br>شماره کارت {account_cart}<br>شماره شبا {account_shaba}<br>نام صاحب حساب {account_owner}",
+		"pay.byCredit" : "پرداخت با موجودی کاربری",
+		"pay.byBankTransfer" : "پرداخت از طریق واریز بانکی",
+		"pay.byBankTransfer.withbank" : "واریز به {bankaccount}",
+		"pay.byBankTransfer.withfollowup" : "شماره پیگیری تراکنش:‌ {followup}",
+		"pay.byPayOnline.withpayport" : "پرداخت آنلاین از طریق {payport}",
+		"pay.byPayOnline":"پرداخت آنلاین",
+		"pay.method.payaccepted": "تایید شده توسط: {acceptor}",
+		"pay.method.credit" : "موجودی کاربری",
+		"packages.transaction.pay.method.operator": "پرداخت کننده:‌ {operator}"
 	}
 }

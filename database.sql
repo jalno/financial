@@ -196,3 +196,6 @@ CREATE TABLE `financial_transactions_products_params` (
 	KEY `product` (`product`),
 	CONSTRAINT `financial_transactions_products_params_ibfk_1` FOREIGN KEY (`product`) REFERENCES `financial_transactions_products` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `financial_currencies` (`id`, `title`, `update_at`) VALUES ('1', 'ریال', '0');
+INSERT INTO `options` (`name`, `value`, `autoload`) VALUES ('packages.financial.defaultCurrency', '1', '1');

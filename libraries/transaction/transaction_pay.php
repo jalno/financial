@@ -1,7 +1,7 @@
 <?php
 namespace packages\financial;
 use \packages\base\{db\dbObject, packages};
-use \packages\financial\events;
+use packages\financial\{Bank\Account, events};
 
 class transaction_pay extends dbObject{
 	const accepted = 1;
@@ -114,6 +114,20 @@ class transaction_pay extends dbObject{
 			return false;
 		}
 	}
+
+	public function getBanktransferBankAccount() {
+		if ($this->method != self::banktransfer) {
+			return null;
+		}
+		$bankaccount_id = $this->param("bankaccount");
+		if ($bankaccount_id) {
+			$bankaccount = new Account();
+			$bankaccount->where("id", $bankaccount_id);
+			$bankaccount = $bankaccount->getOne();
+			return ($bankaccount) ? $bankaccount : null;
+		}
+	}
+
 	protected function convertPrice() {
 		if ($this->currency->id == $this->transaction->currency->id) {
 			return $this->price;
