@@ -4,9 +4,9 @@ namespace packages\financial\controllers;
 use packages\base\{DB, db\duplicateRecord, view\Error, views\FormError, Http, inputValidation, InputValidationException, NotFound, Options, db\Parenthesis, Response, Translator};
 use packages\userpanel;
 use packages\userpanel\{Date, Log, User};
-use packages\financial\{Bank\Account, Authentication, Authorization, Controller, Currency, Events, Logs, Transaction, Transaction_product, Transaction_pay, View, Views, Payport, Payport_pay};
 use packages\financial\{views\transactions\pay as PayView, views\transactions as financialViews};
 use packages\financial\payport\{AlreadyVerified, GatewayException, Redirect, VerificationException};
+use packages\financial\{Bank\Account, Authentication, Authorization, Controller, Currency, Events, Logs, Transaction, Transaction_product, Transaction_pay, View, Views, Payport, Payport_pay};
 
 class Transactions extends Controller {
 
@@ -72,40 +72,57 @@ class Transactions extends Controller {
 		authorization::haveOrFail('transactions_list');
 		transaction::autoExpire();
 		$view = view::byName(views\transactions\listview::class);
+		$this->response->setView($view);
+		$canAccept = Authorization::is_accessed("transactions_pays_accept");
+		$exporters = array();
+		$exporter = null;
+		if ($canAccept) {
+			$exporter = new Events\Exporters();
+			$exporter->trigger();
+			$exporters = $exporter->get();
+			$view->setExporters($exporters);
+		}
 		$types = authorization::childrenTypes();
 		$anonymous = authorization::is_accessed("transactions_anonymous");
-		$transaction = new transaction;
 		$inputsRules = array(
 			'id' => array(
 				'type' => 'number',
 				'optional' => true,
-				'empty' => true
 			),
 			'title' => array(
 				'type' => 'string',
 				'optional' =>true,
-				'empty' => true
 			),
 			'name' => array(
 				'type' => 'string',
 				'optional' =>true,
-				'empty' => true
 			),
 			'user' => array(
 				'type' => 'number',
 				'optional' => true,
-				'empty' => true
 			),
 			'status' => array(
-				'type' => 'number',
+				'values' => [transaction::unpaid, transaction::paid, transaction::refund, transaction::expired],
 				'optional' => true,
-				'empty' => true,
-				'values' => [transaction::unpaid, transaction::paid, transaction::refund, transaction::expired]
+			),
+			'download' => array(
+				'type' => 'string',
+				'values' => array("csv"),
+				'optional' => true,
+			),
+			'create_from' => array(
+				'type' => 'date',
+				'unix' => true,
+				'optional' => true,
+			),
+			'create_to' => array(
+				'type' => 'date',
+				'unix' => true,
+				'optional' => true,
 			),
 			'word' => array(
 				'type' => 'string',
 				'optional' => true,
-				'empty' => true
 			),
 			'comparison' => array(
 				'values' => array('equals', 'startswith', 'contains'),
@@ -113,64 +130,131 @@ class Transactions extends Controller {
 				'optional' => true
 			)
 		);
+		if ($canAccept) {
+			$inputsRules["download"]["values"] = array_merge($exporter->getExporterNames(), $inputsRules["download"]["values"]);
+			$inputsRules['refund'] = array(
+				'type' => 'bool',
+				'optional' => true,
+				'empty' => true,
+				'default' => false,
+			);
+		}
 		$searched = false;
-		try{
-			$inputs = $this->checkinputs($inputsRules);
-			if(isset($inputs['user']) and $inputs['user'] != 0){
-				$user = user::byId($inputs['user']);
-				if(!$user){
-					throw new inputValidation("user");
+		$inputs = $this->checkinputs($inputsRules);
+		if (!$canAccept) {
+			$inputs["refund"] = false;
+		}
+		$view->setDataForm($this->inputsvalue($inputsRules));
+		$transaction = new Transaction;
+		$transaction->with("currency");
+		$transaction->join(Transaction_product::class, null, "INNER", "transaction");
+		foreach(array('id', 'title', 'status', 'user') as $item){
+			if(isset($inputs[$item])){
+				$comparison = $inputs['comparison'];
+				if(in_array($item, array('id', 'status', 'user'))){
+					$comparison = 'equals';
 				}
-				$inputs['user'] = $user->id;
-			}
-			foreach(array('id', 'title', 'status', 'user') as $item){
-				if(isset($inputs[$item]) and $inputs[$item]){
-					$comparison = $inputs['comparison'];
-					if(in_array($item, array('id', 'status', 'user'))){
-						$comparison = 'equals';
-					}
-					$transaction->where("financial_transactions.".$item, $inputs[$item], $comparison);
-					$searched = true;
-				}
-			}
-			if(isset($inputs['word']) and $inputs['word']){
-				$parenthesis = new parenthesis();
-				foreach(array('title') as $item){
-					if(!isset($inputs[$item]) or !$inputs[$item]){
-						$parenthesis->where($item,$inputs['word'], $inputs['comparison'], 'OR');
-					}
-				}
+				$transaction->where("financial_transactions.".$item, $inputs[$item], $comparison);
 				$searched = true;
-				$transaction->where($parenthesis);
 			}
-		} catch(inputValidation $error){
-			$view->setFormError(FormError::fromException($error));
-			$this->response->setStatus(false);
+		}
+		if (isset($inputs["create_from"])) {
+			$transaction->where("financial_transactions.create_at", $inputs["create_from"], ">=");
+			$searched = true;
+		}
+		if (isset($inputs["create_to"])) {
+			$transaction->where("financial_transactions.create_at", $inputs["create_to"], "<");
+			$searched = true;
+		}
+		if(isset($inputs['word']) and $inputs['word']){
+			$parenthesis = new Parenthesis();
+			foreach(array('title') as $item){
+				if(!isset($inputs[$item])){
+					$parenthesis->orWhere("financial_transactions.{$item}", $inputs['word'], $inputs['comparison']);
+				}
+			}
+			foreach (array('title', 'description') as $item) {
+				$parenthesis->orWhere("financial_transactions_products.{$item}", $inputs['word'], $inputs['comparison']);
+			}
+			$searched = true;
+			$transaction->where($parenthesis);
 		}
 		if($anonymous){
-			db::join("userpanel_users", "userpanel_users.id=financial_transactions.user", "LEFT");
-			$parenthesis = new parenthesis();
+			$transaction->join(User::class, "user", "LEFT");
+			$parenthesis = new Parenthesis();
 			$parenthesis->where("userpanel_users.type",  $types, "in");
-			$parenthesis->where("financial_transactions.user", null, "is","or");
-			db::where($parenthesis);
+			$parenthesis->orWhere("financial_transactions.user", null, "is");
+			$transaction->where($parenthesis);
 		} else {
-			db::join("userpanel_users", "userpanel_users.id=financial_transactions.user", "INNER");
+			$transaction->join(User::class, "user", "INNER");
 			if ($types) {
-				db::where("userpanel_users.type", $types, "in");
+				$transaction->where("userpanel_users.type", $types, "in");
 			} else {
-				db::where("userpanel_users.id", authentication::getID());
+				$transaction->where("userpanel_users.id", authentication::getID());
 			}
 		}
-		if (!$searched) {
-			$transaction->where('financial_transactions.status', transaction::expired, '!=');
+		if ($inputs["refund"]) {
+			$transaction->where("financial_transactions_products.method", Transaction_product::refund);
+			$searched = false;
 		}
-		$transaction->orderBy('id', ' DESC');
-		$transaction->pageLimit = $this->items_per_page;
-		$transactions = $transaction->paginate($this->page, ["financial_transactions.*"]);
-		$view->setDataList($transactions);
-		$view->setPaginate($this->page, db::totalCount(), $this->items_per_page);
+		$transaction->orderBy('financial_transactions.id', 'DESC');
+		if (isset($inputs["download"])) {
+			$transactions = $transaction->get();
+			if ($inputs["refund"] and in_array($inputs["download"], $exporter->getExporterNames())) {
+				$handler = $exporter->getByName($inputs["download"])->getHandler();
+				$responseFile = (new $handler())->export($transactions);
+				$this->response->setFile($responseFile);
+				$this->response->forceDownload();
+			} else if ($inputs["download"] == "csv")  {
+				$csv = t("packages.financial.transaction.id") . ";" .
+					t("packages.financial.transaction.title") . ";" .
+					t("packages.financial.transaction.create_at") . ";" .
+					t("packages.financial.transaction.user") . ";" .
+					t("packages.financial.transaction.user.cellphone") . ";" .
+					t("packages.financial.transaction.user.email") . ";" .
+					t("packages.financial.transaction.price") . ";" .
+					t("packages.financial.transaction.price.paid") . ";" .
+					t("packages.financial.transaction.price.payable") . ";" .
+					t("packages.financial.transaction.status") . "\n";
+				foreach ($transactions as $transaction) {
+					$createAt = date::format("Y/m/d H:i", $transaction->create_at);
+					$price = abs($transaction->price);
+					$payablePrice = abs($transaction->payablePrice());
+					$paid = $price - $payablePrice;
+					$status = '';
+					switch ($transaction->status) {
+						case (Transaction::unpaid):
+							$status = t("packages.financial.transaction.status.unpaid");
+							break;
+						case (Transaction::paid):
+							$status = t("packages.financial.transaction.status.paid");
+							break;
+						case (Transaction::refund):
+							$status = t("packages.financial.transaction.status.refund");
+							break;
+						case (Transaction::expired):
+							$status = t("packages.financial.transaction.status.expired");
+							break;
+						case (Transaction::rejected):
+							$status = t("packages.financial.transaction.status.rejected");
+							break;
+					}
+					$csv .= "{$transaction->id};{$transaction->title};{$createAt};{$transaction->user->getFullName()};{$transaction->user->cellphone};{$transaction->user->email};{$price} {$transaction->currency->title};{$paid} {$transaction->currency->title};{$payablePrice} {$transaction->currency->title};{$status}\n";
+				}
+				$this->response->setHeader('content-disposition', "attachment; filename=\"financial-transactions.csv\"");
+				$this->response->setMimeType("text/csv", "utf-8");
+				$this->response->rawOutput($csv);
+			}
+		} else {
+			if (!$searched) {
+				$transaction->where('financial_transactions.status', transaction::expired, '!=');
+			}
+			$transaction->pageLimit = $this->items_per_page;
+			$transactions = $transaction->paginate($this->page, ["financial_transactions.*", "userpanel_users.*", "financial_currencies.*"]);
+			$view->setDataList($transactions);
+			$view->setPaginate($this->page, db::totalCount(), $this->items_per_page);
+		}
 		$this->response->setStatus(true);
-		$this->response->setView($view);
 		return $this->response;
 	}
 	public function transaction_view($data){
