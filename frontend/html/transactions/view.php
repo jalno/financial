@@ -6,7 +6,8 @@ use \packages\financial\{currency, transaction, transaction_pay, authentication}
 use \packages\userpanel;
 use \packages\userpanel\{date, user};
 $isLogin = authentication::check();
-$refundTransaction = false;
+$payablePrice = $this->transaction->payablePrice();
+$refundTransaction = $payablePrice < 0;
 $this->the_header(!$isLogin ? "logedout" : "");
 ?>
 <div class="row">
@@ -17,7 +18,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 					<?php if($logoPath){ ?>
 					<div class="col-sm-6">
 						<a href="<?php echo base\url(); ?>" target="_blank" >
-							<img src="<?php echo($logoPath); ?>" height="244" width="221"/>
+							<img src="<?php echo($logoPath); ?>"/>
 						</a>
 					</div>
 					<?php } ?>
@@ -97,7 +98,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 										echo("ایران");
 										break;
 									default:
-										echo($this->transaction->country->name);
+										echo($this->transaction->user->country->name);
 										break;
 								}
 							}
@@ -157,6 +158,10 @@ $this->the_header(!$isLogin ? "logedout" : "");
 					</ul>
 				</div>
 			</div>
+
+			<?php if ($refundTransaction and $this->transaction->status == Transaction::expired) { ?>
+			<div class="alert alert-info text-center"><?php echo t("packages.financial.refunded-expired-refund-transaction"); ?></div>
+			<?php } ?>
 			<h3>محصولات</h3>
 			<div class="row">
 				<div class="col-sm-12">
@@ -213,6 +218,9 @@ $this->the_header(!$isLogin ? "logedout" : "");
 				$hasButtons = $this->hasButtons();
 			?>
 			<h3><?php echo translator::trans('pays'); ?></h3>
+			<?php if (!$refundTransaction and $this->transaction->status == Transaction::expired) { ?>
+			<div class="alert alert-info text-center"><?php echo t("packages.financial.refunded-expired-buy-transaction"); ?></div>
+			<?php } ?>
 			<div class="row">
 				<div class="col-xs-12">
 					<table class="table table-striped table-hover">
@@ -281,7 +289,6 @@ $this->the_header(!$isLogin ? "logedout" : "");
 						<li>
 							<strong>مبلغ قابل پرداخت:</strong>
 						<?php
-						$payablePrice = $this->transaction->payablePrice();
 						echo abs($payablePrice). " " .$currency->title;
 						?>
 						</li>
@@ -298,7 +305,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 					?>
 						<a class="btn btn-lg btn-green hidden-print btn-pay" href="<?php echo userpanel\url('transactions/pay/'.$this->transaction->id, $parameter);?>">پرداخت صورتحساب<i class="fa fa-check"></i></a>
 					<?php
-					} else if ($this->canAcceptRefund) {
+					} else if ($payablePrice < 0 and $this->canAcceptRefund) {
 						$refundTransaction = true;
 					?>
 						<a class="btn btn-lg btn-success hidden-print" href="#refund-accept-modal" data-toggle="modal">

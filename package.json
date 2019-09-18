@@ -3,9 +3,9 @@
 	"routing": "routing.json",
 	"frontend":"frontend",
 	"autoload": {
-		"directories": ["controllers", "libraries", "listeners", "processes", "views"]
+		"directories": ["controllers", "libraries", "listeners", "logs", "processes", "views"]
 	},
-	"dependencies": ["base", "userpanel"],
+	"dependencies": ["base", "userpanel", "notifications"],
 	"languages":{
 		"fa_IR": "langs/fa_IR.json"
 	},

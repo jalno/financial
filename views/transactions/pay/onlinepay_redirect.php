@@ -16,4 +16,11 @@ class redirect extends form{
 	public function getRedirect(){
 		return $this->getData('redirect');
 	}
+	public function export() {
+		return array(
+			'data' => array(
+				'redirect' => $this->getRedirect(),
+			)
+		);
+	}
 }

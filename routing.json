@@ -20,7 +20,13 @@
 	},
 	{
 		"path": ["userpanel","transactions","pay", "banktransfer", {"type":"dynamic", "name":"transaction", "regex":"/^(\\d+)$/"}],
-		"controller": "controllers\\transactions@payByBankTransfer"
+		"controller": "controllers/transactions@payByBankTransferView",
+		"method":"get"
+	},
+	{
+		"path": ["userpanel","transactions","pay", "banktransfer", {"type":"dynamic", "name":"transaction", "regex":"/^(\\d+)$/"}],
+		"controller": "controllers/transactions@payByBankTransfer",
+		"method" :"post"
 	},
 	{
 		"path": ["userpanel","transactions","pay", "accept", {"type":"dynamic", "name":"pay", "regex":"/^(\\d+)$/"}],
@@ -48,7 +54,13 @@
 	},
 	{
 		"path": ["userpanel","transactions","new"],
-		"controller": "controllers\\transactions@add"
+		"controller": "controllers/transactions@add",
+		"method": "get"
+	},
+	{
+		"path": ["userpanel","transactions","new"],
+		"controller": "controllers/transactions@store",
+		"method": "post"
 	},
 	{
 		"path": ["userpanel","transactions","pay", "delete", {"type":"dynamic", "name":"id", "regex":"/^\\d+$/"}],
@@ -210,5 +222,14 @@
 		"path": "userpanel/transactions/:transaction/refund/reject",
 		"controller": "controllers/transactions@refundReject",
 		"method": "post"
+	},
+	{
+		"paths": [
+			"transactions/"
+		],
+		"exceptions":[
+			"packages/base/NotFound"
+		],
+		"handler": "packages/userpanel/controllers/dashboard@notfound"
 	}
 ]
