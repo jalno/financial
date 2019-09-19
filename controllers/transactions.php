@@ -9,7 +9,6 @@ use packages\financial\payport\{AlreadyVerified, GatewayException, Redirect, Ver
 use packages\financial\{Bank\Account, Authentication, Authorization, Controller, Currency, Events, Logs, Transaction, Transaction_product, Transaction_pay, View, Views, Payport, Payport_pay};
 
 class Transactions extends Controller {
-
 	public static function getAvailablePayMethods($canPayByCredit = true) {
 		$methods = array();
 		$userBankAccounts = options::get("packages.financial.pay.tansactions.banka.accounts");
@@ -31,6 +30,21 @@ class Transactions extends Controller {
 		}
 		return $methods;
 	}
+	public static function getBankAccountsForPay(): array {
+		$paymentsMethods = self::getAvailablePayMethods(false);
+		$accounts = array();
+		if (in_array("banktransfer", $paymentsMethods)) {
+			$userBankAccounts = Options::get("packages.financial.pay.tansactions.banka.accounts");
+			$account = new Account();
+			$account->with("bank");
+			$account->where("financial_banks_accounts.status", Account::Active);
+			if ($userBankAccounts) {
+				$account->where("financial_banks_accounts.id", $userBankAccounts, "IN");
+			}
+			$accounts = $account->get();
+		}
+		return $accounts;
+	}
 	public static function checkBanktransferFollowup(int $bank, string $code) {
 		$account = new Account();
 		$account->where("bank_id", $bank);
@@ -46,6 +60,23 @@ class Transactions extends Controller {
 		db::joinWhere("financial_transactions_pays_params params2", "params2.name", "followup");
 		db::joinWhere("financial_transactions_pays_params params2", "params2.value", $code);
 		return $banktransferPays->has();
+	}
+	public static function getBankAccountForPayById(int $id): ?Account {
+		$paymentsMethods = self::getAvailablePayMethods(false);
+		$account = null;
+		if (in_array("banktransfer", $paymentsMethods)) {
+			$userBankAccounts = Options::get("packages.financial.pay.tansactions.banka.accounts");
+			$account = new Account();
+			$account->with("user");
+			$account->with("bank");
+			$account->where("financial_banks_accounts.status", Account::Active);
+			$account->where("financial_banks_accounts.id", $id);
+			if ($userBankAccounts) {
+				$account->where("financial_banks_accounts.id", $userBankAccounts, "IN");
+			}
+			$account = $account->getOne();
+		}
+		return $account;
 	}
 
 	protected $authentication = true;
