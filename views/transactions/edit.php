@@ -15,6 +15,7 @@ class edit extends form{
 		$this->canEditProduct = authorization::is_accessed('transactions_product_edit');
 		$this->canDeleteProduct = authorization::is_accessed('transactions_product_delete');
 		$this->canPaydelete = authorization::is_accessed('transactions_pay_delete');
+		$this->canEditPays = authorization::is_accessed('transactions_pay_edit');
 	}
 	public function setTransactionData(transaction $transaction){
 		$this->setData($transaction, 'transaction');

@@ -1,6 +1,6 @@
 <?php
 namespace packages\financial;
-use \packages\base\{db\dbObject, packages};
+use \packages\base\{db, db\dbObject, packages};
 use packages\financial\{Bank\Account, events};
 
 class transaction_pay extends dbObject{
@@ -112,6 +112,15 @@ class transaction_pay extends dbObject{
 				}
 			}
 			return false;
+		}
+	}
+	public function deleteParam(string $name) {
+		if ($this->isNew) {
+			unset($this->tmparams[$name]);
+		} else {
+			db::where("pay", $this->id)
+				->where("name", $name)
+				->delete("financial_transactions_pays_params");
 		}
 	}
 

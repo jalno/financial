@@ -2,7 +2,7 @@
 namespace themes\clipone\views\transactions;
 use \packages\userpanel;
 use \packages\userpanel\date;
-use \packages\financial\bankaccount;
+use \packages\financial\Bank\Account;
 use \packages\financial\transaction;
 use \packages\financial\transaction_pay;
 use \packages\financial\payport_pay;
@@ -39,16 +39,14 @@ class edit extends transactionsEdit{
 			if($pay->status == transaction_pay::pending){
 				$needacceptbtn = true;
 			}
-			$pay->date = date::format("Y/m/d H:i:s", $pay->date);
-			$pay->price = translator::trans('currency.rial', array('number' => $pay->price));
 			switch($pay->method){
 				case(transaction_pay::credit):
 					$pay->method = translator::trans('pay.method.credit');
 					break;
 				case(transaction_pay::banktransfer):
-					if($bankaccount = bankaccount::byId($pay->param('bankaccount'))){
-					$pay->method = translator::trans('pay.byBankTransfer.withbank', array('bankaccount' => $bankaccount->title));
-					}else{
+					if ($bankaccount = Account::byId($pay->param('bankaccount'))) {
+						$pay->method = translator::trans('pay.byBankTransfer.withbank', array('bankaccount' => $bankaccount->cart));
+					} else {
 						$pay->method = translator::trans('pay.byBankTransfer');
 					}
 					$pay->description = translator::trans('pay.byBankTransfer.withfollowup', array('followup' => $pay->param('followup')));
@@ -113,6 +111,14 @@ class edit extends transactionsEdit{
 			'title' => translator::trans('financial.delete'),
 			'icon' => 'fa fa-times',
 			'classes' => array('btn', 'btn-xs', 'btn-bricky')
+		));
+		$this->setButton('pay_edit', $this->canEditPays, array(
+			'title' => translator::trans('financial.edit'),
+			'icon' => 'fa fa-edit',
+			'classes' => array('btn', 'btn-xs', 'btn-teal'),
+			'data' => array(
+				'action' => 'edit',
+			),
 		));
 	}
 	private function setForm(){

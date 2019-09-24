@@ -15,6 +15,7 @@ class usertype{
 
 			'transactions_pays_accept',
 			'transactions_pay_delete',
+			'transactions_pay_edit',
 			'transactions_addingcredit',
 			'transactions_accept',
 			'transactions_product_edit',

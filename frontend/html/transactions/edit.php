@@ -118,23 +118,21 @@ $this->the_header();
 					</div>
 					<?php
 					if($this->pays){
-						$hasdesc = $this->paysHasDiscription();
-						$hastatus = $this->paysHasStatus();
 						$hasButtons = $this->hasButtons();
 					?>
 					<div class="row">
 						<div class="col-xs-12">
 							<h3 class="text-muted"><?php echo translator::trans('pays'); ?></h3>
 							<div class="table-responsive">
-								<table class="table table-striped table-hover">
+								<table class="table table-striped table-hover table-pays">
 									<thead>
 										<tr>
 											<th> # </th>
 											<th> <?php echo translator::trans('date&time'); ?> </th>
 											<th> <?php echo translator::trans('pay.method'); ?> </th>
-											<?php if($hasdesc){ ?><th> <?php echo translator::trans('description'); ?> </th><?php } ?>
+											<th> <?php echo translator::trans('description'); ?> </th>
 											<th> <?php echo translator::trans('transaction.price'); ?> </th>
-											<?php if($hastatus){ ?><th> <?php echo translator::trans('pay.status'); ?> </th><?php } ?>
+											<th> <?php echo translator::trans('pay.status'); ?> </th>
 											<?php if($hasButtons){ ?><th></th><?php } ?>
 										</tr>
 									</thead>
@@ -147,29 +145,38 @@ $this->the_header();
 												$this->setButtonParam('pay_reject', 'link', userpanel\url("transactions/pay/reject/".$pay->id));
 												$this->setButtonParam('pay_delete', 'link', userpanel\url("transactions/pay/delete/".$pay->id));
 											}
-											if($hastatus){
-												$statusClass = utility::switchcase($pay->status, [
-													'label label-danger' => transaction_pay::rejected,
-													'label label-success' => transaction_pay::accepted,
-													'label label-warning' => transaction_pay::pending
-												]);
-												$statusTxt = utility::switchcase($pay->status, [
-													'pay.rejected' => transaction_pay::rejected,
-													'pay.accepted' => transaction_pay::accepted,
-													'pay.pending' => transaction_pay::pending
-												]);
-											}
+											$statusClass = utility::switchcase($pay->status, [
+												'label label-danger' => transaction_pay::rejected,
+												'label label-success' => transaction_pay::accepted,
+												'label label-warning' => transaction_pay::pending
+											]);
+											$statusTxt = utility::switchcase($pay->status, [
+												'pay.rejected' => transaction_pay::rejected,
+												'pay.accepted' => transaction_pay::accepted,
+												'pay.pending' => transaction_pay::pending
+											]);
+											$description = $pay->param("description");
 										?>
-										<tr>
+										<tr data-pay='<?php echo json\encode(array(
+											"id" => $pay->id,
+											"date" => $pay->date,
+											"price" => $pay->price,
+											"currency" => $pay->currency->toArray(),
+											"description" => $description,
+											"status" => $pay->status,
+										)); ?>'>
 											<td><?php echo $x++; ?></td>
-											<td class="ltr"><?php echo $pay->date; ?></td>
+											<td class="ltr"><?php echo date::format("Y/m/d H:i:s", $pay->date); ?></td>
 											<td class="hidden-480"><?php echo $pay->method; ?></td>
-											<?php if($hasdesc){ ?><td><?php echo $pay->description; ?></td><?php } ?>
-											<td><?php echo $pay->price; ?></td>
-											<?php if($hastatus){ ?><td><span class="<?php echo $statusClass; ?>"><?php echo translator::trans($statusTxt); ?></td><?php } ?>
+											<td>
+											<?php echo $pay->description ? $pay->description : ""; ?>
+												<div class="pay-description btn-block"><?php echo $description ? nl2br($description) : ""; ?></div>
+											</td>
+											<td><?php echo number_format(abs($pay->price)) . " " . $pay->currency->title;; ?></td>
+											<td><span class="<?php echo $statusClass; ?>"><?php echo translator::trans($statusTxt); ?></td>
 											<?php
 											if($hasButtons){
-												echo("<td class=\"center\">".$this->genButtons(['pay_accept', 'pay_reject', 'pay_delete'])."</td>");
+												echo("<td class=\"center\">".$this->genButtons(['pay_accept', 'pay_reject', 'pay_edit', 'pay_delete'])."</td>");
 											}
 											?>
 										</tr>

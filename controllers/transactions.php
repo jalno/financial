@@ -78,6 +78,41 @@ class Transactions extends Controller {
 		}
 		return $account;
 	}
+	private static function getPay($data): Transaction_pay {
+		$check = Authentication::check();
+		$isOperator = false;
+		$types = array();
+		if ($check) {
+			$isOperator = Authorization::is_accessed("transactions_anonymous");
+			$types = Authorization::childrenTypes();
+		}
+		$pay = new Transaction_pay();
+		$pay->with("currency");
+		db::join("financial_transactions", "financial_transactions.id=financial_transactions_pays.transaction", "INNER");
+		$parenthesis = new parenthesis();
+		if ($check) {
+			if ($isOperator) {
+				$parenthesis->where("financial_transactions.user", null, "is", "or");
+			}
+			db::join("userpanel_users", "userpanel_users.id=financial_transactions.user", "LEFT");
+			if ($types) {
+				$parenthesis->where("userpanel_users.type", $types, 'in', "or");
+			} else {
+				$parenthesis->where("userpanel_users.id", authentication::getID(), "=", "or");
+			}
+			$pay->where($parenthesis);
+		} else if ($token = http::getURIData("token")) {
+			$pay->where("financial_transactions.token", $token);
+		} else {
+			throw new NotFound();
+		}
+		$pay->where("financial_transactions_pays.id", $data["pay"]);
+		$pay = $pay->getOne();
+		if(!$pay){
+			throw new NotFound;
+		}
+		return $pay;
+	}
 
 	protected $authentication = true;
 	public function __construct() {
@@ -341,23 +376,6 @@ class Transactions extends Controller {
 			throw new NotFound;
 		}
 		return $transaction;
-	}
-	private function getPay($id){
-		$types = authorization::childrenTypes();
-		db::join("financial_transactions", "financial_transactions.id=financial_transactions_pays.transaction", "LEFT");
-		db::join("userpanel_users", "userpanel_users.id=financial_transactions.user", "LEFT");
-		if($types){
-			db::where("userpanel_users.type", $types, 'in');
-		}else{
-			db::where("userpanel_users.id", authentication::getID());
-		}
-		db::where("financial_transactions_pays.id", $id);
-		$payData = db::getOne("financial_transactions_pays", "financial_transactions_pays.*");
-		if($payData){
-			return new transaction_pay($payData);
-		}else{
-			throw new NotFound;
-		}
 	}
 	private function getTransactionForPay($data):transaction{
 		$transaction = $this->getTransaction($data['transaction']);
@@ -633,7 +651,7 @@ class Transactions extends Controller {
 		}
 		$view = View::byName(views\transactions\pay::class . '\\' . $action);
 		$this->response->setView($view);
-		$pay = $this->getPay($data['pay']);
+		$pay = self::getPay($data);
 		$transaction = $pay->transaction;
 		if ($pay->status != transaction_pay::pending or $transaction->status != transaction::unpaid) {
 			throw new NotFound;
@@ -1506,6 +1524,65 @@ class Transactions extends Controller {
 		$transaction->save();
 		$transaction->user->credit += abs($transaction->payablePrice());
 		$transaction->user->save();
+		$this->response->setStatus(true);
+		return $this->response;
+	}
+	public function updatePay($data): response {
+		Authorization::haveOrFail("transactions_pay_edit");
+		$pay = self::getPay($data);
+		$inputs = $this->checkinputs(array(
+			"date" => array(
+				"type" => "date",
+				"unix" => true,
+				"optional" => true,
+			),
+			"price" => array(
+				"type" => "number",
+				"min" => 0,
+				"optional" => true,
+			),
+			"description" => array(
+				"type" => "string",
+				"optional" => true,
+				"empty" => true,
+				"multiLine" => true,
+			),
+		));
+		if (isset($inputs["price"]) and $inputs["price"] != $pay->price) {
+			$payablePrice = abs($pay->transaction->payablePrice());
+			if ($payablePrice == 0 and $inputs["price"] > $pay->price) {
+				throw new InputValidationException("price");
+			} else {
+				$price = $inputs["price"] - $pay->price;
+				if ($price > 0) {
+					if ($payablePrice < $pay->currency->changeTo($price, $pay->transaction->currency)) {
+						throw new InputValidationException("price");
+					}
+				}
+			}
+		}
+		if (isset($inputs["date"]) and $inputs["date"] != $pay->date) {
+			$pay->date = $inputs["date"];
+		}
+		if (isset($inputs["price"]) and $inputs["price"] != $pay->price) {
+			$pay->price = $inputs["price"];
+		}
+		$pay->save();
+		if (isset($inputs["description"])) {
+			if ($inputs["description"]) {
+				$pay->setParam("description", $inputs["description"]);
+			} else {
+				$pay->deleteParam("description");
+			}
+		}
+		$this->response->setData(array(
+			"id" => $pay->id,
+			"date" => $pay->date,
+			"price" => $pay->price,
+			"currency" => $pay->currency->toArray(),
+			"description" => $pay->param("description"),
+			"status" => $pay->status,
+		), "pay");
 		$this->response->setStatus(true);
 		return $this->response;
 	}
