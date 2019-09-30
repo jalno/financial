@@ -78,7 +78,7 @@ class Transactions extends Controller {
 		}
 		return $account;
 	}
-	private static function getPay($data): Transaction_pay {
+	public static function getPay($data): Transaction_pay {
 		$check = Authentication::check();
 		$isOperator = false;
 		$types = array();
@@ -112,6 +112,35 @@ class Transactions extends Controller {
 			throw new NotFound;
 		}
 		return $pay;
+	}
+
+	public static function payAcceptor(Transaction_pay $pay) {
+		$pay->status = Transaction_pay::accepted;
+		$log = new log();
+		$log->user = Authentication::getUser();
+		$log->type = logs\transactions\pay::class;
+		$pay->setParam('acceptor', Authentication::getID());
+		$pay->setParam('accept_date', date::time());
+		$log->title = t("financial.logs.transaction.pay.accept", ["transaction_id" => $transaction->id, 'pay_id' => $pay->id]);
+		$pay->save();
+		$parameters['pay'] = $pay;
+		$parameters['currency'] = $transaction->currency;
+		$log->parameters = $parameters;
+		$log->save();
+	}
+	public static function payRejector(Transaction_pay $pay) {
+		$pay->status = Transaction_pay::rejected;
+		$log = new log();
+		$log->user = Authentication::getUser();
+		$log->type = logs\transactions\pay::class;
+		$pay->setParam('rejector', Authentication::getID());
+		$pay->setParam('reject_date', date::time());
+		$log->title = t("financial.logs.transaction.pay.reject", ["transaction_id" => $transaction->id, 'pay_id' => $pay->id]);
+		$pay->save();
+		$parameters['pay'] = $pay;
+		$parameters['currency'] = $transaction->currency;
+		$log->parameters = $parameters;
+		$log->save();
 	}
 
 	protected $authentication = true;
@@ -671,28 +700,11 @@ class Transactions extends Controller {
 		if (!$inputs['confrim']) {
 			throw new InputValidationException("confrim");
 		}
-		$pay->status = $newstatus;
-
-		$log = new log();
-		$log->user = Authentication::getUser();
-		$log->type = logs\transactions\pay::class;
-
-		if($newstatus == transaction_pay::accepted){
-			$pay->setParam('acceptor', Authentication::getID());
-			$pay->setParam('accept_date', date::time());
-			$log->title = t("financial.logs.transaction.pay.accept", ["transaction_id" => $transaction->id, 'pay_id' => $pay->id]);
-		}elseif($newstatus == transaction_pay::rejected){
-			$pay->setParam('rejector', Authentication::getID());
-			$pay->setParam('reject_date', date::time());
-			$log->title = t("financial.logs.transaction.pay.reject", ["transaction_id" => $transaction->id, 'pay_id' => $pay->id]);
+		if ($newstatus == Transaction_pay::accepted) {
+			self::payAcceptor($pay);
+		} elseif($newstatus == Transaction_pay::rejected) {
+			self::payRejector($pay);
 		}
-		$pay->save();
-
-		$parameters['pay'] = $pay;
-		$parameters['currency'] = $transaction->currency;
-		$log->parameters = $parameters;
-		$log->save();
-
 		$this->response->setStatus(true);
 		$this->response->Go(userpanel\url("transactions/view/".$transaction->id));
 		return $this->response;

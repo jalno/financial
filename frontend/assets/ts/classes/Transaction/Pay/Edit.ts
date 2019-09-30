@@ -43,6 +43,7 @@ export default class Edit {
 	private static $modal: JQuery;
 	private static $editBtns: JQuery;
 	private pay: IPay;
+	private onupdate: Function;
 	public constructor(private $table: JQuery, private editBtns: string) {
 		this.appendModal();
 		this.setEvents($table);
@@ -65,24 +66,28 @@ export default class Edit {
 		});
 	}
 	public updatePay(newpay: IPay) {
-		const that = this;
-		$("tbody tr", this.$table).each(function() {
-			const pay = $(this).data("pay") as IPay;
-			if (pay && pay.id === newpay.id) {
-				if (pay.date !== newpay.date) {
-					$("td", this).eq(1).html(moment(newpay.date * 1000).format("YYYY/MM/DD HH:ss"));
+		if (this.onupdate) {
+			this.onupdate(newpay);
+		} else {
+			const that = this;
+			$("tbody tr", this.$table).each(function() {
+				const pay = $(this).data("pay") as IPay;
+				if (pay && pay.id === newpay.id) {
+					if (pay.date !== newpay.date) {
+						$("td", this).eq(1).html(moment(newpay.date * 1000).format("YYYY/MM/DD HH:ss"));
+					}
+					if (pay.description !== newpay.description) {
+						$(".pay-description", this).html(newpay.description ? newpay.description.replace(/\n/g, "<br>") : "");
+					}
+					if (pay.price !== newpay.price) {
+						$("td", this).eq(4).html(newpay.price.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") + " " + newpay.currency.title);
+					}
+					if (pay.status !== newpay.status) {
+						$("td", this).eq(5).html(that.getStatusLabel(newpay.status));
+					}
 				}
-				if (pay.description !== newpay.description) {
-					$(".pay-description", this).html(newpay.description ? newpay.description.replace(/\n/g, "<br>") : "");
-				}
-				if (pay.price !== newpay.price) {
-					$("td", this).eq(4).html(newpay.price.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") + " " + newpay.currency.title);
-				}
-				if (pay.status !== newpay.status) {
-					$("td", this).eq(5).html(that.getStatusLabel(newpay.status));
-				}
-			}
-		});
+			});
+		}
 	}
 	public getStatusLabel(status: Status) {
 		let classes = "";
@@ -108,6 +113,9 @@ export default class Edit {
 			case Status.PENDING:
 				return "منتظر تائید";
 		}
+	}
+	public onUpdate(cb: Function) {
+		this.onupdate = cb;
 	}
 	private showModal() {
 		$("input[name=date]", Edit.$modal).val(moment(this.pay.date * 1000).format("YYYY/MM/DD HH:ss"));
