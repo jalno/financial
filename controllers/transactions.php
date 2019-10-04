@@ -121,8 +121,9 @@ class Transactions extends Controller {
 		$log->type = logs\transactions\pay::class;
 		$pay->setParam('acceptor', Authentication::getID());
 		$pay->setParam('accept_date', date::time());
-		$log->title = t("financial.logs.transaction.pay.accept", ["transaction_id" => $transaction->id, 'pay_id' => $pay->id]);
 		$pay->save();
+		$transaction = $pay->transaction;
+		$log->title = t("financial.logs.transaction.pay.accept", ["transaction_id" => $transaction->id, 'pay_id' => $pay->id]);
 		$parameters['pay'] = $pay;
 		$parameters['currency'] = $transaction->currency;
 		$log->parameters = $parameters;
@@ -135,8 +136,9 @@ class Transactions extends Controller {
 		$log->type = logs\transactions\pay::class;
 		$pay->setParam('rejector', Authentication::getID());
 		$pay->setParam('reject_date', date::time());
-		$log->title = t("financial.logs.transaction.pay.reject", ["transaction_id" => $transaction->id, 'pay_id' => $pay->id]);
 		$pay->save();
+		$transaction = $pay->transaction;
+		$log->title = t("financial.logs.transaction.pay.reject", ["transaction_id" => $transaction->id, 'pay_id' => $pay->id]);
 		$parameters['pay'] = $pay;
 		$parameters['currency'] = $transaction->currency;
 		$log->parameters = $parameters;
