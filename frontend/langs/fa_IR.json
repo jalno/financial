@@ -99,6 +99,7 @@
 		"usertype.permissions.financial_transactions_delete": "حذف صورتحساب",
 		"usertype.permissions.financial_transactions_pays_accept": "تایید پرداخت صورتحساب",
 		"usertype.permissions.financial_transactions_pay_delete": "حذف پرداخت صورتحساب",
+		"usertype.permissions.financial_transactions_pay_edit": "ویرایش پرداخت صورتحساب",
 		"usertype.permissions.financial_transactions_product_delete": "حذف محصول صورتحساب",
 		"usertype.permissions.financial_transactions_product_edit": "ویرایش محصول صورتحساب",
 		"usertype.permissions.financial_transactions_addingcredit": "افزودن موجودی کاربری",
@@ -253,6 +254,14 @@
 		"packages.financial.transaction.status.rejected": "رد شده",
 		"packages.financial.view": "مشاهده",
 		"packages.financial.refunded-expired-refund-transaction": "مبلغ صورتحساب به موجودی کاربری شما مرجوع گردیده است.",
-		"packages.financial.refunded-expired-buy-transaction": "مبالغ پرداخت شما در این صورتحساب به موجودی کاربری شما مرجوع شده است."
+		"packages.financial.refunded-expired-buy-transaction": "مبالغ پرداخت شما در این صورتحساب به موجودی کاربری شما مرجوع شده است.",
+		"packages.financial.export.refund-request": "دریافت خروجی از درخواست های تسویه",
+		"packages.financial.search.word": "کلمه کلیدی",
+		"packages.financial.search.from": "از",
+		"packages.financial.search.to": "تا",
+		"packages.financial.search.refund": "صورتحساب های تسویه",
+		"packages.financial.export": "دریافت خروجی",
+		"packages.financial.download": "دانلود",
+		"packages.financial.export.csv": "خروجی با فرمت فایل Excel"
 	}
 }

@@ -3,18 +3,43 @@ use packages\userpanel;
 use themes\clipone\utility;
 use packages\financial\transaction;
 $this->the_header();
-if ($this->canRefund) {
+$transactions = $this->getTransactions();
+$hasTransaction = !empty($transactions);
+if ($hasTransaction or $this->canRefund) {
 ?>
 <div class="row refund-request">
 	<div class="col-md-6 col-sm-12 col-xs-12">
-		<div class="core-box ">
+	<?php if ($this->canRefund) { ?>
+		<div class="core-box">
 			<h4><?php echo t("currentcredit"); ?>:</h4>
 			<div class="row">
 				<div class="col-xs-8"><h2 class="user-credit text-center"><?php echo number_format($this->user->credit); ?></h2></div>
 				<div class="col-xs-4"> <h3 class="user-currency text-center"><?php echo $this->user->currency->title; ?></h3></div>
 			</div>
 		</div>
+	<?php
+	}
+	if ($hasTransaction) {
+	?>
+		<div class="core-box">
+			<h4><?php echo t("packages.financial.export"); ?>:</h4>
+			<?php $this->createField(array(
+				"name" => "download",
+				"type" => "select",
+				"options" => $this->getExportOptionsForSelect(),
+			)); ?>
+			<div class="row">
+				<div class="col-sm-6 col-sm-offset-6">
+					<a href="#" class="btn btn-block btn-default" id="download-export-file">
+						<div class="btn-icons"> <i class="fa fa-download"></i> </div>
+					<?php echo t("packages.financial.download"); ?>
+					</a>
+				</div>
+			</div>
+		</div>
+	<?php } ?>
 	</div>
+<?php if ($this->canRefund) { ?>
 	<div class="col-md-6 col-sm-12 col-xs-12">
 		<div class="panel panel-default">
 			<div class="panel-heading">
@@ -96,11 +121,12 @@ if ($this->canRefund) {
 			</div>
 		</div>
 	</div>
+<?php } ?>
 </div>
 <?php } ?>
 <div class="row">
 	<div class="col-sm-12">
-		<?php if(!empty($this->getTransactions())){ ?>
+	<?php if($hasTransaction) { ?>
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<i class="clip-data"></i> <?php echo t('transactions'); ?>
@@ -185,7 +211,7 @@ if ($this->canRefund) {
 				<?php $this->paginator(); ?>
 			</div>
 		</div>
-		<?php } ?>
+	<?php } ?>
 	</div>
 </div>
 <div class="modal fade" id="search" tabindex="-1" data-show="true" role="dialog">
@@ -195,48 +221,84 @@ if ($this->canRefund) {
 	</div>
 	<div class="modal-body">
 		<form id="transactionsearch" class="form-horizontal" action="<?php echo userpanel\url("transactions"); ?>" method="GET" autocomplete="off">
-			<?php
-			$this->setHorizontalForm('sm-3','sm-9');
-			$feilds = [
-				[
-					'name' => 'id',
-					'type' => 'number',
-					'label' => t("transaction.id")
-				],
-				[
-					'name' => 'title',
-					'label' => t("transaction.title")
-				],
-				[
-					'type' => 'select',
-					'label' => t('transaction.status'),
-					'name' => 'status',
-					'options' => $this->getStatusForSelect()
-				],
-				[
-					'type' => 'select',
-					'label' => t('search.comparison'),
-					'name' => 'comparison',
-					'options' => $this->getComparisonsForSelect()
-				]
-			];
-			if($this->multiuser){
-				$userSearch = [
-					[
-						'name' => 'user',
-						'type' => 'hidden'
-					],
-					[
-						'name' => 'user_name',
-						'label' => t("transaction.user")
-					],
-				];
-				array_splice($feilds, 2, 0, $userSearch);
-			}
-			foreach($feilds as $input){
-				$this->createField($input);
-			}
-			?>
+		<?php
+		$this->setHorizontalForm('sm-3','sm-9');
+		$this->createField(array(
+			'name' => 'id',
+			'type' => 'number',
+			'label' => t("transaction.id")
+		));
+		$this->createField(array(
+			'name' => 'user',
+			'type' => 'hidden',
+		));
+		$this->createField(array(
+			'name' => 'user_name',
+			'label' => t("transaction.user"),
+		));
+		$this->createField(array(
+			'name' => 'title',
+			'label' => t("transaction.title")
+		));
+		$this->removeHorizontalForm();
+		?>
+			<div class="row">
+				<label class="col-sm-3 control-label create-at-label">تاریخ صدور</label>
+				<div class="col-sm-9">
+					<div class="">
+						<div class="col-sm-6">
+						<?php $this->createField(array(
+							"name" => "create_from",
+							"label" => t("packages.financial.search.from"),
+							"ltr" => true,
+						)); ?>
+						</div>
+						<div class="col-sm-6">
+						<?php $this->createField(array(
+							"name" => "create_to",
+							"label" => t("packages.financial.search.to"),
+							"ltr" => true,
+						)); ?>
+						</div>
+					</div>
+				</div>
+			</div>
+		<?php if ($this->canAccept) { ?>
+			<div class="row">
+				<div class="col-sm-9 col-sm-offset-3">
+				<?php $this->createField(array(
+					"name" => "refund",
+					"type" => "checkbox",
+					"inline" => true,
+					"options" => array(
+						array(
+							"label" => t("packages.financial.search.refund"),
+							"value" => true,
+						),
+					),
+				)); ?>
+				</div>
+			</div>
+		<?php
+		}
+		$this->setHorizontalForm('sm-3','sm-9');
+		$this->createField(array(
+			"name" => "status",
+			"label" => t('transaction.status'),
+			'type' => 'select',
+			'options' => $this->getStatusForSelect(),
+		));
+		$this->createField(array(
+			"name" => "word",
+			"label" => t('packages.financial.search.word'),
+		));
+		$this->createField(array(
+			"name" => "comparison",
+			"label" => t('packages.financial.search.comparison'),
+			'type' => 'select',
+			'options' => $this->getComparisonsForSelect(),
+		));
+		?>
 		</form>
 	</div>
 	<div class="modal-footer">

@@ -52,6 +52,21 @@
 		"pay.byPayOnline":"پرداخت آنلاین",
 		"pay.method.payaccepted": "تایید شده توسط: {acceptor}",
 		"pay.method.credit" : "موجودی کاربری",
-		"packages.transaction.pay.method.operator": "پرداخت کننده:‌ {operator}"
+		"packages.transaction.pay.method.operator": "پرداخت کننده:‌ {operator}",
+		"packages.financial.transaction.id": "شناسه",
+		"packages.financial.transaction.title": "عنوان",
+		"packages.financial.transaction.create_at": "تاریخ صدور",
+		"packages.financial.transaction.user": "کاربر",
+		"packages.financial.transaction.user.cellphone": "تلفن همراه کاربر",
+		"packages.financial.transaction.user.email": "ایمیل کاربر",
+		"packages.financial.transaction.price": "مبلغ کل",
+		"packages.financial.transaction.price.paid": "پرداخت شده",
+		"packages.financial.transaction.price.payable": "مبلغ باقی مانده",
+		"packages.financial.transaction.status": "وضعیت",
+		"packages.financial.transaction.status.unpaid": "پرداخت نشده",
+		"packages.financial.transaction.status.paid": "پرداخت شده",
+		"packages.financial.transaction.status.refund": "برگشت داده شده",
+		"packages.financial.transaction.status.expired": "منقضی شده",
+		"packages.financial.transaction.status.rejected": "رد شده"
 	}
 }
