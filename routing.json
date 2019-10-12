@@ -224,6 +224,11 @@
 		"method": "post"
 	},
 	{
+		"path": "userpanel/transactions/pay/:pay/edit",
+		"controller": "controllers/transactions@updatePay",
+		"method": "post"
+	},
+	{
 		"paths": [
 			"transactions/"
 		],
