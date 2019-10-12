@@ -147,7 +147,6 @@ class Transactions extends Controller {
 		$view->setDataForm($this->inputsvalue($inputsRules));
 		$transaction = new Transaction;
 		$transaction->with("currency");
-		$transaction->join(Transaction_product::class, null, "INNER", "transaction");
 		foreach(array('id', 'title', 'status', 'user') as $item){
 			if(isset($inputs[$item])){
 				$comparison = $inputs['comparison'];
@@ -173,9 +172,11 @@ class Transactions extends Controller {
 					$parenthesis->orWhere("financial_transactions.{$item}", $inputs['word'], $inputs['comparison']);
 				}
 			}
+			$products = db::subQuery();
 			foreach (array('title', 'description') as $item) {
-				$parenthesis->orWhere("financial_transactions_products.{$item}", $inputs['word'], $inputs['comparison']);
+				$products->orWhere("financial_transactions_products.{$item}", $inputs['word'], $inputs['comparison']);
 			}
+			$parenthesis->orWhere("financial_transactions.id", $products->get("financial_transactions_products", null, "financial_transactions_products.transaction"), "IN");
 			$searched = true;
 			$transaction->where($parenthesis);
 		}
@@ -250,7 +251,7 @@ class Transactions extends Controller {
 				$transaction->where('financial_transactions.status', transaction::expired, '!=');
 			}
 			$transaction->pageLimit = $this->items_per_page;
-			$transactions = $transaction->paginate($this->page, ["financial_transactions.*", "userpanel_users.*", "financial_currencies.*"]);
+			$transactions = $transaction->paginate($this->page);
 			$view->setDataList($transactions);
 			$view->setPaginate($this->page, db::totalCount(), $this->items_per_page);
 		}
