@@ -21,7 +21,7 @@ $this->the_header();
 					)); ?>
 				</p>
 				<p>
-					<a href="<?php echo userpanel\url('transactions/view/'.$this->transaction->id); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-right"></i> بازگشت</a>
+					<a href="<?php echo userpanel\url('transactions/view/'.$this->transaction->id); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-right"></i> <?php echo t("return"); ?></a>
 					<button type="submit" class="btn btn-yellow"><i class="fa <?php if($this->action == 'accept')echo('fa-check');elseif($this->action == 'reject')echo('fa-times'); ?>"></i> <?php echo translator::trans('pay.'.$this->action); ?></button>
 				</p>
 			</div>

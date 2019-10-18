@@ -63,7 +63,7 @@ use packages\userpanel;
 						?>
 						</div>
 						<div class="col-md-6">
-							<div class="alert alert-warning"><p>نام کامل ثبت شده در بانک را وارد کنید.</p></div>
+							<div class="alert alert-warning"><p><?php echo t("packages.financial.accounts.enter.fullname"); ?>.</p></div>
 							<?php
 							$this->createField(array(
 								"name" => "owner",
@@ -82,7 +82,7 @@ use packages\userpanel;
 					</div>
 					<div class="row">
 						<div class="col-md-7 col-sm-6 col-xs-12">
-							<p>موارد اجباری با علامت <i class="required-sign">*</i> مشخص شده اند</p>
+							<p><?php echo t("packages.financial.require.items.marker"); ?></p>
 						</div>
 						<div class="col-md-5 col-sm-6 col-xs-12">
 							<div class="text-left">

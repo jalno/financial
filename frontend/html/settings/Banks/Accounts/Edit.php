@@ -35,7 +35,7 @@ use packages\financial\Bank\Account;
 							<form action="<?php echo userpanel\url("settings/financial/banks/accounts/{$this->account->id}/accept"); ?>" method="post">
 								<div class="text-success form-group">
 									<h4 class="alert-heading"><?php echo t("packages.financial.banks.account.accept"); ?></h4>
-									آیا از تایید این حساب بانکی اطمینان دارید؟
+								<?php echo t("packages.financial.accounts.accept"); ?>
 								</div>
 								<div class="row">
 									<div class="col-sm-12 col-sm-offset-0 col-xs-8 col-xs-offset-2">
@@ -151,7 +151,7 @@ use packages\financial\Bank\Account;
 						?>
 						</div>
 						<div class="col-md-6">
-							<div class="alert alert-warning"><p>نام کامل ثبت شده در بانک را وارد کنید.</p></div>
+							<div class="alert alert-warning"><p><?php echo t("packages.financial.accounts.enter.fullname"); ?>.</p></div>
 							<?php
 							$this->createField(array(
 								"name" => "owner",
@@ -170,7 +170,7 @@ use packages\financial\Bank\Account;
 					</div>
 					<div class="row">
 						<div class="col-lg-7 col-md-12 col-sm-6 col-xs-12">
-							<p>موارد اجباری با علامت <i class="required-sign">*</i> مشخص شده اند</p>
+							<p><?php echo t("packages.financial.require.items.marker"); ?></p>
 						</div>
 						<div class="col-lg-5 col-md-12 col-sm-6 col-xs-12">
 							<div class="text-left">

@@ -100,10 +100,10 @@ $this->the_header();
                 </div>
                 <div class="panel-body products">
 					<div class="alert alert-block alert-info fade in no-product">
-					    <h4 class="alert-heading"><i class="fa fa-exclamation-triangle"></i> یک محصول جدید اضافه کنید</h4>
-					    <p>هنوز هیچ محصولی وارد نشده!</p>
+					    <h4 class="alert-heading"><i class="fa fa-exclamation-triangle"></i> <?php echo t("packages.financial.addnew_product"); ?></h4>
+					    <p><?php echo t("packages.financial.not.entered.products.yet"); ?>!</p>
 					    <p>
-							<a class="btn btn-success btn-addproduct" href="#product-add" data-toggle="modal" data-original-title="">محصول جدید</a>
+							<a class="btn btn-success btn-addproduct" href="#product-add" data-toggle="modal" title=""><?php echo t("packages.financial.new_product"); ?></a>
 						</p>
 					</div>
                 </div>

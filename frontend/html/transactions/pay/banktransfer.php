@@ -102,7 +102,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 					<div class="row">
 						<div class="col-xs-12">
 							<div class="well label-info">
-								مبلغ باقیمانده از صورتحساب شما:
+							<?php echo t("packages.financial.remain_price"); ?>:
 								<span class="pull-left"><?php echo number_format($this->transaction->payablePrice()) . " " . $this->transaction->currency->title; ?></span>
 							</div>
 						</div>

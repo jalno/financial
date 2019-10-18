@@ -78,7 +78,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 			<div class="row">
 			<?php if ($this->transaction->user) { ?>
 				<div class="col-sm-4">
-					<h4>خریدار:</h4>
+					<h4><?php echo t("packages.financial.purchaser"); ?>:</h4>
 					<div class="well">
 						<address>
 							<?php if ($this->transaction->user->name or $this->transaction->user->lastname) { ?>
@@ -105,12 +105,12 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							?> - <?php echo $this->transaction->user->city; ?>
 							<?php if($this->transaction->user->phone){ ?>
 							<br>
-							<strong>تلفن:</strong><?php echo $this->transaction->user->phone; ?>
+							<strong><?php echo t("packages.financial.phone"); ?>:</strong><?php echo $this->transaction->user->phone; ?>
 							<?php } ?>
 						</address>
 						<address>
 							<?php if ($this->transaction->user->email) { ?>
-							<strong>ایمیل: </strong>
+							<strong><?php echo t("packages.financial.email"); ?>: </strong>
 							<br>
 							<?php
 							}
@@ -122,19 +122,19 @@ $this->the_header(!$isLogin ? "logedout" : "");
 				</div>
 			<?php } ?>
 				<div class="col-sm-4 pull-left">
-					<h4>اطلاعات فاکتور:</h4>
+					<h4><?php echo t("packages.financial.transaction.details"); ?>:</h4>
 					<ul class="list-unstyled invoice-details">
 						<li>
-							<strong>کد فاکتور :</strong> <?php echo $this->transaction->id; ?>
+							<strong><?php echo t("packages.financial.transaction.id"); ?> :</strong> <?php echo $this->transaction->id; ?>
 						</li>
 						<li>
-							<strong>عنوان فاکتور:</strong> <?php echo $this->transaction->title; ?>
+							<strong><?php echo t("packages.financial.transaction.title"); ?>:</strong> <?php echo $this->transaction->title; ?>
 						</li>
 						<li>
-							<strong>تاریخ صدور:</strong> <?php echo date::format("Y/m/d H:i:s", $this->transaction->create_at); ?>
+							<strong><?php echo t("transaction.createdate"); ?>:</strong> <?php echo date::format("Y/m/d H:i:s", $this->transaction->create_at); ?>
 						</li>
 						<li>
-							<strong>تاریخ انقضا:</strong> <?php echo date::format("Y/m/d H:i:s", $this->transaction->expire_at); ?>
+							<strong><?php echo t("transaction.add.expire_at"); ?>:</strong> <?php echo date::format("Y/m/d H:i:s", $this->transaction->expire_at); ?>
 						</li>
 						<li>
 						<?php
@@ -153,7 +153,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							"packages.financial.transaction.status.rejected" => transaction::rejected,
 						));
 						?>
-							<strong>وضعیت :</strong> <span class="<?php echo $statusClass; ?>"><?php echo translator::trans($statusTxt); ?></span>
+							<strong><?php echo t("transaction.status"); ?> :</strong> <span class="<?php echo $statusClass; ?>"><?php echo translator::trans($statusTxt); ?></span>
 						</li>
 					</ul>
 				</div>
@@ -169,12 +169,12 @@ $this->the_header(!$isLogin ? "logedout" : "");
 						<thead>
 							<tr>
 								<th> # </th>
-								<th> محصول </th>
-								<th class="hidden-480"> توضیحات </th>
-								<th class="hidden-480"> تعداد </th>
-								<th class="hidden-480"> قیمت واحد </th>
-								<th class="hidden-480"> تخفیف </th>
-								<th> قیمت نهایی </th>‍
+								<th><?php echo t("transaction.add.product"); ?></th>
+								<th class="hidden-480"><?php echo t("transaction.add.description"); ?></th>
+								<th class="hidden-480"><?php echo t("transaction.add.number"); ?></th>
+								<th class="hidden-480"><?php echo t("financial.transaction.product.price.bas"); ?></th>
+								<th class="hidden-480"><?php echo t("financial.transaction.product.discount"); ?></th>
+								<th><?php echo t("financial.transaction.product.price.final"); ?></th>‍
 								<?php if($this->transaction->status == transaction::paid and !$this->transaction->isConfigured()){ ?><th></th>‍<?php } ?>
 							</tr>
 						</thead>
@@ -283,11 +283,11 @@ $this->the_header(!$isLogin ? "logedout" : "");
 			<div class="row">
 				<div class="col-sm-12 invoice-block">
 					<ul class="list-unstyled amounts">
-						<li><strong>جمع کل:</strong> <?php echo(number_format(abs($this->transaction->price)).$currency->title); ?></li>
-						<li><strong>تخفیف:</strong><?php echo(number_format($this->Discounts()).$currency->title); ?></li>
-						<li><strong>مالیات:</strong> 0 <?php echo $currency->title; ?></li>
+						<li><strong><?php echo t("packages.financial.total_price"); ?>:</strong> <?php echo(number_format(abs($this->transaction->price)).$currency->title); ?></li>
+						<li><strong><?php echo t("transaction.add.discount"); ?>:</strong><?php echo(number_format($this->Discounts()).$currency->title); ?></li>
+						<li><strong><?php echo t("packages.financial.tax"); ?>:</strong> 0 <?php echo $currency->title; ?></li>
 						<li>
-							<strong>مبلغ قابل پرداخت:</strong>
+							<strong><?php echo t("packages.financial.payable_price"); ?>:</strong>
 						<?php
 						echo abs($payablePrice). " " .$currency->title;
 						?>
@@ -303,7 +303,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 								$parameter["token"] = $token;
 							}
 					?>
-						<a class="btn btn-lg btn-green hidden-print btn-pay" href="<?php echo userpanel\url('transactions/pay/'.$this->transaction->id, $parameter);?>">پرداخت صورتحساب<i class="fa fa-check"></i></a>
+						<a class="btn btn-lg btn-green hidden-print btn-pay" href="<?php echo userpanel\url('transactions/pay/'.$this->transaction->id, $parameter);?>"><?php echo t("packages.financial.transaction.pay"); ?><i class="fa fa-check"></i></a>
 					<?php
 					} else if ($payablePrice < 0 and $this->canAcceptRefund) {
 						$refundTransaction = true;
@@ -353,7 +353,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 	</div>
 	<div class="modal-body">
 		<form id="refund-reject-form" class="form-horizontal" action="<?php echo userpanel\url("transactions/{$this->transaction->id}/refund/reject"); ?>" method="POST" autocomplete="off">
-			<p>آیا از عدم تایید این صورتحساب اطمینان دارید؟</p>
+			<p><?php echo t("transaction.reject.warning"); ?></p>
 		</form>
 	</div>
 	<div class="modal-footer">
@@ -361,5 +361,6 @@ $this->the_header(!$isLogin ? "logedout" : "");
 		<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo t("packages.financial.cancel"); ?></button>
 	</div>
 </div>
-<?php } ?>
-<?php $this->the_footer(!$isLogin ? "logedout" : "");
+<?php
+}
+$this->the_footer(!$isLogin ? "logedout" : "");

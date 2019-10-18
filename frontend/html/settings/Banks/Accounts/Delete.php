@@ -45,7 +45,7 @@ $account = $this->getBankaccount();
 						<div class="row">
 							<div class="col-xs-12">
 								<div class="alert alert-danger">
-									<h4 class="alert-heading"> <i class="fa fa-times-circle"></i> خطا </h4>
+									<h4 class="alert-heading"> <i class="fa fa-times-circle"></i> <?php echo t("error.fatal.title"); ?> </h4>
 								<?php echo t("packages.financial.banks.account.delete.warning"); ?>
 								</div>
 							</div>
