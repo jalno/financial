@@ -1,6 +1,6 @@
 <?php
 use \packages\base;
-use \packages\base\{translator, http};
+use \packages\base\{translator, http, json};
 use \themes\clipone\utility;
 use \packages\financial\{currency, transaction, transaction_pay, authentication};
 use \packages\userpanel;
@@ -98,7 +98,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 										echo("ایران");
 										break;
 									default:
-										echo($this->transaction->country->name);
+										echo($this->transaction->user->country->name);
 										break;
 								}
 							}
@@ -257,7 +257,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 								));
 							}
 						?>
-							<tr>
+							<tr data-pay='<?php echo json\encode($pay->toArray()); ?>'>
 								<td><?php echo $x++; ?></td>
 								<td><?php echo $pay->date; ?></td>
 								<td><?php echo $pay->method; ?></td>

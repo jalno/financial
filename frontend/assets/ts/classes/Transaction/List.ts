@@ -1,10 +1,13 @@
 import "bootstrap-inputmsg";
 import * as $ from "jquery";
+import * as moment from "jalali-moment";
+import "jalali-daterangepicker";
 import "jquery.growl";
 import "webuilder";
 import "webuilder/formAjax";
 import "../jquery.financialUserAutoComplete";
 import { IUser } from "../jquery.financialUserAutoComplete";
+import { Router } from "webuilder";
 
 export default class List {
 	public static initIfNeeded() {
@@ -19,6 +22,8 @@ export default class List {
 	protected static init() {
 		if (List.$form.length) {
 			List.runUserSearch();
+			List.runJalaliDateRangePicker();
+			List.exportListener();
 		}
 		if (List.$refundForm.length) {
 			List.runRefundUserAutoComplete();
@@ -126,5 +131,56 @@ export default class List {
 				},
 			});
 		});
+	}
+	private static runJalaliDateRangePicker() {
+		moment.locale("fa");
+		$('input[name="create_from"], input[name="create_to"]', List.$form).daterangepicker({
+			autoUpdateInput: false,
+			showDropdowns: true,
+			singleDatePicker: true,
+			locale: {
+				format: "YYYY/MM/DD",
+				monthNames: (moment.localeData() as any)._jMonthsShort,
+				firstDay: 6,
+				direction: "rtl",
+				separator: " - ",
+				applyLabel: "اعمال",
+				cancelLabel: "انصراف",
+			},
+		}, function(start) {
+			$(this.element).val(start.format("YYYY/MM/DD"));
+		});
+	}
+	private static exportListener() {
+		const $refund = $("input[name=refund]", List.$form);
+		const $exportType = $(".core-box select[name=download]");
+		const updateDownloadUrl = () => {
+			const query = {
+				download: $exportType.val(),
+			}
+			$("input,select", List.$form).each(function() {
+				const name = $(this).attr("name");
+				const type = $(this).attr("type");
+				if (type == "checkbox") {
+					query[name] = $(this).prop("checked");
+				} else {
+					query[name] = $(this).val();
+				}
+			});
+			$("#download-export-file").attr("href", Router.url("userpanel/transactions", query as any));
+		};
+		$exportType.on("change", function() {
+			const refund = $refund.prop("checked");
+			$("option", this).each(function() {
+				if ($(this).data("refund")) {
+					if (refund) {
+						$(this).show();
+					} else {
+						$(this).hide();
+					}
+				}
+			});
+			updateDownloadUrl();
+		}).trigger("change");
 	}
 }

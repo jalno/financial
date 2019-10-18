@@ -1,7 +1,7 @@
 <?php
 namespace packages\financial;
-use \packages\base\{db\dbObject, packages};
-use \packages\financial\events;
+use \packages\base\{db, db\dbObject, packages};
+use packages\financial\{Bank\Account, events};
 
 class transaction_pay extends dbObject{
 	const accepted = 1;
@@ -92,10 +92,8 @@ class transaction_pay extends dbObject{
 					$this->transaction->paid_at = time();
 					$this->transaction->afterPay();
 					$this->transaction->save();
-					if (packages::package("notifications")) {
-						$event = new events\transactions\pay($this->transaction);
-						$event->trigger();
-					}
+					$event = new events\transactions\pay($this->transaction);
+					$event->trigger();
 					if($this->transaction->isConfigured()){
 						$this->transaction->trigger_paid();
 					}
@@ -116,6 +114,29 @@ class transaction_pay extends dbObject{
 			return false;
 		}
 	}
+	public function deleteParam(string $name) {
+		if ($this->isNew) {
+			unset($this->tmparams[$name]);
+		} else {
+			db::where("pay", $this->id)
+				->where("name", $name)
+				->delete("financial_transactions_pays_params");
+		}
+	}
+
+	public function getBanktransferBankAccount() {
+		if ($this->method != self::banktransfer) {
+			return null;
+		}
+		$bankaccount_id = $this->param("bankaccount");
+		if ($bankaccount_id) {
+			$bankaccount = new Account();
+			$bankaccount->where("id", $bankaccount_id);
+			$bankaccount = $bankaccount->getOne();
+			return ($bankaccount) ? $bankaccount : null;
+		}
+	}
+
 	protected function convertPrice() {
 		if ($this->currency->id == $this->transaction->currency->id) {
 			return $this->price;

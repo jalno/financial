@@ -1,25 +1,20 @@
 <?php
 namespace themes\clipone\views\transactions;
-use packages\base\packages;
-use packages\base\view\error;
-use packages\base\db\dbObject;
-use packages\base\frontend\theme;
 use packages\userpanel;
-use packages\userpanel\date;
-use themes\clipone\viewTrait;
-use themes\clipone\navigation;
-use themes\clipone\views\listTrait;
-use themes\clipone\views\formTrait;
-use themes\clipone\navigation\menuItem;
-use packages\financial\transaction;
-use packages\financial\{authorization, authentication, Bank\Account, currency};
-use packages\financial\views\transactions\listview as transactionsListView;
+use packages\userpanel\{date, User};
+use packages\base\{packages, view\error, db\dbObject, frontend\theme, db\Parenthesis};
+use themes\clipone\{viewTrait, navigation, views\listTrait, views\formTrait, navigation\menuItem};
+use packages\financial\{Transaction, transaction_product as TransactionProduct, Authorization,
+						Authentication, Bank\Account, Currency, views\transactions\listview as transactionsListView};
+
 class listview extends transactionsListView{
 	use viewTrait,listTrait,formTrait;
 	protected $multiuser = false;
 	protected $canRefund = false;
+	protected $canAccept = false;
 	protected $user;
-	function __beforeLoad(){
+	private $exporters = array();
+	public function __beforeLoad(){
 		$this->setTitle([
 			t('transactions'),
 			t('list')
@@ -32,6 +27,7 @@ class listview extends transactionsListView{
 			$this->addNotFoundError();
 		}
 		$this->canRefund = authorization::is_accessed("transactions_refund");
+		$this->canAccept = Authorization::is_accessed("transactions_pays_accept");
 		if ($this->canRefund) {
 			$this->user = authentication::getUser();
 			$this->user->currency = currency::getDefault($this->user);
@@ -142,11 +138,14 @@ class listview extends transactionsListView{
 			]
 		];
 	}
+	public function setExporters(array $exporters) {
+		$this->exporters = $exporters;
+	}
 	protected function getStatusForSelect(){
 		return [
 			[
-				'title' => ' ',
-				'value' => ' '
+				'title' => '',
+				'value' => ''
 			],
 			[
 				'title' => t('transaction.unpaid'),
@@ -196,5 +195,50 @@ class listview extends transactionsListView{
 			$accounts[] = $item;
 		}
 		return $accounts;
+	}
+	protected function hasRefundTransaction(): bool {
+		$types = Authorization::childrenTypes();
+		$anonymous = Authorization::is_accessed("transactions_anonymous");
+		$transaction = new Transaction();
+		$transaction->join(TransactionProduct::class, null, "INNER", "transaction");
+		if($anonymous){
+			$transaction->join(User::class, "user", "LEFT");
+			if ($types) {
+				$parenthesis = new Parenthesis();
+				$parenthesis->where("userpanel_users.type", $types, "in");
+				$parenthesis->orWhere("financial_transactions.user", null, "is");
+				$transaction->where($parenthesis);
+			} else {
+				$transaction->where("financial_transactions.user", null, "is");
+			}
+		} else {
+			$transaction->join(User::class, "user", "INNER");
+			if ($types) {
+				$transaction->where("userpanel_users.type", $types, "in");
+			} else {
+				$transaction->where("financial_transactions.user", Authentication::getID());
+			}
+		}
+		$transaction->where("financial_transactions.status", Transaction::unpaid);
+		$transaction->where("financial_transactions_products.method", TransactionProduct::refund);
+		return $transaction->has();
+	}
+	protected function getExportOptionsForSelect() {
+		$options = array(
+			array(
+				"title" => t("packages.financial.export.csv"),
+				"value" => "csv",
+			),
+		);
+		foreach ($this->exporters as $exporter) {
+			$options[] = array(
+				"title" => t("packages.financial.export.{$exporter->getName()}"),
+				"value" => $exporter->getName(),
+				"data" => array(
+					"refund" => true,
+				),
+			);
+		}
+		return $options;
 	}
 }
