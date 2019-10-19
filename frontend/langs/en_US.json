@@ -276,6 +276,20 @@
 		"packages.financial.accounts.accept": "Are sure want to accept this bank account?",
 		"packages.financial.accounts.enter.fullname": "Enter your full name that register in bank",
 		"packages.financial.require.items.marker": "require items marked with <i class=\"required-sign\">*</i>",
-		"error.fatal.title": "Error"
+		"error.fatal.title": "Error",
+		"packages.financial.success": "Success",
+		"packages.financial.action": "Action",
+		"packages.financial.request.success": "Your request has been done",
+		"packages.financial.request.error": "Can not connect to server, please try again",
+		"packages.financial.data_validation": "Input data is invalid",
+		"packages.financial.data_validation.enter.price.morethan": "Please enter price bigger than {price}",
+		"packages.financial.data_validation.price.morethan.blance": "Price is bigger than current balance",
+		"packages.financial.data_duplicate": "Input data is duplicate",
+		"packages.financial.data_validation.products.price_or_title_is_not_defined": "Product price or title is not defined",
+		"packages.financial.data_validation.pay": "Payment information is invalid",
+		"packages.financial.date": "Date",
+		"packages.financial.edit.pay": "Edit pay",
+		"packages.data_duplicate.currencies.rate": "Currency is duplicate",
+		"packages.data_duplicate.currencies.rates": "Duplicate record in currency changes"
 	}
 }
