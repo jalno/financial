@@ -292,7 +292,9 @@ class Transactions extends Controller {
 			}
 		}
 		if ($inputs["refund"]) {
-			$transaction->where("financial_transactions_products.method", Transaction_product::refund);
+			$products = db::subQuery();
+			$products->where("financial_transactions_products.method", Transaction_product::refund);
+			$transaction->where("financial_transactions.id", $products->get("financial_transactions_products", null, "financial_transactions_products.transaction"), "IN");
 			$searched = false;
 		}
 		$transaction->orderBy('financial_transactions.id', 'DESC');
