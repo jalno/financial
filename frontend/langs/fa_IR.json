@@ -282,6 +282,20 @@
 		"packages.financial.accounts.accept": "آیا از تایید این حساب بانکی اطمینان دارید؟",
 		"packages.financial.accounts.enter.fullname": "نام کامل ثبت شده در بانک را وارد کنید",
 		"packages.financial.require.items.marker": "موارد اجباری با علامت <i class=\"required-sign\">*</i> مشخص شده اند",
-		"error.fatal.title": "خطا"
+		"error.fatal.title": "خطا",
+		"packages.financial.success": "موفق",
+		"packages.financial.action": "اعمال",
+		"packages.financial.request.success": "درخواست شما با موفقیت انجام شد",
+		"packages.financial.request.error": "ارتباط با سامانه بدرستی برقرار نشد، لطفا مجددا تلاش کنید",
+		"packages.financial.data_validation": "داده وارد شده نامعتبر است",
+		"packages.financial.data_validation.enter.price.morethan": "مبلغی بزرگتر از {price} وارد کنید",
+		"packages.financial.data_validation.price.morethan.blance": "مبلغ وارد شده بیشتر از موجودی فعلی است",
+		"packages.financial.data_duplicate": "داده وارد شده تکراری است",
+		"packages.financial.data_validation.products.price_or_title_is_not_defined": "نام محصول و یا مبلغ محصول مشخص نشده است",
+		"packages.financial.data_validation.pay": "اطلاعات پرداخت نامعتبر است",
+		"packages.financial.date": "تاریخ",
+		"packages.financial.edit.pay": "ویرایش پرداخت",
+		"packages.data_duplicate.currencies.rate": "ارز وارد شده تکراری میباشد",
+		"packages.data_duplicate.currencies.rates": "در تبدیل های ارز ، مقدار تکراری وجود دارد"
 	}
 }

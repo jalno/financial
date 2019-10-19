@@ -2,7 +2,7 @@ import Add from "./Transaction/Add";
 import Addingcredit from "./Transaction/Addingcredit";
 import Edit from "./Transaction/Edit";
 import List from "./Transaction/List";
-import payByCredit from "./Transaction/Pay/byCredit";
+import payByCredit from "./Transaction/Pay/ByCredit";
 import EditPay from "./Transaction/Pay/Edit";
 import OnlinePay from "./Transaction/Pay/OnlinePay";
 import Redirect from "./Transaction/Pay/OnlinePay/Redirect";

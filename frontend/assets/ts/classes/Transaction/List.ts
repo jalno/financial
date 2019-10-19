@@ -1,13 +1,14 @@
+import "@jalno/translator";
 import "bootstrap-inputmsg";
-import * as $ from "jquery";
-import * as moment from "jalali-moment";
 import "jalali-daterangepicker";
+import * as moment from "jalali-moment";
+import * as $ from "jquery";
 import "jquery.growl";
 import "webuilder";
+import { Router } from "webuilder";
 import "webuilder/formAjax";
 import "../jquery.financialUserAutoComplete";
 import { IUser } from "../jquery.financialUserAutoComplete";
-import { Router } from "webuilder";
 
 export default class List {
 	public static initIfNeeded() {
@@ -22,7 +23,7 @@ export default class List {
 	protected static init() {
 		if (List.$form.length) {
 			List.runUserSearch();
-			List.runJalaliDateRangePicker();
+			List.runDateRangePicker();
 			List.exportListener();
 		}
 		if (List.$refundForm.length) {
@@ -83,40 +84,37 @@ export default class List {
 			if (isNaN(price) || price <= 0) {
 				$price.inputMsg({
 					type: "error",
-					message: "مبلغی بزرگتر از 0 وارد کنید.",
+					message: t("packages.financial.data_validation.enter.price.morethan", {
+						price: 0,
+					}),
 				});
 				return;
 			}
 			if (price > $(this).data("credit")) {
 				$price.inputMsg({
 					type: "error",
-					message: "مبلغ وارد شده بیشتر از موجودی فعلی است.",
+					message: t("packages.financial.data_validation.price.morethan.blance"),
 				});
 				return;
 			}
 			$(this).formAjax({
-				success: (data) => {
+				success: (data: any) => {
 					$.growl.notice({
-						title: "موفق",
-						message: "انجام شد .",
+						title: t("packages.financial.success"),
+						message: t("packages.financial.request.success"),
 					});
 					setTimeout(() => {
 						window.location.href = data.redirect;
 					}, 500);
 				},
-				error: (error) => {
+				error: (error: any) => {
 					if (error.error === "data_duplicate" || error.error === "data_validation") {
 						const $input = $("[name=" + error.input + "]");
 						const $params = {
-							title: "خطا",
-							message: "",
+							title: t("error.fatal.title"),
+							message: t(`packages.financial.${error.error}`),
 							location: "bl",
 						};
-						if (error.error === "data_validation") {
-							$params.message = "داده وارد شده معتبر نیست";
-						} else if (error.error === "data_duplicate") {
-							$params.message = "داده وارد شده تکراری میباشد";
-						}
 						if ($input.length) {
 							$input.inputMsg($params);
 						} else {
@@ -124,30 +122,33 @@ export default class List {
 						}
 					} else {
 						$.growl.error({
-							title: "خطا",
-							message: "درخواست شما توسط سرور قبول نشد",
+							title: t("error.fatal.title"),
+							message: t("packages.financial.request.error"),
 						});
 					}
 				},
 			});
 		});
 	}
-	private static runJalaliDateRangePicker() {
-		moment.locale("fa");
-		$('input[name="create_from"], input[name="create_to"]', List.$form).daterangepicker({
+	private static runDateRangePicker() {
+		moment.locale(Translator.getActiveShortLang());
+		const config: any = {
 			autoUpdateInput: false,
 			showDropdowns: true,
 			singleDatePicker: true,
-			locale: {
+		};
+		if (Translator.getActiveShortLang() === "fa") {
+			config.locale = {
 				format: "YYYY/MM/DD",
 				monthNames: (moment.localeData() as any)._jMonthsShort,
 				firstDay: 6,
 				direction: "rtl",
 				separator: " - ",
-				applyLabel: "اعمال",
-				cancelLabel: "انصراف",
-			},
-		}, function(start) {
+				applyLabel: t("packages.financial.action"),
+				cancelLabel: t("cancel"),
+			};
+		}
+		$('input[name="create_from"], input[name="create_to"]', List.$form).daterangepicker(config, function(start) {
 			$(this.element).val(start.format("YYYY/MM/DD"));
 		});
 	}
@@ -157,11 +158,11 @@ export default class List {
 		const updateDownloadUrl = () => {
 			const query = {
 				download: $exportType.val(),
-			}
+			};
 			$("input,select", List.$form).each(function() {
 				const name = $(this).attr("name");
 				const type = $(this).attr("type");
-				if (type == "checkbox") {
+				if (type === "checkbox") {
 					query[name] = $(this).prop("checked");
 				} else {
 					query[name] = $(this).val();
