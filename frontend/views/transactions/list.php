@@ -76,7 +76,7 @@ class listview extends transactionsListView{
 		parent::onSourceLoad();
 		if(self::$navigation){
 			$item = new menuItem("transactions");
-			$item->setTitle("صورتحساب ها");
+			$item->setTitle(t("packages.financial.transactions"));
 			$item->setURL(userpanel\url('transactions'));
 			$item->setIcon('fa fa-money');
 			navigation::addItem($item);

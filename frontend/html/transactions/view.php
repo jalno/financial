@@ -92,14 +92,11 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							<br>
 							<?php
 							}
-							if($this->transaction->user->country){
-								switch($this->transaction->user->country->id){
-									case'105':
-										echo("ایران");
-										break;
-									default:
-										echo($this->transaction->user->country->name);
-										break;
+							if($this->transaction->user->country) {
+								if ($this->transaction->user->country->id == 105 and Translator::getShortCodeLang() == "fa") {
+									echo("ایران");
+								} else {
+									echo($this->transaction->user->country->name);
 								}
 							}
 							?> - <?php echo $this->transaction->user->city; ?>
@@ -162,7 +159,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 			<?php if ($refundTransaction and $this->transaction->status == Transaction::expired) { ?>
 			<div class="alert alert-info text-center"><?php echo t("packages.financial.refunded-expired-refund-transaction"); ?></div>
 			<?php } ?>
-			<h3>محصولات</h3>
+			<h3><?php echo t("transaction.products"); ?></h3>
 			<div class="row">
 				<div class="col-sm-12">
 					<table class="table table-striped table-hover">
@@ -172,7 +169,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 								<th><?php echo t("transaction.add.product"); ?></th>
 								<th class="hidden-480"><?php echo t("transaction.add.description"); ?></th>
 								<th class="hidden-480"><?php echo t("transaction.add.number"); ?></th>
-								<th class="hidden-480"><?php echo t("financial.transaction.product.price.bas"); ?></th>
+								<th class="hidden-480"><?php echo t("financial.transaction.product.price_unit"); ?></th>
 								<th class="hidden-480"><?php echo t("financial.transaction.product.discount"); ?></th>
 								<th><?php echo t("financial.transaction.product.price.final"); ?></th>‍
 								<?php if($this->transaction->status == transaction::paid and !$this->transaction->isConfigured()){ ?><th></th>‍<?php } ?>
@@ -198,7 +195,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 								<td><?php echo $x++; ?></td>
 								<td><?php echo $product->title; ?></td>
 								<td class="hidden-480"><?php echo $product->description; ?></td>
-								<td class="hidden-480"><?php echo $product->number; ?> عدد</td>
+								<td class="hidden-480"><?php echo t("product.xnumber", array("number" => $product->number)); ?></td>
 								<td class="hidden-480"> <?php echo ($rate ? $product->price * $rate->price : $product->price).$currency->title; ?></td>
 								<td class="hidden-480"> <?php echo ($rate ? $product->discount * $rate->price : $product->discount).$currency->title; ?></td>
 								<td><?php echo ($rate ? $finalPrice * $rate->price : $finalPrice).$currency->title; ?></td>

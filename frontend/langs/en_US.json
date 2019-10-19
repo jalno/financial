@@ -159,7 +159,7 @@
 		"financial.transaction.product": "Product",
 		"financial.transaction.product.decription": "Decription",
 		"financial.transaction.product.number": "Quantity",
-		"financial.transaction.product.price.base": "Unit Price",
+		"financial.transaction.product.price_unit": "Unit Price",
 		"financial.transaction.product.discount": "Discount",
 		"financial.transaction.product.price.final": "Subtotal",
 		"financial.number": "{number}",
@@ -293,6 +293,7 @@
 		"packages.data_duplicate.currencies.rates": "Duplicate record in currency changes",
 		"packages.financial.download": "Download",
 		"packages.financial.search.word": "Keyword",
-		"packages.financial.search.refund": "Refund Transactions"
+		"packages.financial.search.refund": "Refund Transactions",
+		"packages.financial.transactions": "Invoices"
 	}
 }

@@ -78,6 +78,7 @@
 		"transaction.add.setting":"تنظیمات صورت حساب",
 		"transaction.add.title":"عنوان صورت حساب",
 		"transaction.add.product":"محصول",
+		"transaction.products":"محصولات",
 		"transaction.add.products":"محصولات",
 		"transaction.add.description":"توضیحات",
 		"transaction.add.create_at":"تاریخ ایجاد",
@@ -157,7 +158,7 @@
 		"financial.transaction.product": "محصول",
 		"financial.transaction.product.decription": "توضیحات",
 		"financial.transaction.product.number": "تعداد",
-		"financial.transaction.product.price.base": "قیمت واحد",
+		"financial.transaction.product.price_unit": "قیمت واحد",
 		"financial.transaction.product.discount": "تخفیف",
 		"financial.transaction.product.price.final": "قیمت نهایی",
 		"financial.number": "{number} عدد",
@@ -296,6 +297,7 @@
 		"packages.financial.date": "تاریخ",
 		"packages.financial.edit.pay": "ویرایش پرداخت",
 		"packages.data_duplicate.currencies.rate": "ارز وارد شده تکراری میباشد",
-		"packages.data_duplicate.currencies.rates": "در تبدیل های ارز ، مقدار تکراری وجود دارد"
+		"packages.data_duplicate.currencies.rates": "در تبدیل های ارز ، مقدار تکراری وجود دارد",
+		"packages.financial.transactions": "صورتحساب ها"
 	}
 }
