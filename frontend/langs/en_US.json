@@ -290,6 +290,9 @@
 		"packages.financial.date": "Date",
 		"packages.financial.edit.pay": "Edit pay",
 		"packages.data_duplicate.currencies.rate": "Currency is duplicate",
-		"packages.data_duplicate.currencies.rates": "Duplicate record in currency changes"
+		"packages.data_duplicate.currencies.rates": "Duplicate record in currency changes",
+		"packages.financial.download": "Download",
+		"packages.financial.search.word": "Keyword",
+		"packages.financial.search.refund": "Refund Transactions"
 	}
 }
