@@ -1,3 +1,4 @@
+import "@jalno/translator";
 import "bootstrap-inputmsg";
 import * as $ from "jquery";
 import "jquery.growl";
@@ -106,10 +107,10 @@ export default class Currencies {
 			}
 			const html = `<div class="row rates">
 			<div class="col-sm-5">
-				<div class="form-group"><label class="control-label">قیمت</label><input value="" name="rates[0][price]" class="form-control rates-price ltr" type="number" step="0.0001"></div>
+				<div class="form-group"><label class="control-label">${t("financial.settings.currency.price")}</label><input value="" name="rates[0][price]" class="form-control rates-price ltr" type="number" step="0.0001"></div>
 			</div>
 			<div class="col-sm-5">
-				<div class="form-group"><label class="control-label">ارز</label>
+				<div class="form-group"><label class="control-label">${t("financial.settings.currency")}</label>
 					<select name="rates[0][currency]" class="form-control rates-currency">
 						${Currencies.createCurrencySelectOptions()}
 					</select>

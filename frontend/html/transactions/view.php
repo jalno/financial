@@ -280,8 +280,8 @@ $this->the_header(!$isLogin ? "logedout" : "");
 			<div class="row">
 				<div class="col-sm-12 invoice-block">
 					<ul class="list-unstyled amounts">
-						<li><strong><?php echo t("packages.financial.total_price"); ?>:</strong> <?php echo(number_format(abs($this->transaction->price)).$currency->title); ?></li>
-						<li><strong><?php echo t("transaction.add.discount"); ?>:</strong><?php echo(number_format($this->Discounts()).$currency->title); ?></li>
+						<li><strong><?php echo t("packages.financial.total_price"); ?>:</strong> <?php echo(number_format(abs($this->transaction->price)). " " . $currency->title); ?></li>
+						<li><strong><?php echo t("transaction.add.discount"); ?>:</strong> <?php echo(number_format($this->Discounts()) . " " . $currency->title); ?></li>
 						<li><strong><?php echo t("packages.financial.tax"); ?>:</strong> 0 <?php echo $currency->title; ?></li>
 						<li>
 							<strong><?php echo t("packages.financial.payable_price"); ?>:</strong>
@@ -291,7 +291,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 						</li>
 					</ul>
 					<br>
-					<a onclick="javascript:window.print();" class="btn btn-lg btn-teal hidden-print">چاپ<i class="fa fa-print"></i></a>
+					<a onclick="javascript:window.print();" class="btn btn-lg btn-teal hidden-print"> <?php echo t("print"); ?> <i class="fa fa-print"></i></a>
 					<?php
 					if ($this->transaction->status == transaction::unpaid) {
 						if ($payablePrice > 0) {

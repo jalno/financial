@@ -81,7 +81,7 @@ use \packages\financial\Bank\Account;
 			} else {
 			?>
 				<div class="alert alert-block alert-info ">
-					<h4 class="alert-heading"> <i class="fa fa-info-circle"></i> توجه </h4>
+					<h4 class="alert-heading"> <i class="fa fa-info-circle"></i> <?php echo t("attention"); ?> </h4>
 					<p><?php echo t("financial.settings.bankaccount.notfound"); ?></p>
 				</div>
 			<?php } ?>

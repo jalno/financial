@@ -1,10 +1,7 @@
 <?php
-use \packages\base;
-use \packages\base\translator;
-use \packages\userpanel;
-use \packages\userpanel\date;
-use \packages\financial\gateway\number;
-use \themes\clipone\utility;
+use packages\base;
+use packages\base\translator;
+use packages\userpanel;
 
 $this->the_header();
 $gateway = $this->getGateway();
@@ -18,7 +15,7 @@ $gateway = $this->getGateway();
 					<?php echo translator::trans("financial.gateway.delete.warning", array('gateway' => $gateway->id)); ?>
 				</p>
 				<p>
-					<a href="<?php echo userpanel\url('settings/financial/gateways'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-right"></i> <?php echo translator::trans('back'); ?></a>
+					<a href="<?php echo userpanel\url('settings/financial/gateways'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-<?php echo ((bool)translator::getLang()->isRTL()) ? "right" : "left"; ?>"></i> <?php echo translator::trans('back'); ?></a>
 					<button type="submit" class="btn btn-danger"><i class="fa fa-trash-o tip"></i> <?php echo translator::trans("delete") ?></button>
 				</p>
 			</div>
