@@ -1,3 +1,4 @@
+import "@jalno/translator";
 import "bootstrap";
 import "bootstrap-inputmsg";
 import * as $ from "jquery";
@@ -30,26 +31,26 @@ export default class Delete {
 			Delete.$modal = $(`<div class="modal fade" tabindex="-1" data-show="true" role="dialog">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				<h4 class="modal-title">حذف بانک</h4>
+				<h4 class="modal-title">${t("financial.banks.delete.title")}</h4>
 			</div>
 			<div class="modal-body">
 				<form id="delete-form" class="form-horizontal" method="POST">
 					<div class="alert alert-warning">
-						<h4 class="alert-heading"> <i class="fa fa-exclamation-triangle"></i> هشدار </h4>
-						تمامی سوابق تراکنش های مربوط به این بانک از بین خواهد رفت.
+						<h4 class="alert-heading"> <i class="fa fa-exclamation-triangle"></i> ${t("attention")} </h4>
+							${t("financial.banks.delete.alert.text")}
 						<br>
-						این عملیات غیر قابل بازگشت است.
+							${t("attention.this_action_cant_revert")}
 					</div>
 					<div class="form-group">
-						<label class="control-label col-sm-3">شناسه</label>
+						<label class="control-label col-sm-3">${t("packages.financial.bank.id")}</label>
 						<div class="col-sm-9 bank-id"></div>
 					</div>
 					<div class="form-group">
-						<label class="control-label col-sm-3">عنوان</label>
+						<label class="control-label col-sm-3">${t("packages.financial.bank.title")}</label>
 						<div class="col-sm-9 bank-title"></div>
 					</div>
 					<div class="form-group">
-						<label class="control-label col-sm-3">وضعیت</label>
+						<label class="control-label col-sm-3">${t("packages.financial.bank.status")}</label>
 						<div class="col-sm-9 bank-status"></div>
 					</div>
 				</form>
@@ -57,9 +58,9 @@ export default class Delete {
 			<div class="modal-footer">
 				<button type="submit" form="delete-form" class="btn btn-danger btn-success">
 					<div class="btn-icons"> <i class="fa fa-trash"></i> </div>
-					حذف
+					${t("packages.financial.delete")}
 				</button>
-				<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">انصراف</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">${t("cancel")}</button>
 			</div>
 		</div>`).appendTo("body");
 			Delete.$form = $("form", Delete.$modal);
@@ -86,8 +87,8 @@ export default class Delete {
 				url: `userpanel/settings/financial/banks/${Delete.bank.id}/delete?ajax=1`,
 				success: () => {
 					$.growl.warning({
-						title: "موفق",
-						message: "اطلاعات با موفقیت حذف شد.",
+						title: t("packages.financial.success"),
+						message: t("userpanel.formajax.success"),
 						location: "bl",
 					});
 					Delete.closeModal();
@@ -98,14 +99,14 @@ export default class Delete {
 					if (data.error === "data_duplicate" || data.error === "data_validation") {
 						const $input = $(`[name="${data.input}"]`, this);
 						const params = {
-							title: "خطا",
+							title: t("error.fatal.title"),
 							message: "",
 							location: "bl",
 						};
 						if (data.error === "data_validation") {
-							params.message = "داده وارد شده معتبر نیست";
+							params.message = t("packages.financial.data_validation");
 						} else if (data.error === "data_duplicate") {
-							params.message = "داده وارد شده تکراری میباشد";
+							params.message = t("packages.financial.data_duplicate");
 						}
 						if ($input.length) {
 							$input.inputMsg(params);
@@ -114,8 +115,8 @@ export default class Delete {
 						}
 					} else {
 						$.growl.error({
-							title: "خطا",
-							message: "درخواست شما توسط سرور قبول نشد",
+							title: t("error.fatal.title"),
+							message: t("userpanel.formajax.error"),
 							location: "bl",
 						});
 					}
