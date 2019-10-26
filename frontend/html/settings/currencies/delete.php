@@ -1,6 +1,6 @@
 <?php
-use \packages\base\translator;
-use \packages\userpanel;
+use packages\base\translator;
+use packages\userpanel;
 $this->the_header();
 $rates = $this->currency->rates;
 ?>
@@ -34,7 +34,7 @@ $rates = $this->currency->rates;
 					</div>
 					<div class="row">
 						<div class="col-sm-12 text-left">
-							<a href="<?php echo userpanel\url('settings/financial/currencies'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-right"></i> <?php echo translator::trans('return'); ?></a>
+							<a href="<?php echo userpanel\url('settings/financial/currencies'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-<?php echo ((bool)translator::getLang()->isRTL()) ? "right" : "left"; ?>"></i> <?php echo translator::trans('return'); ?></a>
 							<button type="submit" class="btn btn-danger"><i class="fa fa-trash-o"></i> <?php echo translator::trans("delete"); ?></button>
 						</div>
 					</div>

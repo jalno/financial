@@ -315,7 +315,7 @@ class Transactions extends Controller {
 					t("packages.financial.transaction.price") . ";" .
 					t("packages.financial.transaction.price.paid") . ";" .
 					t("packages.financial.transaction.price.payable") . ";" .
-					t("packages.financial.transaction.status") . "\n";
+					t("packages.financial.transaction.status") . ";\n";
 				foreach ($transactions as $transaction) {
 					$createAt = date::format("Y/m/d H:i", $transaction->create_at);
 					$price = abs($transaction->price);
@@ -1436,7 +1436,7 @@ class Transactions extends Controller {
 		return $this->response;
 	}
 	public function refund(): response {
-		authorization::haveOrFail("transactions_refund");
+		Authorization::haveOrFail("transactions_refund");
 		$inputsRules = array(
 			"refund_user" => array(
 				"type" => "number",
@@ -1449,34 +1449,34 @@ class Transactions extends Controller {
 				"type" => "number",
 			),
 		);
-		$types = authorization::childrenTypes();
+		$types = Authorization::childrenTypes();
 		if (!$types) {
 			unset($inputsRules["refund_user"]);
 		}
 		$inputs = $this->checkinputs($inputsRules);
 		if (isset($inputs["refund_user"])) {
-			if (!$inputs["refund_user"] = user::byId($inputs["refund_user"])) {
-				throw new inputValidation("refund_user");
+			if (!$inputs["refund_user"] = User::byId($inputs["refund_user"])) {
+				throw new InputValidationException("refund_user");
 			}
 		} else {
-			$inputs["refund_user"] = authentication::getUser();
+			$inputs["refund_user"] = Authentication::getUser();
 		}
 		if (!$inputs["refund_account"] = (new Account)->where("user_id", $inputs["refund_user"]->id)->where("id", $inputs["refund_account"])->where("status", Account::Active)->getOne()) {
-			throw new inputValidation("refund_account");
+			throw new InputValidationException("refund_account");
 		}
 		if ($inputs["refund_price"] <= 0 or $inputs["refund_price"] > $inputs["refund_user"]->credit) {
-			throw new inputValidation("refund_price");
+			throw new InputValidationException("refund_price");
 		}
 		$expire = Options::get("packages.financial.refund_expire");
 		if (!$expire) {
 			$expire = 432000;
 		}
-		$currency = currency::getDefault($inputs["refund_user"]);
-		$transaction = new transaction;
+		$currency = Currency::getDefault($inputs["refund_user"]);
+		$transaction = new Transaction;
 		$transaction->title = t("packages.financial.transactions.title.refund");
 		$transaction->user = $inputs["refund_user"]->id;
-		$transaction->create_at = date::time();
-		$transaction->expire_at = date::time() + $expire;
+		$transaction->create_at = Date::time();
+		$transaction->expire_at = Date::time() + $expire;
 		$transaction->currency = $currency->id;
 		$transaction->addProduct(array(
 			"title" => t("packages.financial.transactions.product.title.refund"),

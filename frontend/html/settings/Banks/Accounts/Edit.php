@@ -1,7 +1,8 @@
 <?php
-$this->the_header();
+use packages\base\translator;
 use packages\userpanel;
 use packages\financial\Bank\Account;
+$this->the_header();
 ?>
 <div class="row">
 <?php if ($this->canAccept) { ?>
@@ -174,7 +175,7 @@ use packages\financial\Bank\Account;
 						</div>
 						<div class="col-lg-5 col-md-12 col-sm-6 col-xs-12">
 							<div class="text-left">
-								<a href="<?php echo userpanel\url("settings/financial/banks/accounts"); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-right"></i> <?php echo t("packages.financial.return"); ?></a>
+								<a href="<?php echo userpanel\url("settings/financial/banks/accounts"); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-<?php echo ((bool)translator::getLang()->isRTL()) ? "right" : "left"; ?>"></i> <?php echo t("packages.financial.return"); ?></a>
 								<button type="submit" class="btn btn-teal"><i class="fa fa-check-square-o"></i> <?php echo t("packages.financial.edit") ?></button>
 							</div>
 						</div>
