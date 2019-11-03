@@ -1,22 +1,17 @@
 <?php
 namespace themes\clipone\views\financial\settings\gateways;
-use \packages\base\translator;
-use \packages\base\events;
-use \packages\base\frontend\theme;
 
-use \packages\userpanel;
-use \packages\financial\payport as gateway;
-use \packages\financial\views\settings\gateways\add as addView;
+use packages\base;
+use packages\base\{Events, frontend\Theme, Translator};
+use packages\userpanel;
+use packages\financial\Payport as gateway;
+use themes\clipone\{Breadcrumb, views\FormTrait, Navigation, ViewTrait};
+use packages\financial\views\settings\gateways\Add as AddView;
 
-use \themes\clipone\viewTrait;
-use \themes\clipone\navigation;
-use \themes\clipone\breadcrumb;
-use \themes\clipone\views\formTrait;
-
-class add extends addView{
-	use viewTrait, formTrait;
+class Add extends AddView {
+	use ViewTrait, FormTrait;
 	function __beforeLoad(){
-		$this->setTitle(translator::trans("settings.financial.gateways.add"));
+		$this->setTitle(t("settings.financial.gateways.add"));
 		$this->setNavigation();
 		$this->addBodyClass('transaction-settings-gateway');
 	}
@@ -31,7 +26,7 @@ class add extends addView{
 	public function getGatewaysForSelect(){
 		$options = array();
 		foreach($this->getGateways()->get() as $gateway){
-			$title = translator::trans('financial.gateway.'.$gateway->getName());
+			$title = t('financial.gateway.'.$gateway->getName());
 			$options[] = array(
 				'value' => $gateway->getName(),
 				'title' => $title ? $title : $gateway->getName()
@@ -42,11 +37,11 @@ class add extends addView{
 	public function getGatewayStatusForSelect(){
 		$options = array(
 			array(
-				'title' => translator::trans('financial.gateway.status.active'),
+				'title' => t('financial.gateway.status.active'),
 				'value' => gateway::active
 			),
 			array(
-				'title' => translator::trans('financial.gateway.status.deactive'),
+				'title' => t('financial.gateway.status.deactive'),
 				'value' => gateway::deactive
 			)
 		);
@@ -65,7 +60,7 @@ class add extends addView{
 	protected function getAccountsForSelect(): array {
 		$accounts = array(
 			array(
-				"title" => "هیچ کدام",
+				"title" => t("select.none"),
 				"value" => "",
 			),
 		);
