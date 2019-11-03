@@ -25,6 +25,7 @@
 		"pay":"پرداخت",
 		"pays":"پرداخت ها",
 		"print": "چاپ",
+		"select.none": "هیچ کدام",
 		"packages.financial.pays.banktransfer": "واریزهای بانکی قبلی",
 		"packages.financial.pays.banktransfer_to": "واریز شده به",
 		"transaction.banktransfer.price": "مبلغ واریزی",

@@ -30,6 +30,7 @@
 		"pay.byBankTransfer.withfollowup" : "Tracking number:‌ {followup}",
 		"pay":"Pay",
 		"pays":"Payments",
+		"select.none": "None",
 		"currentcredit":"Current balance",
 		"currency.rial": "{number} Rial",
 		"pay.price":"Payment amount",
