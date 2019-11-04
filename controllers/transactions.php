@@ -1511,6 +1511,7 @@ class Transactions extends Controller {
 		$inputs = $this->checkinputs(array(
 			"refund_pay_info" => array(
 				"type" => "string",
+				"multiLine" => true,
 			),
 		));
 		$transaction->setParam("refund_pay_info", $inputs["refund_pay_info"]);
@@ -1527,20 +1528,35 @@ class Transactions extends Controller {
 		));
 		$transaction->status = transaction::paid;
 		$transaction->save();
+
+		(new Events\transactions\Refund\Accepted($transaction))->trigger();
+
 		$this->response->setStatus(true);
 		return $this->response;
 	}
 	public function refundReject($data) {
-		authorization::haveOrFail("transactions_refund_accept");
+		Authorization::haveOrFail("transactions_refund_accept");
 		$transaction = $this->getTransaction($data["transaction"]);
-		if ($transaction->status != transaction::unpaid or $transaction->payablePrice() > 0) {
+		if ($transaction->status != Transaction::unpaid or $transaction->payablePrice() > 0) {
 			throw new NotFound();
 		}
-		$transaction->setParam("refund_rejector", authentication::getID());
-		$transaction->status = transaction::rejected;
+
+		$inputs = $this->checkInputs(array(
+			"refund_pay_info" => array(
+				"type" => "string",
+				"multiLine" => true,
+			),
+		));
+
+		$transaction->setParam("refund_pay_info", $inputs["refund_pay_info"]);
+		$transaction->setParam("refund_rejector", Authentication::getID());
+		$transaction->status = Transaction::rejected;
 		$transaction->save();
 		$transaction->user->credit += abs($transaction->payablePrice());
 		$transaction->user->save();
+
+		(new Events\transactions\Refund\Rejected($transaction))->trigger();
+
 		$this->response->setStatus(true);
 		return $this->response;
 	}

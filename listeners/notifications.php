@@ -9,5 +9,7 @@ class notifications{
 		$events->add(financialEevents\transactions\expire::class);
 		$events->add(financialEevents\transactions\pay::class);
 		$events->add(financialEevents\transactions\reminder::class);
+		$events->add(financialEevents\transactions\Refund\Accepted::class);
+		$events->add(financialEevents\transactions\Refund\Rejected::class);
 	}
 }

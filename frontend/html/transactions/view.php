@@ -3,11 +3,15 @@ use \packages\base;
 use \packages\base\{translator, http, json};
 use \themes\clipone\utility;
 use \packages\financial\{currency, transaction, transaction_pay, authentication};
+use packages\financial\controllers\Transactions;
 use \packages\userpanel;
 use \packages\userpanel\{date, user};
 $isLogin = authentication::check();
 $payablePrice = $this->transaction->payablePrice();
 $refundTransaction = $payablePrice < 0;
+if ($refundTransaction) {
+	$refundInfo = nl2br($this->transaction->param("refund_pay_info"));
+}
 $this->the_header(!$isLogin ? "logedout" : "");
 ?>
 <div class="row">
@@ -29,7 +33,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 				</div>
 			</div>
 			<hr>
-		<?php if ($this->hasdesc or $refundInfo = $this->transaction->param("refund_pay_info")) { ?>
+		<?php if ($this->hasdesc or ($this->transaction->status == Transaction::paid and $refundInfo)) { ?>
 			<div class="row">
 				<div class="col-md-12">
 					<div class="box-note">
@@ -156,9 +160,21 @@ $this->the_header(!$isLogin ? "logedout" : "");
 				</div>
 			</div>
 
-			<?php if ($refundTransaction and $this->transaction->status == Transaction::expired) { ?>
-			<div class="alert alert-info text-center"><?php echo t("packages.financial.refunded-expired-refund-transaction"); ?></div>
-			<?php } ?>
+			<?php
+			if ($refundTransaction) {
+				if ($this->transaction->status == Transaction::expired) {	
+			?>
+				<div class="alert alert-info text-center"><?php echo t("packages.financial.refunded-expired-refund-transaction"); ?></div>
+			<?php
+				} elseif ($this->transaction->status == Transaction::rejected) {
+			?>
+			<div class="alert alert-warning"><?php echo t($refundInfo ? "packages.financial.rejected-refund-transaction-reasoned" : "packages.financial.rejected-refund-transaction", array(
+				'reason' => $refundInfo
+			)); ?></div>
+			<?php
+				}
+			}
+			?>
 			<h3><?php echo t("transaction.products"); ?></h3>
 			<div class="row">
 				<div class="col-sm-12">
@@ -349,8 +365,16 @@ $this->the_header(!$isLogin ? "logedout" : "");
 		<h4 class="modal-title text-danger"><?php echo t("packages.financial.refund.reject"); ?></h4>
 	</div>
 	<div class="modal-body">
-		<form id="refund-reject-form" class="form-horizontal" action="<?php echo userpanel\url("transactions/{$this->transaction->id}/refund/reject"); ?>" method="POST" autocomplete="off">
+		<form id="refund-reject-form" action="<?php echo userpanel\url("transactions/{$this->transaction->id}/refund/reject"); ?>" method="POST" autocomplete="off">
 			<p><?php echo t("transaction.reject.warning"); ?></p>
+			<?php
+			$this->createField(array(
+				"type" => "textarea",
+				"name" => "refund_pay_info",
+				"label" => t("packages.financial.refund.pay.reject_reason"),
+				"rows" => 4,
+			));
+			?>
 		</form>
 	</div>
 	<div class="modal-footer">

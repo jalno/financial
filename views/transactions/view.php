@@ -1,17 +1,19 @@
 <?php
 namespace packages\financial\views\transactions;
-use \packages\base\view\error;
-use \packages\financial\transaction;
-use \packages\financial\authorization;
-use \packages\base\views\traits\form as formTrait;
+
+use packages\base\{View\Error,views\traits\Form, Packages};
+use packages\financial\{Transaction, Authorization};
+use packages\tickting\Department;
+
 class view extends \packages\financial\view {
-	use formTrait;
+	use Form;
+
 	protected $canPayAccept;
 	protected $canPayReject;
 	protected $canAcceptRefund;
-	public function __construct(){
-		$this->canPayAccept = $this->canPayReject = authorization::is_accessed('transactions_pays_accept');
-		$this->canAcceptRefund = authorization::is_accessed("transactions_refund_accept");
+	public function __construct() {
+		$this->canPayAccept = $this->canPayReject = Authorization::is_accessed('transactions_pays_accept');
+		$this->canAcceptRefund = Authorization::is_accessed("transactions_refund_accept");
 	}
 	public function settransactionData($data){
 		$this->setData($data, 'user');
@@ -19,9 +21,9 @@ class view extends \packages\financial\view {
 	public function getUserData($key){
 		return($this->data['user']->$key);
 	}
-	public function setTransaction(transaction $transaction){
+	public function setTransaction(Transaction $transaction){
 		$this->setData($transaction, "transaction");
-		if($transaction->status == transaction::paid and !$transaction->isConfigured()){
+		if($transaction->status == Transaction::paid and !$transaction->isConfigured()){
 			$error = new error();
 			$error->setType(error::WARNING);
 			$error->setCode("financial.productNeedToConfigured");
