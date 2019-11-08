@@ -1,7 +1,7 @@
 <?php
 namespace packages\financial\Validators;
 
-use packages\base\{http, IO\file, IO\Directory, Exception, InputValidationException};
+use packages\base\{InputValidationException, Validator\IValidator};
 
 class IBANValidator implements IValidator {
 	
