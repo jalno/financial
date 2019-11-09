@@ -7,7 +7,7 @@ use packages\financial\controllers\Transactions;
 use \packages\userpanel;
 use \packages\userpanel\{date, user};
 $isLogin = authentication::check();
-$payablePrice = $this->transaction->payablePrice();
+$payablePrice = $this->transaction->totalPrice();
 $refundTransaction = $payablePrice < 0;
 if ($refundTransaction) {
 	$refundInfo = nl2br($this->transaction->param("refund_pay_info"));
