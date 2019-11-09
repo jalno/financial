@@ -1,4 +1,7 @@
+import "@jalno/translator";
+import "bootstrap-inputmsg";
 import * as $ from "jquery";
+import "jquery-inputlimiter";
 import "../../../jquery.financialUserAutoComplete";
 
 export default class Edit {
@@ -23,10 +26,10 @@ export default class Edit {
 	protected static checkIBAN() {
 		const $input = $("input[name=shaba]", Edit.$form);
 		$input.on("keyup", () => {
-			console.log("keyup");
 			$input.inputMsg("reset");
-			const inputValueString = String($input.val());
-			$input.val(inputValueString.replace(/ +?/g, ""));
+			let inputValueString = String($input.val());
+			inputValueString = inputValueString.replace(/\s/g, "").replace(/[^a-zA-Z0-9]/g, "");
+			$input.val(inputValueString);
 			if (inputValueString.length < 2) {
 				return;
 			}

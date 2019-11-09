@@ -26,10 +26,10 @@ export default class Add {
 	protected static checkIBAN() {
 		const $input = $("input[name=shaba]", Add.$form);
 		$input.on("keyup", () => {
-			console.log("keyup");
 			$input.inputMsg("reset");
-			const inputValueString = String($input.val());
-			$input.val(inputValueString.replace(/ +?/g, ""));
+			let inputValueString = String($input.val());
+			inputValueString = inputValueString.replace(/\s/g, "").replace(/[^a-zA-Z0-9]/g, "");
+			$input.val(inputValueString);
 			if (inputValueString.length < 2) {
 				return;
 			}
