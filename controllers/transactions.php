@@ -6,7 +6,9 @@ use packages\userpanel;
 use packages\userpanel\{Date, Log, User};
 use packages\financial\{views\transactions\pay as PayView, views\transactions as financialViews};
 use packages\financial\payport\{AlreadyVerified, GatewayException, Redirect, VerificationException};
-use packages\financial\{Bank\Account, Authentication, Authorization, Controller, Currency, Events, Logs, Transaction, Transaction_product, Transaction_pay, View, Views, Payport, Payport_pay};
+use packages\financial\{Bank\Account, Authentication, Authorization, Controller, Currency, Events, Logs,
+						Transaction, Transaction_product, Transaction_pay, View, Views, Payport, Payport_pay,
+						Transactions_products_param};
 
 class Transactions extends Controller {
 	public static function getAvailablePayMethods($canPayByCredit = true) {
@@ -314,8 +316,36 @@ class Transactions extends Controller {
 					t("packages.financial.transaction.user.email") . ";" .
 					t("packages.financial.transaction.price") . ";" .
 					t("packages.financial.transaction.price.paid") . ";" .
-					t("packages.financial.transaction.price.payable") . ";" .
-					t("packages.financial.transaction.status") . ";\n";
+					t("packages.financial.transaction.price.payable") . ";";
+				$bankAccountsInfo = array();
+				if ($inputs["refund"]) {
+					$transactionIDs = array();
+					foreach ($transactions as $transaction) {
+						$transactionIDs[] = $transaction->id;
+					}
+					if ($transactionIDs) {
+						db::join("financial_transactions_products", "financial_transactions_products_params.product=financial_transactions_products.id", "INNER");
+						db::joinWhere("financial_transactions_products", "financial_transactions_products.method", Transaction_product::refund);
+
+						$bankAccountsInfo = new Transactions_products_param();
+						$bankAccountsInfo->where("financial_transactions_products.transaction", $transactionIDs, "IN");
+						$bankAccountsInfo->where("financial_transactions_products_params.name", "bank-account");
+						$bankAccountsInfo = $bankAccountsInfo->get(null, array(
+							"financial_transactions_products.transaction",
+							"financial_transactions_products_params.*",
+						));
+					}
+					$csv .= t("packages.financial.bankaccount.credit_cart") . ";" .
+					t("packages.financial.bankaccount.shaba") . ";";
+				}
+				$csv .= t("packages.financial.transaction.status") . ";\n";
+				$getBankAccountInfo = function($transaction) use($bankAccountsInfo) {
+					foreach ($bankAccountsInfo as $param) {
+						if ($param->transaction == $transaction->id) {
+							return $param->value;
+						}
+					}
+				};
 				foreach ($transactions as $transaction) {
 					$createAt = date::format("Y/m/d H:i", $transaction->create_at);
 					$price = abs($transaction->price);
@@ -339,7 +369,23 @@ class Transactions extends Controller {
 							$status = t("packages.financial.transaction.status.rejected");
 							break;
 					}
-					$csv .= "{$transaction->id};{$transaction->title};{$createAt};{$transaction->user->getFullName()};{$transaction->user->cellphone};{$transaction->user->email};{$price} {$transaction->currency->title};{$paid} {$transaction->currency->title};{$payablePrice} {$transaction->currency->title};{$status}\n";
+					$csv .= "{$transaction->id};{$transaction->title};{$createAt};{$transaction->user->getFullName()};{$transaction->user->cellphone};{$transaction->user->email};{$price} {$transaction->currency->title};{$paid} {$transaction->currency->title};{$payablePrice} {$transaction->currency->title};";
+					if ($inputs["refund"]) {
+						$account = $getBankAccountInfo($transaction);
+						if ($account) {
+							if (isset($account["cart"]) and $account["cart"]) {
+								$csv .= "{$account['cart']};";
+							} else {
+								$csv .= "-;";
+							}
+							if (isset($account["shaba"]) and $account["shaba"]) {
+								$csv .= "{$account['shaba']};";
+							} else {
+								$csv .= "-;";
+							}
+						}
+					}
+					$csv .= "{$status}\n";
 				}
 				$this->response->setHeader('content-disposition', "attachment; filename=\"financial-transactions.csv\"");
 				$this->response->setMimeType("text/csv", "utf-8");
