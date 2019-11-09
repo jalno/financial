@@ -43,6 +43,8 @@
 		"financial.pay.bankTransfer.followup" : "Tracking number:‌ {followup}",
 		"packages.financial.transactions.title.refund": "Withdraw",
 		"packages.financial.transactions.product.title.refund": "Withdraw request",
-		"packages.financial.transactions.refund.description": "Bank account: {account_account}<br>Credit card: {account_cart}<br>IBAN: {account_shaba}<br>Account owner: {account_owner}"
+		"packages.financial.transactions.refund.description": "Bank account: {account_account}<br>Credit card: {account_cart}<br>IBAN: {account_shaba}<br>Account owner: {account_owner}",
+		"packages.financial.bankaccount.shaba": "IBAN",
+		"packages.financial.bankaccount.credit_cart": "Credit card"
 	}
 }

@@ -67,6 +67,8 @@
 		"packages.financial.transaction.status.paid": "پرداخت شده",
 		"packages.financial.transaction.status.refund": "برگشت داده شده",
 		"packages.financial.transaction.status.expired": "منقضی شده",
-		"packages.financial.transaction.status.rejected": "رد شده"
+		"packages.financial.transaction.status.rejected": "رد شده",
+		"packages.financial.bankaccount.shaba": "کد شبا",
+		"packages.financial.bankaccount.credit_cart": "شماره کارت"
 	}
 }
