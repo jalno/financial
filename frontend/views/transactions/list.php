@@ -224,12 +224,7 @@ class listview extends transactionsListView{
 		return $transaction->has();
 	}
 	protected function getExportOptionsForSelect() {
-		$options = array(
-			array(
-				"title" => t("packages.financial.export.csv"),
-				"value" => "csv",
-			),
-		);
+		$options = array();
 		foreach ($this->exporters as $exporter) {
 			$options[] = array(
 				"title" => t("packages.financial.export.{$exporter->getName()}"),

@@ -15,9 +15,6 @@ class Exporter {
 		return $this->name;
 	}
 	public function setHandler(string $handler) {
-		if (substr($handler, 0, 1) != "\\") {
-			$handler = "\\" . $handler;
-		}
 		if (!class_exists($handler)) {
 			throw new Exception("exporter handler {$handler} not defined");
 		}
