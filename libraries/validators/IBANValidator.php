@@ -1,7 +1,7 @@
 <?php
 namespace packages\financial\Validators;
 
-use packages\base\{InputValidationException, Validator\IValidator};
+use packages\base\{db\InputRequired, InputValidationException, Validator\IValidator};
 
 class IBANValidator implements IValidator {
 	
@@ -25,18 +25,27 @@ class IBANValidator implements IValidator {
 	 */
 	public function validate(string $input, array $rule, $data) {
 		$countries = array(
-			'al'=>28,'ad'=>24,'at'=>20,'az'=>28,'bh'=>22,'be'=>16,'ba'=>20,'br'=>29,'bg'=>22,'cr'=>21,'hr'=>21,
-			'cy'=>28,'cz'=>24,'dk'=>18,'do'=>28,'ee'=>20,'fo'=>18,'fi'=>18,'fr'=>27,'ge'=>22,'de'=>22,'gi'=>23,'gr'=>27,'gl'=>18,
-			'gt'=>28,'hu'=>28,'is'=>26,'ie'=>22,'il'=>23,'it'=>27,'jo'=>30,'kz'=>20,'kw'=>30,'lv'=>21,'lb'=>28,'li'=>21,'lt'=>20,
-			'lu'=>20,'mk'=>19,'mt'=>31,'mr'=>27,'mu'=>30,'mc'=>27,'md'=>24,'me'=>22,'nl'=>18,'no'=>15,'pk'=>24,'ps'=>29,'pl'=>28,
-			'pt'=>25,'qa'=>29,'ro'=>24,'sm'=>27,'sa'=>24,'rs'=>22,'sk'=>24,'si'=>19,'es'=>24,'se'=>24,'ch'=>21,'tn'=>24,'tr'=>26,
-			'ae'=>23,'gb'=>22,'vg'=>24,
+			'al'=>28,'ad'=>24,'at'=>20,'az'=>28,'bh'=>22,'be'=>16,'ba'=>20,'br'=>29,'bg'=>22,'cr'=>21,'hr'=>21,'cy'=>28,
+			'cz'=>24,'dk'=>18,'do'=>28,'ee'=>20,'fo'=>18,'fi'=>18,'fr'=>27,'ge'=>22,'de'=>22,'gi'=>23,'gr'=>27,'gl'=>18,
+			'gt'=>28,'hu'=>28,'is'=>26,'ie'=>22,'il'=>23,'it'=>27,'ir'=>26,'jo'=>30,'kz'=>20,'kw'=>30,'lv'=>21,'lb'=>28,
+			'li'=>21,'lt'=>20,'lu'=>20,'mk'=>19,'mt'=>31,'mr'=>27,'mu'=>30,'mc'=>27,'md'=>24,'me'=>22,'nl'=>18,'no'=>15,
+			'pk'=>24,'ps'=>29,'pl'=>28,'pt'=>25,'qa'=>29,'ro'=>24,'sm'=>27,'sa'=>24,'rs'=>22,'sk'=>24,'si'=>19,'es'=>24,
+			'se'=>24,'ch'=>21,'tn'=>24,'tr'=>26,'ae'=>23,'gb'=>22,'vg'=>24,
 		);
-		if (!is_string($data) or !$data) {
+		if (!$data) {
+			if (!isset($rule['empty']) or !$rule['empty']) {
+				throw new InputRequired($input);
+			}
+			if (isset($rule['default'])) {
+				return $rule['default'];
+			}
+		}
+		if (!is_string($data)) {
 			throw new InputValidationException($input);
 		}
+		$data = trim($data);
 		$countryCode = strtolower(substr($data, 0, 2));
-		if (!in_array($countryCode, $countries)) {
+		if (!isset($countries[$countryCode])) {
 			throw new InputValidationException($input);
 		}
 		if (strlen($data) != $countries[$countryCode]) {
@@ -45,16 +54,16 @@ class IBANValidator implements IValidator {
 		if (!preg_match('/\w{2}\d+$/', $data)) {
 			throw new InputValidationException($input);
 		}
+		$countryCode = strtoupper($countryCode);
 		$twoFirstChar = "";
 		for ($i = 0, $a = ord("A"); $i < 2; $i++) {
 			$twoFirstChar .= ord($countryCode[$i]) - $a + 10;
 		}
-		$twoFirstChar = substr($data, 4) . $twoFirstChar . substr($data, 2, 4);
+		$twoFirstChar = substr($data, 4) . $twoFirstChar . substr($data, 2, 2);
 		$result = bcmod($twoFirstChar, 97);
 		if ($result != "1") {
 			throw new InputValidationException($input);
 		}
 	}
-
 	
 }
