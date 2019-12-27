@@ -56,6 +56,11 @@ class view extends transactionsView {
 				if ($pay->param("description")) {
 					$description .= "\n<br>" . t("financial.transaction.banktransfer.description") . ": " . $pay->param("description");
 				}
+				$attachment = $pay->param("attachment");
+				if ($attachment) {
+					$url = Packages::package("financial")->url($attachment);
+					$description .= "\n<br><a href=\"{$url}\" target=\"_blank\"><i class=\"fa fa-paperclip\"></i> " . t("pay.banktransfer.attachment") . "</a>";
+				}
 				$pay->description = $description;
 				
 			}elseif($pay->method == transaction_pay::onlinepay){

@@ -1,5 +1,5 @@
 <?php
-use packages\base\{Date, http};
+use packages\base\{Date, http, Packages};
 use packages\userpanel;
 use themes\clipone\utility;
 use packages\financial\authentication;
@@ -66,7 +66,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 									<th><?php echo t("date&time"); ?></th>
 									<th><?php echo t("transaction.banktransfer.price"); ?></th>
 									<th><?php echo t("packages.financial.pays.banktransfer_to"); ?></th>
-									<th><?php echo t("pay.banktransfer.followup"); ?></th>
+									<th><?php echo t("description"); ?></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -77,7 +77,18 @@ $this->the_header(!$isLogin ? "logedout" : "");
 								<td class="center ltr"><?php echo Date\jDate::format("Y/m/d H:i", $pay->date); ?></td>
 								<td><?php echo number_format($pay->price) . " " . $pay->currency->title ?></td>
 								<td><?php echo $pay->getBanktransferBankAccount()->cart; ?></td>
-								<td><?php echo $pay->param("followup"); ?></td>
+								<td><?php 
+									echo t("pay.banktransfer.description-followup", ["followup" => $pay->param("followup")]);
+									$description = $pay->param("description");
+									if ($description) {
+										echo "<br>" . $description;
+									}
+									$attachment = $pay->param("attachment");
+									if ($attachment) {
+										$url = Packages::package("financial")->url($attachment);
+										echo "<br><a href=\"{$url}\" target=\"_blank\"><i class=\"fa fa-paperclip\"></i>" . t("pay.banktransfer.attachment") . "</a>";
+									}
+								?></td>
 							</tr>
 							<?php
 							}
@@ -98,7 +109,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 				</div>
 			</div>
 			<div class="panel-body">
-				<form action="<?php echo userpanel\url('transactions/pay/banktransfer/'.$this->transaction->id, $parameter); ?>" method="POST" role="form" class="pay_banktransfer_form">
+				<form action="<?php echo userpanel\url('transactions/pay/banktransfer/'.$this->transaction->id, $parameter); ?>" method="POST" role="form" enctype="multipart/form-data" class="pay_banktransfer_form">
 					<div class="row">
 						<div class="col-xs-12">
 							<div class="well label-info">
@@ -149,6 +160,12 @@ $this->the_header(!$isLogin ? "logedout" : "");
 								'label' => t("pay.banktransfer.followup"),
 								'type' => 'number',
 								'min' => 0,
+								"ltr" => true,
+							));
+							$this->createField(array(
+								'name' => 'attachment',
+								'label' => t("pay.banktransfer.attachment"),
+								'type' => 'file',
 								"ltr" => true,
 							));
 							$this->createField(array(

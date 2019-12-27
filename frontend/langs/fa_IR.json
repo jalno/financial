@@ -42,6 +42,8 @@
 		"pay.banktransfer.bankaccount" : "بانک",
 		"pay.banktransfer.date":"تاریخ واریز",
 		"pay.banktransfer.followup" : "شماره پیگیری تراکنش",
+		"pay.banktransfer.attachment" : "فایل پیوست",
+		"pay.banktransfer.description-followup": "شماره پیگیری تراکنش: {followup}",
 		"submit":"ثبت",
 		"packages.financial.banks.accounts":"حساب های بانکی",
 		"packages.financial.banks.account.id": "شناسه",

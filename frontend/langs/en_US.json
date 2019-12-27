@@ -44,6 +44,8 @@
 		"pay.banktransfer.bankaccount" : "Bank",
 		"pay.banktransfer.date":"Date",
 		"pay.banktransfer.followup" : "Tracking number",
+		"pay.banktransfer.attachment" : "Attachment",
+		"pay.banktransfer.description-followup": "Tracking number: {followup}",
 		"submit":"Submit",
 		"packages.financial.banks.accounts":"Bank Accounts",
 		"packages.financial.banks.account.id": "ID",
