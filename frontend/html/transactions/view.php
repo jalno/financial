@@ -11,6 +11,8 @@ $payablePrice = $this->transaction->totalPrice();
 $refundTransaction = $payablePrice < 0;
 if ($refundTransaction) {
 	$refundInfo = nl2br($this->transaction->param("refund_pay_info"));
+} else {
+	$refundInfo = null;
 }
 $this->the_header(!$isLogin ? "logedout" : "");
 ?>

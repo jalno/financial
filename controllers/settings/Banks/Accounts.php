@@ -2,7 +2,7 @@
 namespace packages\financial\controllers\settings\Banks;
 use packages\userpanel;
 use packages\base\{NotFound, views\FormError, inputValidation, view\error, response};
-use packages\financial\{view, views, usertype, controller, authorization, authentication, Bank, Bank\Account, payport};
+use packages\financial\{view, views, usertype, controller, authorization, authentication, Bank, Bank\Account, payport, Validators};
 
 class Accounts extends controller{
 	protected $authentication = true;
@@ -140,7 +140,7 @@ class Accounts extends controller{
 				"regex" => "/^[0-9]{16,19}$/",
 			),
 			"shaba" => array(
-				"regex" => "/^IR\d{24}$/",
+				"type" => Validators\IBANValidator::class,
 			),
 		);
 		$this->response->setStatus(false);
@@ -243,7 +243,7 @@ class Accounts extends controller{
 				"optional" => true,
 			),
 			"shaba" => array(
-				"regex" => "/^IR\d{24}$/",
+				"type" => Validators\IBANValidator::class,
 				"optional" => true,
 			),
 		);

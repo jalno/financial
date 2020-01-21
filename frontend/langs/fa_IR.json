@@ -42,6 +42,8 @@
 		"pay.banktransfer.bankaccount" : "بانک",
 		"pay.banktransfer.date":"تاریخ واریز",
 		"pay.banktransfer.followup" : "شماره پیگیری تراکنش",
+		"pay.banktransfer.attachment" : "فایل پیوست",
+		"pay.banktransfer.description-followup": "شماره پیگیری تراکنش: {followup}",
 		"submit":"ثبت",
 		"packages.financial.banks.accounts":"حساب های بانکی",
 		"packages.financial.banks.account.id": "شناسه",
@@ -317,6 +319,9 @@
 		"packages.financial.edit.pay": "ویرایش پرداخت",
 		"packages.data_duplicate.currencies.rate": "ارز وارد شده تکراری میباشد",
 		"packages.data_duplicate.currencies.rates": "در تبدیل های ارز ، مقدار تکراری وجود دارد",
-		"packages.financial.transactions": "صورتحساب ها"
+		"packages.financial.transactions": "صورتحساب ها",
+		"packages.financial.error.IBAN_not_valid": "شماره شبا وارد شده معتبر نیست.",
+		"packages.financial.error.IBAN.exceed": "کد شبا نباید بیش از {number} کاراکتر باشد.",
+		"packages.financial.error.IBAN.start_with_country_code": "شماره شبا باید با کد کشور معتبر شروع شود."
 	}
 }

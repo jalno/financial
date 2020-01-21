@@ -1,7 +1,7 @@
 <?php
 namespace packages\financial\controllers;
 
-use packages\base\{DB, db\duplicateRecord, view\Error, views\FormError, Http, inputValidation, InputValidationException, NotFound, Options, db\Parenthesis, Response, Translator};
+use packages\base\{DB, db\duplicateRecord, view\Error, views\FormError, Packages, Http, inputValidation, InputValidationException, NotFound, Options, db\Parenthesis, Response, Translator};
 use packages\userpanel;
 use packages\userpanel\{Date, Log, User};
 use packages\financial\{views\transactions\pay as PayView, views\transactions as financialViews};
@@ -115,7 +115,6 @@ class Transactions extends Controller {
 		}
 		return $pay;
 	}
-
 	public static function payAcceptor(Transaction_pay $pay) {
 		$pay->status = Transaction_pay::accepted;
 		$log = new log();
@@ -302,94 +301,11 @@ class Transactions extends Controller {
 		$transaction->orderBy('financial_transactions.id', 'DESC');
 		if (isset($inputs["download"])) {
 			$transactions = $transaction->get();
-			if ($inputs["refund"] and in_array($inputs["download"], $exporter->getExporterNames())) {
+			if (in_array($inputs["download"], $exporter->getExporterNames())) {
 				$handler = $exporter->getByName($inputs["download"])->getHandler();
 				$responseFile = (new $handler())->export($transactions);
 				$this->response->setFile($responseFile);
 				$this->response->forceDownload();
-			} else if ($inputs["download"] == "csv")  {
-				$csv = t("packages.financial.transaction.id") . ";" .
-					t("packages.financial.transaction.title") . ";" .
-					t("packages.financial.transaction.create_at") . ";" .
-					t("packages.financial.transaction.user") . ";" .
-					t("packages.financial.transaction.user.cellphone") . ";" .
-					t("packages.financial.transaction.user.email") . ";" .
-					t("packages.financial.transaction.price") . ";" .
-					t("packages.financial.transaction.price.paid") . ";" .
-					t("packages.financial.transaction.price.payable") . ";";
-				$bankAccountsInfo = array();
-				if ($inputs["refund"]) {
-					$transactionIDs = array();
-					foreach ($transactions as $transaction) {
-						$transactionIDs[] = $transaction->id;
-					}
-					if ($transactionIDs) {
-						db::join("financial_transactions_products", "financial_transactions_products_params.product=financial_transactions_products.id", "INNER");
-						db::joinWhere("financial_transactions_products", "financial_transactions_products.method", Transaction_product::refund);
-
-						$bankAccountsInfo = new Transactions_products_param();
-						$bankAccountsInfo->where("financial_transactions_products.transaction", $transactionIDs, "IN");
-						$bankAccountsInfo->where("financial_transactions_products_params.name", "bank-account");
-						$bankAccountsInfo = $bankAccountsInfo->get(null, array(
-							"financial_transactions_products.transaction",
-							"financial_transactions_products_params.*",
-						));
-					}
-					$csv .= t("packages.financial.bankaccount.credit_cart") . ";" .
-					t("packages.financial.bankaccount.shaba") . ";";
-				}
-				$csv .= t("packages.financial.transaction.status") . ";\n";
-				$getBankAccountInfo = function($transaction) use($bankAccountsInfo) {
-					foreach ($bankAccountsInfo as $param) {
-						if ($param->transaction == $transaction->id) {
-							return $param->value;
-						}
-					}
-				};
-				foreach ($transactions as $transaction) {
-					$createAt = date::format("Y/m/d H:i", $transaction->create_at);
-					$price = abs($transaction->price);
-					$payablePrice = abs($transaction->payablePrice());
-					$paid = $price - $payablePrice;
-					$status = '';
-					switch ($transaction->status) {
-						case (Transaction::unpaid):
-							$status = t("packages.financial.transaction.status.unpaid");
-							break;
-						case (Transaction::paid):
-							$status = t("packages.financial.transaction.status.paid");
-							break;
-						case (Transaction::refund):
-							$status = t("packages.financial.transaction.status.refund");
-							break;
-						case (Transaction::expired):
-							$status = t("packages.financial.transaction.status.expired");
-							break;
-						case (Transaction::rejected):
-							$status = t("packages.financial.transaction.status.rejected");
-							break;
-					}
-					$csv .= "{$transaction->id};{$transaction->title};{$createAt};{$transaction->user->getFullName()};{$transaction->user->cellphone};{$transaction->user->email};{$price} {$transaction->currency->title};{$paid} {$transaction->currency->title};{$payablePrice} {$transaction->currency->title};";
-					if ($inputs["refund"]) {
-						$account = $getBankAccountInfo($transaction);
-						if ($account) {
-							if (isset($account["cart"]) and $account["cart"]) {
-								$csv .= "{$account['cart']};";
-							} else {
-								$csv .= "-;";
-							}
-							if (isset($account["shaba"]) and $account["shaba"]) {
-								$csv .= "{$account['shaba']};";
-							} else {
-								$csv .= "-;";
-							}
-						}
-					}
-					$csv .= "{$status}\n";
-				}
-				$this->response->setHeader('content-disposition', "attachment; filename=\"financial-transactions.csv\"");
-				$this->response->setMimeType("text/csv", "utf-8");
-				$this->response->rawOutput($csv);
 			}
 		} else {
 			if (!$searched) {
@@ -617,6 +533,9 @@ class Transactions extends Controller {
 		if(!in_array('banktransfer', self::getAvailablePayMethods())){
 			throw new NotFound();
 		}
+		/**
+		 * @var PayView\Banktransfer
+		 */
 		$view = View::byName(PayView\Banktransfer::class);
 		$this->response->setView($view);
 		$transaction = $this->getTransactionForPay($data);
@@ -651,6 +570,13 @@ class Transactions extends Controller {
 			),
 			"date" => array(
 				"type" => "date"
+			),
+			"attachment" => array(
+				"type" => "file",
+				"extension" => ["png", "jpeg", "jpg", "gif", "pdf", "csf", "docx"],
+				"max-size" => 1024 * 1024 * 5,
+				"optional" => true,
+				"obj" => true,
 			)
 		);
 		$inputs = $this->checkinputs($inputsRules);
@@ -676,16 +602,28 @@ class Transactions extends Controller {
 		if (self::checkBanktransferFollowup($inputBankAccount->bank_id, $inputs['followup'])) {			
 			throw new duplicateRecord("followup");
 		}
+		$params = array(
+			"bankaccount" => $inputs["bankaccount"],
+			"followup" => $inputs["followup"],
+		);
+		if (isset($inputs['attachment'])) {
+			$path = "storage/public/" . $inputs['attachment']->md5() . "." . $inputs['attachment']->getExtension();
+			$storage = Packages::package("financial")->getFile($path);
+			if (!$storage->exists()) {
+				if (!$storage->getDirectory()->exists()) {
+					$storage->getDirectory()->make(true);
+				}
+				$inputs['attachment']->copyTo($storage);
+			}
+			$params['attachment'] = $path;
+		}
 		$newPay = array(
 			"date" => $inputs["date"],
 			"method" => Transaction_pay::banktransfer,
 			"price" => $inputs["price"],
 			"status" => Transaction_pay::pending,
 			"currency" => $transaction->currency->id,
-			"params" => array(
-				"bankaccount" => $inputs["bankaccount"],
-				"followup" => $inputs["followup"]
-			)
+			"params" => $params
 		);
 		if (isset($inputs['description']) and $inputs['description']) {
 			$newPay['params']['description'] = $inputs['description'];
