@@ -1,19 +1,20 @@
 <?php
-use \packages\base;
-use \packages\base\{translator, http, json};
-use \themes\clipone\utility;
-use \packages\financial\{currency, transaction, transaction_pay, authentication};
-use packages\financial\controllers\Transactions;
-use \packages\userpanel;
-use \packages\userpanel\{date, user};
-$isLogin = authentication::check();
+use packages\base;
+use packages\base\{Translator, http, Json};
+use packages\financial\{Authentication, Currency, Transaction, Transaction_pay};
+use packages\userpanel;
+use packages\userpanel\{Date, User};
+use themes\clipone\Utility;
+
+$isLogin = Authentication::check();
 $payablePrice = $this->transaction->payablePrice();
-$refundTransaction = $payablePrice < 0;
+$refundTransaction = $this->transaction->totalPrice() < 0;
 if ($refundTransaction) {
 	$refundInfo = nl2br($this->transaction->param("refund_pay_info"));
 } else {
 	$refundInfo = null;
 }
+
 $this->the_header(!$isLogin ? "logedout" : "");
 ?>
 <div class="row">
