@@ -1,0 +1,45 @@
+.box-note {
+    position: relative;
+    padding: 30px 0;
+    margin-bottom: 25px;
+    border: 1px solid #dbdcde;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+	background: #fff;
+	p{
+		margin: 0;
+		padding: 1px 35px;
+		line-height: 21px;
+		background: url('../images/note_bg.png');
+		&:before {
+			display: block;
+			position: absolute;
+			width: 1px;
+			top: 0;
+			bottom: 0;
+			right: 25px;
+			background: #f1e9ea;
+			content: " ";
+		}
+		&:after {
+			display: block;
+			position: absolute;
+			width: 1px;
+			top: 0;
+			bottom: 0;
+			right: 30px;
+			background: #f1e9ea;
+			content: " ";
+		}
+	}
+	&::after {
+		display: block;
+		position: absolute;
+		width: 99px;
+		height: 26px;
+		top: -13px;
+		left: 50%;
+		margin-left: -44.5px;
+		background: url('../images/note_tape.png');
+		content: " ";
+	}
+}
