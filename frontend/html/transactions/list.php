@@ -195,7 +195,7 @@ if ($hasTransaction or $this->canRefund) {
 								</td>
 								<?php } ?>
 								<td><?php echo $transaction->create_at; ?></td>
-								<td class="hidden-xs"><span class="<?php echo $statusClass; ?>"><?php echo t($statusTxt); ?></span></td>
+								<td><span class="<?php echo $statusClass; ?>"><?php echo t($statusTxt); ?></span></td>
 								<?php
 								if($hasButtons){
 									echo("<td class=\"center\">".$this->genButtons()."</td>");
