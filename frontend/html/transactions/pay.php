@@ -28,7 +28,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							<div class="input-group">
 								<input type="text" class="form-control ltr" value="<?php echo userpanel\url("transactions/pay/".$this->transaction->id,array("token" => $this->transaction->token),true); ?>">
 								<span class="input-group-btn">
-									<button class="btn btn-default" type="button"><?php echo t("copy"); ?></button>
+									<button class="btn btn-default" type="button"><?php echo t("copy"); ?><i class="fa fa-clipboard"></i></button>
 								</span>
 							</div>
 						</div>
