@@ -24,11 +24,11 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							<div class="icon">
 								<i class="fa fa-bell fa-4x" aria-hidden="true"></i>
 							</div>
-							<p>شما میتوانید با استفاده از لینک زیر پرداخت صورتحساب خود را به فرد دیگری واگذار کنید بدون این که اطلاعات شخصی اکانت خود را به کسی بدهید.شخص مورد نظر با استفاده از لینک زیر وارد صفحه پرداخت صورتحساب شما میشود و فقط قادر به پرداخت میباشد.</p>
+							<p><?php echo t("financial.transaction.guest.pay.text"); ?></p>
 							<div class="input-group">
 								<input type="text" class="form-control ltr" value="<?php echo userpanel\url("transactions/pay/".$this->transaction->id,array("token" => $this->transaction->token),true); ?>">
 								<span class="input-group-btn">
-									<button class="btn btn-default" type="button">کپی</button>
+									<button class="btn btn-default" type="button"><?php echo t("copy"); ?></button>
 								</span>
 							</div>
 						</div>
