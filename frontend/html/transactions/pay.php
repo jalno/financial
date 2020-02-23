@@ -46,7 +46,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 			<div class="panel-footer">
 				<div class="row">
 					<div class="col-md-4 col-sm-9">
-						<span><?php echo translator::trans("packages.financial.transaction.guest_pay_link"); ?></span><br>
+						<span><?php echo t("packages.financial.transaction.guest_pay_link"); ?></span><br>
 						<div class="input-group">
 							<input type="text" class="form-control ltr" value="<?php echo userpanel\url("transactions/pay/".$this->transaction->id,array("token" => $this->transaction->token),true); ?>">
 							<span class="input-group-btn">
