@@ -18,35 +18,12 @@ $this->the_header(!$isLogin ? "logedout" : "");
 			</div>
 			<div class="panel-body">
 				<div class="row">
-					<?php
-					$first = true;
-					$parameter = array();
-					if ($token = http::getURIData("token")) {
-						$parameter["token"] = $token;
-					}
-					foreach($this->methods as $method){
-						$icon = utility::switchcase($method, array(
-							'fa fa-university' => 'banktransfer',
-							'fa fa-money' => 'onlinepay',
-							'fa fa-credit-card' => 'credit'
-						));
-					?>
-					<div class="col-sm-<?php echo ($this->getColumnWidth());if($first)echo(' col-sm-offset-3'); ?>">
-						<a href="<?php echo userpanel\url('transactions/pay/'.$method.'/'.$this->transaction->id, $parameter); ?>" class="btn btn-icon btn-block"><i class="<?php echo $icon; ?>"></i> <?php echo translator::trans('pay.method.'.$method); ?></a>
-					</div>
-					<?php
-						if($first){
-							$first = false;
-						}
-					}
-					?>
-				</div>
-			</div>
-			<?php if($this->canAccept){ ?>
-			<div class="panel-footer">
-				<div class="row">
-					<div class="col-md-4 col-sm-9">
-						<span><?php echo t("packages.financial.transaction.guest_pay_link"); ?></span><br>
+					<div class="col-md-6">
+					<div class="guest_pay_link">
+						<div class="icon">
+							<i class="fa fa-bell fa-4x" aria-hidden="true"></i>
+						</div>
+						<p>شما میتوانید با استفاده از لینک زیر پرداخت صورتحساب خود را ب فرد دیگری واگذار کنید بدون این که اطلاعات شخصی اکانت خود را به کسی بدهید.شخص مورد نظر با استفاده از لینک زیر وارد صفحه پرداخت صورتحساب شما میشود و فقط قادر به پرداخت میباشد.</p>
 						<div class="input-group">
 							<input type="text" class="form-control ltr" value="<?php echo userpanel\url("transactions/pay/".$this->transaction->id,array("token" => $this->transaction->token),true); ?>">
 							<span class="input-group-btn">
@@ -54,7 +31,39 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							</span>
 						</div>
 					</div>
-					<div class="col-md-2 col-md-offset-6 col-sm-3">
+					</div>
+					<div class="col-md-6">
+						<div class="row">
+							<?php
+							$first = true;
+							$parameter = array();
+							if ($token = http::getURIData("token")) {
+								$parameter["token"] = $token;
+							}
+							foreach($this->methods as $method){
+								$icon = utility::switchcase($method, array(
+									'fa fa-university' => 'banktransfer',
+									'fa fa-money' => 'onlinepay',
+									'fa fa-credit-card' => 'credit'
+								));
+							?>
+							<div class="col-sm-<?php echo ($this->getColumnWidth());if($first)echo(' col-sm-offset-3'); ?>">
+								<a href="<?php echo userpanel\url('transactions/pay/'.$method.'/'.$this->transaction->id, $parameter); ?>" class="btn btn-icon btn-block"><i class="<?php echo $icon; ?>"></i> <?php echo translator::trans('pay.method.'.$method); ?></a>
+							</div>
+							<?php
+								if($first){
+									$first = false;
+								}
+							}
+							?>
+						</div>
+					</div>
+				</div>
+			</div>
+			<?php if($this->canAccept){ ?>
+			<div class="panel-footer">
+				<div class="row">
+					<div class="col-md-2 col-md-offset-10 col-sm-3 col-sm-offset-9">
 						<a href="<?php echo userpanel\url("transactions/accept/".$this->transaction->id); ?>" class="btn btn-success btn-block"><i class="fa fa-check-square-o"></i> <?php echo translator::trans("paided"); ?></a>
 					</div>
 				</div>
