@@ -323,6 +323,6 @@
 		"packages.financial.error.IBAN_not_valid": "شماره شبا وارد شده معتبر نیست.",
 		"packages.financial.error.IBAN.exceed": "کد شبا نباید بیش از {number} کاراکتر باشد.",
 		"packages.financial.error.IBAN.start_with_country_code": "شماره شبا باید با کد کشور معتبر شروع شود.",
-		"Createـguestـlinks": "لینک مهمان :"
+		"packages.financial.transaction.guest_pay_link": "لینک مهمان :"
 	}
 }

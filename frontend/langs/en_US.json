@@ -322,6 +322,6 @@
 		"packages.financial.error.IBAN_not_valid": "IBAN code is invalid.",
 		"packages.financial.error.IBAN.exceed": "IBAN code should't exceed from {number} charachters.",
 		"packages.financial.error.IBAN.start_with_country_code": "IBAN code should start with valid country code.",
-		"Createـguestـlinks": "guest links"
+		"packages.financial.transaction.guest_pay_link": "guest links"
 	}
 }
