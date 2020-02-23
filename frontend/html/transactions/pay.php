@@ -18,21 +18,25 @@ $this->the_header(!$isLogin ? "logedout" : "");
 			</div>
 			<div class="panel-body">
 				<div class="row">
+					<?php if($this->canViewGuestLink){ ?>
 					<div class="col-md-6">
-					<div class="guest_pay_link">
-						<div class="icon">
-							<i class="fa fa-bell fa-4x" aria-hidden="true"></i>
-						</div>
-						<p>شما میتوانید با استفاده از لینک زیر پرداخت صورتحساب خود را ب فرد دیگری واگذار کنید بدون این که اطلاعات شخصی اکانت خود را به کسی بدهید.شخص مورد نظر با استفاده از لینک زیر وارد صفحه پرداخت صورتحساب شما میشود و فقط قادر به پرداخت میباشد.</p>
-						<div class="input-group">
-							<input type="text" class="form-control ltr" value="<?php echo userpanel\url("transactions/pay/".$this->transaction->id,array("token" => $this->transaction->token),true); ?>">
-							<span class="input-group-btn">
-								<button class="btn btn-default" type="button">کپی</button>
-							</span>
+						<div class="guest_pay_link">
+							<div class="icon">
+								<i class="fa fa-bell fa-4x" aria-hidden="true"></i>
+							</div>
+							<p>شما میتوانید با استفاده از لینک زیر پرداخت صورتحساب خود را به فرد دیگری واگذار کنید بدون این که اطلاعات شخصی اکانت خود را به کسی بدهید.شخص مورد نظر با استفاده از لینک زیر وارد صفحه پرداخت صورتحساب شما میشود و فقط قادر به پرداخت میباشد.</p>
+							<div class="input-group">
+								<input type="text" class="form-control ltr" value="<?php echo userpanel\url("transactions/pay/".$this->transaction->id,array("token" => $this->transaction->token),true); ?>">
+								<span class="input-group-btn">
+									<button class="btn btn-default" type="button">کپی</button>
+								</span>
+							</div>
 						</div>
 					</div>
-					</div>
 					<div class="col-md-6">
+						<?php }else { ?>
+					<div class="col-md-12">
+						<?php } ?>	
 						<div class="row">
 							<?php
 							$first = true;

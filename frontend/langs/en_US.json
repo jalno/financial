@@ -109,6 +109,7 @@
 		"usertype.permissions.financial_transactions_pay_delete": "Delete invoice payment",
 		"usertype.permissions.financial_transactions_product_delete": "Delete invoice product",
 		"usertype.permissions.financial_transactions_product_edit": "Edit invoice product",
+		"usertype.permissions.financial_transactions_guest_pay_link": "view quest pay link",
 		"usertype.permissions.financial_transactions_addingcredit": "Add user balance",
 		"usertype.permissions.financial_transactions_accept": "Accept invoices",
 		"usertype.permissions.financial_settings_banks_accounts_search":"Bank accounts link",

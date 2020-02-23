@@ -4,6 +4,7 @@ use \packages\userpanel\usertype\permissions;
 class usertype{
 	public function permissions_list(){
 		$permissions = array(
+			'transactions_guest_pay_link',
 			'transactions_list',
 			'transactions_add',
 			'transactions_edit',
@@ -20,6 +21,7 @@ class usertype{
 			'transactions_accept',
 			'transactions_product_edit',
 			'transactions_product_delete',
+			
 
 			"settings_banks_search",
 			"settings_banks_add",

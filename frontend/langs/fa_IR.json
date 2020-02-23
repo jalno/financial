@@ -108,6 +108,7 @@
 		"usertype.permissions.financial_transactions_pay_edit": "ویرایش پرداخت صورتحساب",
 		"usertype.permissions.financial_transactions_product_delete": "حذف محصول صورتحساب",
 		"usertype.permissions.financial_transactions_product_edit": "ویرایش محصول صورتحساب",
+		"usertype.permissions.financial_transactions_guest_pay_link": "مشاهده لینک پرداخت مهمان",
 		"usertype.permissions.financial_transactions_addingcredit": "افزودن موجودی کاربری",
 		"usertype.permissions.financial_transactions_accept": "تایید صورتحساب ها",
 		"usertype.permissions.financial_settings_banks_accounts_search":"جستجوی حساب های بانکی",
