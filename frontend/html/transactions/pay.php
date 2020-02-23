@@ -45,7 +45,16 @@ $this->the_header(!$isLogin ? "logedout" : "");
 			<?php if($this->canAccept){ ?>
 			<div class="panel-footer">
 				<div class="row">
-					<div class="col-md-2 col-md-offset-10 col-sm-3 col-sm-offset-9">
+					<div class="col-md-4 col-sm-9">
+						<span><?php echo translator::trans("Createـguestـlinks"); ?></span><br>
+						<div class="input-group">
+							<input type="text" class="form-control ltr" value="<?php echo userpanel\url("transactions/pay/".$this->transaction->id,array("token" => $this->transaction->token),true); ?>">
+							<span class="input-group-btn">
+								<button class="btn btn-default" type="button">کپی</button>
+							</span>
+						</div>
+					</div>
+					<div class="col-md-2 col-md-offset-6 col-sm-3">
 						<a href="<?php echo userpanel\url("transactions/accept/".$this->transaction->id); ?>" class="btn btn-success btn-block"><i class="fa fa-check-square-o"></i> <?php echo translator::trans("paided"); ?></a>
 					</div>
 				</div>
