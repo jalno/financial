@@ -51,7 +51,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 									'fa fa-credit-card' => 'credit'
 								));
 							?>
-							<div class="col-sm-<?php echo ($this->getColumnWidth());if($first)echo(' col-sm-offset-3'); ?>">
+							<div class="col-sm-<?php echo ($this->getColumnWidth());if($first)echo(' col-sm-offset-' . ($this->canViewGuestLink ? 1 : 3)); ?>">
 								<a href="<?php echo userpanel\url('transactions/pay/'.$method.'/'.$this->transaction->id, $parameter); ?>" class="btn btn-icon btn-block"><i class="<?php echo $icon; ?>"></i> <?php echo translator::trans('pay.method.'.$method); ?></a>
 							</div>
 							<?php
