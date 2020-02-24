@@ -1,3 +1,4 @@
+import "@jalno/translator";
 import "bootstrap";
 import * as $ from "jquery";
 import Accounts from "./Banks/Accounts";
@@ -66,9 +67,9 @@ export default class Banks {
 	public static getStatus(status: Status): string {
 		switch (status) {
 			case (Status.Active):
-				return `<span class="label label-success">فعال</span>`;
+				return `<span class="label label-success">${t("packages.financial.bank.status.Active")}</span>`;
 			case (Status.Deactive):
-				return `<span class="label label-danger">غیرفعال</span>`;
+				return `<span class="label label-danger">${t("packages.financial.bank.status.Deactive")}</span>`;
 		}
 	}
 	public static generateButtons(): string {
@@ -79,20 +80,20 @@ export default class Banks {
 		$btns = `<td class="center">
 		<div class="visible-md visible-lg hidden-sm hidden-xs">`;
 		if (Banks.canEdit) {
-			$btns += `<a href="#" class="btn btn-xs btn-warning tooltips" data-action="edit" title="ویرایش"><i class="fa fa-edit"></i></a>`;
+			$btns += `<a href="#" class="btn btn-xs btn-warning tooltips" data-action="edit" title="${t("packages.financial.edit")}"><i class="fa fa-edit"></i></a>`;
 		}
 		if (Banks.canDelete) {
-			$btns += `<a href="#" class="btn btn-xs btn-bricky tooltips" data-action="delete" title="حذف"><i class="fa fa-times"></i></a>`;
+			$btns += `<a href="#" class="btn btn-xs btn-bricky tooltips" data-action="delete" title="${t("packages.financial.delete")}"><i class="fa fa-times"></i></a>`;
 		}
 		$btns += `</div>
 		<div class="visible-xs visible-sm hidden-md hidden-lg">
 			<div class="btn-group"><a class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" href="#"><i class="fa fa-cog"></i> <span class="caret"></span></a>
 				<ul role="menu" class="dropdown-menu pull-right">`;
 		if (Banks.canEdit) {
-			$btns += `<li><a tabindex="-1" href="#" data-action="edit"><i class="fa fa-edit"></i> ویرایش</a></li>`;
+			$btns += `<li><a tabindex="-1" href="#" data-action="edit"><i class="fa fa-edit"></i> ${t("packages.financial.edit")}</a></li>`;
 		}
 		if (Banks.canDelete) {
-			$btns += `<li><a tabindex="-1" href="#" data-action="delete"><i class="fa fa-times"></i> حذف</a></li>`;
+			$btns += `<li><a tabindex="-1" href="#" data-action="delete"><i class="fa fa-times"></i> ${t("packages.financial.delete")}</a></li>`;
 		}
 		$btns += `</ul>
 			</div>

@@ -195,7 +195,7 @@ if ($hasTransaction or $this->canRefund) {
 								</td>
 								<?php } ?>
 								<td><?php echo $transaction->create_at; ?></td>
-								<td class="hidden-xs"><span class="<?php echo $statusClass; ?>"><?php echo t($statusTxt); ?></span></td>
+								<td><span class="<?php echo $statusClass; ?>"><?php echo t($statusTxt); ?></span></td>
 								<?php
 								if($hasButtons){
 									echo("<td class=\"center\">".$this->genButtons()."</td>");
@@ -243,7 +243,7 @@ if ($hasTransaction or $this->canRefund) {
 		$this->removeHorizontalForm();
 		?>
 			<div class="row">
-				<label class="col-sm-3 control-label create-at-label">تاریخ صدور</label>
+				<label class="col-sm-3 control-label create-at-label"><?php echo t("transaction.createdate"); ?></label>
 				<div class="col-sm-9">
 					<div class="">
 						<div class="col-sm-6">

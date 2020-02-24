@@ -8,7 +8,7 @@ use \packages\financial\Bank\Account;
 	<div class="col-md-12">
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<i class="fa fa-external-link-square"></i>لیست حساب ها
+				<i class="fa fa-external-link-square"></i> <?php echo t("packages.financial.accounts"); ?>
 				<div class="panel-tools">
 				<?php if($this->canAdd){ ?>
 					<a class="btn btn-xs btn-link tooltips" title="<?php echo t("packages.financial.add") ?>" href="<?php echo userpanel\url("settings/financial/banks/accounts/add"); ?>"><i class="fa fa-plus"></i></a>
@@ -81,7 +81,7 @@ use \packages\financial\Bank\Account;
 			} else {
 			?>
 				<div class="alert alert-block alert-info ">
-					<h4 class="alert-heading"> <i class="fa fa-info-circle"></i> توجه </h4>
+					<h4 class="alert-heading"> <i class="fa fa-info-circle"></i> <?php echo t("attention"); ?> </h4>
 					<p><?php echo t("financial.settings.bankaccount.notfound"); ?></p>
 				</div>
 			<?php } ?>

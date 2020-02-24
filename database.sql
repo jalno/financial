@@ -13,7 +13,7 @@ CREATE TABLE `financial_banks_accounts` (
 	`owner` varchar(255) COLLATE utf8_persian_ci NOT NULL,
 	`account` varchar(100) COLLATE utf8_persian_ci DEFAULT NULL,
 	`cart` varchar(19) COLLATE utf8_persian_ci DEFAULT NULL,
-	`shaba` varchar(26) COLLATE utf8_persian_ci DEFAULT NULL,
+	`shaba` varchar(31) COLLATE utf8_persian_ci DEFAULT NULL,
 	`reject_reason` varchar(255) COLLATE utf8_persian_ci DEFAULT NULL,
 	`oprator_id` int(11) DEFAULT NULL,
 	`status` tinyint(4) NOT NULL,

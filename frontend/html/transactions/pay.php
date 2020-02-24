@@ -18,28 +18,50 @@ $this->the_header(!$isLogin ? "logedout" : "");
 			</div>
 			<div class="panel-body">
 				<div class="row">
-					<?php
-					$first = true;
-					$parameter = array();
-					if ($token = http::getURIData("token")) {
-						$parameter["token"] = $token;
-					}
-					foreach($this->methods as $method){
-						$icon = utility::switchcase($method, array(
-							'fa fa-university' => 'banktransfer',
-							'fa fa-money' => 'onlinepay',
-							'fa fa-credit-card' => 'credit'
-						));
-					?>
-					<div class="col-sm-<?php echo ($this->getColumnWidth());if($first)echo(' col-sm-offset-3'); ?>">
-						<a href="<?php echo userpanel\url('transactions/pay/'.$method.'/'.$this->transaction->id, $parameter); ?>" class="btn btn-icon btn-block"><i class="<?php echo $icon; ?>"></i> <?php echo translator::trans('pay.method.'.$method); ?></a>
+					<?php if($this->canViewGuestLink){ ?>
+					<div class="col-md-6">
+						<div class="guest_pay_link">
+							<div class="icon">
+								<i class="fa fa-bell fa-4x" aria-hidden="true"></i>
+							</div>
+							<p><?php echo t("financial.transaction.guest.pay.text"); ?></p>
+							<div class="input-group">
+								<input type="text" class="form-control ltr" id="financial-guest-pay" value="<?php echo userpanel\url("transactions/pay/".$this->transaction->id,array("token" => $this->transaction->token),true); ?>">
+								<span class="input-group-btn">
+									<button class="btn btn-default btn-copy-link" data-clipboard-target="#financial-guest-pay" type="button"><i class="fa fa-clipboard"></i> <?php echo t("copy"); ?></button>
+								</span>
+							</div>
+						</div>
 					</div>
-					<?php
-						if($first){
-							$first = false;
-						}
-					}
-					?>
+					<div class="col-md-6">
+						<?php }else { ?>
+					<div class="col-md-12">
+						<?php } ?>	
+						<div class="row">
+							<?php
+							$first = true;
+							$parameter = array();
+							if ($token = http::getURIData("token")) {
+								$parameter["token"] = $token;
+							}
+							foreach($this->methods as $method){
+								$icon = utility::switchcase($method, array(
+									'fa fa-university' => 'banktransfer',
+									'fa fa-money' => 'onlinepay',
+									'fa fa-credit-card' => 'credit'
+								));
+							?>
+							<div class="col-sm-<?php echo ($this->getColumnWidth());if($first)echo(' col-sm-offset-' . ($this->canViewGuestLink ? 1 : 3)); ?>">
+								<a href="<?php echo userpanel\url('transactions/pay/'.$method.'/'.$this->transaction->id, $parameter); ?>" class="btn btn-icon btn-block"><i class="<?php echo $icon; ?>"></i> <?php echo translator::trans('pay.method.'.$method); ?></a>
+							</div>
+							<?php
+								if($first){
+									$first = false;
+								}
+							}
+							?>
+						</div>
+					</div>
 				</div>
 			</div>
 			<?php if($this->canAccept){ ?>

@@ -7,28 +7,33 @@
 	},
 	"dependencies": ["base", "userpanel", "notifications"],
 	"languages":{
-		"fa_IR": "langs/fa_IR.json"
+		"fa_IR": "langs/fa_IR.json",
+		"en_US": "langs/en_US.json"
 	},
 	"events": [
 		{
-			"name":"\\packages\\userpanel\\events\\usertype_permissions_list",
-			"listener": "listeners\\settings\\usertype@permissions_list"
+			"name":"packages/userpanel/events/usertype_permissions_list",
+			"listener": "listeners/settings/usertype@permissions_list"
 		},
 		{
-			"name":"\\packages\\userpanel\\events\\search",
-			"listener": "listeners\\search@find"
+			"name":"packages/userpanel/events/search",
+			"listener": "listeners/search@find"
 		},
 		{
-			"name":"\\packages\\notifications\\events",
-			"listener": "listeners\\notifications@events"
+			"name":"packages/notifications/events",
+			"listener": "listeners/notifications@events"
 		},
 		{
-			"name":"\\packages\\userpanel\\events\\settings",
-			"listener": "listeners\\userpanel\\settings@settings_list"
+			"name":"packages/userpanel/events/settings",
+			"listener": "listeners/userpanel/settings@settings_list"
 		},
 		{
-			"name":"\\packages\\cronjob\\events\\tasks",
-			"listener": "listeners\\cronjob@tasks"
+			"name":"packages/cronjob/events/tasks",
+			"listener": "listeners/cronjob@tasks"
+		},
+		{
+			"name":"events/Exporters",
+			"listener": "listeners/Exporters@add"
 		}
 	]
 }

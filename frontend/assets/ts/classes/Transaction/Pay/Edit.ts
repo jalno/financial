@@ -1,3 +1,4 @@
+import "@jalno/translator";
 import "bootstrap";
 import "bootstrap-inputmsg";
 import "jalali-daterangepicker";
@@ -43,6 +44,7 @@ export default class Edit {
 	private static $modal: JQuery;
 	private static $editBtns: JQuery;
 	private pay: IPay;
+	// tslint:disable-next-line: ban-types
 	private onupdate: Function;
 	public constructor(private $table: JQuery, private editBtns: string) {
 		this.appendModal();
@@ -56,8 +58,8 @@ export default class Edit {
 			const pay = $tr.data("pay") as IPay;
 			if (!pay) {
 				$.growl.error({
-					title: "خطا",
-					message: "اطلاعات پرداخت نامعتبر است.",
+					title: t("error.fatal.title"),
+					message: t("packages.financial.data_validation.pay"),
 				});
 				return;
 			}
@@ -131,52 +133,55 @@ export default class Edit {
 		Edit.$modal = $(`<div class="modal fade" id="financial-edit-paymenys-modal" tabindex="-1" role="dialog" aria-hidden="false">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-			<h4 class="modal-title">ویرایش پرداخت</h4>
+			<h4 class="modal-title">${t("packages.financial.edit.pay")}</h4>
 		</div>
 		<div class="modal-body">
 			<form id="financial-edit-paymenys-form" method="POST">
 				<div class="form-group">
-					<label class="control-label">تاریخ</label>
+					<label class="control-label">${t("packages.financial.date")}</label>
 					<input type="text" value="" name="date" required="" class="form-control ltr">
 				</div>
 				<div class="form-group">
-					<label class="control-label">مبلغ</label>
+					<label class="control-label">${t("transaction.price")}</label>
 					<div class="input-group">
 						<input type="text" value="" required="" name="price" class="form-control ltr">
 						<span class="input-group-addon"></span>
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label">توضیحات</label>
+					<label class="control-label">${t("description")}</label>
 					<textarea name="description" rows="4" class="form-control"></textarea>
 				</div>
 			</form>
 		</div>
 		<div class="modal-footer">
-			<button type="submit" form="financial-edit-paymenys-form" class="btn btn-teal btn-submit">ویرایش</button>
-			<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">انصراف</button>
+			<button type="submit" form="financial-edit-paymenys-form" class="btn btn-teal btn-submit">${t("packages.financial.edit")}</button>
+			<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">${t("cancel")}</button>
 		</div>
 	</div>`).appendTo("body");
-		moment.locale("fa");
-		$("input[name=date]", Edit.$modal).daterangepicker({
+		moment.locale(Translator.getActiveShortLang());
+		const config: any = {
 			showDropdowns: true,
 			singleDatePicker: true,
-			locale: {
+		};
+		if (Translator.getActiveShortLang() === "fa") {
+			config.locale = {
 				format: "YYYY/MM/DD HH:ss",
 				monthNames: (moment.localeData() as any)._jMonthsShort,
 				firstDay: 6,
 				direction: "rtl",
 				separator: " - ",
-				applyLabel: "اعمال",
-				cancelLabel: "انصراف",
-			},
-		});
+				applyLabel: t("packages.financial.action"),
+				cancelLabel: t("cancel"),
+			};
+		}
+		$("input[name=date]", Edit.$modal).daterangepicker(config);
 		$("input[name=price]", Edit.$modal).on("keyup", function() {
 			const val = ($(this).val() as string);
 			if (!val.length) {
 				return;
 			}
-			const price = parseFloat(val.replace(/\,/g, ""), 10);
+			const price = parseFloat(val.replace(/\,/g, ""));
 			if (isNaN(price)) {
 				$(this).val("");
 			} else {
@@ -211,12 +216,9 @@ export default class Edit {
 					if (response.error === "data_duplicate" || response.error === "data_validation") {
 						const $input = $(`[name="${response.input}"]`, form);
 						const $params = {
-							title: "خطا",
-							message: "",
+							title: t("error.fatal.title"),
+							message: t(`packages.financial.${response.error}`),
 						};
-						if (response.error === "data_validation") {
-							$params.message = "داده وارد شده معتبر نیست";
-						}
 						if ($input.length) {
 							$input.inputMsg($params);
 						} else {
@@ -224,8 +226,8 @@ export default class Edit {
 						}
 					} else {
 						$.growl.error({
-							title: "خطا",
-							message: "ارتباط شما با سامانه به درستی برقرار نشد. لطفا مجددا تلاش کنید.",
+							title: t("error.fatal.title"),
+							message: t("packages.financial.request.error"),
 						});
 					}
 				},

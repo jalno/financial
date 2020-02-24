@@ -25,29 +25,25 @@ export default class View {
 	protected static acceptFormListener() {
 		View.$acceptForm.on("submit", function(e) {
 			e.preventDefault();
-			$(this).formAjax({
-				success: (data) => {
+			const form = this as HTMLFormElement;
+			$(form).formAjax({
+				success: () => {
 					$.growl.notice({
-						title: "موفق",
-						message: "انجام شد .",
+						title: t("packages.financial.success"),
+						message: t("packages.financial.request.success"),
 					});
 					setTimeout(() => {
 						window.location.reload();
 					}, 500);
 				},
-				error: (error) => {
+				error: (error: any) => {
 					if (error.error === "data_duplicate" || error.error === "data_validation") {
-						const $input = $("[name=" + error.input + "]");
+						const $input = $(`[name="${error.input}"]`, form);
 						const $params = {
-							title: "خطا",
-							message: "",
+							title: t("error.fatal.title"),
+							message: t(`packages.financial.${error.error}`),
 							location: "bl",
 						};
-						if (error.error === "data_validation") {
-							$params.message = "داده وارد شده معتبر نیست";
-						} else if (error.error === "data_duplicate") {
-							$params.message = "داده وارد شده تکراری میباشد";
-						}
 						if ($input.length) {
 							$input.inputMsg($params);
 						} else {
@@ -55,8 +51,8 @@ export default class View {
 						}
 					} else {
 						$.growl.error({
-							title: "خطا",
-							message: "درخواست شما توسط سرور قبول نشد",
+							title: t("error.fatal.title"),
+							message: t("packages.financial.request.error"),
 						});
 					}
 				},
@@ -66,29 +62,25 @@ export default class View {
 	protected static rejectFormListener() {
 		View.$rejectForm.on("submit", function(e) {
 			e.preventDefault();
-			$(this).formAjax({
-				success: (data) => {
+			const form = this as HTMLFormElement;
+			$(form).formAjax({
+				success: () => {
 					$.growl.notice({
-						title: "موفق",
-						message: "انجام شد .",
+						title: t("packages.financial.success"),
+						message: t("packages.financial.request.success"),
 					});
 					setTimeout(() => {
 						window.location.reload();
 					}, 500);
 				},
-				error: (error) => {
+				error: (error: any) => {
 					if (error.error === "data_duplicate" || error.error === "data_validation") {
-						const $input = $("[name=" + error.input + "]");
+						const $input = $(`[name="${error.input}"]`, form);
 						const $params = {
-							title: "خطا",
-							message: "",
+							title: t("error.fatal.title"),
+							message: t(`packages.financial.${error.error}`),
 							location: "bl",
 						};
-						if (error.error === "data_validation") {
-							$params.message = "داده وارد شده معتبر نیست";
-						} else if (error.error === "data_duplicate") {
-							$params.message = "داده وارد شده تکراری میباشد";
-						}
 						if ($input.length) {
 							$input.inputMsg($params);
 						} else {
@@ -96,8 +88,8 @@ export default class View {
 						}
 					} else {
 						$.growl.error({
-							title: "خطا",
-							message: "درخواست شما توسط سرور قبول نشد",
+							title: t("error.fatal.title"),
+							message: t("packages.financial.request.success"),
 						});
 					}
 				},

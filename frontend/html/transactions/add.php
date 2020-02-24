@@ -55,6 +55,7 @@ $this->the_header();
                 </div>
                 <div class="panel-body form-horizontal">
 					<?php
+					$this->removeHorizontalForm();
 					$this->setHorizontalForm('sm-9','sm-3');
 					$feilds = [
 						[
@@ -63,6 +64,7 @@ $this->the_header();
 							'label' => translator::trans("transaction.add.notification"),
 							'options' => [
 								[
+									'label' => '',
 									'value' => 1
 								]
 							],
@@ -74,6 +76,7 @@ $this->the_header();
 							'label' => translator::trans("transaction.add.notification.support"),
 							'options' => [
 								[
+									'label' => '',
 									'value' => 1
 								]
 							],
@@ -100,10 +103,10 @@ $this->the_header();
                 </div>
                 <div class="panel-body products">
 					<div class="alert alert-block alert-info fade in no-product">
-					    <h4 class="alert-heading"><i class="fa fa-exclamation-triangle"></i> یک محصول جدید اضافه کنید</h4>
-					    <p>هنوز هیچ محصولی وارد نشده!</p>
+					    <h4 class="alert-heading"><i class="fa fa-exclamation-triangle"></i> <?php echo t("packages.financial.addnew_product"); ?></h4>
+					    <p><?php echo t("packages.financial.not.entered.products.yet"); ?>!</p>
 					    <p>
-							<a class="btn btn-success btn-addproduct" href="#product-add" data-toggle="modal" data-original-title="">محصول جدید</a>
+							<a class="btn btn-success btn-addproduct" href="#product-add" data-toggle="modal" title=""><?php echo t("packages.financial.new_product"); ?></a>
 						</p>
 					</div>
                 </div>
@@ -113,7 +116,7 @@ $this->the_header();
 		<div class="col-md-8">
 		</div>
 		<div class="col-md-4">
-			<button class="btn btn-teal btn-block btn-submit" type="submit"><i class="fa fa-arrow-circle-left"></i>بساز</button>
+			<button class="btn btn-teal btn-block btn-submit" type="submit"><?php echo t("packages.financial.create"); ?> <i class="fa fa-arrow-circle-<?php echo ((bool)translator::getLang()->isRTL()) ? "left" : "right"; ?>"></i></button>
 		</div>
     </form>
 </div>

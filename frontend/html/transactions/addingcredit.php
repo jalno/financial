@@ -56,8 +56,8 @@ $this->the_header();
 						<div class="col-sm-12">
 			                <hr>
 			                <p>
-			                    <a href="<?php echo userpanel\url('transactions'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-right"></i> <?php echo translator::trans('return'); ?></a>
-			                    <button type="submit" class="btn btn-yellow"><i class="fa fa-check-square-o"></i> <?php echo translator::trans("submit"); ?></button>
+			                    <a href="<?php echo userpanel\url('transactions'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-right"></i> <?php echo translator::trans('packages.financial.return'); ?></a>
+			                    <button type="submit" class="btn btn-yellow"><i class="fa fa-check-square-o"></i> <?php echo translator::trans("packages.financial.submit"); ?></button>
 			                </p>
 						</div>
 	                </form>

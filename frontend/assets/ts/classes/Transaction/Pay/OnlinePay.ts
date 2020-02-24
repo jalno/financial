@@ -1,11 +1,11 @@
 import * as $ from "jquery";
 
-export default class OnlinePay{
-	public static init(){
+export default class OnlinePay {
+	public static init() {
 		OnlinePay.payPortsCurrecyListener();
 	}
-	public static initIfNeeded(){
-		if(OnlinePay.$form.length){
+	public static initIfNeeded() {
+		if (OnlinePay.$form.length) {
 			OnlinePay.init();
 		}
 	}

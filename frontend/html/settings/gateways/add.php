@@ -1,9 +1,7 @@
 <?php
-use \packages\base;
-use \packages\base\translator;
-use \packages\userpanel;
-use \packages\userpanel\date;
-use \themes\clipone\utility;
+use packages\base;
+use packages\base\translator;
+use packages\userpanel;
 
 $this->the_header();
 ?>
@@ -83,7 +81,7 @@ $this->the_header();
 					<div class="row">
 						<div class="col-sm-12">
 							<p>
-								<a href="<?php echo userpanel\url('settings/financial/gateways'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-right"></i> <?php echo translator::trans('return'); ?></a>
+								<a href="<?php echo userpanel\url('settings/financial/gateways'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-<?php echo ((bool)translator::getLang()->isRTL()) ? "right" : "left"; ?>"></i> <?php echo translator::trans('return'); ?></a>
 								<button type="submit" class="btn btn-success"><i class="fa fa-check-square-o"></i> <?php echo translator::trans("submit"); ?></button>
 							</p>
 						</div>

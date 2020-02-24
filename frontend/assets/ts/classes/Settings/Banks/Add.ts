@@ -1,3 +1,4 @@
+import "@jalno/translator";
 import "bootstrap-inputmsg";
 import * as $ from "jquery";
 import "jquery.growl";
@@ -25,8 +26,8 @@ export default class Add {
 			$(this).formAjax({
 				success: (data) => {
 					$.growl.notice({
-						title: "موفق",
-						message: "بانک با موفقیت اضافه شد.",
+						title: t("userpanel.success"),
+						message: t("userpanel.formajax.success"),
 						location: "bl",
 					});
 					$btn.prop("disabled", false);
@@ -38,14 +39,14 @@ export default class Add {
 					if (data.error === "data_duplicate" || data.error === "data_validation") {
 						const $input = $(`[name="${data.input}"]`, this);
 						const params = {
-							title: "خطا",
+							title: t("error.fatal.title"),
 							message: "",
 							location: "bl",
 						};
 						if (data.error === "data_validation") {
-							params.message = "داده وارد شده معتبر نیست";
+							params.message = t("packages.financial.data_validation");
 						} else if (data.error === "data_duplicate") {
-							params.message = "داده وارد شده تکراری میباشد";
+							params.message = t("packages.financial.data_duplicate");
 						}
 						if ($input.length) {
 							$input.inputMsg(params);
@@ -54,8 +55,8 @@ export default class Add {
 						}
 					} else {
 						$.growl.error({
-							title: "خطا",
-							message: "درخواست شما توسط سرور قبول نشد",
+							title: t("error.fatal.title"),
+							message: t("userpanel.formajax.error"),
 							location: "bl",
 						});
 					}
