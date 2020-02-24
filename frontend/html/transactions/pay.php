@@ -26,9 +26,9 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							</div>
 							<p><?php echo t("financial.transaction.guest.pay.text"); ?></p>
 							<div class="input-group">
-								<input type="text" class="form-control ltr" value="<?php echo userpanel\url("transactions/pay/".$this->transaction->id,array("token" => $this->transaction->token),true); ?>">
+								<input type="text" class="form-control ltr" id="financial-guest-pay" value="<?php echo userpanel\url("transactions/pay/".$this->transaction->id,array("token" => $this->transaction->token),true); ?>">
 								<span class="input-group-btn">
-									<button class="btn btn-default" type="button"><?php echo t("copy"); ?><i class="fa fa-clipboard"></i></button>
+									<button class="btn btn-default btn-copy-link" data-clipboard-target="#financial-guest-pay" type="button"><i class="fa fa-clipboard"></i> <?php echo t("copy"); ?></button>
 								</span>
 							</div>
 						</div>
