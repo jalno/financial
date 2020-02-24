@@ -7,6 +7,7 @@
     "@types/jqueryui": "^1.12.7",
     "bootstrap": "^3.3.7",
     "bootstrap-inputmsg": "^1.0.0",
+    "clipboard": "^1.7.1",
     "jalali-daterangepicker": "^3.0.5",
     "jalali-moment": "^3.3.3",
     "jquery": "^3.2.1",
