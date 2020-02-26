@@ -45,6 +45,6 @@ class pay extends payView{
 		navigation::active("transactions/list");
 	}
 	protected function getColumnWidth(){
-		return ($this->canViewGuestLink ? 9 : 6)/count($this->methods);
+		return ($this->canViewGuestLink ? 12 : 6)/count($this->methods);
 	}
 }
