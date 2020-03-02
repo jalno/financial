@@ -1176,20 +1176,18 @@ class Transactions extends Controller {
 		if(isset($inputs['description'])){
 			$transaction->setparam('description', $inputs['description']);
 		}
-		
 		if ($inputs['notification']) {
 			$event = new events\transactions\Add($transaction);
 			$event->trigger();
 		}
-			$log = new Log();
-			$log->user = Authentication::getUser();
-			$log->type = logs\transactions\Add::class;
-			$log->title = t("financial.logs.transaction.add", ["transaction_id" => $transaction->id]);
-			$log->save();
-			$this->response->setStatus(true);
-			$this->response->Go(userpanel\url('transactions/view/'.$transaction->id));
-			return $this->response;
-		
+		$log = new Log();
+		$log->user = Authentication::getUser();
+		$log->type = logs\transactions\Add::class;
+		$log->title = t("financial.logs.transaction.add", ["transaction_id" => $transaction->id]);
+		$log->save();
+		$this->response->setStatus(true);
+		$this->response->Go(userpanel\url('transactions/view/'.$transaction->id));
+		return $this->response;
 	}
 
 	private function getProduct($data){
