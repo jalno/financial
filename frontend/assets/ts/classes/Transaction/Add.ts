@@ -83,8 +83,8 @@ export default class Add {
 			user: $("input[name=user]", Add.$form).val(),
 			create_at: $("input[name=create_at]", Add.$form).val(),
 			expire_at: $("input[name=expire_at]", Add.$form).val(),
-			notification: $("input[name=notification]", Add.$form).val(),
-			notification_support: $("input[name=notification_support]", Add.$form).val(),
+			notification: $("input[name=notification]", Add.$form).prop('checked'),
+			notification_support: $("input[name=notification_support]", Add.$form).prop('checked'),
 			products: [],
 		};
 		$(".product-table tbody > tr").each(function() {
