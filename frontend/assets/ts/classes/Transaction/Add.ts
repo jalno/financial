@@ -47,7 +47,7 @@ export default class Add {
 		const id = $("tr", $table).length;
 		const code = `
 			<tr>
-				<td>${id}/td>
+				<td>${id}</td>
 				<td>${product.title}</td>
 				<td>${product.description}</td>
 				<td>${t("product.xnumber", {number: product.number})}</td>
