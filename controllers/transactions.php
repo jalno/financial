@@ -1115,12 +1115,18 @@ class Transactions extends Controller {
 				'min' => 0,
 			),
 			'products' => array(),
+			'notification' => array(
+				'type' => 'bool',
+				'optional' => true,
+				'default' => false
+			),
+
 		);
 		$inputs = $this->checkinputs($inputsRules);
 		$inputs['create_at'] = Date::strtotime($inputs['create_at']);
 		$inputs['expire_at'] = Date::strtotime($inputs['expire_at']);
 		$inputs['currency'] = Currency::getDefault($inputs['user']);
-
+		
 		if ($inputs['expire_at'] < $inputs['create_at']) {
 			throw new InputValidationException("expire_at");
 		}
@@ -1170,8 +1176,10 @@ class Transactions extends Controller {
 		if(isset($inputs['description'])){
 			$transaction->setparam('description', $inputs['description']);
 		}
-		$event = new events\transactions\Add($transaction);
-		$event->trigger();
+		if ($inputs['notification']) {
+			$event = new events\transactions\Add($transaction);
+			$event->trigger();
+		}
 		$log = new Log();
 		$log->user = Authentication::getUser();
 		$log->type = logs\transactions\Add::class;
