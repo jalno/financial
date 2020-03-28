@@ -4,10 +4,10 @@ use packages\base\{options, packages};
 use packages\userpanel;
 use packages\userpanel\{user, date};
 use packages\financial\{Bank\Account, transaction, payport_pay, transaction_pay, views\transactions\view as transactionsView};
-use themes\clipone\{viewTrait, views\listTrait, views\formTrait, breadcrumb, navigation, navigation\menuItem};
+use themes\clipone\{viewTrait, views\listTrait, views\formTrait, breadcrumb, navigation, navigation\menuItem, views\TransactionTrait};
 
 class view extends transactionsView {
-	use viewTrait, listTrait, formTrait;
+	use viewTrait, listTrait, formTrait, TransactionTrait;
 	protected $transaction;
 	protected $pays;
 	protected $hasdesc;
@@ -40,7 +40,7 @@ class view extends transactionsView {
 				$needacceptbtn = true;
 			}
 			$pay->date = date::format("Y/m/d H:i:s", $pay->date);
-			$pay->price = abs($pay->price) . " " . $pay->currency->title;
+			$pay->price = $this->numberFormat(abs($pay->price)) . " " . $pay->currency->title;
 			if($pay->method == transaction_pay::credit){
 				$pay->method = t("pay.method.credit");
 			}elseif($pay->method == transaction_pay::banktransfer){

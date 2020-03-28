@@ -100,10 +100,10 @@ $this->the_header();
 												<td><?php echo $x++; ?></td>
 												<td><?php echo $product->title; ?></td>
 												<td class="hidden-xs"><?php echo $product->description; ?></td>
-												<td><?php echo translator::trans('financial.number', ['number'=>$product->number]); ?></td>
-												<td><?php echo $product->price.$product->currency->title; ?></td>
-												<td><?php echo ($product->disscount ? $product->disscount : 0).$product->currency->title; ?></td>
-												<td><?php echo (($product->price*$product->number)-$product->discount).$product->currency->title; ?></td>
+												<td><?php echo translator::trans('financial.number', ['number' => $product->number]); ?></td>
+												<td><?php echo $this->numberFormat($product->price) . " " . $product->currency->title; ?></td>
+												<td><?php echo $this->numberFormat($product->discount ? $product->discount : 0) . " " . $product->currency->title; ?></td>
+												<td><?php echo $this->numberFormat(($product->price * $product->number) - $product->discount) . " " . $product->currency->title; ?></td>
 												<?php
 													if($hasButtons){
 														echo("<td class=\"center\">".$this->genButtons(['productEdit', 'productDelete'])."</td>");
@@ -172,7 +172,7 @@ $this->the_header();
 											<?php echo $pay->description ? $pay->description : ""; ?>
 												<div class="pay-description btn-block"><?php echo $description ? nl2br($description) : ""; ?></div>
 											</td>
-											<td><?php echo number_format(abs($pay->price)) . " " . $pay->currency->title;; ?></td>
+											<td><?php echo $this->formatNumber(abs($pay->price)) . " " . $pay->currency->title;; ?></td>
 											<td><span class="<?php echo $statusClass; ?>"><?php echo translator::trans($statusTxt); ?></td>
 											<?php
 											if($hasButtons){
@@ -230,14 +230,12 @@ $this->the_header();
 				],
 				[
 					'name' => 'product_price',
-					'type' => 'number',
 					'label' => translator::trans("transaction.add.price"),
 					'ltr' => true,
 					'step' => 0.001
 				],
 				[
 					'name' => 'discount',
-					'type' => 'number',
 					'label' => translator::trans("transaction.add.discount"),
 					'ltr' => true,
 					'step' => 0.001
@@ -288,14 +286,12 @@ $this->the_header();
 				],
 				[
 					'name' => 'product_price',
-					'type' => 'number',
 					'label' => translator::trans("transaction.add.price"),
 					'ltr' => true,
 					'step' => 0.001
 				],
 				[
 					'name' => 'discount',
-					'type' => 'number',
 					'label' => translator::trans("transaction.add.discount"),
 					'ltr' => true,
 					'step' => 0.001
