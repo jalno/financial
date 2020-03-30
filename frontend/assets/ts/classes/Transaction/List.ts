@@ -9,6 +9,7 @@ import { Router } from "webuilder";
 import "webuilder/formAjax";
 import "../jquery.financialUserAutoComplete";
 import { IUser } from "../jquery.financialUserAutoComplete";
+import Transaction from "../Transaction";
 
 export default class List {
 	public static initIfNeeded() {
@@ -28,6 +29,7 @@ export default class List {
 		}
 		if (List.$refundForm.length) {
 			List.runRefundUserAutoComplete();
+			List.runNumberFormatListener();
 			List.refundFormSubmitListener();
 		}
 	}
@@ -79,7 +81,7 @@ export default class List {
 		List.$refundForm.on("submit", function(e) {
 			e.preventDefault();
 			const $price = $("input[name=refund_price]", this);
-			const price = parseFloat($price.val());
+			const price = parseFloat(Transaction.deFormatNumber($price.val() as string));
 			$price.inputMsg("reset");
 			if (isNaN(price) || price <= 0) {
 				$price.inputMsg({
@@ -183,5 +185,21 @@ export default class List {
 			});
 			updateDownloadUrl();
 		}).trigger("change");
+	}
+	private static runNumberFormatListener() {
+		$("input[name=refund_price]", List.$refundForm).on("keyup", function(e) {
+			let val = Transaction.deFormatNumber($(this).val() as string);
+			const isDot = e.keyCode === 110;
+			const number = parseInt(val, 10);
+			if (isNaN(number)) {
+				$(this).val(isDot ? "0." : "");
+				return;
+			}
+			val = Transaction.formatFlotNumber(parseFloat(val));
+			if (isDot) {
+				val += ".";
+			}
+			$(this).val(val);
+		});
 	}
 }

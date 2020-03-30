@@ -1,28 +1,21 @@
 <?php
 namespace themes\clipone\views\transactions;
-use \packages\userpanel;
-use \packages\userpanel\date;
-use \packages\financial\Bank\Account;
-use \packages\financial\transaction;
-use \packages\financial\transaction_pay;
-use \packages\financial\payport_pay;
-use \packages\financial\views\transactions\edit as transactionsEdit;
-use \themes\clipone\navigation;
-use \themes\clipone\viewTrait;
-use \themes\clipone\views\listTrait;
-use \themes\clipone\views\formTrait;
-use \packages\base\translator;
+use packages\userpanel;
+use packages\userpanel\date;
+use themes\clipone\{navigation, viewTrait, views\listTrait, views\formTrait, views\TransactionTrait};
+use packages\financial\{Bank\Account, transaction, transaction_pay, payport_pay, views\transactions\edit as transactionsEdit};
+
 class edit extends transactionsEdit{
-	use viewTrait, formTrait, listTrait;
+	use viewTrait, formTrait, listTrait, TransactionTrait;
 	protected $transaction;
 	protected $pays;
 	function __beforeLoad(){
 		$this->transaction = $this->getTransactionData();
 		$this->setTitle(array(
-			translator::trans('edit'),
+			t('edit'),
 			$this->transaction->id
 		));
-		$this->setShortDescription(translator::trans('transaction.edit'));
+		$this->setShortDescription(t('transaction.edit'));
 		$this->setPays();
 		$this->setNavigation();
 		$this->setButtons();
@@ -41,37 +34,37 @@ class edit extends transactionsEdit{
 			}
 			switch($pay->method){
 				case(transaction_pay::credit):
-					$pay->method = translator::trans('pay.method.credit');
+					$pay->method = t('pay.method.credit');
 					break;
 				case(transaction_pay::banktransfer):
 					if ($bankaccount = Account::byId($pay->param('bankaccount'))) {
-						$pay->method = translator::trans('pay.byBankTransfer.withbank', array('bankaccount' => $bankaccount->cart));
+						$pay->method = t('pay.byBankTransfer.withbank', array('bankaccount' => $bankaccount->cart));
 					} else {
-						$pay->method = translator::trans('pay.byBankTransfer');
+						$pay->method = t('pay.byBankTransfer');
 					}
-					$pay->description = translator::trans('pay.byBankTransfer.withfollowup', array('followup' => $pay->param('followup')));
+					$pay->description = t('pay.byBankTransfer.withfollowup', array('followup' => $pay->param('followup')));
 					break;
 				case(transaction_pay::onlinepay):
 					if($payport_pay = payport_pay::byId($pay->param('payport_pay'))){
-						$pay->method = translator::trans('pay.byPayOnline.withpayport', array('payport' => $payport_pay->payport->title));
+						$pay->method = t('pay.byPayOnline.withpayport', array('payport' => $payport_pay->payport->title));
 					}else{
-						$pay->method = translator::trans('pay.byPayOnline');
+						$pay->method = t('pay.byPayOnline');
 					}
 					break;
 				case(transaction_pay::payaccepted):
 					$acceptor = userpanel\user::byId($pay->param('acceptor'));
-					$pay->method = translator::trans('pay.method.payaccepted', array('acceptor' => $acceptor->getFullName()));
+					$pay->method = t('pay.method.payaccepted', array('acceptor' => $acceptor->getFullName()));
 					break;
 			}
 		}
 		if($needacceptbtn){
 			$this->setButton('pay_accept',($this->canPayAccept and $this->transaction->status == transaction::unpaid), array(
-				'title' => translator::trans('pay.accept'),
+				'title' => t('pay.accept'),
 				'icon' => 'fa fa-check',
 				'classes' => array('btn', 'btn-xs', 'btn-green')
 			));
 			$this->setButton('pay_reject', ($this->canPayReject and $this->transaction->status == transaction::unpaid), array(
-				'title' => translator::trans('pay.reject'),
+				'title' => t('pay.reject'),
 				'icon' => 'fa fa-times',
 				'classes' => array('btn', 'btn-xs', 'btn-tael')
 			));
@@ -95,7 +88,7 @@ class edit extends transactionsEdit{
 	}
 	public function setButtons(){
 		$this->setButton('productEdit', $this->canEditProduct, array(
-			'title' => translator::trans('financial.edit'),
+			'title' => t('financial.edit'),
 			'icon' => 'fa fa-edit ',
 			'classes' => array('btn', 'btn-xs', 'btn-teal', 'product-edit'),
 			'data' => [
@@ -103,17 +96,17 @@ class edit extends transactionsEdit{
 			]
 		));
 		$this->setButton('productDelete', $this->canDeleteProduct, array(
-			'title' => translator::trans('financial.delete'),
+			'title' => t('financial.delete'),
 			'icon' => 'fa fa-times',
 			'classes' => array('btn', 'btn-xs', 'btn-bricky', 'product-delete')
 		));
 		$this->setButton('pay_delete', $this->canPaydelete, array(
-			'title' => translator::trans('financial.delete'),
+			'title' => t('financial.delete'),
 			'icon' => 'fa fa-times',
 			'classes' => array('btn', 'btn-xs', 'btn-bricky')
 		));
 		$this->setButton('pay_edit', $this->canEditPays, array(
-			'title' => translator::trans('financial.edit'),
+			'title' => t('financial.edit'),
 			'icon' => 'fa fa-edit',
 			'classes' => array('btn', 'btn-xs', 'btn-teal'),
 			'data' => array(

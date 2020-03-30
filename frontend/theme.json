@@ -7,7 +7,7 @@
 		"website" : "http://www.jeyserver.com/"
 	},
 	"autoload": {
-		"directories": ["listeners", "views"]
+		"directories": ["listeners", "views", "library"]
 	},
 	"languages":{
 		"fa_IR" : "langs/fa_IR.json",

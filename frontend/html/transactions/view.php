@@ -215,9 +215,9 @@ $this->the_header(!$isLogin ? "logedout" : "");
 								<td><?php echo $product->title; ?></td>
 								<td class="hidden-480"><?php echo $product->description; ?></td>
 								<td class="hidden-480"><?php echo t("product.xnumber", array("number" => $product->number)); ?></td>
-								<td class="hidden-480"> <?php echo ($rate ? $product->price * $rate->price : $product->price).$currency->title; ?></td>
-								<td class="hidden-480"> <?php echo ($rate ? $product->discount * $rate->price : $product->discount).$currency->title; ?></td>
-								<td><?php echo ($rate ? $finalPrice * $rate->price : $finalPrice).$currency->title; ?></td>
+								<td class="hidden-480"> <?php echo $this->numberFormat($rate ? $product->price * $rate->price : $product->price) . " " . $currency->title; ?></td>
+								<td class="hidden-480"> <?php echo $this->numberFormat($rate ? $product->discount * $rate->price : $product->discount) . " " . $currency->title; ?></td>
+								<td><?php echo $this->numberFormat($rate ? $finalPrice * $rate->price : $finalPrice) . " " . $currency->title; ?></td>
 								<?php if($this->transaction->status == transaction::paid and !$product->configure){ ?>
 								<td><a href="<?php echo userpanel\url("transactions/config/".$product->id); ?>" class="btn btn-sm btn-teal"><i class="fa fa-cog"></i> <?php echo translator::trans("financial.configure"); ?></a></td>
 								<?php } ?>
@@ -299,13 +299,13 @@ $this->the_header(!$isLogin ? "logedout" : "");
 			<div class="row">
 				<div class="col-sm-12 invoice-block">
 					<ul class="list-unstyled amounts">
-						<li><strong><?php echo t("packages.financial.total_price"); ?>:</strong> <?php echo(number_format(abs($this->transaction->price)). " " . $currency->title); ?></li>
-						<li><strong><?php echo t("transaction.add.discount"); ?>:</strong> <?php echo(number_format($this->Discounts()) . " " . $currency->title); ?></li>
+						<li><strong><?php echo t("packages.financial.total_price"); ?>:</strong> <?php echo($this->numberFormat(abs($this->transaction->price)). " " . $currency->title); ?></li>
+						<li><strong><?php echo t("transaction.add.discount"); ?>:</strong> <?php echo($this->numberFormat($this->Discounts()) . " " . $currency->title); ?></li>
 						<li><strong><?php echo t("packages.financial.tax"); ?>:</strong> 0 <?php echo $currency->title; ?></li>
 						<li>
 							<strong><?php echo t("packages.financial.payable_price"); ?>:</strong>
 						<?php
-						echo abs($payablePrice). " " .$currency->title;
+						echo $this->numberFormat(abs($payablePrice)) . " " .$currency->title;
 						?>
 						</li>
 					</ul>

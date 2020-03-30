@@ -39,7 +39,6 @@ $this->the_header();
 						<div class="<?php echo ($multyUser ? 'col-sm-6': 'col-sm-6 col-sm-offset-3'); ?>">
 							<?php $this->createField([
 								'name' => 'price',
-								'type' => 'number',
 								'label' => translator::trans("transaction.addingcredit.price"),
 								'ltr' => true,
 								'placeholder' => 10000,
