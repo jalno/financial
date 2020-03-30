@@ -41,7 +41,7 @@ export default class Add {
 		if (!product.price || isNaN(product.price)) {
 			product.price = 0;
 		}
-		if (!product.discount.length) {
+		if (!product.discount || isNaN(product.discount)) {
 			product.discount = 0;
 		}
 		const finalPrice = (product.number * product.price) - product.discount;
@@ -54,7 +54,7 @@ export default class Add {
 				<td>${product.description}</td>
 				<td>${t("product.xnumber", {number: product.number})}</td>
 				<td>${Transaction.formatFlotNumber(product.price)} ${product.currency_title}</td>
-				<td>${product.discount} ${product.currency_title}</td>
+				<td>${Transaction.formatFlotNumber(product.discount)} ${product.currency_title}</td>
 				<td>${Transaction.formatFlotNumber(finalPrice)} ${product.currency_title}</td> <td><a href="#" class="btn btn-xs btn-bricky btn-remove tooltips" title="${t("delete")}"><i class="fa fa-times fa fa-white"></i></a></td>
 			</tr>
 		`;
@@ -136,7 +136,7 @@ export default class Add {
 				description: $("input[name=description]", this).val(),
 				number: $("input[name=number]", this).val(),
 				price: parseFloat(Transaction.deFormatNumber($("input[name=price]", this).val())),
-				discount: $("input[name=discount]", this).val(),
+				discount: parseFloat(Transaction.deFormatNumber($("input[name=discount]", this).val())),
 				currency: $("select[name=currency] option:selected", this).val(),
 				currency_title: $("select[name=currency] option:selected", this).data("title"),
 			};

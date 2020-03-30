@@ -38,7 +38,7 @@ export default class Edit {
 			$("textarea[name=description]", ModalEditProduct).val(product.description);
 			$("input[name=number]", ModalEditProduct).val(product.number);
 			$("input[name=product_price]", ModalEditProduct).val(Transaction.formatFlotNumber(product.price));
-			$("input[name=discount]", ModalEditProduct).val(product.discount);
+			$("input[name=discount]", ModalEditProduct).val(Transaction.formatFlotNumber(product.discount));
 			$("select[name=product_currency]", ModalEditProduct).val(product.currency);
 			$("#editproductform", ModalEditProduct).data("tr", tr);
 		});
@@ -67,7 +67,7 @@ export default class Edit {
 		if (!product.price || isNaN(product.price)) {
 			product.price = 0;
 		}
-		if (!product.discount) {
+		if (!product.discount  || isNaN(product.price)) {
 			product.discount = 0;
 		}
 		const finalPrice = ((product.price * product.number) - product.discount);
@@ -78,7 +78,7 @@ export default class Edit {
 				<td>${product.description}</td>
 				<td>${product.number} عدد</td>
 				<td>${Transaction.formatFlotNumber(product.price)} ${product.currency_title}</td>
-				<td>${product.discount} ${product.currency_title}</td>
+				<td>${Transaction.formatFlotNumber(product.discount)} ${product.currency_title}</td>
 				<td>${Transaction.formatFlotNumber(finalPrice)} ${product.currency_title}</td>
 				<td class="center">
 		`;
@@ -112,7 +112,7 @@ export default class Edit {
 				description: $("textarea[name=description]", this).val(),
 				number: $("input[name=number]", this).val(),
 				price: parseFloat(Transaction.deFormatNumber($("input[name=product_price]", this).val())),
-				discount: $("input[name=discount]", this).val(),
+				discount: parseFloat(Transaction.deFormatNumber($("input[name=discount]", this).val())),
 				currency: $("select[name=product_currency] option:selected", this).val(),
 				currency_title: $("select[name=product_currency] option:selected", this).data("title"),
 			};
@@ -150,7 +150,7 @@ export default class Edit {
 				description: $("textarea[name=description]", this).val(),
 				number: $("input[name=number]", this).val(),
 				price: parseFloat(Transaction.deFormatNumber($("input[name=product_price]", this).val())),
-				discount: $("input[name=discount]", this).val(),
+				discount: parseFloat(Transaction.deFormatNumber($("input[name=discount]", this).val())),
 				currency: $("select[name=product_currency] option:selected", this).val(),
 				currency_title: $("select[name=product_currency] option:selected", this).data("title"),
 			};
