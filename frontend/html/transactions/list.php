@@ -13,7 +13,7 @@ if ($hasTransaction or $this->canRefund) {
 		<div class="core-box">
 			<h4><?php echo t("currentcredit"); ?>:</h4>
 			<div class="row">
-				<div class="col-xs-8"><h2 class="user-credit text-center"><?php echo number_format($this->user->credit); ?></h2></div>
+				<div class="col-xs-8"><h2 class="user-credit text-center"><?php echo $this->numberFormat($this->user->credit); ?></h2></div>
 				<div class="col-xs-4"> <h3 class="user-currency text-center"><?php echo $this->user->currency->title; ?></h3></div>
 			</div>
 		</div>
@@ -182,7 +182,7 @@ if ($hasTransaction or $this->canRefund) {
 							<tr>
 								<td class="center"><?php echo $transaction->id; ?></td>
 								<td><?php echo $transaction->title; ?></td>
-								<td><?php echo abs($transaction->price) . " " . $transaction->currency->title; ?></td>
+								<td><?php echo $this->numberFormat(abs($transaction->price)) . " " . $transaction->currency->title; ?></td>
 								<?php if($this->multiuser){ ?>
 								<td>
 									<?php if ($transaction->user) { ?>
@@ -194,7 +194,7 @@ if ($hasTransaction or $this->canRefund) {
 									?>
 								</td>
 								<?php } ?>
-								<td><?php echo $transaction->create_at; ?></td>
+								<td class="ltr"><?php echo $transaction->create_at; ?></td>
 								<td><span class="<?php echo $statusClass; ?>"><?php echo t($statusTxt); ?></span></td>
 								<?php
 								if($hasButtons){

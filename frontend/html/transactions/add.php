@@ -128,6 +128,7 @@ $this->the_header();
 	<div class="modal-body">
 		<form id="addproductform" action="" method="post" class="form-horizontal">
 			<?php
+			$this->removeHorizontalForm();
 			$this->setHorizontalForm('sm-3','sm-9');
 			$feilds = [
 				[
@@ -146,13 +147,11 @@ $this->the_header();
 				],
 				[
 					'name' => 'price',
-					'type' => 'number',
 					'label' => translator::trans("transaction.add.price"),
 					'ltr' => true
 				],
 				[
 					'name' => 'discount',
-					'type' => 'number',
 					'label' => translator::trans("transaction.add.discount"),
 					'ltr' => true
 				],

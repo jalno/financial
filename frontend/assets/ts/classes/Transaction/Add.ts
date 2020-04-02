@@ -4,6 +4,7 @@ import * as $ from "jquery";
 import "jquery.growl";
 import { webuilder } from "webuilder";
 import "../jquery.financialUserAutoComplete";
+import Transaction from "../Transaction";
 
 export default class Add {
 	public static init() {
@@ -11,6 +12,7 @@ export default class Add {
 			Add.runUserSearch();
 		}
 		Add.transactionProduct();
+		Add.runNumberFormatListener();
 		Add.runSubmitFormListener();
 	}
 	public static initIfNeeded() {
@@ -36,10 +38,10 @@ export default class Add {
 		if (!product.number.length) {
 			product.number = 1;
 		}
-		if (!product.price.length) {
+		if (!product.price || isNaN(product.price)) {
 			product.price = 0;
 		}
-		if (!product.discount.length) {
+		if (!product.discount || isNaN(product.discount)) {
 			product.discount = 0;
 		}
 		const finalPrice = (product.number * product.price) - product.discount;
@@ -51,9 +53,9 @@ export default class Add {
 				<td>${product.title}</td>
 				<td>${product.description}</td>
 				<td>${t("product.xnumber", {number: product.number})}</td>
-				<td>${product.price} ${product.currency_title}</td>
-				<td>${product.discount} ${product.currency_title}</td>
-				<td>${finalPrice} ${product.currency_title}</td> <td><a href="#" class="btn btn-xs btn-bricky btn-remove tooltips" title="${t("delete")}"><i class="fa fa-times fa fa-white"></i></a></td>
+				<td>${Transaction.formatFlotNumber(product.price)} ${product.currency_title}</td>
+				<td>${Transaction.formatFlotNumber(product.discount)} ${product.currency_title}</td>
+				<td>${Transaction.formatFlotNumber(finalPrice)} ${product.currency_title}</td> <td><a href="#" class="btn btn-xs btn-bricky btn-remove tooltips" title="${t("delete")}"><i class="fa fa-times fa fa-white"></i></a></td>
 			</tr>
 		`;
 		const $row = $(code).appendTo($("tbody", $table));
@@ -83,8 +85,8 @@ export default class Add {
 			user: $("input[name=user]", Add.$form).val(),
 			create_at: $("input[name=create_at]", Add.$form).val(),
 			expire_at: $("input[name=expire_at]", Add.$form).val(),
-			notification: $("input[name=notification]", Add.$form).prop('checked'),
-			notification_support: $("input[name=notification_support]", Add.$form).prop('checked'),
+			notification: $("input[name=notification]", Add.$form).prop("checked"),
+			notification_support: $("input[name=notification_support]", Add.$form).prop("checked"),
 			products: [],
 		};
 		$(".product-table tbody > tr").each(function() {
@@ -133,14 +135,30 @@ export default class Add {
 				title: $("input[name=product_title]", this).val(),
 				description: $("input[name=description]", this).val(),
 				number: $("input[name=number]", this).val(),
-				price: $("input[name=price]", this).val(),
-				discount: $("input[name=discount]", this).val(),
+				price: parseFloat(Transaction.deFormatNumber($("input[name=price]", this).val())),
+				discount: parseFloat(Transaction.deFormatNumber($("input[name=discount]", this).val())),
 				currency: $("select[name=currency] option:selected", this).val(),
 				currency_title: $("select[name=currency] option:selected", this).data("title"),
 			};
 			$(this).parents(".modal").modal("hide");
 			$(".no-product").hide();
 			Add.addProductTocode(product);
+		});
+	}
+	private static runNumberFormatListener() {
+		$("#addproductform input[name=price], #addproductform input[name=discount]").on("keyup", function(e) {
+			let val = Transaction.deFormatNumber($(this).val() as string);
+			const isDot = e.keyCode === 110;
+			const number = parseInt(val, 10);
+			if (isNaN(number)) {
+				$(this).val(isDot ? "0." : "");
+				return;
+			}
+			val = Transaction.formatFlotNumber(parseFloat(val));
+			if (isDot) {
+				val += ".";
+			}
+			$(this).val(val);
 		});
 	}
 }

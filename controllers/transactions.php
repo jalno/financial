@@ -1300,7 +1300,7 @@ class Transactions extends Controller {
 		}
 		$inputsRules = array(
 			'price' => array(
-				'type' => 'number'
+				'type' => 'float',
 			)
 		);
 		if($types){

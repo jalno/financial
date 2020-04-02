@@ -3,12 +3,12 @@ namespace themes\clipone\views\transactions;
 use packages\userpanel;
 use packages\userpanel\{date, User};
 use packages\base\{packages, view\error, db\dbObject, frontend\theme, db\Parenthesis};
-use themes\clipone\{viewTrait, navigation, views\listTrait, views\formTrait, navigation\menuItem};
+use themes\clipone\{viewTrait, navigation, views\listTrait, views\formTrait, navigation\menuItem, views\TransactionTrait};
 use packages\financial\{Transaction, transaction_product as TransactionProduct, Authorization,
 						Authentication, Bank\Account, Currency, views\transactions\listview as transactionsListView};
 
 class listview extends transactionsListView{
-	use viewTrait,listTrait,formTrait;
+	use viewTrait, listTrait, formTrait, TransactionTrait;
 	protected $multiuser = false;
 	protected $canRefund = false;
 	protected $canAccept = false;
