@@ -1,16 +1,14 @@
 <?php
 namespace packages\financial\controllers\userpanel;
-use packages\userpanel\{controllers\users as userpanelUsers, user\option};
-use packages\financial\{controller, currency};
-use packages\base\{response, inputValidation};
 
-class Users extends controller {
-	public function search($data): response {
-		$users = new userpanelUsers();
-		$response = $users->index($data);
-		$view = $response->getView();
-		$dataList = $view->getDataList();
-		$defaultCurrency = currency::getDefault();
+use packages\userpanel\{controllers\Users as UserpanelUsers, User\Option};
+use packages\financial\{Controller, Currency};
+use packages\base\Response;
+
+class Users extends Controller {
+	public function search($data): Response {
+		$response = (new UserpanelUsers())->search($data);
+		$dataList = $response->getView()->getDataList();
 		$userIds = array();
 		foreach ($dataList as $key => $user) {
 			$userIds[$key] = $user->id;
@@ -18,16 +16,17 @@ class Users extends controller {
 		if (!$userIds) {
 			return $response;
 		}
+		$defaultCurrency = Currency::getDefault();
 		$currencies = array();
 		$currencies[$defaultCurrency->id] = $defaultCurrency;
-		$option = new option();
+		$option = new Option();
 		$option->where("user", $userIds, "IN");
 		$option->where("name", "financial_transaction_currency");
 		foreach ($option->get(null, "userpanel_users_options.*") as $option) {
 			$key = array_search($option->data["user"], $userIds);
 			if ($key !== false) {
 				if (!isset($currencies[$option->value])) {
-					$currencies[$option->value] = currency::byId($option->value);
+					$currencies[$option->value] = Currency::byId($option->value);
 				}
 				$dataList[$key]->currency = $currencies[$option->value]->title;
 				unset($userIds[$key]);
@@ -36,7 +35,7 @@ class Users extends controller {
 		foreach ($userIds as $key => $user) {
 			$dataList[$key]->currency = $defaultCurrency->title;
 		}
-		$view->setDataList($dataList);
+		$response->getView()->setDataList($dataList);
 		return $response;
 	}
 }
