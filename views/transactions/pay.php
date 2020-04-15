@@ -16,7 +16,7 @@ class pay  extends \packages\financial\view{
 	protected $canViewGuestLink;
 	function __construct(){
 		$this->canAccept = authorization::is_accessed('transactions_accept');
-		$this->canViewGuestLink = authorization::is_accessed('transactions_guest_pay_link');
+		$this->canViewGuestLink = authorization::is_accessed('transactions_guest-pay-link');
 		$this->setData(array(), 'methods');
 	}
 	public function setCredit($credit){

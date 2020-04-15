@@ -12,7 +12,7 @@ class view extends \packages\financial\view {
 	protected $canPayReject;
 	protected $canAcceptRefund;
 	public function __construct() {
-		$this->canPayAccept = $this->canPayReject = Authorization::is_accessed('transactions_pays_accept');
+		$this->canPayAccept = $this->canPayReject = Authorization::is_accessed('transactions_pay_accept');
 		$this->canAcceptRefund = Authorization::is_accessed("transactions_refund_accept");
 	}
 	public function settransactionData($data){

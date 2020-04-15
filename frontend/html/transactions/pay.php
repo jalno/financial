@@ -20,7 +20,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 				<div class="row">
 					<?php if($this->canViewGuestLink){ ?>
 					<div class="col-md-6">
-						<div class="guest_pay_link">
+						<div class="guest-pay-link">
 							<div class="icon">
 								<i class="fa fa-bell fa-4x" aria-hidden="true"></i>
 							</div>
