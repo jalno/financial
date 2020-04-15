@@ -45,6 +45,63 @@
 		"packages.financial.transactions.product.title.refund": "Withdraw request",
 		"packages.financial.transactions.refund.description": "Bank account: {account_account}<br>Credit card: {account_cart}<br>IBAN: {account_shaba}<br>Account owner: {account_owner}",
 		"packages.financial.bankaccount.shaba": "IBAN",
-		"packages.financial.bankaccount.credit_cart": "Credit card"
+		"packages.financial.bankaccount.credit_cart": "Credit card",
+
+
+
+		"usertype.permissions.financial": "Financial",
+		"usertype.permissions.financial_transactions_guest-pay-link": "view guest pay link",
+
+		"usertype.permissions.financial_transactions": "Invoices",
+		"usertype.permissions.financial_transactions_list": "Invoice list",
+		"usertype.permissions.financial_transactions_add": "Add invoice",
+		"usertype.permissions.financial_transactions_edit": "Edit invoice",
+		"usertype.permissions.financial_transactions_view": "View invoice",
+		"usertype.permissions.financial_transactions_delete": "Delete invoice",
+		"usertype.permissions.financial_transactions_addingcredit": "Add user balance",
+		"usertype.permissions.financial_transactions_accept": "Accept invoices",
+		"usertype.permissions.financial_transactions_anonymous": "Access to anonymous invoices",
+
+		"usertype.permissions.financial_transactions_refund": "Withdraw request",
+		"usertype.permissions.financial_transactions_refund_add": "Submit withdraw request",
+		"usertype.permissions.financial_transactions_refund_accept": "Accept withdraw payments",
+
+		"usertype.permissions.financial_transactions_pay": "Invoice Payment",
+		"usertype.permissions.financial_transactions_pay_accept": "Accept invoice payment",
+		"usertype.permissions.financial_transactions_pay_edit": "Edit invoice payment",
+		"usertype.permissions.financial_transactions_pay_delete": "Delete invoice payment",
+
+		"usertype.permissions.financial_transactions_product": "Invoice Product",
+		"usertype.permissions.financial_transactions_product_config": "Invoice products configuration",
+		"usertype.permissions.financial_transactions_product_edit": "Edit invoice product",
+		"usertype.permissions.financial_transactions_product_delete": "Delete invoice product",
+
+		"usertype.permissions.financial_settings": "Settings",
+		"usertype.permissions.financial_settings_banks": "Banks",
+		"usertype.permissions.financial_settings_banks_search": "Banks list",
+		"usertype.permissions.financial_settings_banks_add": "Add new bank",
+		"usertype.permissions.financial_settings_banks_edit": "Edit bank",
+		"usertype.permissions.financial_settings_banks_delete": "Delete bank",
+
+		"usertype.permissions.financial_settings_banks_accounts": "Bank Accounts",
+		"usertype.permissions.financial_settings_banks_accounts_search":"Bank accounts link",
+		"usertype.permissions.financial_settings_banks_accounts_add":"Add bank account",
+		"usertype.permissions.financial_settings_banks_accounts_accept":"Accept bank account",
+		"usertype.permissions.financial_settings_banks_accounts_delete":"Delete bank account",
+		"usertype.permissions.financial_settings_banks_accounts_edit":"Edit bank account",
+		
+
+		"usertype.permissions.financial_settings_gateways": "Payment Gateways",
+		"usertype.permissions.financial_settings_gateways_search": "Payment gateway list",
+		"usertype.permissions.financial_settings_gateways_add": "Add payment gateway",
+		"usertype.permissions.financial_settings_gateways_edit": "Edit payment gateway",
+		"usertype.permissions.financial_settings_gateways_delete": "Delete payment gateway",
+
+		"usertype.permissions.financial_settings_currencies": "Currencies",
+		"usertype.permissions.financial_settings_currencies_search": "Currencies list",
+		"usertype.permissions.financial_settings_currencies_add": "Add currency",
+		"usertype.permissions.financial_settings_currencies_edit": "Edit Currency",
+		"usertype.permissions.financial_settings_currencies_delete": "Delete currency"
+
 	}
 }

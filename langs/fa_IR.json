@@ -69,6 +69,62 @@
 		"packages.financial.transaction.status.expired": "منقضی شده",
 		"packages.financial.transaction.status.rejected": "رد شده",
 		"packages.financial.bankaccount.shaba": "کد شبا",
-		"packages.financial.bankaccount.credit_cart": "شماره کارت"
+		"packages.financial.bankaccount.credit_cart": "شماره کارت",
+
+
+
+		"usertype.permissions.financial": "مالی",
+
+		"usertype.permissions.financial_transactions_guest-pay-link": "مشاهده لینک پرداخت مهمان",
+		"usertype.permissions.financial_transactions": "صورتحساب‌های مالی",
+		"usertype.permissions.financial_transactions_list": "لیست صورتحساب ها",
+		"usertype.permissions.financial_transactions_add": "افزودن صورتحساب",
+		"usertype.permissions.financial_transactions_edit": "ویرایش صورتحساب",
+		"usertype.permissions.financial_transactions_view": "مشاهده صورتحساب",
+		"usertype.permissions.financial_transactions_delete": "حذف صورتحساب",
+		"usertype.permissions.financial_transactions_addingcredit": "افزودن موجودی کاربری",
+		"usertype.permissions.financial_transactions_accept": "تایید صورتحساب ها",
+		"usertype.permissions.financial_transactions_anonymous": "مدیریت صورتحساب های بدون کاربر",
+
+		"usertype.permissions.financial_transactions_refund": "درخواست تسویه حساب",
+		"usertype.permissions.financial_transactions_refund_add": "ایجاد درخواست تسویه حساب",
+		"usertype.permissions.financial_transactions_refund_accept": "تایید درخواست های تسویه حساب",
+
+		"usertype.permissions.financial_transactions_pay": "پرداخت صورتحساب",
+		"usertype.permissions.financial_transactions_pay_accept": "تایید پرداخت صورتحساب",
+		"usertype.permissions.financial_transactions_pay_edit": "ویرایش پرداخت صورتحساب",
+		"usertype.permissions.financial_transactions_pay_delete": "حذف پرداخت صورتحساب",
+
+		"usertype.permissions.financial_transactions_product": "محصول صورتحساب",
+		"usertype.permissions.financial_transactions_product_delete": "حذف محصول صورتحساب",
+		"usertype.permissions.financial_transactions_product_edit": "ویرایش محصول صورتحساب",
+		"usertype.permissions.financial_transactions_product_config": "پیکربندی محصولات",
+
+		"usertype.permissions.financial_settings": "تنظیمات مالی",
+
+		"usertype.permissions.financial_settings_banks": "بانک ها",
+		"usertype.permissions.financial_settings_banks_search": "جستجوی بانک ها",
+		"usertype.permissions.financial_settings_banks_add": "افزودن بانک جدید",
+		"usertype.permissions.financial_settings_banks_edit": "ویرایش بانک",
+		"usertype.permissions.financial_settings_banks_delete": "حذف بانک",
+
+		"usertype.permissions.financial_settings_banks_accounts": "حساب های بانکی",
+		"usertype.permissions.financial_settings_banks_accounts_search":"جستجوی حساب های بانکی",
+		"usertype.permissions.financial_settings_banks_accounts_add":"افزودن حساب بانکی",
+		"usertype.permissions.financial_settings_banks_accounts_accept":"تایید حساب بانکی",
+		"usertype.permissions.financial_settings_banks_accounts_delete":"حذف حساب بانکی",
+		"usertype.permissions.financial_settings_banks_accounts_edit":"ویرایش حساب بانکی",
+
+		"usertype.permissions.financial_settings_gateways": "پنل های مالی",
+		"usertype.permissions.financial_settings_gateways_search": "لیست پنل های مالی",
+		"usertype.permissions.financial_settings_gateways_add": "افزودن پنل مالی",
+		"usertype.permissions.financial_settings_gateways_edit": "ویرایش پنل های مالی",
+		"usertype.permissions.financial_settings_gateways_delete": "حذف پنل های مالی",
+
+		"usertype.permissions.financial_settings_currencies": "ارز ها",
+		"usertype.permissions.financial_settings_currencies_search": "جستجوی ارز ها در صورتحساب",
+		"usertype.permissions.financial_settings_currencies_add": "افزودن ارز در صورتحساب",
+		"usertype.permissions.financial_settings_currencies_edit": "ویرایش ارز در صورتحساب",
+		"usertype.permissions.financial_settings_currencies_delete": "حذف ارز در صورتحساب"
 	}
 }

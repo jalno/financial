@@ -10,10 +10,10 @@ class usertype{
 			'transactions_delete',
 			'transactions_view',
 			"transactions_anonymous",
-			"transactions_refund",
+			"transactions_refund_add",
 			"transactions_refund_accept",
 			
-			'transactions_pays_accept',
+			'transactions_pay_accept',
 			'transactions_pay_delete',
 			'transactions_pay_edit',
 			'transactions_addingcredit',
@@ -44,7 +44,7 @@ class usertype{
 			"settings_currencies_add",
 			"settings_currencies_edit",
 			"settings_currencies_delete",
-			'transactions_guest_pay_link',
+			'transactions_guest-pay-link',
 		);
 		foreach($permissions as $permission){
 			permissions::add('financial_'.$permission);
