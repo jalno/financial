@@ -171,7 +171,7 @@ class Transactions extends Controller {
 		transaction::autoExpire();
 		$view = view::byName(views\transactions\listview::class);
 		$this->response->setView($view);
-		$canAccept = Authorization::is_accessed("transactions_pays_accept");
+		$canAccept = Authorization::is_accessed("transactions_pay_accept");
 		$exporters = array();
 		$exporter = null;
 		if ($canAccept) {
@@ -596,7 +596,7 @@ class Transactions extends Controller {
 			throw new InputValidationException("price");
 		}
 		$inputs["date"] = Date::strtotime($inputs["date"]);
-		if (!Authorization::is_accessed("transactions_pays_accept") and $inputs["date"] <= Date::time() - ( 86400 * 30)) {
+		if (!Authorization::is_accessed("transactions_pay_accept") and $inputs["date"] <= Date::time() - ( 86400 * 30)) {
 			throw new InputValidationException("date");
 		}
 		if (self::checkBanktransferFollowup($inputBankAccount->bank_id, $inputs['followup'])) {			
@@ -628,7 +628,7 @@ class Transactions extends Controller {
 		if (isset($inputs['description']) and $inputs['description']) {
 			$newPay['params']['description'] = $inputs['description'];
 		}
-		if (Authorization::is_accessed("transactions_pays_accept")) {
+		if (Authorization::is_accessed("transactions_pay_accept")) {
 			$newPay['status'] = Transaction_pay::accepted;
 		}
 		$pay = $transaction->addPay($newPay);
@@ -660,7 +660,7 @@ class Transactions extends Controller {
 	} // payByBankTransfer
 
 	private function accept_handler($data, $newstatus){
-		Authorization::haveOrFail("transactions_pays_accept");
+		Authorization::haveOrFail("transactions_pay_accept");
 		$action = '';
 		if ($newstatus == Transaction_pay::accepted) {
 			$action = 'accept';
@@ -1428,7 +1428,7 @@ class Transactions extends Controller {
 		return $this->response;
 	}
 	public function refund(): response {
-		Authorization::haveOrFail("transactions_refund");
+		Authorization::haveOrFail("transactions_refund_add");
 		$inputsRules = array(
 			"refund_user" => array(
 				"type" => "number",

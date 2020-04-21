@@ -26,8 +26,8 @@ class listview extends transactionsListView{
 		if(empty($this->getTransactions())){
 			$this->addNotFoundError();
 		}
-		$this->canRefund = authorization::is_accessed("transactions_refund");
-		$this->canAccept = Authorization::is_accessed("transactions_pays_accept");
+		$this->canRefund = authorization::is_accessed("transactions_refund_add");
+		$this->canAccept = Authorization::is_accessed("transactions_pay_accept");
 		if ($this->canRefund) {
 			$this->user = authentication::getUser();
 			$this->user->currency = currency::getDefault($this->user);
