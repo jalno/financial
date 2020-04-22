@@ -102,7 +102,11 @@ $this->the_header();
 					<h4 class="alert-heading"> <i class="fa fa-info-circle"></i> <?php echo t("attention"); ?> </h4>
 				<?php echo t("packages.financial.banks.notfound"); ?>
 				</div>
-				<?php $this->paginator(); ?>
+				<?php
+				if ($banks) {
+					$this->paginator();
+				}
+				?>
 			</div>
 		</div>
 	</div>
