@@ -99,7 +99,12 @@ export default class List {
 				});
 				return;
 			}
+			const data = new FormData(this);
+			data.set("refund_price", price.toString());
 			$(this).formAjax({
+				data: data,
+				contentType: false,
+				processData: false,
 				success: (data: any) => {
 					$.growl.notice({
 						title: t("packages.financial.success"),
