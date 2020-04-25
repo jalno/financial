@@ -84,7 +84,7 @@ export default class Edit {
 		`;
 		let className: string = "";
 		let link = "";
-		if (product.id && !isNaN(parseInt(product.id))) {
+		if (product.id && /^\d+$/.test(product.id.toString())) {
 			link = Router.url("userpanel/transactions/product/delete/" + product.id);
 			code += Edit.productEdit + " ";
 		} else {
