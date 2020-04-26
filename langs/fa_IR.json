@@ -125,6 +125,8 @@
 		"usertype.permissions.financial_settings_currencies_search": "جستجوی ارز ها در صورتحساب",
 		"usertype.permissions.financial_settings_currencies_add": "افزودن ارز در صورتحساب",
 		"usertype.permissions.financial_settings_currencies_edit": "ویرایش ارز در صورتحساب",
-		"usertype.permissions.financial_settings_currencies_delete": "حذف ارز در صورتحساب"
+		"usertype.permissions.financial_settings_currencies_delete": "حذف ارز در صورتحساب",
+
+		"usertype.permissions.financial_paid_user_profile": "مشاهده مجموع پرداختی هادر نمایش کاربر"
 	}
 }

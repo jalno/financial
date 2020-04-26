@@ -292,6 +292,13 @@
 		"packages.financial.transactions": "صورتحساب ها",
 		"packages.financial.error.IBAN_not_valid": "شماره شبا وارد شده معتبر نیست.",
 		"packages.financial.error.IBAN.exceed": "کد شبا نباید بیش از {number} کاراکتر باشد.",
-		"packages.financial.error.IBAN.start_with_country_code": "شماره شبا باید با کد کشور معتبر شروع شود."
+		"packages.financial.error.IBAN.start_with_country_code": "شماره شبا باید با کد کشور معتبر شروع شود.",
+
+		"packages.financial.transaction": "گزارش صورتحساب های دریافتی و پرداختی",
+		"packages.financial.month": "ماه گذشته",
+		"packages.financial.year": "سال گذشته",
+		"packages.financial.total": "جمع کل",
+		"packages.financial.recive": "دریافتی",
+		"packages.financial.paid": "پرداختی"
 	}
 }
