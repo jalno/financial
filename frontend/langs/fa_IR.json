@@ -295,10 +295,12 @@
 		"packages.financial.error.IBAN.start_with_country_code": "شماره شبا باید با کد کشور معتبر شروع شود.",
 
 		"packages.financial.transaction": "گزارش صورتحساب های دریافتی و پرداختی",
-		"packages.financial.month": "ماه گذشته",
-		"packages.financial.year": "سال گذشته",
+		"packages.financial.last_month": "{month} ماه گذشته",
+		"packages.financial.last_year": "سال گذشته",
 		"packages.financial.total": "جمع کل",
-		"packages.financial.recive": "دریافتی",
-		"packages.financial.paid": "پرداختی"
+		"packages.financial.receive": "دریافتی",
+		"packages.financial.paid": "پرداختی",
+		"packages.financial.user_paids": "پرداختی های کاربر",
+		"packages.financial.paid_touser": "پرداخت ها به کاربر"
 	}
 }

@@ -2,8 +2,8 @@
 namespace themes\clipone\views\financial\Profile;
 
 use packages\base\{json, Date};
-use packages\userpanel\{User, Log};
 use themes\clipone\views\Dashboard\Box;
+use packages\userpanel\{User, Log, Authentication};
 use packages\financial\{logs, Authorization, Difficulty, Transaction, currency};
 
 class StatsBox extends Box {
@@ -66,6 +66,7 @@ class StatsBox extends Box {
 			}
 			return $sum;
 		};
+		$isme = $this->user->id == Authentication::getID();
 		$this->html .= '<div class="table-responsive table-responsive-posts-stats" data-user="' . $this->user->id . '">';
 			$this->html .= '<table class="table table-bordered table-posts-stats">';
 				$this->html .= '<thead>';
@@ -74,16 +75,16 @@ class StatsBox extends Box {
 					$this->html .= '</tr>';
 					$this->html .= '<tr>';
 						$this->html .= '<th class="center"></th>';
-						$this->html .= '<th class="center">' . "1" . t("packages.financial.month") . "</th>";
-						$this->html .= '<th class="center">' . "2" . t("packages.financial.month") . "</th>";
-						$this->html .= '<th class="center">' . "3" . t("packages.financial.month") . "</th>";
-						$this->html .= '<th class="center">' . "1" . t("packages.financial.year") . "</th>";
+						$this->html .= '<th class="center">' . t("packages.financial.last_month") . "</th>";
+						$this->html .= '<th class="center">' . t("packages.financial.last_month", array("month" => 2)) . "</th>";
+						$this->html .= '<th class="center">' . t("packages.financial.last_month", array("month" => 3)) . "</th>";
+						$this->html .= '<th class="center">' . t("packages.financial.last_year") . "</th>";
 						$this->html .= '<th class="center">' . t("packages.financial.total") . "</th>";
 					$this->html .= '</tr>';
 				$this->html .= '</thead>';
 				$this->html .= '<tbody>';
 					$this->html .= "<tr>";
-						$this->html .= '<td class="center">' . t("packages.financial.paid") .'</td>';
+						$this->html .= '<td class="center">' . ($isme ? t("packages.financial.paid") : t("packages.financial.user_paids")) .'</td>';
 						$this->html .= '<td class="center">' . number_format($queryBuilder(true, Date::time(), Date::time() - 2592000)) . " " . $defaultCurrency->title . '</td>';
 						$this->html .= '<td class="center">' . number_format($queryBuilder(true, Date::time(), Date::time() - 5184000)) . " " . $defaultCurrency->title . '</td>';
 						$this->html .= '<td class="center">' . number_format($queryBuilder(true, Date::time(), Date::time() - 7776000)) . " " . $defaultCurrency->title . '</td>';
@@ -91,7 +92,7 @@ class StatsBox extends Box {
 						$this->html .= '<td class="center">' . number_format($queryBuilder(true)) . " " . $defaultCurrency->title . '</td>';
 					$this->html .= "</tr>";
 					$this->html .= "<tr>";
-						$this->html .= '<td class="center">' . t("packages.financial.recive") .'</td>';
+						$this->html .= '<td class="center">' . ($isme ? t("packages.financial.receive") : t("packages.financial.paid_touser")) .'</td>';
 						$this->html .= '<td class="center">' . number_format(abs($queryBuilder(false, Date::time(), Date::time() - 2592000))) . " " . $defaultCurrency->title . '</td>';
 						$this->html .= '<td class="center">' . number_format(abs($queryBuilder(false, Date::time(), Date::time() - 5184000))) . " " . $defaultCurrency->title . '</td>';
 						$this->html .= '<td class="center">' . number_format(abs($queryBuilder(false, Date::time(), Date::time() - 7776000))) . " " . $defaultCurrency->title . '</td>';
