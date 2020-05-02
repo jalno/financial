@@ -67,7 +67,7 @@ class StatsBox extends Box {
 			return $sum;
 		};
 		$isme = $this->user->id == Authentication::getID();
-		$this->html .= '<div class="table-responsive table-responsive-posts-stats" data-user="' . $this->user->id . '">';
+		$this->html .= '<div class="table-responsive">';
 			$this->html .= '<table class="table table-bordered table-posts-stats">';
 				$this->html .= '<thead>';
 					$this->html .= '<tr>';
@@ -75,7 +75,7 @@ class StatsBox extends Box {
 					$this->html .= '</tr>';
 					$this->html .= '<tr>';
 						$this->html .= '<th class="center"></th>';
-						$this->html .= '<th class="center">' . t("packages.financial.last_month") . "</th>";
+						$this->html .= '<th class="center">' . t("packages.financial.last_month", array("month" => 1)) . "</th>";
 						$this->html .= '<th class="center">' . t("packages.financial.last_month", array("month" => 2)) . "</th>";
 						$this->html .= '<th class="center">' . t("packages.financial.last_month", array("month" => 3)) . "</th>";
 						$this->html .= '<th class="center">' . t("packages.financial.last_year") . "</th>";
