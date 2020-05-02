@@ -67,8 +67,8 @@ class StatsBox extends Box {
 			return $sum;
 		};
 		$isme = $this->user->id == Authentication::getID();
-		$this->html .= '<div class="table-responsive">';
-			$this->html .= '<table class="table table-bordered table-posts-stats">';
+		$this->html .= '<div class="table-responsive table-responsive-transactions">';
+			$this->html .= '<table class="table table-bordered table-transactions">';
 				$this->html .= '<thead>';
 					$this->html .= '<tr>';
 						$this->html .= '<th colspan="6" class="center">' . t("packages.financial.transaction") . '</th>';
