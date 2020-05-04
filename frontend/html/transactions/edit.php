@@ -172,7 +172,7 @@ $this->the_header();
 											<?php echo $pay->description ? $pay->description : ""; ?>
 												<div class="pay-description btn-block"><?php echo $description ? nl2br($description) : ""; ?></div>
 											</td>
-											<td><?php echo $this->formatNumber(abs($pay->price)) . " " . $pay->currency->title;; ?></td>
+											<td><?php echo $this->numberFormat(abs($pay->price)) . " " . $pay->currency->title;; ?></td>
 											<td><span class="<?php echo $statusClass; ?>"><?php echo translator::trans($statusTxt); ?></td>
 											<?php
 											if($hasButtons){
