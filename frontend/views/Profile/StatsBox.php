@@ -91,6 +91,7 @@ class StatsBox extends Box {
 						$this->html .= '<td class="center">' . number_format($queryBuilder(true, Date::time(), Date::time() - 31104000)) . " " . $defaultCurrency->title . '</td>';
 						$this->html .= '<td class="center">' . number_format($queryBuilder(true)) . " " . $defaultCurrency->title . '</td>';
 					$this->html .= "</tr>";
+				if (Authorization::is_accessed("transactions_refund_add")) {
 					$this->html .= "<tr>";
 						$this->html .= '<td class="center">' . ($isme ? t("packages.financial.receive") : t("packages.financial.paid_touser")) .'</td>';
 						$this->html .= '<td class="center">' . number_format(abs($queryBuilder(false, Date::time(), Date::time() - 2592000))) . " " . $defaultCurrency->title . '</td>';
@@ -99,6 +100,7 @@ class StatsBox extends Box {
 						$this->html .= '<td class="center">' . number_format(abs($queryBuilder(false, Date::time(), Date::time() - 31104000))) . " " . $defaultCurrency->title . '</td>';
 						$this->html .= '<td class="center">' . number_format(abs($queryBuilder(false))) . " " . $defaultCurrency->title . '</td>';
 					$this->html .= "</tr>";
+				}
 				$this->html .= '</tbody>';
 			$this->html .= '</table>';
 		$this->html .= '</div>';
