@@ -84,7 +84,7 @@ export default class Edit {
 		`;
 		let className: string = "";
 		let link = "";
-		if (product.id) {
+		if (product.id && /^\d+$/.test(product.id.toString())) {
 			link = Router.url("userpanel/transactions/product/delete/" + product.id);
 			code += Edit.productEdit + " ";
 		} else {
@@ -146,6 +146,7 @@ export default class Edit {
 			}
 			$(this).parents(".modal").modal("hide");
 			const newdata = {
+				id: Math.random().toString(36).substring(2),
 				title: $("input[name=product_title]", this).val(),
 				description: $("textarea[name=description]", this).val(),
 				number: $("input[name=number]", this).val(),
@@ -165,11 +166,24 @@ export default class Edit {
 			const form = this as HTMLFormElement;
 			$(form).formAjax({
 				data: Edit.serialize(),
-				success: () => {
+				success: (response) => {
 					$.growl.notice({
 						title: t("packages.financial.success"),
 						message: t("packages.financial.request.success"),
 					});
+					$("tbody > tr", Edit.table).each(function() {
+						const product = $(this).data("product");
+						for (const item of response.products) {
+							if (product.id == item.id) {
+								if (typeof item.pId !== 'undefined') {
+									item.id = item.pId;
+								}
+								$(this).data("product", item);
+								break;
+							}
+						}
+					});
+					Edit.rebuildProductsTable();
 				},
 				error: (error: webuilder.AjaxError) => {
 					if (error.error === "data_duplicate" || error.error === "data_validation") {

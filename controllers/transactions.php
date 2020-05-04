@@ -985,7 +985,7 @@ class Transactions extends Controller {
 						throw new inputValidation('products');
 					}
 					foreach($inputs['products'] as $product){
-						if(isset($product['id'])){
+						if(isset($product['id']) and is_numeric($product['id'])){
 							if(!transaction_product::byId($product['id'])){
 								throw new inputValidation("product");
 							}
@@ -1009,14 +1009,16 @@ class Transactions extends Controller {
 						}
 					}
 				}
+				$productsData = array();
 				if(isset($inputs['products'])){
 					foreach($inputs['products'] as $row){
-						if(isset($row['id'])){
+						if(isset($row['id']) and is_numeric($row['id'])){
 							$product = transaction_product::byId($row['id']);
 						}else{
 							$product = new transaction_product;
 							$product->transaction = $transaction->id;
 							$product->method  = transaction_product::other;
+
 						}
 						$product->title = $row['title'];
 						$product->description = isset($row['description']) ? $row['description'] : null;
@@ -1025,6 +1027,13 @@ class Transactions extends Controller {
 						$product->discount = $row['discount'];
 						$product->currency = $row['currency'];
 						$product->save();
+						$data = $product->toArray();
+						$data["currency_title"] = $row['currency_title'];
+						if (isset($row['id']) and !is_numeric($row['id'])) {
+							$data["pId"] = $data["id"];
+							$data["id"] = $row['id'];
+						}
+						$productsData[] = $data;
 					}
 				}
 				$parameters = ['oldData' => []];
@@ -1067,6 +1076,7 @@ class Transactions extends Controller {
 				$log->parameters = $parameters;
 				$log->save();
 				$this->response->setStatus(true);
+				$this->response->setData($productsData, "products");
 			}catch(inputValidation $error){
 				$view->setFormError(FormError::fromException($error));
 			}catch(currency\UnChangableException $e){
