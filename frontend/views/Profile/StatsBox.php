@@ -71,7 +71,7 @@ class StatsBox extends Box {
 			$this->html .= '<table class="table table-bordered table-transactions">';
 				$this->html .= '<thead>';
 					$this->html .= '<tr>';
-						$this->html .= '<th colspan="6" class="center">' . t("packages.financial.transaction") . '</th>';
+						$this->html .= '<th colspan="6" class="center"><i class="fa fa-line-chart"></i>' . t("packages.financial.transaction") . '</th>';
 					$this->html .= '</tr>';
 					$this->html .= '<tr>';
 						$this->html .= '<th class="center"></th>';
@@ -84,7 +84,7 @@ class StatsBox extends Box {
 				$this->html .= '</thead>';
 				$this->html .= '<tbody>';
 					$this->html .= "<tr>";
-						$this->html .= '<td class="center">' . ($isme ? t("packages.financial.paid") : t("packages.financial.user_paids")) .'</td>';
+						$this->html .= '<td class="center"><i class="fa fa-' . ($isme ? "upload text-info" : "download text-success") . '"></i> ' . ($isme ? t("packages.financial.paid") : t("packages.financial.user_paids")) .'</td>';
 						$this->html .= '<td class="center">' . number_format($queryBuilder(true, Date::time(), Date::time() - 2592000)) . " " . $defaultCurrency->title . '</td>';
 						$this->html .= '<td class="center">' . number_format($queryBuilder(true, Date::time(), Date::time() - 5184000)) . " " . $defaultCurrency->title . '</td>';
 						$this->html .= '<td class="center">' . number_format($queryBuilder(true, Date::time(), Date::time() - 7776000)) . " " . $defaultCurrency->title . '</td>';
@@ -92,7 +92,7 @@ class StatsBox extends Box {
 						$this->html .= '<td class="center">' . number_format($queryBuilder(true)) . " " . $defaultCurrency->title . '</td>';
 					$this->html .= "</tr>";
 					$this->html .= "<tr>";
-						$this->html .= '<td class="center">' . ($isme ? t("packages.financial.receive") : t("packages.financial.paid_touser")) .'</td>';
+						$this->html .= '<td class="center"><i class="fa fa-' . ($isme ? "download text-info" : "upload text-danger") . '"></i> ' . ($isme ? t("packages.financial.receive") : t("packages.financial.paid_touser")) .'</td>';
 						$this->html .= '<td class="center">' . number_format(abs($queryBuilder(false, Date::time(), Date::time() - 2592000))) . " " . $defaultCurrency->title . '</td>';
 						$this->html .= '<td class="center">' . number_format(abs($queryBuilder(false, Date::time(), Date::time() - 5184000))) . " " . $defaultCurrency->title . '</td>';
 						$this->html .= '<td class="center">' . number_format(abs($queryBuilder(false, Date::time(), Date::time() - 7776000))) . " " . $defaultCurrency->title . '</td>';
