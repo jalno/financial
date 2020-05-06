@@ -30,7 +30,11 @@
 		{
 			"name":"\\themes\\clipone\\events\\initializeDashboard",
 			"listener": "listeners\\financial\\dashboard@initialize"
-		}
+		},
+		{
+            "name": "themes/clipone/events/InitializeProfile",
+            "listener": "listeners/financial/InitializeProfile@handle"
+        }
 	],
 	"views":[
 		{
