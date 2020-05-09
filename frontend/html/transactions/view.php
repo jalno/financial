@@ -209,6 +209,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							}
 							$product->price = abs($product->price);
 							$finalPrice = ($product->price * $product->number) - $product->discount;
+							$this->discounts += $product->discount * ($rate ? $rate->price : 1);
 						?>
 							<tr>
 								<td><?php echo $x++; ?></td>
@@ -300,7 +301,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 				<div class="col-sm-12 invoice-block">
 					<ul class="list-unstyled amounts">
 						<li><strong><?php echo t("packages.financial.total_price"); ?>:</strong> <?php echo($this->numberFormat(abs($this->transaction->price)). " " . $currency->title); ?></li>
-						<li><strong><?php echo t("transaction.add.discount"); ?>:</strong> <?php echo($this->numberFormat($this->Discounts()) . " " . $currency->title); ?></li>
+						<li><strong><?php echo t("transaction.add.discount"); ?>:</strong> <?php echo($this->numberFormat($this->discounts) . " " . $currency->title); ?></li>
 						<li><strong><?php echo t("packages.financial.tax"); ?>:</strong> 0 <?php echo $currency->title; ?></li>
 						<li>
 							<strong><?php echo t("packages.financial.payable_price"); ?>:</strong>

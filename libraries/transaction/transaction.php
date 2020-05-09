@@ -292,18 +292,20 @@ class transaction extends dbObject{
 				$invoice = $dakhl->addIncomeInvoice($this->title, $this->user, $price);
 			}
 		}
-		foreach($this->products as $product){
-			$currency = $this->currency;
+		$currency = $this->currency;
+		foreach ($this->products as $product) {
 			$pcurrency = $product->currency;
-			if($pcurrency->id != $currency->id){
+			if ($pcurrency->id != $currency->id) {
 				$rate = new currency\rate();
 				$rate->where('currency', $pcurrency->id);
 				$rate->where('changeTo', $currency->id);
 				$rate = $rate->getOne();
-				$product->price *= $rate->price;
-				$product->discount *= $rate->discount;
-				$product->currency = $currency->id;
-				$product->save();
+				if ($rate) {
+					$product->price *= $rate->price;
+					$product->discount *= $rate->price;
+					$product->currency = $currency->id;
+					$product->save();
+				}
 			}
 			if ($invoice) {
 				if (!$product->description) {
