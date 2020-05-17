@@ -1,10 +1,10 @@
 <?php
 namespace themes\clipone\views\financial\Profile;
 
-use packages\base\{json, Date};
+use packages\base\{json, Date, db};
 use themes\clipone\views\Dashboard\Box;
 use packages\userpanel\{User, Log, Authentication};
-use packages\financial\{logs, Authorization, Difficulty, Transaction, currency};
+use packages\financial\{logs, Authorization, Difficulty, Transaction, currency, products\Addingcredit};
 
 class StatsBox extends Box {
 
@@ -43,6 +43,12 @@ class StatsBox extends Box {
 		}
 		$defaultCurrency = Currency::getDefault($this->user);
 		$queryBuilder = function (bool $paid = true, int $from = 0,int $to = 0) use ($defaultCurrency) {
+			$ignoreTransactions = null;
+			if ($paid) {
+				$product = db::subQuery();
+				$product->where("type", "\\" . Addingcredit::class);
+				$ignoreTransactions = $product->get("financial_transactions_products", null, "transaction");
+			}
 			$transaction = new Transaction;
 			$transaction->where("user", $this->user->id);
 			if ($from > 0 and $to > 0) {
@@ -51,9 +57,11 @@ class StatsBox extends Box {
 			}
 			if ($paid) {
 				$transaction->where("price", 0, ">=");
+				$transaction->where("id", $ignoreTransactions, "NOT IN");
 			} else{
 				$transaction->where("price", 0, "<");
 			}
+			$transaction->where("status", Transaction::paid);
 			$transaction->groupBy("currency");
 			$transaction->ArrayBuilder();
 			$transactions = $transaction->get(null, array("currency", "SUM(price) as `sum`"));
