@@ -3,9 +3,20 @@ body.profile, body.users_view {
 		table {
 			thead {
 				tr:first-child {
+					position: relative;
 					i {
 						margin-right: 7px;
 						vertical-align: middle;
+					}
+					span {
+						display: inline-block;
+						float: right;
+						font-size: 12px;
+						@media (max-width: 576px) {
+							display: block;
+							float: none !important;
+							margin-top: 5px;
+						}
 					}
 				}
 			}
@@ -30,6 +41,9 @@ body.profile, body.users_view {
 						i {
 							margin-right: 0;
 							margin-left: 7px;
+						}
+						span {
+							float: left;
 						}
 					}
 				}

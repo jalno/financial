@@ -1,10 +1,10 @@
 <?php
 namespace themes\clipone\views\financial\Profile;
 
-use packages\base\{json, Date, db};
 use themes\clipone\views\Dashboard\Box;
+use packages\base\{json, Date, db, Options};
 use packages\userpanel\{User, Log, Authentication};
-use packages\financial\{logs, Authorization, Difficulty, Transaction, currency, products\Addingcredit};
+use packages\financial\{logs, Authorization, Difficulty, Transaction, currency, Transaction_pay as Pay};
 
 class StatsBox extends Box {
 
@@ -43,70 +43,71 @@ class StatsBox extends Box {
 		}
 		$defaultCurrency = Currency::getDefault($this->user);
 		$queryBuilder = function (bool $paid = true, int $from = 0,int $to = 0) use ($defaultCurrency) {
-			$ignoreTransactions = null;
+			$pay = new Pay();
+			$pay->join(Transaction::class, "transaction", "INNER");
+			$pay->where("financial_transactions.user", $this->user->id);
 			if ($paid) {
-				$product = db::subQuery();
-				$product->where("type", "\\" . Addingcredit::class);
-				$ignoreTransactions = $product->get("financial_transactions_products", null, "transaction");
+				$pay->where("financial_transactions_pays.method", [Pay::banktransfer, Pay::onlinepay], "IN");
+				$pay->where("financial_transactions.price", 0, ">=");
+			} else {
+				$pay->where("financial_transactions.price", 0, "<");
 			}
-			$transaction = new Transaction;
-			$transaction->where("user", $this->user->id);
 			if ($from > 0 and $to > 0) {
-				$transaction->where("paid_at", $from, "<");
-				$transaction->where("paid_at", $to, ">=");
+				$pay->where("financial_transactions.paid_at", $from, "<");
+				$pay->where("financial_transactions.paid_at", $to, ">=");
 			}
-			if ($paid) {
-				$transaction->where("price", 0, ">=");
-				$transaction->where("id", $ignoreTransactions, "NOT IN");
-			} else{
-				$transaction->where("price", 0, "<");
-			}
-			$transaction->where("status", Transaction::paid);
-			$transaction->groupBy("currency");
-			$transaction->ArrayBuilder();
-			$transactions = $transaction->get(null, array("currency", "SUM(price) as `sum`"));
-
+			$pay->where("financial_transactions.status", Transaction::paid);
+			$pay->groupBy("financial_transactions_pays.currency");
+			$pay->ArrayBuilder();
+			$pays = $pay->get(null, array("financial_transactions_pays.currency", "SUM(`financial_transactions_pays`.`price`) as `sum`"));
 			$sum = 0;
-			foreach ($transactions as $transaction) {
-				$currency = new currency;
-				$currency =  $currency->byId($transaction["currency"]);
-				$sum += $currency->changeTo($transaction["sum"], $defaultCurrency);
+			foreach ($pays as $pay) {
+				$currency =  (new Currency)->byId($pay["currency"]);
+				$sum += $currency->changeTo(abs($pay["sum"]), $defaultCurrency);
 			}
 			return $sum;
 		};
+		$periods = Options::get("packages.financial.user_pay_stats_period");
+		if (!$periods) {
+			$periods = array();
+		}
 		$isme = $this->user->id == Authentication::getID();
 		$this->html .= '<div class="table-responsive table-responsive-transactions">';
 			$this->html .= '<table class="table table-bordered table-transactions">';
 				$this->html .= '<thead>';
 					$this->html .= '<tr>';
-						$this->html .= '<th colspan="6" class="center"><i class="fa fa-line-chart"></i>' . t("packages.financial.transaction") . '</th>';
+						$this->html .= '<th colspan="' . ($periods ? count($periods) + 2 : 2) . '" class="center"><i class="fa fa-line-chart"></i>' . t("packages.financial.transaction") . '<span class="text-danger">' . t("packages.financial.stats_curreny", ["currency" => $defaultCurrency->title]) . '</span></th>';
 					$this->html .= '</tr>';
 					$this->html .= '<tr>';
 						$this->html .= '<th class="center"></th>';
-						$this->html .= '<th class="center">' . t("packages.financial.last_month", array("month" => 1)) . "</th>";
-						$this->html .= '<th class="center">' . t("packages.financial.last_month", array("month" => 2)) . "</th>";
-						$this->html .= '<th class="center">' . t("packages.financial.last_month", array("month" => 3)) . "</th>";
-						$this->html .= '<th class="center">' . t("packages.financial.last_year") . "</th>";
+					foreach ($periods as $period) {
+						$days = $period / 86400;
+						if ($days >= 360) {
+							$this->html .= '<th class="center">' . t("packages.financial.last_year", ["year" => $days / 360]) . "</th>";
+						} else if ($days >= 30) {
+							$this->html .= '<th class="center">' . t("packages.financial.last_month", ["month" => $days / 30]) . "</th>";
+						} else {
+							$this->html .= '<th class="center">' . t("packages.financial.last_day", array("day" => $days)) . "</th>";
+						}
+					}
 						$this->html .= '<th class="center">' . t("packages.financial.total") . "</th>";
 					$this->html .= '</tr>';
 				$this->html .= '</thead>';
 				$this->html .= '<tbody>';
 					$this->html .= "<tr>";
 						$this->html .= '<td class="center"><i class="fa fa-' . ($isme ? "upload text-info" : "download text-success") . '"></i> ' . ($isme ? t("packages.financial.paid") : t("packages.financial.user_paids")) .'</td>';
-						$this->html .= '<td class="center">' . number_format($queryBuilder(true, Date::time(), Date::time() - 2592000)) . " " . $defaultCurrency->title . '</td>';
-						$this->html .= '<td class="center">' . number_format($queryBuilder(true, Date::time(), Date::time() - 5184000)) . " " . $defaultCurrency->title . '</td>';
-						$this->html .= '<td class="center">' . number_format($queryBuilder(true, Date::time(), Date::time() - 7776000)) . " " . $defaultCurrency->title . '</td>';
-						$this->html .= '<td class="center">' . number_format($queryBuilder(true, Date::time(), Date::time() - 31104000)) . " " . $defaultCurrency->title . '</td>';
-						$this->html .= '<td class="center">' . number_format($queryBuilder(true)) . " " . $defaultCurrency->title . '</td>';
+					foreach ($periods as $period) {
+						$this->html .= '<td class="center">' . number_format($queryBuilder(true, Date::time(), Date::time() - 2592000)) . '</td>';
+					}
+						$this->html .= '<td class="center">' . number_format($queryBuilder()) . '</td>';
 					$this->html .= "</tr>";
 				if (Authorization::is_accessed("transactions_refund_add")) {
 					$this->html .= "<tr>";
 						$this->html .= '<td class="center"><i class="fa fa-' . ($isme ? "download text-info" : "upload text-danger") . '"></i> ' . ($isme ? t("packages.financial.receive") : t("packages.financial.paid_touser")) .'</td>';
-						$this->html .= '<td class="center">' . number_format(abs($queryBuilder(false, Date::time(), Date::time() - 2592000))) . " " . $defaultCurrency->title . '</td>';
-						$this->html .= '<td class="center">' . number_format(abs($queryBuilder(false, Date::time(), Date::time() - 5184000))) . " " . $defaultCurrency->title . '</td>';
-						$this->html .= '<td class="center">' . number_format(abs($queryBuilder(false, Date::time(), Date::time() - 7776000))) . " " . $defaultCurrency->title . '</td>';
-						$this->html .= '<td class="center">' . number_format(abs($queryBuilder(false, Date::time(), Date::time() - 31104000))) . " " . $defaultCurrency->title . '</td>';
-						$this->html .= '<td class="center">' . number_format(abs($queryBuilder(false))) . " " . $defaultCurrency->title . '</td>';
+					foreach ($periods as $period) {
+						$this->html .= '<td class="center">' . number_format($queryBuilder(false, Date::time(), Date::time() - 2592000)) . '</td>';
+					}
+						$this->html .= '<td class="center">' . number_format(abs($queryBuilder(false))) . '</td>';
 					$this->html .= "</tr>";
 				}
 				$this->html .= '</tbody>';
