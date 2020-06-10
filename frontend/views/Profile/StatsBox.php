@@ -82,8 +82,8 @@ class StatsBox extends Box {
 						$this->html .= '<th class="center"></th>';
 					foreach ($periods as $period) {
 						$days = $period / 86400;
-						if ($days >= 360) {
-							$this->html .= '<th class="center">' . t("packages.financial.last_year", ["year" => $days / 360]) . "</th>";
+						if ($days >= 365) {
+							$this->html .= '<th class="center">' . t("packages.financial.last_year", ["year" => $days / 365]) . "</th>";
 						} else if ($days >= 30) {
 							$this->html .= '<th class="center">' . t("packages.financial.last_month", ["month" => $days / 30]) . "</th>";
 						} else {
