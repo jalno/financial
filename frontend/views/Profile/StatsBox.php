@@ -97,7 +97,7 @@ class StatsBox extends Box {
 					$this->html .= "<tr>";
 						$this->html .= '<td class="center"><i class="fa fa-' . ($isme ? "upload text-info" : "download text-success") . '"></i> ' . ($isme ? t("packages.financial.paid") : t("packages.financial.user_paids")) .'</td>';
 					foreach ($periods as $period) {
-						$this->html .= '<td class="center">' . number_format($queryBuilder(true, Date::time(), Date::time() - 2592000)) . '</td>';
+						$this->html .= '<td class="center">' . number_format($queryBuilder(true, Date::time(), Date::time() - $period)) . '</td>';
 					}
 						$this->html .= '<td class="center">' . number_format($queryBuilder()) . '</td>';
 					$this->html .= "</tr>";
@@ -105,7 +105,7 @@ class StatsBox extends Box {
 					$this->html .= "<tr>";
 						$this->html .= '<td class="center"><i class="fa fa-' . ($isme ? "download text-info" : "upload text-danger") . '"></i> ' . ($isme ? t("packages.financial.receive") : t("packages.financial.paid_touser")) .'</td>';
 					foreach ($periods as $period) {
-						$this->html .= '<td class="center">' . number_format($queryBuilder(false, Date::time(), Date::time() - 2592000)) . '</td>';
+						$this->html .= '<td class="center">' . number_format($queryBuilder(false, Date::time(), Date::time() - $period)) . '</td>';
 					}
 						$this->html .= '<td class="center">' . number_format(abs($queryBuilder(false))) . '</td>';
 					$this->html .= "</tr>";
