@@ -65,7 +65,7 @@ use \packages\financial\Bank\Account;
 								<?php
 								if ($hasButtons) {
 									$this->setButtonParam("edit", "link", userpanel\url("settings/financial/banks/accounts/edit/".$account->id));
-									$this->setButtonActive("edit", $account->status == Account::Rejected or $this->canAccept);
+									$this->setButtonActive("edit", $this->canEdit and ($account->status == Account::Rejected or $this->canAccept));
 									$this->setButtonParam("delete", "link", userpanel\url("settings/financial/banks/accounts/delete/".$account->id));
 									echo("<td class=\"center\">".$this->genButtons()."</td>");
 								}
