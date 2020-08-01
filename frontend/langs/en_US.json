@@ -292,6 +292,17 @@
 		"packages.financial.transactions": "Invoices",
 		"packages.financial.error.IBAN_not_valid": "IBAN code is invalid.",
 		"packages.financial.error.IBAN.exceed": "IBAN code should't exceed from {number} charachters.",
-		"packages.financial.error.IBAN.start_with_country_code": "IBAN code should start with valid country code."
+		"packages.financial.error.IBAN.start_with_country_code": "IBAN code should start with valid country code.",
+
+		"packages.financial.transaction": "Receive and paid transactions report",
+		"packages.financial.last_month": "{month} Month ago",
+		"packages.financial.last_year": "{year} Year ago",
+		"packages.financial.last_day": "{day} Day ago",
+		"packages.financial.total": "Total",
+		"packages.financial.receive": "Receive",
+		"packages.financial.paid": "Paid",
+		"packages.financial.user_paids": "User payments",
+		"packages.financial.paid_touser": "Paid to user",
+		"packages.financial.stats_curreny": "Pays currency is: {currency}"
 	}
 }

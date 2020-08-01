@@ -11,6 +11,7 @@ class view extends transactionsView {
 	protected $transaction;
 	protected $pays;
 	protected $hasdesc;
+	protected $discounts = 0;
 	public function __beforeLoad(){
 		$this->transaction = $this->getTransaction();
 		$this->pays = $this->transaction->pays;
@@ -102,13 +103,6 @@ class view extends transactionsView {
 			}
 		}
 		return false;
-	}
-	protected function Discounts(){
-		$discounts = 0;
-		foreach($this->transaction->products as $product){
-			$discounts += $product->discount;
-		}
-		return $discounts;
 	}
 	protected function getTransActionLogo(){
 		if($logoPath = options::get("packages.financial.transactions_logo")){
