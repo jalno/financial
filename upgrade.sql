@@ -14,3 +14,17 @@ ALTER TABLE `financial_banks_accounts` CHANGE `shaba` `shaba` VARCHAR(31) CHARAC
 UPDATE `userpanel_usertypes_permissions` SET name = REPLACE(`name`,'financial_transactions_refund','financial_transactions_refund_add') WHERE `name` LIKE 'financial_transactions_refund';
 UPDATE `userpanel_usertypes_permissions` SET name = REPLACE(`name`,'financial_transactions_pays_accept','financial_transactions_pay_accept') WHERE `name` LIKE 'financial_transactions_pays_accept';
 UPDATE `userpanel_usertypes_permissions` SET name = REPLACE(`name`,'financial_transactions_guest_pay_link','financial_transactions_guest-pay-link') WHERE `name` LIKE 'financial_transactions_guest_pay_link';
+
+---
+---	Commit:	0cf6cb64b9fe11304a5f14443a02247c6fa32147
+---	Date:   Sun Aug 2 14:26:15 2020 +0430
+---
+ALTER TABLE `financial_transactions` CHANGE `price` `price` DOUBLE NOT NULL;
+ALTER TABLE `financial_transactions_products` CHANGE `price` `price` DOUBLE NOT NULL; 
+
+---
+---	Commit:	256025ce8bbc643e5dcdd0ce1d3d44bf44074e3a
+---	Date:   Sun Aug 2 14:27:52 2020 +0430
+---
+ALTER TABLE `financial_payports_pays` CHANGE `price` `price` DOUBLE NOT NULL;
+ALTER TABLE `financial_transactions_pays` CHANGE `price` `price` DOUBLE NOT NULL;
