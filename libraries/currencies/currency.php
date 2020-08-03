@@ -2,19 +2,28 @@
 namespace packages\financial;
 
 use packages\base\{options, db, db\dbObject};
+use packages\financial\Currency\{Param, Rate};
 use packages\userpanel\user;
 
-class currency extends dbObject{
+class Currency extends dbObject {
 	use Paramable;
+
+	/** rounding-behaviour */
+	const CEIL = 1;
+	const ROUND = 2;
+	const FLOOR = 3;
+
 	protected $dbTable = "financial_currencies";
 	protected $primaryKey = "id";
 	protected $dbFields = [
         'title' => ['type' => 'text', 'required' => true],
-        'update_at' => ['type' => 'int', 'required' => true]
+		'update_at' => ['type' => 'int', 'required' => true],
+		'rounding_behaviour' => ['type' => 'int'],
+		'rounding_precision' => ['type' => 'double'],
     ];
 	protected $relations = [
-		'params' => ['hasMany', 'packages\\financial\\currency\\param', 'currency'],
-		'rates' => ['hasMany', 'packages\\financial\\currency\\rate', 'currency']
+		'params' => ['hasMany', Param::class, 'currency'],
+		'rates' => ['hasMany', Rate::class, 'currency'],
 	];
 	public function addRate(currency $currency, float $price){
 		$rate = new currency\rate();
@@ -57,17 +66,24 @@ class currency extends dbObject{
 		$rate->where('changeTo', $changeTo);
 		return $rate->getOne();
 	}
-	public function changeTo(float $price, currency $other): float {
+	public function changeTo(float $price, Currency $other): float {
 		if ($other->id == $this->id) {
 			return $price;
 		}
-		$rate = new currency\rate();
+		$rate = new Currency\Rate();
 		$rate->where('currency', $this->id);
 		$rate->where('changeTo', $other->id);
-		if(!$rate = $rate->getOne()){
+		$rate = $rate->getOne();
+		if (!$rate) {
 			throw new currency\UnChangableException($other, $this);
 		}
-		return $price * $rate->price;
+		$changed = $price * $rate->price;
+		switch ($other->behaviour) {
+			case(self::CEIL): $changed = ceil($changed); break;
+			case(self::ROUND): $changed = round($changed, $other->precision ?? 0); break;
+			case(self::FLOOR): $changed = floor($changed); break;
+		}
+		return $changed;
 	}
 	public function getCountRates():int{
 		$rate = new currency\rate();
