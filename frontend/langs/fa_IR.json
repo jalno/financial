@@ -167,6 +167,11 @@
 		"financial.transaction.guest.pay.text": "شما می توانید فاکتور خود را با استفاده از لینک زیر به شخص دیگری منتقل کنید بدون اینکه اطلاعات شخصی خود را به کسی بدهید. شخصی که از لینک زیر استفاده می کند وارد صفحه پرداخت فاکتور شما می شود و فقط قادر به پرداخت آن است.",
 		"settings.financial.currencies": "ارز ها",
 		"error.financial.settings.currency.notfound": "هیچ ارزی یافت نشد. بعد از افزودن ارز جدید، آن را در اینجا مشاهده خواهید کرد.",
+		"financial.setting.currency.rounding_behaviour": "رفتار در هنگام تبدیل شدن",
+		"financial.setting.currency.rounding_precision": "دقت تبدیل",
+		"financial.setting.currency.rounding_behaviour.ceil": "گرد شدن یک واحد رو به بالا",
+		"financial.setting.currency.rounding_behaviour.round": "گرد شدن منصفانه",
+		"financial.setting.currency.rounding_behaviour.floor": "گرد شدن یک واحد رو به پایین",
 		"settings.financial.currency.add": "افزودن ارز",
 		"settings.financial.currency.edit": "ویرایش ارز",
 		"settings.financial.currency.delete": "حذف ارز",
@@ -293,6 +298,11 @@
 		"packages.financial.error.IBAN_not_valid": "شماره شبا وارد شده معتبر نیست.",
 		"packages.financial.error.IBAN.exceed": "کد شبا نباید بیش از {number} کاراکتر باشد.",
 		"packages.financial.error.IBAN.start_with_country_code": "شماره شبا باید با کد کشور معتبر شروع شود.",
+		"packages.financial.error.currency.rates.should_add_rates": "در صورت فعال بودن تبدیل ارز، باید حداقل یک نرخ برای تبدیل وارد کنید",
+
+		"packages.financial.currencies.rounding.behaviour.ceil.help_text": "در هنگام تبدیل سایر ارز ها به این ارز، عدد بدست آمده حداکثر یک واحد رو به بالا گرد خواهد شد.<br>مثال: 77.89 رند خواهد شد به 78",
+		"packages.financial.currencies.rounding.behaviour.round.help_text": "در هنگام تبدیل سایر ارز ها به این ارز، در صورت وجود قسمت اعشاری در خروجی، اعداد قسمت اعشاری به تعداد «دقت تبدیل» خواهند بود. (قسمت حذف شده به سمت بالا رند خواهد شد)<br>در صورت صفر بودن «دقت تبدیل» عدد خروجی بدون قسمت اعشاری خواهد بود.<br>مثال: 77.89 تبدیل می شود به 77.9 (دقت تبدیل: 1)<br>مثال: 77.89 تبدیل می شود به 78 (دقت تبدیل: 0)",
+		"packages.financial.currencies.rounding.behaviour.floor.help_text": "در هنگام تبدیل سایر ارز ها به این ارز، عدد بدست آمده حداکثر یک واحد رو به پایین گرد خواهد شد.<br>مثال: 77.89 رند خواهد شد به 77",
 
 		"packages.financial.transaction": "گزارش صورتحساب های دریافتی و پرداختی",
 		"packages.financial.last_month": "{month} ماه گذشته",

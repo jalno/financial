@@ -1,4 +1,5 @@
 import "@jalno/translator";
+import "bootstrap";
 import "bootstrap-inputmsg";
 import * as $ from "jquery";
 import "jquery.growl";
@@ -6,6 +7,11 @@ import { webuilder } from "webuilder";
 interface ICurrency {
 	title: string;
 	value: number;
+}
+enum Behaviours {
+	CEIL = 1,
+	ROUND = 2,
+	FLOOR = 3,
 }
 export default class Currencies {
 	public static init() {
@@ -18,6 +24,7 @@ export default class Currencies {
 		Currencies.$panel = $(".panel.panel-white", Currencies.$form);
 		Currencies.setEvents(Currencies.$form);
 		Currencies.runChangeListener();
+		Currencies.runChangebehaviourListener();
 		Currencies.createChangeRatesFields();
 		Currencies.runSubmitFormListener();
 	}
@@ -52,6 +59,7 @@ export default class Currencies {
 				}
 			});
 		}).trigger("change");
+		$(".tooltips", $row).tooltip();
 	}
 	private static shiftIndex($row: JQuery) {
 		const $rates: JQuery = $(".panel-body .rates", Currencies.$panel);
@@ -83,8 +91,42 @@ export default class Currencies {
 			}
 			if ($this.prop("checked")) {
 				Currencies.$panel.slideDown();
+				$(".rounding-container", Currencies.$form).slideDown();
+				$("select[name=rounding-behaviour], input[name=rounding-precision]", Currencies.$form).prop("disabled", false);
 			} else {
 				Currencies.$panel.slideUp();
+				$(".rounding-container", Currencies.$form).slideUp();
+				$("select[name=rounding-behaviour], input[name=rounding-precision]", Currencies.$form).prop("disabled", true);
+			}
+		}).trigger("change");
+	}
+	private static runChangebehaviourListener(): void {
+		const $container = $(".rounding-container", Currencies.$form);
+		const $behaviorContainer = $(".col-rounding-behaviour", $container);
+		const $precisionContainer = $(".col-rounding-precision", $container);
+		const $precisionInput = $("input[name=rounding-precision]", $container);
+		const $helpbox = $(".help-block", $container);
+		$("select[name=rounding-behaviour]", Currencies.$form).on("change", function() {
+			const selected = parseInt($("option:selected", this).val(), 10) as Behaviours;
+			switch (selected) {
+				case(Behaviours.CEIL):
+				$helpbox.html(t("packages.financial.currencies.rounding.behaviour.ceil.help_text"));
+				break;
+				case(Behaviours.ROUND):
+				$helpbox.html(t("packages.financial.currencies.rounding.behaviour.round.help_text"));
+				break;
+				case(Behaviours.FLOOR):
+				$helpbox.html(t("packages.financial.currencies.rounding.behaviour.floor.help_text"));
+				break;
+			}
+			if (selected === Behaviours.ROUND) {
+				$precisionContainer.show();
+				$behaviorContainer.addClass("col-sm-8").removeClass("col-sm-12");
+				$precisionInput.prop("disabled", false);
+			} else {
+				$precisionContainer.hide();
+				$behaviorContainer.removeClass("col-sm-8").addClass("col-sm-12");
+				$precisionInput.prop("disabled", true);
 			}
 		}).trigger("change");
 	}
@@ -161,14 +203,17 @@ export default class Currencies {
 				error: (error: webuilder.AjaxError) => {
 					if (error.error === "data_duplicate" || error.error === "data_validation") {
 						const $input = $("[name=" + error.input + "]");
-						const $params = {
+						const params = {
 							title: t("error.fatal.title"),
 							message: t(`packages.financial.${error.error}`),
 						};
+						if (error.input === "rates") {
+							params.message = t("packages.financial.error.currency.rates.should_add_rates");
+						}
 						if ($input.length) {
-							$input.inputMsg($params);
+							$input.inputMsg(params);
 						} else {
-							$.growl.error($params);
+							$.growl.error(params);
 						}
 					} else if (error.hasOwnProperty("type") && error.type === "fatal") {
 						const ErrorHtml = `
