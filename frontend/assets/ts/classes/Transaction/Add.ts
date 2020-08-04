@@ -108,7 +108,7 @@ export default class Add {
 				},
 				error: (error: webuilder.AjaxError) => {
 					if (error.error === "data_duplicate" || error.error === "data_validation") {
-						const $input = $(`[name="${error.input}"]`);
+						const $input = $(`[name="${(error.input === "user" ? "user_name" : error.input)}"]`);
 						const $params = {
 							title: t("error.fatal.title"),
 							message: t(`packages.financial.${error.error}`),

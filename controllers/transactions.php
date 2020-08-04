@@ -428,6 +428,7 @@ class Transactions extends Controller {
 		$payer = (($types and $self->credit) ? $self : $user);
 		$view->setCredit($payer->credit);
 		$view->setDataForm($payer->id, "user");
+		$view->setCurrency(Currency::getDefault($payer));
 		$view->setDataForm(min($transaction->payablePrice(), $payer->credit), "credit");
 		$this->response->setStatus(true);
 		return $this->response;
@@ -456,6 +457,7 @@ class Transactions extends Controller {
 		$payer = (($types and $self->credit) ? $self : $user);
 		$view->setCredit($payer->credit);
 		$view->setDataForm($payer->id, "user");
+		$view->setCurrency(Currency::getDefault($payer));
 		$view->setDataForm(min($transaction->payablePrice(), $payer->credit), "credit");
 		$rules = array(
 			"credit" => array(
@@ -479,7 +481,6 @@ class Transactions extends Controller {
 		} else {
 			$inputs["user"] = $user;
 		}
-		throw new InputValidationException("credit");
 		if (!($inputs["credit"] > 0 and $inputs["credit"] <= $transaction->payablePrice() and $inputs["credit"] <= $inputs["user"]->credit)) {
 			throw new InputValidationException("credit");
 		}

@@ -65,8 +65,11 @@ $this->the_header();
 									$this->createField(array(
 										'name' => 'currentcredit',
 										'label' => translator::trans("currentcredit"),
-										'value' => $this->getCredit(),
-										'disabled' => true
+										'value' => number_format($this->getCredit()),
+										'disabled' => true,
+										'input-group' => array(
+											'right' => $this->getCurrency()->title,
+										),
 									));
 									?>
 								</div>
@@ -77,7 +80,10 @@ $this->the_header();
 									$this->createField(array(
 										'type' => 'number',
 										'name' => 'credit',
-										'label' => translator::trans("pay.price")
+										'label' => translator::trans("pay.price"),
+										'input-group' => array(
+											'right' => $this->getCurrency()->title,
+										),
 									));
 									?>
 								</div>
