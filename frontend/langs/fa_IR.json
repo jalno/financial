@@ -169,9 +169,9 @@
 		"error.financial.settings.currency.notfound": "هیچ ارزی یافت نشد. بعد از افزودن ارز جدید، آن را در اینجا مشاهده خواهید کرد.",
 		"financial.setting.currency.rounding_behaviour": "رفتار در هنگام تبدیل شدن",
 		"financial.setting.currency.rounding_precision": "دقت تبدیل",
-		"financial.setting.currency.rounding_behaviour.ceil": "گرد شدن یک واحد رو به بالا",
+		"financial.setting.currency.rounding_behaviour.ceil": "گرد شدن رو به بالا",
 		"financial.setting.currency.rounding_behaviour.round": "گرد شدن منصفانه",
-		"financial.setting.currency.rounding_behaviour.floor": "گرد شدن یک واحد رو به پایین",
+		"financial.setting.currency.rounding_behaviour.floor": "گرد شدن رو به پایین",
 		"settings.financial.currency.add": "افزودن ارز",
 		"settings.financial.currency.edit": "ویرایش ارز",
 		"settings.financial.currency.delete": "حذف ارز",
@@ -300,9 +300,9 @@
 		"packages.financial.error.IBAN.start_with_country_code": "شماره شبا باید با کد کشور معتبر شروع شود.",
 		"packages.financial.error.currency.rates.should_add_rates": "در صورت فعال بودن تبدیل ارز، باید حداقل یک نرخ برای تبدیل وارد کنید",
 
-		"packages.financial.currencies.rounding.behaviour.ceil.help_text": "در هنگام تبدیل سایر ارز ها به این ارز، عدد بدست آمده حداکثر یک واحد رو به بالا گرد خواهد شد.<br>مثال: 77.89 رند خواهد شد به 78",
+		"packages.financial.currencies.rounding.behaviour.ceil.help_text": "در هنگام تبدیل سایر ارز ها به این ارز، عدد بدست آمده رو به بالا گرد خواهد شد.<br>دقت تبدیل تعداد اعداد اعشاری در خروجی خواهد بود.<br>در صورت صفر بودن دقت تبدیل، عدد حداکثر یک واحد به سمت بالا گرد خواهد شد.<br>مثال: عدد 17.8912 با دقت تبدیل 0 تبدیل می شود به 18<br>مثال: عدد 17.8912 با دقت تبدیل 1 تبدیل می شود به 17.9",
 		"packages.financial.currencies.rounding.behaviour.round.help_text": "در هنگام تبدیل سایر ارز ها به این ارز، در صورت وجود قسمت اعشاری در خروجی، اعداد قسمت اعشاری به تعداد «دقت تبدیل» خواهند بود. (قسمت حذف شده به سمت بالا رند خواهد شد)<br>در صورت صفر بودن «دقت تبدیل» عدد خروجی بدون قسمت اعشاری خواهد بود.<br>مثال: 77.89 تبدیل می شود به 77.89 (دقت تبدیل: 2)<br>مثال: 77.89 تبدیل می شود به 77.9 (دقت تبدیل: 1)<br>مثال: 77.89 تبدیل می شود به 78 (دقت تبدیل: 0)<br>مثال: 77.89 تبدیل می شود به 80 (دقت تبدیل: -1)",
-		"packages.financial.currencies.rounding.behaviour.floor.help_text": "در هنگام تبدیل سایر ارز ها به این ارز، عدد بدست آمده حداکثر یک واحد رو به پایین گرد خواهد شد.<br>مثال: 77.89 رند خواهد شد به 77",
+		"packages.financial.currencies.rounding.behaviour.floor.help_text": "در هنگام تبدیل سایر ارز ها به این ارز، عدد بدست آمده رو به پایین گرد خواهد شد.<br>دقت تبدیل تعداد اعداد اعشاری در خروجی خواهد بود.<br>در صورت صفر بودن دقت تبدیل، عدد حداکثر یک واحد به سمت پایین گرد خواهد شد.<br>مثال: عدد 17.8912 با دقت تبدیل 0 تبدیل می شود به 17<br>مثال: عدد 17.8912 با دقت تبدیل 1 تبدیل می شود به 17.8",
 
 		"packages.financial.transaction": "گزارش صورتحساب های دریافتی و پرداختی",
 		"packages.financial.last_month": "{month} ماه گذشته",

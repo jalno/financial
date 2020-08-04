@@ -111,7 +111,7 @@ class Currencies extends Controller {
 				'optional' => true,
 			],
 			'rounding-precision' => [
-				'type' => 'number',
+				'type' => 'int8',
 				'zero' => true,
 				'optional' => true,
 			],
@@ -144,17 +144,16 @@ class Currencies extends Controller {
 		];
 		$view->setDataForm($this->inputsValue($rules));
 		$inputs = $this->checkInputs($rules);
-		if ((isset($inputs['rounding-behaviour']) and $inputs['rounding-behaviour'] == Currency::ROUND) and
-			(!isset($inputs['rounding-precision']) or $inputs['rounding-precision'] === null)
-		) {
-			throw new InputValidationException('rounding-precision');
-		}
-		if (!isset($inputs['change']) or !$inputs['change']) {
+		if (isset($inputs['change']) and $inputs['change']) {
+			foreach (['rounding-behaviour', 'rounding-precision', 'rates'] as $field) {
+				if (!isset($inputs[$field])) {
+					throw new InputValidationException($field);
+				}
+			}
+		} else {
 			unset($inputs['rates']);
 			unset($inputs['rounding-behaviour']);
 			unset($inputs['rounding-precision']);
-		} elseif (!isset($inputs['rates'])) {
-			throw new InputValidationException("rates");
 		}
 
 		$currency = new Currency();
@@ -226,7 +225,7 @@ class Currencies extends Controller {
 				'optional' => true,
 			],
 			'rounding-precision' => [
-				'type' => 'number',
+				'type' => 'int8',
 				'zero' => true,
 				'optional' => true,
 			],
@@ -266,11 +265,6 @@ class Currencies extends Controller {
 			}
 			if (!isset($inputs['rounding-behaviour']) and !$currency->rounding_behaviour) {
 				throw new InputValidationException('rounding-behaviour');
-			} elseif (
-				(isset($inputs['rounding-behaviour']) and $inputs['rounding-behaviour'] == Currency::ROUND) and
-				(array_key_exists('rounding-precision', $inputs) and $inputs['rounding-precision'] === null)
-			) {
-				throw new InputValidationException('rounding-precision');
 			}
 		} else {
 			unset($inputs['rates']);

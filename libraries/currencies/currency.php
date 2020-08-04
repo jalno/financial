@@ -78,12 +78,22 @@ class Currency extends dbObject {
 			throw new currency\UnChangableException($other, $this);
 		}
 		$changed = $price * $rate->price;
-		switch ($other->behaviour) {
-			case(self::CEIL): $changed = ceil($changed); break;
-			case(self::ROUND): $changed = round($changed, $other->precision ?? 0); break;
-			case(self::FLOOR): $changed = floor($changed); break;
+		switch ($other->rounding_behaviour) {
+			case(self::CEIL):
+				$precision = pow(10, $other->rounding_precision);
+				$changed = ceil($changed * $precision);
+				$changed /= $precision;
+				break;
+			case(self::ROUND):
+				$changed = round($changed, $other->rounding_precision);
+				break;
+			case(self::FLOOR):
+				$precision = pow(10, $other->rounding_precision);
+				$changed = floor($changed * $precision);
+				$changed /= $precision;
+				break;
 		}
-		return $changed;
+		return floatval($changed);
 	}
 	public function getCountRates():int{
 		$rate = new currency\rate();

@@ -107,11 +107,8 @@ export default class Currencies {
 	}
 	private static runChangebehaviourListener(): void {
 		const $container = $(".rounding-container", Currencies.$form);
-		const $behaviorContainer = $(".col-rounding-behaviour", $container);
-		const $precisionContainer = $(".col-rounding-precision", $container);
-		const $precisionInput = $("input[name=rounding-precision]", $container);
 		const $helpbox = $(".help-block", $container);
-		$("select[name=rounding-behaviour]", Currencies.$form).on("change", function() {
+		$("select[name=rounding-behaviour]", $container).on("change", function() {
 			const selected = parseInt($("option:selected", this).val(), 10) as Behaviours;
 			switch (selected) {
 				case(Behaviours.CEIL):
@@ -123,15 +120,6 @@ export default class Currencies {
 				case(Behaviours.FLOOR):
 				$helpbox.html(t("packages.financial.currencies.rounding.behaviour.floor.help_text"));
 				break;
-			}
-			if (selected === Behaviours.ROUND) {
-				$precisionContainer.show();
-				$behaviorContainer.addClass("col-sm-8").removeClass("col-sm-12");
-				$precisionInput.prop("disabled", false);
-			} else {
-				$precisionContainer.hide();
-				$behaviorContainer.removeClass("col-sm-8").addClass("col-sm-12");
-				$precisionInput.prop("disabled", true);
 			}
 		}).trigger("change");
 	}
