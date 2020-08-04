@@ -8,8 +8,11 @@ class edit extends form{
 	public function setCurrency(currency $currency){
 		$this->setData($currency, "currency");
 		$this->setDataForm($currency->toArray());
+		$this->setDataForm($currency->rounding_behaviour, 'rounding-behaviour');
+		$this->setDataForm($currency->rounding_precision, 'rounding-precision');
 		$this->setDataForm(date::format("Y/m/d H:i:s", $currency->update_at), "update_at");
 		$this->setDataForm($currency->hasRate(), 'change');
+		$this->setDataForm($currency->hasRate(), 'change-checkbox');
 		$rates = [];
 		foreach($currency->rates as $rate){
 			$rates[] = [

@@ -1,26 +1,29 @@
 <?php
 namespace themes\clipone\views\financial\settings\currencies;
-use \packages\base\translator;
-use \themes\clipone\viewTrait;
-use \themes\clipone\navigation;
-use \themes\clipone\views\formTrait;
-use \packages\financial\views\settings\currencies\edit as currenciesEdit;
-class edit extends currenciesEdit{
-	use viewTrait, formTrait;
+
+use packages\base\{translator};
+use packages\financial\{Currency};
+use themes\clipone\{views\FormTrait, Navigation, ViewTrait};
+use packages\financial\views\settings\currencies\Edit as CurrenciesEdit;
+
+class Edit extends CurrenciesEdit {
+	use ViewTrait, FormTrait;
+
 	protected $currency;
 	private $currencies;
-	function __beforeLoad(){
+
+	public function __beforeLoad(): void {
 		$this->currency = $this->getCurrency();
 		$this->currencies = $this->getCurrencies();
 		$this->setTitle([
-			translator::trans("settings.financial.currencies"),
-			translator::trans("settings.financial.currency.edit")
+			t("settings.financial.currencies"),
+			t("settings.financial.currency.edit")
 		]);
-		navigation::active("settings/financial/currencies");
+		Navigation::active("settings/financial/currencies");
 		$this->addBodyClass('financial-settings');
 		$this->addBodyClass('currencies-edit');
 	}
-	protected function geCurrenciesForSelect():array{
+	protected function geCurrenciesForSelect(): array {
 		$currencies = [];
 		foreach($this->currencies as $currency){
 			$currencies[] = [
@@ -29,5 +32,21 @@ class edit extends currenciesEdit{
 			];
 		}
 		return $currencies;
+	}
+	protected function getRoundingBehavioursForSelect(): array {
+		return array(
+			array(
+				'title' => t('financial.setting.currency.rounding_behaviour.ceil'),
+				'value' => Currency::CEIL,
+			),
+			array(
+				'title' => t('financial.setting.currency.rounding_behaviour.round'),
+				'value' => Currency::ROUND,
+			),
+			array(
+				'title' => t('financial.setting.currency.rounding_behaviour.floor'),
+				'value' => Currency::FLOOR,
+			),
+		);
 	}
 }

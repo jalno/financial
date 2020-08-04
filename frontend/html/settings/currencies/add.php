@@ -34,6 +34,10 @@ $this->the_header();
 								<?php
 								$this->createField(array(
 									'name' => 'change',
+									'type' => 'hidden',
+								));
+								$this->createField(array(
+									'name' => 'change-checkbox',
 									'type' => 'checkbox',
 									'options' => [
 										[

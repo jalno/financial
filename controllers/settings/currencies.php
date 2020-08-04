@@ -176,140 +176,151 @@ class Currencies extends Controller {
 		$this->response->Go(userpanel\url("settings/financial/currencies/edit/{$currency->id}"));
 		return $this->response;
 	}
-	public function edit($data){
-		authorization::haveOrFail('settings_currencies_edit');
-		$currency = currency::byId($data['currency']);
-		if(!$currency){
+	public function edit($data): Response {
+		Authorization::haveOrFail('settings_currencies_edit');
+		$currency = Currency::byID($data['currency']);
+		if (!$currency) {
 			throw new NotFound();
 		}
-		$view = view::byName(currencyview\edit::class);
-		$view->setCurrency($currency);
-		$currencies = new currency();
-		$currencies->where('id', $currency->id, "!=");
-		$view->setCurrencies($currencies->get());
-		$this->response->setStatus(true);
+		$view = View::byName(CurrencyView\Edit::class);
 		$this->response->setView($view);
+		$view->setCurrency($currency);
+		$view->setCurrencies((new Currency())->where('id', $currency->id, '!=')->get());
+		$this->response->setStatus(true);
 		return $this->response;
 	}
-	public function update($data){
-		authorization::haveOrFail('settings_currencies_edit');
-		$currency = currency::byId($data['currency']);
-		if(!$currency){
+	public function update($data): Response {
+		Authorization::haveOrFail('settings_currencies_edit');
+		$currency = Currency::byId($data['currency']);
+		if (!$currency) {
 			throw new NotFound();
 		}
-		$view = view::byName(currencyview\edit::class);
+		$view = View::byName(CurrencyView\Edit::class);
+		$this->response->setView($view);
 		$view->setCurrency($currency);
-		$currencies = new currency();
-		$currencies->where('id', $currency->id, "!=");
-		$view->setCurrencies($currencies->get());
-		$this->response->setStatus(false);
-		$inputsRules = [
+		$view->setCurrencies((new Currency())->where('id', $currency->id, '!=')->get());
+		$rules = [
 			'title' => [
-				'type' => 'string',
-				'optional' => true
-			],
-			'change' => [
-				'type' => 'bool',
-				'optional' => true
-			],
-			'rates' => [
-				'optional' => true
+				'type' => function ($data, $rule, $input) use ($currency) {
+					$data = (new Validator\StringValidator)->validate($input, $rule, $data);
+					$hasDuplicateTitle = (new Currency())->where('id', $currency->id, '!=')->where('title', $data)->has();
+					if ($hasDuplicateTitle) {
+						throw new DuplicateRecord('title');
+					}
+					return $data;
+				},
+				'optional' => true,
 			],
 			'update_at' => [
 				'type' => 'date',
-				'optional' => true
-			]
+				'unix' => true,
+				'optional' => true,
+			],
+			'change' => [
+				'type' => 'bool',
+				'optional' => true,
+			],
+			'rounding-behaviour' => [
+				'type' => 'number',
+				'values' => [Currency::CEIL, Currency::ROUND, Currency::FLOOR],
+				'optional' => true,
+			],
+			'rounding-precision' => [
+				'type' => 'number',
+				'zero' => true,
+				'optional' => true,
+			],
+			'rates' => [
+				'type' => function ($data, $rule, $input) {
+					if (!is_array($data)) {
+						throw new InputValidationException($input);
+					}
+					foreach ($data as $key => $rate) {
+						if (!isset($rate['currency']) or !isset($rate['price'])) {
+							throw new InputValidationException("rates[{$key}]");
+						}
+						foreach ($data as $key2 => $rate2) {
+							if ($key != $key2 and $rate2['currency'] == $rate['currency']) {
+								throw new DuplicateRecord("rates[{$key}][currency]");
+							}
+						}
+						$rate['currency'] = Currency::byID($rate['currency']);
+						if (!$rate['currency']) {
+							throw new InputValidationException("rates[{$key}][currency]");
+						}
+						if ($rate['price'] <= 0) {
+							throw new InputValidationException("rates[{$key}][price]");
+						}
+						$data[$key]['currency'] = $rate['currency'];
+					}
+					return $data;
+				},
+				'optional' => true,
+			],
 		];
-		try{
-			$inputs = $this->checkinputs($inputsRules);
-			$currencyObj = new currency();
-			$currencyObj->where('id', $currency->id, "!=");
-			$currencyObj->where('title', $inputs['title']);
-			if($currencyObj->has()){
-				throw new duplicateRecord('title');
+		$view->setDataForm($this->inputsValue($rules));
+		$inputs = $this->checkInputs($rules);
+		if (isset($inputs['change']) and $inputs['change']) {
+			if ((isset($inputs['rates']) and !$inputs['rates']) or (!isset($inputs['rates']) and !$currency->hasRate())) {
+				throw new InputValidationException('rates');
 			}
-			if(isset($inputs['title']) and !$inputs['title']){
-				unset($inputs['title']);
+			if (!isset($inputs['rounding-behaviour']) and !$currency->rounding_behaviour) {
+				throw new InputValidationException('rounding-behaviour');
+			} elseif (
+				(isset($inputs['rounding-behaviour']) and $inputs['rounding-behaviour'] == Currency::ROUND) and
+				(array_key_exists('rounding-precision', $inputs) and $inputs['rounding-precision'] === null)
+			) {
+				throw new InputValidationException('rounding-precision');
 			}
-			if(isset($inputs['update_at'])){
-				if($inputs['update_at']){
-					$inputs['update_at'] = date::strtotime($inputs['update_at']);
-				}else{
-					unset($inputs['update_at']);
-				}
-			}
-			if(!isset($inputs['change']) or !$inputs['change']){
-				unset($inputs['rates']);
-			}
-			if(isset($inputs['update_at'])){
-				if($inputs['update_at'] < 0){
-					throw new inputValidation('update_at');
-				}
-			}
-			if(isset($inputs['rates'])){
-				if(!is_array($inputs['rates'])){
-					throw new inputValidation('rates');
-				}
-				foreach($inputs['rates'] as $key => $rate){
-					if(!isset($rate['currency']) or !isset($rate['price'])){
-						throw new inputValidation("rates[{$key}]");
-					}
-					foreach($inputs['rates'] as $key2 => $rate2){
-						if($key != $key2 and $rate2['currency'] == $rate['currency']){
-							throw new duplicateRecord("rates[{$key}][currency]");
-						}
-					}
-					if(!$rate['currency'] = currency::byId($rate['currency'])){
-						throw new inputValidation("rates[{$key}][currency]");
-					}
-					if($rate['price'] <= 0){
-						throw new inputValidation("rates[{$key}][price]");
-					}
-					$inputs['ids'][] = $rate['currency']->id;
-					$inputs['rates'][$key]['currency'] = $rate['currency'];
-				}
-			}
-			if(isset($inputs['title'])){
-				$currency->title = $inputs['title'];
-			}
-			if(isset($inputs['update_at'])){
-				$currency->update_at = $inputs['update_at'];
-			}
-			if(isset($inputs['rates'])){
-				foreach($currency->rates as $rate){
-					if(!in_array($rate->changeTo->id, $inputs['ids'])){
-						$transaction = new transaction();
-						$changeTo = $rate->changeTo;
-						db::join('financial_transactions_products', 'financial_transactions_products.transaction=financial_transactions.id', "LEFT");
-						$transaction->where('financial_transactions.currency', $changeTo->id);
-						$transaction->where('financial_transactions.status', transaction::unpaid);
-						$transaction->where('financial_transactions_products.currency', $currency->id);
-						if($transaction->has()){
-							throw new dependenciesChangebleRateException($changeTo);
-						}
-						$rate->delete();
-					}
-				}
-				foreach($inputs['rates'] as $key => $rate){
-					$currency->addRate($rate['currency'], $rate['price']);
-				}
-			}else{
-				$currency->deleteRate();
-			}
-			$currency->save();
-			$this->response->setStatus(true);
-		}catch(inputValidation $error){
-			$view->setFormError(FormError::fromException($error));
-		}catch(duplicateRecord $error){
-			$view->setFormError(FormError::fromException($error));
-		}catch(dependenciesChangebleRateException $e){
-			$error = new error();
-			$error->setCode('financial.currencies.edit.dependenciesChangebleRateException');
-			$error->setMessage(translator::trans('error.financial.currencies.edit.dependenciesChangebleRateException', ['currency'=> $e->getCurrency()->title]));
-			$view->addError($error);
+		} else {
+			unset($inputs['rates']);
+			unset($inputs['rounding-behaviour']);
+			unset($inputs['rounding-precision']);
 		}
-		$view->setDataForm($this->inputsvalue($inputsRules));
-		$this->response->setView($view);
+
+        if (isset($inputs['rates']) and $inputs['rates']) {
+			$currencyRatesIDs = array_map(function ($item) {
+				return $item['currency']->id;
+			}, $inputs['rates']);
+
+			foreach ($currency->rates as $rate) {
+				$changeTo = $rate->changeTo;
+				if (!in_array($changeTo->id, $currencyRatesIDs)) {
+					$transaction = new Transaction();
+					db::join('financial_transactions_products', 'financial_transactions_products.transaction=financial_transactions.id', "LEFT");
+					$transaction->where('financial_transactions.currency', $changeTo->id);
+					$transaction->where('financial_transactions.status', Transaction::unpaid);
+					$transaction->where('financial_transactions_products.currency', $currency->id);
+					if ($transaction->has()) {
+						$error = new Error();
+						$error->setCode('financial.currencies.edit.dependenciesChangebleRateException');
+						$error->setMessage(t('error.financial.currencies.edit.dependenciesChangebleRateException', ['currency' => $changeTo->title]));
+						throw $error;
+					}
+					$rate->delete();
+				}
+			}
+			foreach ($inputs['rates'] as $rate) {
+				$currency->addRate($rate['currency'], $rate['price']);
+			}
+		}
+		if ((isset($inputs['change']) and !$inputs['change']) or (isset($inputs['rates']) and !$inputs['rates'])) {
+			$currency->deleteRate();
+		}
+		foreach (['title', 'update_at'] as $item) {
+			if (!isset($inputs[$item])) {
+				continue;
+			}
+			$currency->$item = $inputs[$item];
+		}
+		if (isset($inputs['rounding-behaviour'])) {
+			$currency->rounding_behaviour = $inputs['rounding-behaviour'];
+		}
+		if (isset($inputs['rounding-precision'])) {
+			$currency->rounding_precision = $inputs['rounding-precision'];
+		}
+		$currency->save();
+		$this->response->setStatus(true);
 		return $this->response;
 	}
 	public function delete($data){
@@ -366,12 +377,4 @@ class Currencies extends Controller {
 }
 class dependenciesTransactionException extends \Exception{}
 class dependenciesUserCurrencyException extends \Exception{}
-class dependenciesChangebleRateException extends \Exception{
-	private $currency;
-	public function __construct(currency $currency){
-		$this->currency = $currency;
-	}
-	public function getCurrency():currency{
-		return $this->currency;
-	}
-}
+

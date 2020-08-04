@@ -81,7 +81,10 @@ export default class Currencies {
 		}
 	}
 	private static runChangeListener(): void {
-		$("input[name=change]", Currencies.$form).on("change", function() {
+		const $change = $("input[name=change]", Currencies.$form);
+		const $roundingContainer = $(".rounding-container", Currencies.$form);
+		const $roundingInputs = $("select[name=rounding-behaviour], input[name=rounding-precision]", Currencies.$form);
+		$("input[name=change-checkbox]", Currencies.$form).on("change", function() {
 			const $this = $(this);
 			if (!$this.data("change")) {
 				$this.prop({
@@ -90,13 +93,15 @@ export default class Currencies {
 				});
 			}
 			if ($this.prop("checked")) {
+				$change.val("1");
 				Currencies.$panel.slideDown();
-				$(".rounding-container", Currencies.$form).slideDown();
-				$("select[name=rounding-behaviour], input[name=rounding-precision]", Currencies.$form).prop("disabled", false);
+				$roundingContainer.slideDown();
+				$roundingInputs.prop("disabled", false);
 			} else {
+				$change.val("0");
 				Currencies.$panel.slideUp();
-				$(".rounding-container", Currencies.$form).slideUp();
-				$("select[name=rounding-behaviour], input[name=rounding-precision]", Currencies.$form).prop("disabled", true);
+				$roundingContainer.slideUp();
+				$roundingInputs.prop("disabled", true);
 			}
 		}).trigger("change");
 	}
@@ -190,6 +195,10 @@ export default class Currencies {
 			if ($dataDuplicate) {
 				return;
 			}
+			$(".has-error", Currencies.$form).each(function() {
+				$(this).removeClass("has-error");
+				$(".help-block", this).remove();
+			});
 			$(this).formAjax({
 				success: (data: webuilder.AjaxResponse) => {
 					$.growl.notice({
@@ -202,7 +211,7 @@ export default class Currencies {
 				},
 				error: (error: webuilder.AjaxError) => {
 					if (error.error === "data_duplicate" || error.error === "data_validation") {
-						const $input = $("[name=" + error.input + "]");
+						const $input = $(`[name="${error.input}"]`);
 						const params = {
 							title: t("error.fatal.title"),
 							message: t(`packages.financial.${error.error}`),
