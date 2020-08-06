@@ -7,9 +7,38 @@
 @import "Currencies.less";
 .btn {
 	.btn-icons {
-		float: right;
+		float: left;
 		i {
 			vertical-align: middle;
+		}
+	}
+}
+.label {
+	.label-icon {
+		float: left;
+		i {
+			vertical-align: middle;
+			margin-right: 7px;
+		}
+	}
+	&-gold {
+		background-color: gold;
+		border-color: goldenrod;
+	}
+}
+&.rtl {
+	.btn {
+		.btn-icons {
+			float: right;
+		}
+	}
+	.label {
+		.label-icon {
+			float: right;
+			i {
+				margin-right: 0;
+				margin-left: 7px;
+			}
 		}
 	}
 }

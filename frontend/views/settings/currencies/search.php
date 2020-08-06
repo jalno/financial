@@ -13,9 +13,11 @@ class search extends currenciesListview{
 	use viewTrait, listTrait, formTrait;
 	function __beforeLoad(){
 		$this->setTitle(translator::trans("settings.financial.currencies"));
+		$this->addBodyClass("financial-settings");
+		$this->addBodyClass("settings-currencies");
 		navigation::active("settings/financial/currencies");
 		$this->setButtons();
-		if(empty($this->getDataList())){
+		if (empty($this->getDataList())) {
 			$this->addNotFoundError();
 		}
 	}

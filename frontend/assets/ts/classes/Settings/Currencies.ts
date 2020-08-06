@@ -51,8 +51,10 @@ export default class Currencies {
 			$(".panel-body .rates-currency", Currencies.$panel).each(function() {
 				const $parent = $(this).parents(".form-group");
 				if (!$(this).is($that) && $(this).val() === $that.val()) {
-					$parent.addClass("has-error");
-					$parent.append(`<span class="help-block">${t("packages.data_duplicate.currencies.rate")}</span>`);
+					if (!$parent.hasClass("has-error")) {
+						$parent.addClass("has-error");
+						$parent.append(`<span class="help-block">${t("packages.data_duplicate.currencies.rate")}</span>`);
+					}
 				} else {
 					$parent.removeClass("has-error");
 					$(".help-block", $parent).remove();
@@ -84,6 +86,7 @@ export default class Currencies {
 		const $change = $("input[name=change]", Currencies.$form);
 		const $roundingContainer = $(".rounding-container", Currencies.$form);
 		const $roundingInputs = $("select[name=rounding-behaviour], input[name=rounding-precision]", Currencies.$form);
+		const $helpbox = $(".rounding-behaviour-guidance");
 		$("input[name=change-checkbox]", Currencies.$form).on("change", function() {
 			const $this = $(this);
 			if (!$this.data("change")) {
@@ -96,18 +99,21 @@ export default class Currencies {
 				$change.val("1");
 				Currencies.$panel.slideDown();
 				$roundingContainer.slideDown();
+				$helpbox.slideDown();
 				$roundingInputs.prop("disabled", false);
 			} else {
 				$change.val("0");
 				Currencies.$panel.slideUp();
 				$roundingContainer.slideUp();
+				$helpbox.slideUp();
 				$roundingInputs.prop("disabled", true);
 			}
-		}).trigger("change");
+		});
+		$helpbox.removeClass("text-center");
 	}
 	private static runChangebehaviourListener(): void {
 		const $container = $(".rounding-container", Currencies.$form);
-		const $helpbox = $(".help-block", $container);
+		const $helpbox = $(".rounding-behaviour-guidance");
 		$("select[name=rounding-behaviour]", $container).on("change", function() {
 			const selected = parseInt($("option:selected", this).val(), 10) as Behaviours;
 			switch (selected) {
@@ -142,7 +148,7 @@ export default class Currencies {
 			}
 			const html = `<div class="row rates">
 			<div class="col-sm-5">
-				<div class="form-group"><label class="control-label">${t("financial.settings.currency.price")}</label><input value="" name="rates[0][price]" class="form-control rates-price ltr" type="number" step="0.0001"></div>
+				<div class="form-group"><label class="control-label">${t("financial.settings.currency.price")}</label><input value="" name="rates[0][price]" class="form-control rates-price ltr" type="number" step="any"></div>
 			</div>
 			<div class="col-sm-5">
 				<div class="form-group"><label class="control-label">${t("financial.settings.currency")}</label>

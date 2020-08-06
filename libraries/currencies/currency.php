@@ -19,21 +19,21 @@ class Currency extends dbObject {
         'title' => ['type' => 'text', 'required' => true],
 		'update_at' => ['type' => 'int', 'required' => true],
 		'rounding_behaviour' => ['type' => 'int'],
-		'rounding_precision' => ['type' => 'double'],
+		'rounding_precision' => ['type' => 'int'],
     ];
 	protected $relations = [
 		'params' => ['hasMany', Param::class, 'currency'],
 		'rates' => ['hasMany', Rate::class, 'currency'],
 	];
-	public function addRate(currency $currency, float $price){
-		$rate = new currency\rate();
+	public function addRate(Currency $currency, float $price){
+		$rate = new currency\Rate();
 		$rate->where('currency', $this->id);
 		$rate->where('changeTo', $currency->id);
 		if($rate = $rate->getOne()){
 			$rate->price = $price;
 			$rate->save();
 		}else{
-			$rate = new currency\rate();
+			$rate = new currency\Rate();
 			$rate->currency = $this->id;
 			$rate->changeTo = $currency->id;
 			$rate->price = $price;
@@ -53,7 +53,7 @@ class Currency extends dbObject {
 		}
 	}
 	public function hasRate(int $with = 0):bool{
-		$rate = new currency\rate();
+		$rate = new currency\Rate();
 		$rate->where('currency', $this->id);
 		if($with > 0){
 			$rate->where('changeTo', $with);
@@ -61,7 +61,7 @@ class Currency extends dbObject {
 		return $rate->has();
 	}
 	public function getRate(int $changeTo) {
-		$rate = new currency\rate();
+		$rate = new currency\Rate();
 		$rate->where('currency', $this->id);
 		$rate->where('changeTo', $changeTo);
 		return $rate->getOne();
