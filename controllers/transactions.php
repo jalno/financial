@@ -1,7 +1,7 @@
 <?php
 namespace packages\financial\controllers;
 
-use packages\base\{DB, db\duplicateRecord, view\Error, views\FormError, Packages, Http, inputValidation, InputValidationException, NotFound, Options, db\Parenthesis, Response, Translator};
+use packages\base\{DB, db\duplicateRecord, view\Error, views\FormError, Packages, Http, inputValidation, InputValidationException, NotFound, Options, db\Parenthesis, Response, Utility\Safe, Translator};
 use packages\userpanel;
 use packages\userpanel\{Date, Log, User};
 use packages\financial\{views\transactions\pay as PayView, views\transactions as financialViews};
@@ -462,6 +462,7 @@ class Transactions extends Controller {
 		$rules = array(
 			"credit" => array(
 				"type" => "number",
+				"float" => true,
 			),
 		);
 		if ($types) {
@@ -481,7 +482,10 @@ class Transactions extends Controller {
 		} else {
 			$inputs["user"] = $user;
 		}
-		if (!($inputs["credit"] > 0 and $inputs["credit"] <= $transaction->payablePrice() and $inputs["credit"] <= $inputs["user"]->credit)) {
+		if (!($inputs["credit"] > 0 and
+			in_array(Safe::floats_cmp($inputs["credit"], $transaction->payablePrice()), [-1, 0])) and
+			in_array(Safe::floats_cmp($inputs["credit"], $inputs["user"]->credit), [-1, 0])
+		) {
 			throw new InputValidationException("credit");
 		}
 		$pay = $transaction->addPay(array(

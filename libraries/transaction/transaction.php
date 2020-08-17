@@ -1,7 +1,7 @@
 <?php
 namespace packages\financial;
 
-use packages\base\{options, db\dbObject, packages, translator};
+use packages\base\{db\dbObject, Options, Packages, Utility\Safe, Translator};
 use packages\userpanel\{user, date};
 use packages\dakhl\API as dakhl;
 
@@ -114,17 +114,18 @@ class transaction extends dbObject{
 			return $pay->id;
 		}
 	}
-	protected function payablePrice(){
+	protected function payablePrice(): float {
 		$payable = $this->totalPrice();
-		if(!$this->isNew){
+		$paid = 0;
+		if (!$this->isNew) {
 			unset($this->data['pays']);
-			foreach($this->pays as $pay){
-				if($pay->status == transaction_pay::accepted){
-					$payable -= $pay->convertPrice();
+			foreach ($this->pays as $pay) {
+				if ($pay->status == transaction_pay::accepted) {
+					$paid += $pay->convertPrice();
 				}
 			}
 		}
-		return $payable;
+		return (Safe::floats_cmp($payable, $paid) == 0 ? 0 : floatval($payable - $paid));
 	}
 	protected function trigger_paid(){
 		if(!$this->param("trigered_paid")){
