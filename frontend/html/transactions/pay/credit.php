@@ -7,7 +7,7 @@ use \packages\financial\authentication;
 $this->the_header();
 ?>
 <div class="row">
-	<div class="col-sm-12">
+	<div class="col-sm-8 col-sm-offset-2">
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<i class="clip-phone-3"></i> <?php echo translator::trans('pay.byCredit'); ?>
@@ -15,7 +15,7 @@ $this->the_header();
 					<a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
 				</div>
 			</div>
-			<div class="panel-body">
+			<div class="panel-body panel-pay-by-credit-body">
 				<div class="row">
 					<div class="col-sm-12">
 						<?php if($this->getCredit() < $this->transaction->payablePrice()){ ?>
@@ -67,6 +67,7 @@ $this->the_header();
 										'label' => translator::trans("currentcredit"),
 										'value' => number_format($this->getCredit()),
 										'disabled' => true,
+										'ltr' => true,
 										'input-group' => array(
 											'right' => $this->getCurrency()->title,
 										),
@@ -78,9 +79,9 @@ $this->the_header();
 								<div class="col-xs-12">
 									<?php
 									$this->createField(array(
-										'type' => 'number',
 										'name' => 'credit',
 										'label' => translator::trans("pay.price"),
+										'ltr' => true,
 										'input-group' => array(
 											'right' => $this->getCurrency()->title,
 										),
