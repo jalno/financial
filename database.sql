@@ -30,7 +30,10 @@ CREATE TABLE `financial_currencies` (
 	`id` int(11) NOT NULL AUTO_INCREMENT,
 	`title` varchar(25) NOT NULL,
 	`update_at` int(11) NOT NULL,
-	PRIMARY KEY (`id`)
+	`rounding_behaviour` tinyint(4) NOT NULL,
+	`rounding_precision` tinyint(4) NOT NULL,
+	PRIMARY KEY (`id`),
+	UNIQUE KEY `title` (`title`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `financial_currencies_params` (
