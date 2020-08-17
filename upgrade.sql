@@ -28,3 +28,13 @@ ALTER TABLE `financial_transactions_products` CHANGE `price` `price` DOUBLE NOT 
 ---
 ALTER TABLE `financial_payports_pays` CHANGE `price` `price` DOUBLE NOT NULL;
 ALTER TABLE `financial_transactions_pays` CHANGE `price` `price` DOUBLE NOT NULL;
+
+---
+---	Commit: 6bde94e1ff6d70e08c5fc9d1b7d13c7b1e7c651e
+---	Date:   Tue Aug 4 10:44:32 2020 +0430
+---
+ALTER TABLE `financial_currencies` ADD UNIQUE(`title`);
+ALTER TABLE `financial_currencies`
+ADD `rounding_behaviour` TINYINT NOT NULL AFTER `update_at`,
+ADD `rounding_precision` TINYINT NOT NULL AFTER `rounding_behaviour`;
+
