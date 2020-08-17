@@ -53,9 +53,9 @@ export default class Add {
 				<td>${product.title}</td>
 				<td>${product.description}</td>
 				<td>${t("product.xnumber", {number: product.number})}</td>
-				<td>${Transaction.formatFlotNumber(product.price)} ${product.currency_title}</td>
-				<td>${Transaction.formatFlotNumber(product.discount)} ${product.currency_title}</td>
-				<td>${Transaction.formatFlotNumber(finalPrice)} ${product.currency_title}</td> <td><a href="#" class="btn btn-xs btn-bricky btn-remove tooltips" title="${t("delete")}"><i class="fa fa-times fa fa-white"></i></a></td>
+				<td>${Transaction.formatFloatNumber(product.price)} ${product.currency_title}</td>
+				<td>${Transaction.formatFloatNumber(product.discount)} ${product.currency_title}</td>
+				<td>${Transaction.formatFloatNumber(finalPrice)} ${product.currency_title}</td> <td><a href="#" class="btn btn-xs btn-bricky btn-remove tooltips" title="${t("delete")}"><i class="fa fa-times fa fa-white"></i></a></td>
 			</tr>
 		`;
 		const $row = $(code).appendTo($("tbody", $table));
@@ -154,7 +154,7 @@ export default class Add {
 				$(this).val(isDot ? "0." : "");
 				return;
 			}
-			val = Transaction.formatFlotNumber(parseFloat(val));
+			val = Transaction.formatFloatNumber(parseFloat(val));
 			if (isDot) {
 				val += ".";
 			}
