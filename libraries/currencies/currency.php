@@ -1,9 +1,9 @@
 <?php
 namespace packages\financial;
 
-use packages\base\{options, db, db\dbObject};
-use packages\financial\Currency\{Param, Rate};
-use packages\userpanel\user;
+use packages\base\{db, db\dbObject, Options};
+use packages\financial\Currency\{Param, Rate, UnChangableException, UndefinedCurrencyException};
+use packages\userpanel\User;
 
 class Currency extends dbObject {
 	use Paramable;
@@ -12,6 +12,23 @@ class Currency extends dbObject {
 	const CEIL = 1;
 	const ROUND = 2;
 	const FLOOR = 3;
+
+	public static function getDefault(User $user = null): Currency {
+		$currencyID = null;
+		if ($user) {
+			$currencyID = $user->option('financial_transaction_currency');
+		}
+		if (!$currencyID) {
+			$currencyID = Options::get('packages.financial.defaultCurrency');
+			if (!$currencyID) {
+				throw new UndefinedCurrencyException();
+			}
+			if ($user) {
+				$user->option('financial_transaction_currency', $currencyID);
+			}
+		}
+		return (new Currency())->byID($currencyID);
+	}
 
 	protected $dbTable = "financial_currencies";
 	protected $primaryKey = "id";
@@ -25,57 +42,52 @@ class Currency extends dbObject {
 		'params' => ['hasMany', Param::class, 'currency'],
 		'rates' => ['hasMany', Rate::class, 'currency'],
 	];
-	public function addRate(Currency $currency, float $price){
-		$rate = new currency\Rate();
-		$rate->where('currency', $this->id);
-		$rate->where('changeTo', $currency->id);
-		if($rate = $rate->getOne()){
+	public function addRate(Currency $currency, float $price): void {
+		$rate = $this->getRate($currency->id);
+		if ($rate) {
 			$rate->price = $price;
 			$rate->save();
-		}else{
-			$rate = new currency\Rate();
+		} else {
+			$rate = new Rate();
 			$rate->currency = $this->id;
 			$rate->changeTo = $currency->id;
 			$rate->price = $price;
 			$rate->save();
 		}
 	}
-	public function deleteRate(int $rate = 0){
-		if($rate == 0){
-			foreach($this->rates as $rate){
+	public function deleteRate(int $rate = 0): void {
+		if ($rate == 0) {
+			foreach ($this->rates as $rate) {
 				$rate->delete();
 			}
-		}else{
-			$rate = new currency\rate();
-			if($rate = $rate->byId($rate)){
+		} else {
+			$rate = (new Rate())->byID($rate);
+			if ($rate) {
 				$rate->delete();
 			}
 		}
 	}
-	public function hasRate(int $with = 0):bool{
-		$rate = new currency\Rate();
+	public function hasRate(int $with = 0): bool {
+		$rate = new Rate();
 		$rate->where('currency', $this->id);
-		if($with > 0){
+		if ($with > 0) {
 			$rate->where('changeTo', $with);
 		}
 		return $rate->has();
 	}
-	public function getRate(int $changeTo) {
-		$rate = new currency\Rate();
-		$rate->where('currency', $this->id);
-		$rate->where('changeTo', $changeTo);
-		return $rate->getOne();
+	public function getCountRates(): int {
+		return (new Rate())->where('currency', $this->id)->count();
+	}
+	public function getRate(int $changeTo):? Rate {
+		return (new Rate())->where('currency', $this->id)->where('changeTo', $changeTo)->getOne();
 	}
 	public function changeTo(float $price, Currency $other): float {
 		if ($other->id == $this->id) {
 			return $price;
 		}
-		$rate = new Currency\Rate();
-		$rate->where('currency', $this->id);
-		$rate->where('changeTo', $other->id);
-		$rate = $rate->getOne();
+		$rate = $this->getRate($other->id);
 		if (!$rate) {
-			throw new currency\UnChangableException($other, $this);
+			throw new UnChangableException($other, $this);
 		}
 		$changed = $price * $rate->price;
 		switch ($other->rounding_behaviour) {
@@ -94,27 +106,5 @@ class Currency extends dbObject {
 				break;
 		}
 		return floatval($changed);
-	}
-	public function getCountRates():int{
-		$rate = new currency\rate();
-		$rate->where('currency', $this->id);
-		return $rate->count();
-	}
-	public static function getDefault(user $user = null):currency{
-		$currency = null;
-		if($user){
-			$currency = $user->option('financial_transaction_currency');
-		}
-		if(!$currency){
-			if(!$currency = options::get('packages.financial.defaultCurrency')){
-				throw new currency\undefinedCurrencyException();
-			}
-			if($user){
-				$user->option('financial_transaction_currency', $currency);
-			}
-		}
-		$return  = new currency();
-		$return->where('id', $currency);
-		return $return->getOne();
 	}
 }
