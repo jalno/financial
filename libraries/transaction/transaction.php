@@ -23,9 +23,7 @@ class transaction extends dbObject{
 
 	public static function autoExpire(){
 		$transactions = (new static)->where('status', self::unpaid)
-									->where('expire_at', null, 'IS NOT')
-									->where('expire_at', date::time(), '<')
-									->get();
+		->where('expire_at', null, 'IS NOT')->where('expire_at', date::time(), '<')->get();
 		foreach ($transactions as $transaction) {
 			$transaction->status = self::expired;
 			$transaction->save();
@@ -288,18 +286,12 @@ class transaction extends dbObject{
 		$currency = $this->currency;
 		foreach ($this->products as $product) {
 			$pcurrency = $product->currency;
-			if ($pcurrency->id != $currency->id) {
-				$rate = new currency\rate();
-				$rate->where('currency', $pcurrency->id);
-				$rate->where('changeTo', $currency->id);
-				$rate = $rate->getOne();
-				if ($rate) {
-					$product->price *= $rate->price;
-					$product->discount *= $rate->price;
-					$product->currency = $currency->id;
-					$product->save();
-				}
-			}
+			try {
+				$product->price = $pcurrency->changeTo($product->price, $currency);
+				$product->discount = $pcurrency->changeTo($product->discount, $currency);
+				$product->currency = $currency->id;
+				$product->save();
+			} catch (currency\UnChangableException $e) {}
 			if ($invoice) {
 				if (!$product->description) {
 					$product->description = "";
