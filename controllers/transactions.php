@@ -767,6 +767,7 @@ class Transactions extends Controller {
 			'price' => array(
 				'type' => 'number',
 				'optional' => true,
+				'float' => true,
 			),
 			"currency" => array(
 				"type" => "number",

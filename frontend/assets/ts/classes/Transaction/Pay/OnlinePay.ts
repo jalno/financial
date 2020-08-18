@@ -31,7 +31,6 @@ export default class OnlinePay {
 	}
 	protected static runFormatListener(): void {
 		$("input[name=price]", OnlinePay.$form).on("change keyup", function(e) {
-			$(this).inputMsg("reset");
 			const val = $(this).val() as string;
 			if (!val || (e.keyCode === 110 && val.match(/\./g).length === 1)) {
 				return;
