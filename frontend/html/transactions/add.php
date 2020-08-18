@@ -120,7 +120,7 @@ $this->the_header();
 		</div>
     </form>
 </div>
-<div class="modal fade" id="product-add" tabindex="-1" data-show="true" role="dialog">
+<div class="modal fade" id="product-add" tabindex="-1" data-show="true" role="dialog" data-backdrop="static" data-keyboard="false">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 		<h4 class="modal-title"><?php echo translator::trans('users.search'); ?></h4>
