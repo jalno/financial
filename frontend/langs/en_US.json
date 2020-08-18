@@ -313,6 +313,9 @@
 		"packages.financial.paid": "Paid",
 		"packages.financial.user_paids": "User payments",
 		"packages.financial.paid_touser": "Paid to user",
-		"packages.financial.stats_curreny": "Pays currency is: {currency}"
+		"packages.financial.stats_curreny": "Pays currency is: {currency}",
+		"financial.default_currency": "Default",
+		"financial.settings.currency.changes": "Changes",
+		"financial.settings.currency.changeTo.price": "Price"
 	}
 }

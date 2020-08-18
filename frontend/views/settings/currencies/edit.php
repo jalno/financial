@@ -10,11 +10,13 @@ class Edit extends CurrenciesEdit {
 	use ViewTrait, FormTrait;
 
 	protected $currency;
+	protected $hasRate;
 	private $currencies;
 
 	public function __beforeLoad(): void {
 		$this->currency = $this->getCurrency();
 		$this->currencies = $this->getCurrencies();
+		$this->hasRate = $this->currency->hasRate();
 		$this->setTitle([
 			t("settings.financial.currencies"),
 			t("settings.financial.currency.edit")

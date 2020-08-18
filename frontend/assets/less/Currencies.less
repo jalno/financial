@@ -4,9 +4,58 @@ body.financial-settings {
 			color: transparent;
 			text-shadow: 0 0 0 #000;
 		}
+		.rate-inputs {
+			display: none;
+		}
 		.col-checkbox {
 			.form-group {
 				margin-top: 25px;
+			}
+		}
+		.default-currency-container {
+			.checkbox-inline {
+				margin-top: 29px !important;
+			}
+		}
+	}
+	&.settings-currencies {
+		.table-currencies {
+			tbody {
+				tr {
+					td {
+						.label-gold {
+							float: right
+						}
+					}
+				}
+			}
+		}
+	}
+	&.rtl {
+		&.currencies-add .currency-add-form, &.currencies-edit .currency-edit-form {
+			.rounding-behaviour-guidance {
+				font-family: yekan;
+			}
+		}
+		&.settings-currencies {
+			.table-currencies {
+				thead {
+					tr {
+						th {
+							font-family: koodak;
+						}
+					}
+				}
+				tbody {
+					tr {
+						font-family: yekan;
+						td {
+							.label-gold {
+								float: left
+							}
+						}
+					}
+				}
 			}
 		}
 	}
