@@ -26,7 +26,7 @@ export default class Transaction {
 		const split = float.toString().split(".");
 		const int = parseInt(split[0].toString().replace(/\D/g, ""), 10);
 		const number = isNaN(int) ? 0 : Transaction.formatNumber(int);
-		const decimal = split.length > 1 ? parseInt(split[1].toString().replace(/\D/g, ""), 10) : 0;
-		return number + (decimal > 0 ? "." + decimal : "");
+		const decimal = split.length > 1 ? (split[1].toString().replace(/\D/g, "")) : "";
+		return number + (decimal.length ? "." + decimal : "");
 	}
 }
