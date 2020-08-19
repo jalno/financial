@@ -159,7 +159,7 @@ class transaction extends dbObject{
 			if (isset($data['user'])) {
 				$userModel = (($data['user'] instanceof dbObject) ? $data['user'] : (new User())->byID($data['user']));
 			}
-			$data['currency'] = Currency::getDefault($userModel);
+			$this->currency = $data['currency'] = Currency::getDefault($userModel);
 		}
 		if($data['currency'] instanceof dbObject){
 			$data['currency'] = $data['currency']->id;
