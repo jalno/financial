@@ -6,6 +6,14 @@ use packages\userpanel\{user, date};
 use packages\dakhl\API as dakhl;
 
 class transaction extends dbObject{
+	/** status */
+	const UNPAID = self::unpaid;
+	const PAID = self::paid;
+	const REFUND = self::refund;
+	const EXPIRED = self::expired;
+	const REJECTED = self::rejected;
+
+	/** old style const, we dont removed these for backward compatibility */
 	const unpaid = 1;
 	const paid = 2;
 	const refund = 3;
