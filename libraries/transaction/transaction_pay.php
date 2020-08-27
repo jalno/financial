@@ -4,13 +4,27 @@ use \packages\base\{db, db\dbObject, packages};
 use packages\financial\{Bank\Account, events};
 
 class transaction_pay extends dbObject{
+	/** status */
+	const PENDING = self::pending;
+	const ACCEPTED = self::accepted;
+	const REJECTED = self::rejected;
+
+	/** method */
+	const CREDIT = self::credit;
+	const BANKTRANSFER = self::banktransfer;
+	const ONLINEPAY = self::onlinepay;
+	const PAYACCEPTED = self::payaccepted;
+
+
+	/** old style const, we dont removed these for backward compatibility */
+	const pending = 2;
 	const accepted = 1;
 	const rejected = 0;
-	const pending = 2;
 	const credit = 1;
 	const banktransfer = 2;
 	const onlinepay = 3;
 	const payaccepted = 4;
+
 	protected $dbTable = "financial_transactions_pays";
 	protected $primaryKey = "id";
 	protected $dbFields = array(
@@ -98,7 +112,7 @@ class transaction_pay extends dbObject{
 					if ($this->transaction->isConfigured()) {
 						$this->transaction->trigger_paid();
 					}
-				} else if ($this->transaction->status != Transaction::PENDING and $this->method == self::banktransfer) {
+				} else if ($this->transaction->status != Transaction::PENDING and $this->method == self::BANKTRANSFER) {
 					$this->transaction->status = Transaction::PENDING;
 					$this->transaction->save();
 				}
