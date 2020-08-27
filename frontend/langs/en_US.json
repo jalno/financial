@@ -5,6 +5,7 @@
 	},
 	"rtl": false,
 	"phrases":{
+		"financial.actions": "Actions",
 		"services": "Services",
 		"files":"Files",
 		"print": "print",

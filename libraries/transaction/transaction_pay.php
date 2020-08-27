@@ -112,9 +112,21 @@ class transaction_pay extends dbObject{
 					if ($this->transaction->isConfigured()) {
 						$this->transaction->trigger_paid();
 					}
-				} else if ($this->transaction->status != Transaction::PENDING and $this->method == self::BANKTRANSFER) {
+				} else if ($this->method == self::BANKTRANSFER and $this->status == self::PENDING and $this->transaction->status != Transaction::PENDING) {
 					$this->transaction->status = Transaction::PENDING;
 					$this->transaction->save();
+				} else if ($this->transaction->status == Transaction::PENDING) {
+					$shouldChangeTransactionStatusToUnpaid = true;
+					foreach ($this->transaction->pays as $pay) {
+						if ($pay->status == self::PENDING) {
+							$shouldChangeTransactionStatusToUnpaid = false;
+							break;
+						}
+					}
+					if ($shouldChangeTransactionStatusToUnpaid) {
+						$this->transaction->status = Transaction::UNPAID;
+						$this->transaction->save();
+					}
 				}
 			}
 		}

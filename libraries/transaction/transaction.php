@@ -94,6 +94,12 @@ class transaction extends dbObject{
 		}
 		$this->user->save();
 	}
+	public function canAddPay(): bool {
+		if (!in_array($this->status, [self::UNPAID, self::PENDING])) {
+			return false;
+		}
+		return $this->payablePrice() > 0;
+	}
 	protected function addProduct($productdata){
 		$product = new transaction_product($productdata);
 		if ($this->isNew){

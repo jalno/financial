@@ -5,6 +5,7 @@
 	},
 	"rtl": true,
 	"phrases":{
+		"financial.actions": "اقدامات",
 		"services": "سرویس ها",
 		"files":"فایل ها",
 		"plan.name" : "پلن",

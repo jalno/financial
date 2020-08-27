@@ -117,17 +117,18 @@ class Transactions extends Controller {
 	}
 	public static function payAcceptor(Transaction_pay $pay) {
 		$pay->status = Transaction_pay::accepted;
-		$log = new log();
-		$log->user = Authentication::getUser();
-		$log->type = logs\transactions\pay::class;
 		$pay->setParam('acceptor', Authentication::getID());
 		$pay->setParam('accept_date', date::time());
 		$pay->save();
 		$transaction = $pay->transaction;
+		$log = new Log();
+		$log->user = Authentication::getUser();
+		$log->type = logs\transactions\pay::class;
 		$log->title = t("financial.logs.transaction.pay.accept", ["transaction_id" => $transaction->id, 'pay_id' => $pay->id]);
-		$parameters['pay'] = $pay;
-		$parameters['currency'] = $transaction->currency;
-		$log->parameters = $parameters;
+		$log->parameters = array(
+			"pay" => $pay,
+			"currency" => $transaction->currency,
+		);
 		$log->save();
 	}
 	public static function payRejector(Transaction_pay $pay) {
@@ -375,9 +376,9 @@ class Transactions extends Controller {
 		}
 		return $transaction;
 	}
-	private function getTransactionForPay($data):transaction{
+	private function getTransactionForPay($data): transaction {
 		$transaction = $this->getTransaction($data['transaction']);
-		if($transaction->status != transaction::unpaid or $transaction->param('UnChangableException') or $transaction->payablePrice() < 0){
+		if (!$transaction->canAddPay() or $transaction->param('UnChangableException')){
 			throw new NotFound;
 		}
 		return $transaction;
@@ -505,9 +506,6 @@ class Transactions extends Controller {
 		$view = View::byName(PayView\Banktransfer::class);
 		$this->response->setView($view);
 		$transaction = $this->getTransactionForPay($data);
-		if ($transaction->status != Transaction::unpaid) {
-			throw new NotFound();
-		}
 		$view->setTransaction($transaction);
 		$userBankAccounts = Options::get("packages.financial.pay.tansactions.banka.accounts");
 		$account = new Account();
@@ -541,9 +539,6 @@ class Transactions extends Controller {
 		$view = View::byName(PayView\Banktransfer::class);
 		$this->response->setView($view);
 		$transaction = $this->getTransactionForPay($data);
-		if ($transaction->status != Transaction::unpaid) {
-			throw new NotFound();
-		}
 		$view->setTransaction($transaction);
 		$userBankAccounts = Options::get("packages.financial.pay.tansactions.banka.accounts");
 		$account = new Account();
@@ -673,7 +668,7 @@ class Transactions extends Controller {
 		$this->response->setView($view);
 		$pay = self::getPay($data);
 		$transaction = $pay->transaction;
-		if ($pay->status != transaction_pay::pending or $transaction->status != transaction::unpaid) {
+		if ($pay->status != transaction_pay::pending) {
 			throw new NotFound;
 		}
 		$view->setPay($pay);
@@ -1372,7 +1367,7 @@ class Transactions extends Controller {
 		authorization::haveOrFail('transactions_accept');
 		$view = view::byName("\\packages\\financial\\views\\transactions\\accept");
 		$transaction = transaction::byId($data['id']);
-		if(!$transaction or $transaction->status != transaction::unpaid){
+		if (!$transaction or !$transaction->canAddPay()) {
 			throw new NotFound;
 		}
 		$view->setTransactionData($transaction);
@@ -1509,7 +1504,7 @@ class Transactions extends Controller {
 	public function refundAccept($data) {
 		authorization::haveOrFail("transactions_refund_accept");
 		$transaction = $this->getTransaction($data["transaction"]);
-		if ($transaction->status != transaction::unpaid or $transaction->payablePrice() > 0) {
+		if (!$transaction or !$transaction->canAddPay) {
 			throw new NotFound();
 		}
 		$inputs = $this->checkinputs(array(
@@ -1541,7 +1536,7 @@ class Transactions extends Controller {
 	public function refundReject($data) {
 		Authorization::haveOrFail("transactions_refund_accept");
 		$transaction = $this->getTransaction($data["transaction"]);
-		if ($transaction->status != Transaction::unpaid or $transaction->payablePrice() > 0) {
+		if (!$transaction->canAddPay()) {
 			throw new NotFound();
 		}
 
