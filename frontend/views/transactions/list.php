@@ -1,19 +1,22 @@
 <?php
 namespace themes\clipone\views\transactions;
-use packages\userpanel;
-use packages\userpanel\{date, User};
-use packages\base\{packages, view\error, db\dbObject, frontend\theme, db\Parenthesis};
-use themes\clipone\{viewTrait, navigation, views\listTrait, views\formTrait, navigation\menuItem, views\TransactionTrait};
-use packages\financial\{Transaction, transaction_product as TransactionProduct, Authorization,
-						Authentication, Bank\Account, Currency, views\transactions\listview as transactionsListView};
 
-class listview extends transactionsListView{
+use packages\base\{view\Error, Packages, frontend\Theme, db\Parenthesis};
+use packages\financial\{Authentication, Authorization, Bank\Account, Currency, Transaction, transaction_product as TransactionProduct};
+use packages\userpanel;
+use packages\userpanel\{Date, User};
+use themes\clipone\{viewTrait, navigation, views\listTrait, views\formTrait, navigation\menuItem, views\TransactionTrait};
+use packages\financial\views\transactions\ListView as TransactionsListView;
+
+class ListView extends TransactionsListView {
 	use viewTrait, listTrait, formTrait, TransactionTrait;
+
 	protected $multiuser = false;
 	protected $canRefund = false;
 	protected $canAccept = false;
 	protected $user;
 	private $exporters = array();
+
 	public function __beforeLoad(){
 		$this->setTitle([
 			t('transactions'),
@@ -42,35 +45,6 @@ class listview extends transactionsListView{
 				}
 			}
 		}
-	}
-	private function addNotFoundError(){
-		$error = new error();
-		$error->setType(error::NOTICE);
-		$error->setCode('financial.transaction.notfound');
-		$btns = [];
-		if(packages::package('ticketing')){
-			$btns[] = [
-				'type' => 'btn-teal',
-				'txt' => t('ticketing.add'),
-				'link' => userpanel\url('ticketing/new')
-			];
-		}
-		if($this->canAdd){
-			$btns[] = [
-				'type' => 'btn-success',
-				'txt' => t('financial.transaction.add'),
-				'link' => userpanel\url('transactions/new')
-			];
-		}
-		if($this->canAddingCredit){
-			$btns[] = [
-				'type' => 'btn-success',
-				'txt' => t('transaction.adding_credit'),
-				'link' => userpanel\url('transactions/addingcredit')
-			];
-		}
-		$error->setData($btns, 'btns');
-		$this->addError($error);
 	}
 	public static function onSourceLoad(){
 		parent::onSourceLoad();
@@ -235,5 +209,34 @@ class listview extends transactionsListView{
 			);
 		}
 		return $options;
+	}
+	private function addNotFoundError(){
+		$error = new error();
+		$error->setType(error::NOTICE);
+		$error->setCode('financial.transaction.notfound');
+		$btns = [];
+		if(packages::package('ticketing')){
+			$btns[] = [
+				'type' => 'btn-teal',
+				'txt' => t('ticketing.add'),
+				'link' => userpanel\url('ticketing/new')
+			];
+		}
+		if($this->canAdd){
+			$btns[] = [
+				'type' => 'btn-success',
+				'txt' => t('financial.transaction.add'),
+				'link' => userpanel\url('transactions/new')
+			];
+		}
+		if($this->canAddingCredit){
+			$btns[] = [
+				'type' => 'btn-success',
+				'txt' => t('transaction.adding_credit'),
+				'link' => userpanel\url('transactions/addingcredit')
+			];
+		}
+		$error->setData($btns, 'btns');
+		$this->addError($error);
 	}
 }
