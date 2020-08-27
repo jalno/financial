@@ -79,24 +79,28 @@ class transaction_pay extends dbObject{
 		}
 	}
 	public function save($data = null) {
-		if($return = parent::save($data)){
-			foreach($this->tmparams as $param){
+		$return = parent::save($data);
+		if ($return) {
+			foreach ($this->tmparams as $param) {
 				$param->pay = $this->id;
 				$param->save();
 			}
 			$this->tmparams = array();
-			if($this->transaction->status == transaction::unpaid){
-				if($this->transaction->payablePrice() == 0){
-					$this->transaction->status = transaction::paid;
+			if (in_array($this->transaction->status, [Transaction::PENDING, Transaction::UNPAID])) {
+				if ($this->transaction->payablePrice() == 0) {
+					$this->transaction->status = Transaction::PAID;
 					$this->transaction->expire_at = null;
 					$this->transaction->paid_at = time();
 					$this->transaction->afterPay();
 					$this->transaction->save();
-					$event = new events\transactions\pay($this->transaction);
+					$event = new events\transactions\Pay($this->transaction);
 					$event->trigger();
-					if($this->transaction->isConfigured()){
+					if ($this->transaction->isConfigured()) {
 						$this->transaction->trigger_paid();
 					}
+				} else if ($this->transaction->status != Transaction::PENDING and $this->method == self::banktransfer) {
+					$this->transaction->status = Transaction::PENDING;
+					$this->transaction->save();
 				}
 			}
 		}
