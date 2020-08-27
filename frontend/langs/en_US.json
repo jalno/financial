@@ -16,6 +16,7 @@
 		"title.transaction.view" : "View Invoice",
 		"transactions" : "Invoices",
 		"tranaction" : "Invoice {id}",
+		"transaction.pending" : "Pending",
 		"transaction.unpaid" : "Unpaid",
 		"transaction.paid" : "Paid",
 		"transaction.refund" : "Refunded",

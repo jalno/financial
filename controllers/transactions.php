@@ -200,7 +200,8 @@ class Transactions extends Controller {
 				'optional' => true,
 			),
 			'status' => array(
-				'values' => [transaction::unpaid, transaction::paid, transaction::refund, transaction::expired],
+				'type' => 'number',
+				'values' => [Transaction::UNPAID, Transaction::PENDING, Transaction::PAID, Transaction::REFUND, Transaction::EXPIRED],
 				'optional' => true,
 			),
 			'download' => array(
@@ -223,6 +224,7 @@ class Transactions extends Controller {
 				'optional' => true,
 			),
 			'comparison' => array(
+				'type' => 'string',
 				'values' => array('equals', 'startswith', 'contains'),
 				'default' => 'contains',
 				'optional' => true

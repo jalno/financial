@@ -115,27 +115,31 @@ class ListView extends TransactionsListView {
 	public function setExporters(array $exporters) {
 		$this->exporters = $exporters;
 	}
-	protected function getStatusForSelect(){
+	protected function getStatusForSelect(): array {
 		return [
 			[
 				'title' => '',
-				'value' => ''
+				'value' => '',
 			],
 			[
 				'title' => t('transaction.unpaid'),
-				'value' => transaction::unpaid
+				'value' => Transaction::UNPAID,
+			],
+			[
+				'title' => t('transaction.pending'),
+				'value' => Transaction::PENDING,
 			],
 			[
 				'title' => t('transaction.paid'),
-				'value' => transaction::paid
+				'value' => Transaction::PAID,
 			],
 			[
 				'title' => t('transaction.refund'),
-				'value' => transaction::refund
+				'value' => Transaction::REFUND,
 			],
 			[
 				'title' => t('transaction.status.expired'),
-				'value' => transaction::expired
+				'value' => Transaction::EXPIRED,
 			]
 		];
 	}

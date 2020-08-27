@@ -15,6 +15,7 @@
 		"title.transaction.view" : "مشاهده صورتحساب",
 		"transactions" : "صورتحساب ها",
 		"tranaction" : "صورتحساب {id}",
+		"transaction.pending" : "منتظر تایید",
 		"transaction.unpaid" : "پرداخت نشده",
 		"transaction.paid" : "پرداخت شده",
 		"transaction.refund" : "بازگشت داده شده",
