@@ -168,7 +168,6 @@ class Transactions extends Controller {
 	}
 	public function listtransactions(){
 		authorization::haveOrFail('transactions_list');
-		transaction::autoExpire();
 		$view = view::byName(views\transactions\listview::class);
 		$this->response->setView($view);
 		$canAccept = Authorization::is_accessed("transactions_pay_accept");
