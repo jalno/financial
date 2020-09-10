@@ -261,8 +261,8 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							if($hasButtons){
 								$this->setButtonParam('pay_accept', 'link', userpanel\url("transactions/pay/accept/".$pay->id));
 								$this->setButtonParam('pay_reject', 'link', userpanel\url("transactions/pay/reject/".$pay->id));
-								$this->setButtonActive('pay_accept', $pay->status == Transaction_pay::pending);
-								$this->setButtonActive('pay_reject', $pay->status == Transaction_pay::pending);
+								$this->setButtonActive('pay_accept', $this->canPayAccept and $pay->status == Transaction_pay::pending);
+								$this->setButtonActive('pay_reject', $this->canPayReject and $pay->status == Transaction_pay::pending);
 							}
 							if($hastatus){
 								$statusClass = utility::switchcase($pay->status, array(
