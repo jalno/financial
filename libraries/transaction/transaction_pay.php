@@ -112,18 +112,14 @@ class transaction_pay extends dbObject{
 					if ($this->transaction->isConfigured()) {
 						$this->transaction->trigger_paid();
 					}
-				} else if ($this->method == self::BANKTRANSFER and $this->status == self::PENDING and $this->transaction->status != Transaction::PENDING) {
+				} elseif ($this->method == self::BANKTRANSFER and $this->status == self::PENDING and $this->transaction->status != Transaction::PENDING) {
 					$this->transaction->status = Transaction::PENDING;
 					$this->transaction->save();
-				} else if ($this->transaction->status == Transaction::PENDING) {
-					$shouldChangeTransactionStatusToUnpaid = true;
-					foreach ($this->transaction->pays as $pay) {
-						if ($pay->status == self::PENDING) {
-							$shouldChangeTransactionStatusToUnpaid = false;
-							break;
-						}
-					}
-					if ($shouldChangeTransactionStatusToUnpaid) {
+				} elseif ($this->transaction->status == Transaction::PENDING) {
+					$hasPendingPay = (new Static)->where("transaction", $this->transaction->id)
+									->where("status", self::PENDING)
+									->has();
+					if (!$hasPendingPay) {
 						$this->transaction->status = Transaction::UNPAID;
 						$this->transaction->save();
 					}
@@ -153,7 +149,6 @@ class transaction_pay extends dbObject{
 				->delete("financial_transactions_pays_params");
 		}
 	}
-
 	public function getBanktransferBankAccount() {
 		if ($this->method != self::banktransfer) {
 			return null;
@@ -166,7 +161,21 @@ class transaction_pay extends dbObject{
 			return ($bankaccount) ? $bankaccount : null;
 		}
 	}
-
+	public function delete() {
+		$transaction = $this->transaction;
+		$return = parent::delete();
+		if ($return) {
+			$hasPendingPay = (new Static)->where("transaction", $transaction->id)
+							->where("status", self::PENDING)
+							->has();
+			if ($hasPendingPay) {
+				$transaction->status = Transaction::PENDING;
+			} elseif ($transaction->payablePrice() > 0) {
+				$transaction->status = Transaction::UNPAID;
+			}
+			$transaction->save();
+		}
+	}
 	protected function convertPrice() {
 		if ($this->currency->id == $this->transaction->currency->id) {
 			return $this->price;

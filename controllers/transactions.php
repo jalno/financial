@@ -1283,10 +1283,6 @@ class Transactions extends Controller {
 					}
 				}
 				$transaction_pay->delete();
-				if($transaction->payablePrice() > 0){
-					$transaction->status = transaction::unpaid;
-				}
-				$transaction->save();
 				$this->response->setStatus(true);
 				$this->response->Go(userpanel\url('transactions/edit/'.$transaction->id));
 			}catch(inputValidation $error){
