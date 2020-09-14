@@ -1,19 +1,20 @@
 <?php
 namespace themes\clipone\views\transactions\pay;
-use \packages\base\translator;
-use \packages\userpanel;
-use \packages\userpanel\date;
-use \packages\financial\views\transactions\pay\banktransfer as banktransferView;
-use \themes\clipone\breadcrumb;
-use \themes\clipone\navigation;
-use \themes\clipone\navigation\menuItem;
-use \themes\clipone\viewTrait;
-use \themes\clipone\views\formTrait;
 
-class banktransfer extends banktransferView{
-	use viewTrait,formTrait;
+use packages\base\{Translator};
+use packages\financial\{Transaction};
+use packages\userpanel;
+use packages\userpanel\date;
+use themes\clipone\{BreadCrumb, views\FormTrait, navigation\MenuItem, Navigation, ViewTrait};
+use packages\financial\views\transactions\pay\Banktransfer as BanktransferView;
+
+class Banktransfer extends BanktransferView {
+	use FormTrait, ViewTrait;
+
+	/** @var Transaction */
 	protected $transaction;
-	function __beforeLoad(){
+
+	public function __beforeLoad(): void {
 		$this->transaction = $this->getTransaction();
 		$this->setTitle(array(
 			translator::trans('pay.byBankTransfer')
@@ -22,6 +23,16 @@ class banktransfer extends banktransferView{
 		$this->setNavigation();
 		$this->addBodyClass("transaction-pay-bankaccount");
 		$this->addBodyClass("transaction-pay-banktransfer");
+	}
+	protected function getBankAccountsForSelect(){
+		$options = array();
+		foreach ($this->getBankAccounts() as $account){
+			$options[] = array(
+				"title" => $account->bank->title . "[{$account->cart}]",
+				"value" => $account->id
+			);
+		}
+		return $options;
 	}
 	private function setNavigation(){
 		$item = new menuItem("transactions");
@@ -49,15 +60,5 @@ class banktransfer extends banktransferView{
 		breadcrumb::addItem($item);
 
 		navigation::active("transactions/list");
-	}
-	protected function getBankAccountsForSelect(){
-		$options = array();
-		foreach ($this->getBankAccounts() as $account){
-			$options[] = array(
-				"title" => $account->bank->title . "[{$account->cart}]",
-				"value" => $account->id
-			);
-		}
-		return $options;
 	}
 }
