@@ -533,8 +533,9 @@ class Transactions extends Controller {
 				},
 			),
 			"price" => array(
-				"type" => "number",
+				"type" => "float",
 				"zero" => false,
+				"min" => 0,
 				"max" => $transaction->remainPriceForAddPay(),
 			),
 			"followup" => array(

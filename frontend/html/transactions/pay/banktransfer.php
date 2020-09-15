@@ -137,6 +137,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 								'type' => 'number',
 								'min' => 0,
 								'ltr' => true,
+								'step' => 'any',
 								"input-group" => array(
 									"right" => array(
 										array(
