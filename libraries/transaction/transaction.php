@@ -98,7 +98,17 @@ class transaction extends dbObject{
 		if (!in_array($this->status, [self::UNPAID, self::PENDING])) {
 			return false;
 		}
-		return $this->payablePrice() > 0;
+		return $this->remainPriceForAddPay() > 0;
+	}
+	public function remainPriceForAddPay(): float {
+		$remainPrice = $this->totalPrice();
+		unset($this->data["pays"]);
+		foreach ($this->pays as $pay) {
+			if (in_array($pay->status, [Transaction_pay::ACCEPTED, Transaction_pay::PENDING])) {
+				$remainPrice -= $pay->convertPrice();
+			}
+		}
+		return $remainPrice;
 	}
 	protected function addProduct($productdata){
 		$product = new transaction_product($productdata);
