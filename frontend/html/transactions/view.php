@@ -7,7 +7,7 @@ use packages\userpanel\{Date, User};
 use themes\clipone\Utility;
 
 $isLogin = Authentication::check();
-$payablePrice = $this->transaction->payablePrice();
+$remainPriceForAddPay = $this->transaction->remainPriceForAddPay();
 $refundTransaction = $this->transaction->totalPrice() < 0;
 if ($refundTransaction) {
 	$refundInfo = nl2br($this->transaction->param("refund_pay_info"));
@@ -309,7 +309,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 						<li>
 							<strong><?php echo t("packages.financial.payable_price"); ?>:</strong>
 						<?php
-						echo $this->numberFormat(abs($payablePrice)) . " " .$currency->title;
+						echo $this->numberFormat(abs($remainPriceForAddPay)) . " " .$currency->title;
 						?>
 						</li>
 					</ul>
@@ -324,7 +324,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 					?>
 					<a class="btn btn-lg btn-green hidden-print btn-pay" href="<?php echo userpanel\url('transactions/pay/'.$this->transaction->id, $parameter);?>"><?php echo t("packages.financial.transaction.pay"); ?><i class="fa fa-check"></i></a>
 					<?php
-					} else if ($payablePrice < 0 and $this->canAcceptRefund) {
+					} else if ($remainPriceForAddPay < 0 and $this->canAcceptRefund) {
 						$refundTransaction = true;
 					?>
 					<a class="btn btn-lg btn-success hidden-print" href="#refund-accept-modal" data-toggle="modal">
