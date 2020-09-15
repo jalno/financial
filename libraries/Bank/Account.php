@@ -1,7 +1,8 @@
 <?php
 namespace packages\financial\Bank;
+
 use packages\userpanel\user;
-use packages\base\db\dbObject;
+use packages\base\{db\dbObject, Options};
 use packages\financial\{Bank, authorization};
 
 class Account extends dbObject {
@@ -20,7 +21,7 @@ class Account extends dbObject {
 		if ($availableBankAccountsForPay) {
 			$accounts->where("financial_banks_accounts.id", $availableBankAccountsForPay, "IN");
 		}
-		return $account->get($limit, array("financial_banks_accounts.*", "userpanel_users.*", "financial_banks.*"));
+		return $accounts->get($limit, array("financial_banks_accounts.*", "userpanel_users.*", "financial_banks.*"));
 	}
 
 	/** status */

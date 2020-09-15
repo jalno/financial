@@ -15,8 +15,14 @@
 		"method":"get"
 	},
 	{
-		"path": ["userpanel","transactions","pay", "credit", {"type":"dynamic", "name":"transaction", "regex":"/^(\\d+)$/"}],
-		"controller": "controllers\\transactions@payByCredit"
+		"path": "userpanel/transactions/pay/credit/:transaction",
+		"controller": "controllers/transactions@payByCreditView",
+		"method": "post"
+	},
+	{
+		"path": "userpanel/transactions/pay/credit/:transaction",
+		"controller": "controllers/transactions@payByCredit",
+		"method": "post"
 	},
 	{
 		"path": ["userpanel","transactions","pay", "banktransfer", {"type":"dynamic", "name":"transaction", "regex":"/^(\\d+)$/"}],
