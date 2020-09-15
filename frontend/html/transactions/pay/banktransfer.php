@@ -137,6 +137,14 @@ $this->the_header(!$isLogin ? "logedout" : "");
 								'type' => 'number',
 								'min' => 0,
 								'ltr' => true,
+								"input-group" => array(
+									"right" => array(
+										array(
+											"type" => "addon",
+											"text" => $this->transaction->currency->title,
+										),
+									),
+								),
 							));
 							?>
 						</div>
