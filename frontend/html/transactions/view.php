@@ -135,10 +135,10 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							<strong><?php echo t("packages.financial.transaction.title"); ?>:</strong> <?php echo $this->transaction->title; ?>
 						</li>
 						<li>
-							<strong><?php echo t("transaction.createdate"); ?>:</strong> <?php echo date::format("Y/m/d H:i:s", $this->transaction->create_at); ?>
+							<strong><?php echo t("transaction.createdate"); ?>:</strong> <span dir="ltr"> <?php echo date::format("Y/m/d H:i:s", $this->transaction->create_at); ?><span>
 						</li>
 						<li>
-							<strong><?php echo t("transaction.add.expire_at"); ?>:</strong> <?php echo date::format("Y/m/d H:i:s", $this->transaction->expire_at); ?>
+							<strong><?php echo t("transaction.add.expire_at"); ?>:</strong> <span dir="ltr"><?php echo date::format("Y/m/d H:i:s", $this->transaction->expire_at); ?></span>
 						</li>
 						<li>
 						<?php
@@ -279,7 +279,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 						?>
 							<tr data-pay='<?php echo json\encode($pay->toArray()); ?>'>
 								<td><?php echo $x++; ?></td>
-								<td><?php echo $pay->date; ?></td>
+								<td class="ltr-text-center"><?php echo $pay->date; ?></td>
 								<td><?php echo $pay->method; ?></td>
 								<?php if($hasdesc){ ?><td><?php echo $pay->description; ?></td><?php } ?>
 								<td><?php echo $pay->price; ?></td>
