@@ -1,7 +1,8 @@
 <?php
 namespace packages\financial;
 
-use packages\base\{options, db\dbObject, packages, translator};
+use packages\base\{options, db, db\dbObject, packages, translator};
+use packages\financial\{products\AddingCredit};
 use packages\userpanel\{user, date};
 use packages\dakhl\API as dakhl;
 
@@ -109,6 +110,12 @@ class transaction extends dbObject{
 			}
 		}
 		return $remainPrice;
+	}
+	public function canPayByCredit(): bool {
+		return !((new Transaction_Product())
+		->where("transaction", $this->id)
+		->where("type", [AddingCredit::class, "\\" . AddingCredit::class], "IN")
+		->has());
 	}
 	protected function addProduct($productdata){
 		$product = new transaction_product($productdata);
