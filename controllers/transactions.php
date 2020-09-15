@@ -1,7 +1,7 @@
 <?php
 namespace packages\financial\controllers;
 
-use packages\base\{DB, db\duplicateRecord, view\Error, views\FormError, Packages, Http, inputValidation, InputValidationException, NotFound, Options, db\Parenthesis, Response, Translator};
+use packages\base\{DB, db\duplicateRecord, view\Error, views\FormError, Packages, Http, inputValidation, InputValidationException, NotFound, Options, db\Parenthesis, Response, Translator, Validator};
 use packages\userpanel;
 use packages\userpanel\{Date, Log, User};
 use packages\financial\{views\transactions\pay as PayView, views\transactions as financialViews};
@@ -499,74 +499,62 @@ class Transactions extends Controller {
 		$this->response->setView($view);
 		return $this->response;
 	}
-	public function payByBankTransferView($data) {
-		if(!in_array('banktransfer', self::getAvailablePayMethods())){
+	public function payByBankTransferView($data): Response {
+		if (!in_array('banktransfer', self::getAvailablePayMethods())) {
 			throw new NotFound();
 		}
+		$transaction = $this->getTransactionForPay($data);
 		$view = View::byName(PayView\Banktransfer::class);
 		$this->response->setView($view);
-		$transaction = $this->getTransactionForPay($data);
 		$view->setTransaction($transaction);
-		$userBankAccounts = Options::get("packages.financial.pay.tansactions.banka.accounts");
-		$account = new Account();
-		$account->with("user");
-		$account->with("bank");
-		$account->where("financial_banks_accounts.status", Account::Active);
-		if ($userBankAccounts) {
-			$account->where("financial_banks_accounts.id", $userBankAccounts, "IN");
-		}
-		$accounts = $account->get(null, array("financial_banks_accounts.*", "userpanel_users.*", "financial_banks.*"));
-		$transaction_pay = new Transaction_pay();
-		$transaction_pay->where("transaction", $transaction->id);
-		$transaction_pay->where("method", Transaction_pay::banktransfer);
-		$transaction_pay = $transaction_pay->get();
-		if ($transaction_pay) {
-			$view->setBanktransferPays($transaction_pay);
-		}
-		$view->setBankAccounts($accounts);
-		$view->setDataForm($transaction->payablePrice(), 'price');
-		$view->setDataForm(Date::format("Y/m/d H:i:s"), 'date');
+		$banktransferPays = (new Transaction_pay())
+		->where("transaction", $transaction->id)
+		->where("method", Transaction_pay::banktransfer)
+		->get();
+		$view->setBanktransferPays($banktransferPays);
+		$view->setBankAccounts(Account::getAvailableAccounts());
+		$this->response->setStatus(true);
 		return $this->response;
 	} // payByBankTransferView
 
-	public function payByBankTransfer($data){
-		if(!in_array('banktransfer', self::getAvailablePayMethods())){
+	public function payByBankTransfer($data): Response {
+		if (!in_array('banktransfer', self::getAvailablePayMethods())) {
 			throw new NotFound();
 		}
-		/**
-		 * @var PayView\Banktransfer
-		 */
+		/** @var PayView\Banktransfer $view */
+		$transaction = $this->getTransactionForPay($data);
 		$view = View::byName(PayView\Banktransfer::class);
 		$this->response->setView($view);
-		$transaction = $this->getTransactionForPay($data);
 		$view->setTransaction($transaction);
-		$userBankAccounts = Options::get("packages.financial.pay.tansactions.banka.accounts");
-		$account = new Account();
-		$account->with("user");
-		$account->with("bank");
-		$account->where("financial_banks_accounts.status", Account::Active);
-		if ($userBankAccounts) {
-			$account->where("financial_banks_accounts.id", $userBankAccounts, "IN");
-		}
-		$accounts = $account->get(null, array("financial_banks_accounts.*", "userpanel_users.*", "financial_banks.*"));
+		$accounts = Account::getAvailableAccounts();
 		$view->setBankAccounts($accounts);
 		$this->response->setStatus(false);
-		$inputsRules = array(
+		$rules = array(
 			"bankaccount" => array(
-				"type" => "number"
+				"type" => function ($data, $rule, $input) use ($accounts) {
+					foreach ($accounts as $account) {
+						if ($account->id == $data) {
+							return $account;
+						}
+					}
+					throw new InputValidationException($input);
+				},
 			),
 			"price" => array(
 				"type" => "number",
+				"zero" => false,
+				"max" => $transaction->remainPriceForAddPay(),
 			),
 			"followup" => array(
-				"type" => "string"
+				"type" => "string",
 			),
 			"description" => array(
 				"type" => "string",
 				"optional" => true,
 			),
 			"date" => array(
-				"type" => "date"
+				"type" => "date",
+				"unix" => true,
 			),
 			"attachment" => array(
 				"type" => "file",
@@ -576,32 +564,17 @@ class Transactions extends Controller {
 				"obj" => true,
 			)
 		);
-		$inputs = $this->checkinputs($inputsRules);
-		$found = false;
-		$inputBankAccount = null;
-		foreach ($accounts as $account) {
-			if ($account->id == $inputs["bankaccount"]) {
-				$inputBankAccount = $account;
-				$found = true;
-				break;
-			}
-		}
-		if (!$found) {
-			throw new InputValidationException("bankaccount");
-		}
-		if ($inputs["price"] <= 0 or $inputs["price"] > $transaction->payablePrice()) {
-			throw new InputValidationException("price");
-		}
-		$inputs["date"] = Date::strtotime($inputs["date"]);
+		$inputs = $this->checkInputs($rules);
 		if (!Authorization::is_accessed("transactions_pay_accept") and $inputs["date"] <= Date::time() - ( 86400 * 30)) {
 			throw new InputValidationException("date");
 		}
-		if (self::checkBanktransferFollowup($inputBankAccount->bank_id, $inputs['followup'])) {			
-			throw new duplicateRecord("followup");
+		if (self::checkBanktransferFollowup($inputs["bankaccount"]->bank_id, $inputs['followup'])) {
+			throw new DuplicateRecord("followup");
 		}
 		$params = array(
-			"bankaccount" => $inputs["bankaccount"],
+			"bankaccount" => $inputs["bankaccount"]->id,
 			"followup" => $inputs["followup"],
+			"description" => $inputs['description'] ?? "",
 		);
 		if (isset($inputs['attachment'])) {
 			$path = "storage/public/" . $inputs['attachment']->md5() . "." . $inputs['attachment']->getExtension();
@@ -614,25 +587,18 @@ class Transactions extends Controller {
 			}
 			$params['attachment'] = $path;
 		}
-		$newPay = array(
+		$pay = $transaction->addPay(array(
 			"date" => $inputs["date"],
 			"method" => Transaction_pay::banktransfer,
 			"price" => $inputs["price"],
-			"status" => Transaction_pay::pending,
+			"status" => Transaction_pay::pending, //(Authorization::is_accessed("transactions_pay_accept") ? Transaction_pay::accepted : Transaction_pay::pending),
 			"currency" => $transaction->currency->id,
-			"params" => $params
-		);
-		if (isset($inputs['description']) and $inputs['description']) {
-			$newPay['params']['description'] = $inputs['description'];
-		}
-		if (Authorization::is_accessed("transactions_pay_accept")) {
-			$newPay['status'] = Transaction_pay::accepted;
-		}
-		$pay = $transaction->addPay($newPay);
+			"params" => $params,
+		));
 		if ($pay) {
 			if (Authentication::check()) {
 				$log = new Log();
-				$log->user = Authentication::getUser();
+				$log->user = Authentication::getID();
 				$log->type = logs\transactions\Pay::class;
 				$log->title = t("financial.logs.transaction.pay", ["transaction_id" => $transaction->id]);
 				$log->parameters = array(
@@ -646,13 +612,12 @@ class Transactions extends Controller {
 			if ($token = Http::getURIData("token")) {
 				$parameter["token"] = $token;
 			}
-			$url = '';
-			$url = ($transaction->payablePrice() > 0) ? 'pay/banktransfer/' : 'view/';
+			$this->response->setStatus(true);
+			$url = ($transaction->remainPriceForAddPay() > 0) ? 'pay/banktransfer/' : 'view/';
 			$this->response->Go(userpanel\url('transactions/'  . $url . $transaction->id, $parameter));
 		} else {
 			$this->response->setStatus(false);
 		}
-		$this->response->setStatus(true);		
 		return $this->response;
 	} // payByBankTransfer
 

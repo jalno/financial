@@ -23,6 +23,8 @@ class Banktransfer extends BanktransferView {
 		$this->setNavigation();
 		$this->addBodyClass("transaction-pay-bankaccount");
 		$this->addBodyClass("transaction-pay-banktransfer");
+		$this->setDataForm($this->transaction->remainPriceForAddPay(), "price");
+		$this->setDataForm(Date::format("Y/m/d H:i:s"), "date");
 	}
 	protected function getBankAccountsForSelect(){
 		$options = array();

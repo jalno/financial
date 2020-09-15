@@ -149,17 +149,12 @@ class transaction_pay extends dbObject{
 				->delete("financial_transactions_pays_params");
 		}
 	}
-	public function getBanktransferBankAccount() {
+	public function getBanktransferBankAccount(): ?Account {
 		if ($this->method != self::banktransfer) {
 			return null;
 		}
 		$bankaccount_id = $this->param("bankaccount");
-		if ($bankaccount_id) {
-			$bankaccount = new Account();
-			$bankaccount->where("id", $bankaccount_id);
-			$bankaccount = $bankaccount->getOne();
-			return ($bankaccount) ? $bankaccount : null;
-		}
+		return ($bankaccount_id ? (new Account())->byID($bankaccount_id) : null);
 	}
 	public function delete() {
 		$transaction = $this->transaction;
