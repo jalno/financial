@@ -47,6 +47,16 @@
 		"controller": "controllers\\transactions@onlinePay"
 	},
 	{
+		"path": "userpanel/transactions/pay/onlinepay/:transaction",
+		"controller": "controllers/transactions@onlinePayView",
+		"method": "get"
+	},
+	{
+		"path": "userpanel/transactions/pay/onlinepay/:transaction",
+		"controller": "controllers/transactions@onlinePay",
+		"method": "post"
+	},
+	{
 		"path": ["transactions","pay", "onlinepay", "callback", {"type":"dynamic", "name":"pay", "regex":"/^\\d+$/"}],
 		"controller": "controllers\\transaction\\OnlinePay@callBack"
 	},

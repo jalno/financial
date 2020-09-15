@@ -658,96 +658,105 @@ class Transactions extends Controller {
 	public function rejectPay($data){
 		return $this->accept_handler($data, transaction_pay::rejected);
 	}
-	public function onlinePay($data) {
-		if (!in_array('onlinepay',self::getAvailablePayMethods())) {
+	public function onlinePayView($data): Response {
+		if (!in_array('onlinepay', self::getAvailablePayMethods())) {
 			throw new NotFound;
 		}
 		$transaction = $this->getTransactionForPay($data);
 		$currency = $transaction->currency;
-		$payablePrice = $transaction->payablePrice();
-
-		$view = view::byName(views\transactions\pay\onlinepay::class);
+		$view = View::byName(views\transactions\pay\OnlinePay::class);
 		$this->response->setView($view);
+		$view->setTransaction($transaction);
 
 		$model = new Payport();
 		db::join('financial_payports_currencies', 'financial_payports_currencies.payport=financial_payports.id', "INNER");
 		db::join('financial_currencies', 'financial_currencies.id=financial_payports_currencies.currency', "LEFT");
 		db::join('financial_currencies_rates', 'financial_currencies_rates.currency=financial_currencies.id', "LEFT");
-		$parenthesis = new parenthesis();
+		$parenthesis = new Parenthesis();
 		$parenthesis->where("financial_payports_currencies.currency", $currency->id, "=", "OR");
 		$parenthesis->where("financial_currencies_rates.changeTo", $currency->id, "=", "OR");
 		$model->where($parenthesis);
 		$model->where('financial_payports.status', payport::active);
 		$model->setQueryOption("DISTINCT");
 		$payports = $model->get(null, 'financial_payports.*');
-		$view->setTransaction($transaction);
 		$view->setPayports($payports);
 
-		if (!isset(http::$data['payport'])) {
-			$this->response->setStatus(true);
-			return $this->response;
+		$this->response->setStatus(true);
+		return $this->response;
+	}
+	public function onlinePay($data) {
+		if (!in_array('onlinepay', self::getAvailablePayMethods())) {
+			throw new NotFound;
 		}
+		$this->response->setStatus(false);
+		$transaction = $this->getTransactionForPay($data);
+		$currency = $transaction->currency;
+		$remainPriceForAddPay = $transaction->remainPriceForAddPay();
+		$view = View::byName(views\transactions\pay\OnlinePay::class);
+		$this->response->setView($view);
+		$view->setTransaction($transaction);
+
+		$model = new Payport();
+		db::join('financial_payports_currencies', 'financial_payports_currencies.payport=financial_payports.id', "INNER");
+		db::join('financial_currencies', 'financial_currencies.id=financial_payports_currencies.currency', "LEFT");
+		db::join('financial_currencies_rates', 'financial_currencies_rates.currency=financial_currencies.id', "LEFT");
+		$parenthesis = new Parenthesis();
+		$parenthesis->where("financial_payports_currencies.currency", $currency->id, "=", "OR");
+		$parenthesis->where("financial_currencies_rates.changeTo", $currency->id, "=", "OR");
+		$model->where($parenthesis);
+		$model->where('financial_payports.status', payport::active);
+		$model->setQueryOption("DISTINCT");
+		$payports = $model->get(null, 'financial_payports.*');
+		$view->setPayports($payports);
+
 		$rules = array(
 			'payport' => array(
-				'type' => function ($data) use ($payports) {
+				'type' => function ($data, $rule, $input) use ($payports) {
 					foreach ($payports as $item) {
 						if ($data == $item->id) {
 							return $item;
 						}
 					}
-					throw new InputValidationException("payport");
-				}
+					throw new InputValidationException($input);
+				},
 			),
 			'price' => array(
 				'type' => 'number',
 				'optional' => true,
+				'min' => 0,
+				'max' => $remainPriceForAddPay,
 			),
 			"currency" => array(
-				"type" => "number",
+				"type" => Currency::class,
 				'optional' => true,
 			),
 		);
-		try{
-			$inputs = $this->checkinputs($rules);
-			$payport = $inputs['payport'];
-			if (isset($inputs["currency"])) {
-				if (!$payport->getCurrency($inputs["currency"])) {
-					throw new Payport\UnsupportCurrencyTypeException($inputs["currency"]);
-				}
-			} else {
-				$inputs['currency'] = $payport->getCompatilbeCurrency($transaction->currency->id);
-				if (!$inputs['currency']) {
-					throw new payport\UnsupportCurrencyTypeException(null, "cannot find any compatilble currency between payport and transaction");
-				}
-			}
-			if ($transaction->currency->id != $inputs["currency"]) {
-				$currency = Currency::byID($inputs["currency"]);
-				$payablePrice = $transaction->currency->changeTo($payablePrice, $currency);
-			} else {
-				$currency = $transaction->currency;
-			}
-			if (!isset($inputs['price'])) {
-				$inputs['price'] = $payablePrice;
-			}
-			if ($inputs['price'] <= 0 or $inputs['price'] > $payablePrice) {
-				throw new inputValidation("price");
-			}
-			$this->response->setStatus(true);
-			$redirect = $payport->PaymentRequest($inputs['price'], $transaction, $currency);
-			if ($redirect->method == redirect::get) {
-				$this->response->Go($redirect->getURL());
-			} elseif ($redirect->method == redirect::post) {
-				$view = view::byName(views\transactions\pay\onlinepay\redirect::class);
-				$view->setTransaction($transaction);
-				$view->setRedirect($redirect);
-				$this->response->setView($view);
-			}
-		} catch(payport\UnsupportCurrencyTypeException $e) {
-			$error = new error();
+		$view->setDataForm($this->inputsValue($rules));
+		$inputs = $this->checkInputs($rules);
+		if (
+			(isset($inputs["currency"]) and !$payport->getCurrency($inputs["currency"]->id)) or
+			!($payport->getCompatilbeCurrency($transaction->currency->id))
+		) {
+			$error = new Error('financial.transaction.payport.unSupportCurrencyTypeException');
 			$error->setCode('financial.transaction.payport.unSupportCurrencyTypeException');
 			$view->addError($error);
+			$this->response->setStatus(false);
+			return $this->response;
 		}
-		$view->setDataForm($this->inputsvalue($rules));
+		$inputs['price'] = $inputs['price'] ?? $payablePrice;
+		$inputs['price'] = $transaction->currency->changeTo($inputs['price'], $inputs["currency"]);
+
+		$redirect = $payport->PaymentRequest($inputs['price'], $transaction, $inputs["currency"]);
+		$this->response->setStatus(true);
+		if ($redirect->method == Redirect::get) {
+			$this->response->Go($redirect->getURL());
+		} elseif ($redirect->method == Redirect::post) {
+			$view = View::byName(views\transactions\pay\onlinepay\Redirect::class);
+			$view->setTransaction($transaction);
+			$view->setRedirect($redirect);
+			$this->response->setView($view);
+		}
+		$this->response->setStatus(true);
 		return $this->response;
 	}
 	private function redirectToConfig($transaction){

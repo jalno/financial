@@ -44,6 +44,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							$this->createField(array(
 								'type' => 'number',
 								'name' => 'price',
+								'ltr' => true,
 								'label' => translator::trans("pay.price"),
 								"input-group" => [
 									"right" => [
