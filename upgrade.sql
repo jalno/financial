@@ -14,3 +14,9 @@ ALTER TABLE `financial_banks_accounts` CHANGE `shaba` `shaba` VARCHAR(31) CHARAC
 UPDATE `userpanel_usertypes_permissions` SET name = REPLACE(`name`,'financial_transactions_refund','financial_transactions_refund_add') WHERE `name` LIKE 'financial_transactions_refund';
 UPDATE `userpanel_usertypes_permissions` SET name = REPLACE(`name`,'financial_transactions_pays_accept','financial_transactions_pay_accept') WHERE `name` LIKE 'financial_transactions_pays_accept';
 UPDATE `userpanel_usertypes_permissions` SET name = REPLACE(`name`,'financial_transactions_guest_pay_link','financial_transactions_guest-pay-link') WHERE `name` LIKE 'financial_transactions_guest_pay_link';
+
+--
+--	Commit:	faed208235534d07ebb22b15bf9daff89ef88976
+--
+ALTER TABLE `financial_transactions_pays` CHANGE `price` `price` FLOAT(11) NOT NULL;
+
