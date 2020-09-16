@@ -1326,48 +1326,62 @@ class Transactions extends Controller {
 		$this->response->setView($view);
 		return $this->response;
 	}
-	public function accepted($data){
-		authorization::haveOrFail('transactions_accept');
-		$view = view::byName("\\packages\\financial\\views\\transactions\\accept");
-		$transaction = transaction::byId($data['id']);
-		if (!$transaction or !$transaction->canAddPay()) {
+	public function acceptedView($data): Response {
+		Authorization::haveOrFail('transactions_accept');
+		$transaction = $this->getTransaction($data['id']);
+		if (!in_array($transaction->status, [Transaction::UNPAID, Transaction::PENDING])) {
 			throw new NotFound;
 		}
-		$view->setTransactionData($transaction);
-		if(http::is_post()){
-			try{
-				$pay = $transaction->addPay(array(
-					'date' => time(),
-					'method' => transaction_pay::payaccepted,
-					'price' => $transaction->payablePrice(),
-					'status' => transaction_pay::accepted,
-					"currency" => $transaction->currency->id,
-					'params' => array(
-						'acceptor' => authentication::getID(),
-						'accept_date' => time(),
-					)
-				));
-				$transaction->status = transaction::paid;
-				$transaction->save();
-
-				$log = new log();
-				$log->user = authentication::getUser();
-				$log->type = logs\transactions\pay::class;
-				$log->title = t("financial.logs.transaction.pay", ["transaction_id" => $transaction->id]);
-				$parameters['pay'] = transaction_pay::byId($pay);
-				$parameters['currency'] = $transaction->currency;
-				$log->parameters = $parameters;
-				$log->save();
-
-				$this->response->setStatus(true);
-				$this->response->Go(userpanel\url("transactions/view/".$transaction->id));
-			}catch(inputValidation $error){
-				$view->setFormError(FormError::fromException($error));
-			}
-		}else{
-			$this->response->setStatus(true);
-		}
+		$view = View::byName(views\transactions\Accept::class);
 		$this->response->setView($view);
+		$view->setTransactionData($transaction);
+		$this->response->setStatus(true);
+		return $this->response;
+	}
+	public function accepted($data): Response {
+		Authorization::haveOrFail('transactions_accept');
+		$transaction = $this->getTransaction($data['id']);
+		if (!in_array($transaction->status, [Transaction::UNPAID, Transaction::PENDING])) {
+			throw new NotFound;
+		}
+		$view = View::byName(views\transactions\Accept::class);
+		$this->response->setView($view);
+		$view->setTransactionData($transaction);
+
+		$pendingPays = (new Transaction_Pay())
+		->where("transaction", $transaction->id)
+		->where("status", Transaction_Pay::PENDING)
+		->get();
+		foreach ($pendingPays as $pendingPay) {
+			self::payAcceptor($pendingPay);
+		}
+		$payablePrice = $transaction->payablePrice();
+		if ($payablePrice > 0) {
+			$pay = $transaction->addPay(array(
+				'date' => time(),
+				'method' => Transaction_Pay::payaccepted,
+				'price' => $payablePrice,
+				'status' => Transaction_Pay::accepted,
+				"currency" => $transaction->currency->id,
+				'params' => array(
+					'acceptor' => Authentication::getID(),
+					'accept_date' => Date::time(),
+				)
+			));
+			$log = new Log();
+			$log->user = Authentication::getID();
+			$log->type = logs\transactions\Pay::class;
+			$log->title = t("financial.logs.transaction.pay", ["transaction_id" => $transaction->id]);
+			$log->parameters = array(
+				"pay" => Transaction_Pay::byID($pay),
+				"currency" => $transaction->currency,
+			);
+			$log->save();
+		}
+		$transaction->status = Transaction::paid;
+		$transaction->save();
+		$this->response->Go(userpanel\url("transactions/view/{$transaction->id}"));
+		$this->response->setStatus(true);
 		return $this->response;
 	}
 	public function config($data){

@@ -91,8 +91,14 @@
 		"controller": "controllers\\transactions@addingcredit"
 	},
 	{
-		"path": ["userpanel","transactions","accept", {"type":"dynamic", "name":"id", "regex":"/^\\d+$/"}],
-		"controller": "controllers\\transactions@accepted"
+		"path": "userpanel/transactions/accept/:id",
+		"controller": "controllers/transactions@acceptedView",
+		"method": "get"
+	},
+	{
+		"path": "userpanel/transactions/accept/:id",
+		"controller": "controllers/transactions@accepted",
+		"method": "post"
 	},
 	{
 		"path":["userpanel","settings", "financial","gateways"],
