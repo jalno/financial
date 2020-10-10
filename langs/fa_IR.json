@@ -36,6 +36,7 @@
 		"sms.template.name.financial_transaction_pay":"پرداخت صورتحساب در بخش مالی",
 		"financial.usersettings.transaction.currency": "واحد پول",
 		"cronjob.task.name.financial_task_reminder": "یادآور پرداخت صورتحساب ها",
+		"cronjob.task.name.financial_task_autoexpire": "انقضای صورتحساب ها",
 		"email.template.name.financial_transaction_reminder": "یادآور پرداخت صورتحساب ها در بخش مالی",
 		"sms.template.name.financial_transaction_reminder": "یادآور پرداخت صورتحساب ها در بخش مالی",
 		"financial.pay.online":"پرداخت آنلاین درگاه {payport}",

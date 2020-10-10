@@ -21,30 +21,6 @@ class transaction extends dbObject{
 		return $pw;
 	}
 
-	public static function autoExpire(){
-		$transactions = (new static)->where('status', self::unpaid)
-		->where('expire_at', null, 'IS NOT')->where('expire_at', date::time(), '<')->get();
-		foreach ($transactions as $transaction) {
-			$transaction->status = self::expired;
-			$transaction->save();
-			$payablePrice = $transaction->payablePrice();
-			if ($payablePrice < 0) {
-				$payablePrice *= -1;
-				$userCurrency = Currency::getDefault($transaction->user);
-				$price = $transaction->currency->changeTo($payablePrice, $userCurrency);
-				$transaction->user->credit += $price;
-				$transaction->user->save();
-			} else {
-				try {
-					$transaction->returnPaymentsToCredit();
-				} catch (Currency\UnChangableException $e) {
-
-				}
-			}
-			$event = new events\transactions\expire($transaction);
-			$event->trigger();
-		}
-	}
 	protected $dbTable = "financial_transactions";
 	protected $primaryKey = "id";
 	protected $dbFields = array(
@@ -69,6 +45,22 @@ class transaction extends dbObject{
 	protected $tmproduct = array();
 	protected $tmpays = array();
 
+	public function expire() {
+		$payablePrice = $this->payablePrice();
+		if ($payablePrice < 0) {
+			$payablePrice *= -1;
+			$userCurrency = Currency::getDefault($this->user);
+			$price = $this->currency->changeTo($payablePrice, $userCurrency);
+			$this->user->credit += $price;
+			$this->user->save();
+		} else {
+			$this->returnPaymentsToCredit([Transaction_Pay::credit, Transaction_Pay::onlinepay, Transaction_Pay::banktransfer]);
+		}
+		$this->status = self::expired;
+		$this->save();
+		$event = new events\transactions\Expire($this);
+		$event->trigger();
+	}
 	/**
 	 * get total price of products based on transaction currency
 	 *
@@ -80,11 +72,12 @@ class transaction extends dbObject{
 
 	/**
 	 * @throws Currency\UnChangableException
+	 * @return void
 	 */
-	public function returnPaymentsToCredit(array $methods = [Transaction_pay::credit]) {
+	public function returnPaymentsToCredit(array $methods = [Transaction_pay::credit]): void {
 		$userCurrency = Currency::getDefault($this->user);
 		foreach ($this->pays as $pay) {
-			if (in_array($pay->method, $methods)) {
+			if ($pay->status == Transaction_Pay::accepted and in_array($pay->method, $methods)) {
 				$price = $pay->currency->changeTo($pay->price, $userCurrency);
 				$this->user->credit += $price;
 			}
