@@ -41,9 +41,7 @@ class Transactions extends Process {
 	}
 	public function autoExpire(array $data): Response {
 		$response = new Response(false);
-		Log::setLevel("debug");
 		$log = Log::getInstance();
-		$log->info(__CLASS__."@".__FUNCTION__);
 
 		$dryRun = $data["dry-run"] ?? false;
 		if ($dryRun) {
