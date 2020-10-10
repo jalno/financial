@@ -35,8 +35,14 @@ $this->the_header();
 								<div class="col-xs-5 default-currency-container">
 								<?php $this->createField(array(
 									"name" => "default",
-									"label" => t("financial.settings.currency.update_at"),
-									"ltr" => true
+									"type" => "checkbox",
+									"inline" => true,
+									"options" => array(
+										array(
+											"label" => t("financial.default_currency"),
+											"value" => 1,
+										),
+									),
 								)); ?>
 								</div>
 							</div>
@@ -91,7 +97,7 @@ $this->the_header();
 							<div class="alert alert-info rounding-behaviour-guidance rate-inputs"></div>
 						</div>
 						<div class="col-sm-6">
-							<div class="panel panel-white rate-inputs" data-currencies="<?php echo json\encode($this->geCurrenciesForSelect()); ?>">
+							<div class="panel panel-white rate-inputs" data-currencies='<?php echo json\encode($this->geCurrenciesForSelect()); ?>''>
 								<div class="panel-heading">
 									<i class="fa fa-handshake-o"></i>
 									<span><?php echo t("financial.settings.currency.change"); ?></span>
