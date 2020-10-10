@@ -108,7 +108,7 @@ export default class Currencies {
 				$helpbox.slideUp();
 				$roundingInputs.prop("disabled", true);
 			}
-		});
+		}).trigger("change");
 		$helpbox.removeClass("text-center");
 	}
 	private static runChangebehaviourListener(): void {
