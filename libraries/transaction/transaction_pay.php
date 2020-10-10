@@ -16,7 +16,7 @@ class transaction_pay extends dbObject{
 	const PAYACCEPTED = self::payaccepted;
 
 
-	/** old style const, we dont removed these for backward compatibility */
+	/* old style const, we dont removed these for backward compatibility */
 	const pending = 2;
 	const accepted = 1;
 	const rejected = 0;
