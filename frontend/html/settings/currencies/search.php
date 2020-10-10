@@ -20,6 +20,7 @@ $this->the_header();
 					<a class="btn btn-xs btn-link tooltips" title="<?php echo t("add"); ?>" href="<?php echo userpanel\url("settings/financial/currencies/add"); ?>"><i class="fa fa-plus"></i></a>
 				<?php } ?>
 					<a class="btn btn-xs btn-link tooltips" title="<?php echo t("search"); ?>" href="#search" data-toggle="modal"><i class="fa fa-search"></i></a>
+					<a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
 				</div>
 			</div>
 			<div class="panel-body">
