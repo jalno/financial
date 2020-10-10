@@ -409,9 +409,9 @@ class Transactions extends Controller {
 		if ($transaction->status != Transaction::unpaid) {
 			throw new NotFound;
 		}
-		$addingCreditClass = strtolower(AddingCredit::class);
+		$addingCreditClass = ltrim(strtolower(AddingCredit::class), "\\");
 		foreach ($transaction->products as $product) {
-			if (in_array(strtolower($product->type), ["\\" . $addingCreditClass, $addingCreditClass])) {
+			if (ltrim(strtolower($product->type), "\\") == $addingCreditClass) {
 				throw new NotFound;
 			}
 		}
@@ -423,8 +423,8 @@ class Transactions extends Controller {
 			throw new NotFound;			
 		}
 		$view = View::byName(payView\Credit::class);
-		$this->response->setView($view);
 		$view->setTransaction($transaction);
+		$this->response->setView($view);
 		$payer = (($types and $self->credit) ? $self : $user);
 		$view->setCredit($payer->credit);
 		$view->setDataForm($payer->id, "user");
