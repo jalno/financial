@@ -1,19 +1,20 @@
 <?php
 namespace themes\clipone\views\transactions\pay;
-use \packages\base\{translator, json};
-use \packages\userpanel;
-use \packages\userpanel\date;
-use \packages\financial\{views\transactions\pay\onlinepay as onlinepayView, payport, currency};
-use \themes\clipone\breadcrumb;
-use \themes\clipone\navigation;
-use \themes\clipone\navigation\menuItem;
-use \themes\clipone\viewTrait;
-use \themes\clipone\views\formTrait;
 
-class onlinepay extends onlinepayView{
-	use viewTrait,formTrait;
+use packages\base\{Json, Translator};
+use packages\financial\{Currency, Payport, Transaction, Currency\UnChangableException};
+use packages\financial\views\transactions\pay\Onlinepay as OnlinepayView;
+use packages\userpanel;
+use packages\userpanel\{Date};
+use themes\clipone\{Breadcrumb, views\FormTrait, navigation\MenuItem, Navigation, ViewTrait};
+
+class OnlinePay extends OnlinepayView {
+	use ViewTrait, FormTrait;
+
+	/** @var Transaction */
 	protected $transaction;
-	function __beforeLoad(){
+
+	public function __beforeLoad(): void {
 		$this->transaction = $this->getTransaction();
 		$this->setTitle(array(
 			translator::trans('pay.method.onlinepay')
@@ -22,7 +23,7 @@ class onlinepay extends onlinepayView{
 		$this->setNavigation();
 		$this->addBodyClass("transaction-pay-online");
 	}
-	private function setNavigation(){
+	protected function setNavigation(){
 		$item = new menuItem("transactions");
 		$item->setTitle(translator::trans('transactions'));
 		$item->setURL(userpanel\url('transactions'));
@@ -49,33 +50,48 @@ class onlinepay extends onlinepayView{
 
 		navigation::active("transactions/list");
 	}
-	protected function getPayportsForSelect(){
+	protected function getPayportsForSelect(): array {
 		$options = array();
-		$userCurrency = $this->transaction->currency;
-		foreach($this->getPayports() as $payport){
-			$option = array(
-				'title' => $payport->title,
-				'value' => $payport->id,
-				"data" => [
-					"price" => $this->transaction->payablePrice(),
-					"title" => $userCurrency->title,
-					"currency" => $userCurrency->id,
-				],
-			);
-			$payPortCurrencies = array_column($payport->getCurrencies(), "currency");
-			if (!in_array($userCurrency->id, $payPortCurrencies)) {
-				$rate = new currency\rate();
-				$rate->where("currency", $userCurrency->id);
-				$rate->where("changeTo", $payPortCurrencies, "in");
-				if ($rate = $rate->getOne()){
-					$option["data"] = [
-						"price" => $this->transaction->payablePrice() * $rate->price,
-						"title" => $rate->changeTo->title,
-						"currency" => $rate->changeTo->id,
-					];
+		$currency = $this->transaction->currency;
+		$payablePrice = $this->transaction->payablePrice();
+		foreach ($this->getPayports() as $payport) {
+			$currenciesID = array_column($payport->getCurrencies(), 'currency');
+			if (!$currenciesID) {
+				continue;
+			}
+			$validCurrencies = [];
+			$key = array_search($currency->id, $currenciesID);
+			if ($key !== false) {
+				$validCurrencies[] = array(
+					'price' => $payablePrice,
+					'currency' => $currency,
+				);
+				unset($currenciesID[$key]);
+				$currenciesID = array_values($currenciesID);
+			}
+			if ($currenciesID) {
+				$currencies = (new Currency())->where('id', $currenciesID, 'IN')->get();
+				foreach ($currencies as $payportCurrency) {
+					try {
+						$validCurrencies[] = array(
+							'price' => $currency->changeTo($payablePrice, $payportCurrency),
+							'currency' => $payportCurrency,
+						);
+					} catch (UnChangableException $e) {}
 				}
 			}
-			$options[] = $option;
+			$l = count($validCurrencies);
+			foreach ($validCurrencies as $option) {
+				$options[] = array(
+					'title' => $payport->title . ($l > 1 ? ' (' . $option['currency']->title . ')' : ''),
+					'value' => $payport->id,
+					'data' => array(
+						'price' => $option['price'],
+						'title' => $option['currency']->title,
+						'currency' => $option['currency']->id,
+					),
+				);
+			}
 		}
 		return $options;
 	}

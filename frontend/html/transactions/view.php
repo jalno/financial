@@ -199,26 +199,20 @@ $this->the_header(!$isLogin ? "logedout" : "");
 						$x = 1;
 						$currency = $this->transaction->currency;
 						foreach($this->transaction->products as $product){
-							$pcurrency = $product->currency;
-							$rate = false;
-							if($pcurrency->id != $currency->id){
-								$rate = new currency\rate();
-								$rate->where('currency', $pcurrency->id);
-								$rate->where('changeTo', $currency->id);
-								$rate = $rate->getOne();
-							}
-							$product->price = abs($product->price);
-							$finalPrice = ($product->price * $product->number) - $product->discount;
-							$this->discounts += $product->discount * ($rate ? $rate->price : 1);
+							$productPrice = $product->currency->changeTo(($product->price * $product->number), $currency);
+							$productDiscount = $product->currency->changeTo($product->discount, $currency);
+							$finalPrice = $productPrice - $productDiscount;
+
+							$this->discounts += $productDiscount;
 						?>
 							<tr>
 								<td><?php echo $x++; ?></td>
 								<td><?php echo $product->title; ?></td>
 								<td class="hidden-480"><?php echo $product->description; ?></td>
 								<td class="hidden-480"><?php echo t("product.xnumber", array("number" => $product->number)); ?></td>
-								<td class="hidden-480"> <?php echo $this->numberFormat($rate ? $product->price * $rate->price : $product->price) . " " . $currency->title; ?></td>
-								<td class="hidden-480"> <?php echo $this->numberFormat($rate ? $product->discount * $rate->price : $product->discount) . " " . $currency->title; ?></td>
-								<td><?php echo $this->numberFormat($rate ? $finalPrice * $rate->price : $finalPrice) . " " . $currency->title; ?></td>
+								<td class="hidden-480"> <?php echo $this->numberFormat($productPrice) . " " . $currency->title; ?></td>
+								<td class="hidden-480"> <?php echo $this->numberFormat($productDiscount) . " " . $currency->title; ?></td>
+								<td><?php echo $this->numberFormat($finalPrice) . " " . $currency->title; ?></td>
 								<?php if($this->transaction->status == transaction::paid and !$product->configure){ ?>
 								<td><a href="<?php echo userpanel\url("transactions/config/".$product->id); ?>" class="btn btn-sm btn-teal"><i class="fa fa-cog"></i> <?php echo translator::trans("financial.configure"); ?></a></td>
 								<?php } ?>

@@ -1,8 +1,9 @@
 <?php
 namespace packages\financial;
-use \packages\base\db;
-use \packages\base\db\dbObject;
-use \packages\financial\payport\param;
+
+use packages\base\db;
+use packages\base\db\dbObject;
+use packages\financial\{payport\param, Bank};
 
 use payport\GatewayException;
 use payport\VerificationException;
@@ -20,8 +21,8 @@ class payport extends dbObject{
 		'status' => array('type' => 'int', 'required' => true)
     );
 	protected $relations = array(
-		'params' => array('hasMany', 'packages\\financial\\payport\\param', 'payport'),
-		"account" => array("hasOne", bankaccount::class, "account"),
+		'params' => array('hasMany', Param::class, 'payport'),
+		"account" => array("hasOne", Bank\Account::class, "account"),
 	);
 	function __construct($data = null, $connection = 'default'){
 		$data = $this->processData($data);

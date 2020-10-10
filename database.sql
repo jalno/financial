@@ -30,7 +30,10 @@ CREATE TABLE `financial_currencies` (
 	`id` int(11) NOT NULL AUTO_INCREMENT,
 	`title` varchar(25) NOT NULL,
 	`update_at` int(11) NOT NULL,
-	PRIMARY KEY (`id`)
+	`rounding_behaviour` tinyint(4) NOT NULL,
+	`rounding_precision` tinyint(4) NOT NULL,
+	PRIMARY KEY (`id`),
+	UNIQUE KEY `title` (`title`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `financial_currencies_params` (
@@ -90,7 +93,7 @@ CREATE TABLE `financial_transactions` (
 	`token` varchar(15) NOT NULL,
 	`user` int(11) DEFAULT NULL,
 	`title` varchar(100) NOT NULL,
-	`price` float NOT NULL,
+	`price` DOUBLE NOT NULL,
 	`create_at` int(11) NOT NULL,
 	`expire_at` int(11) DEFAULT NULL,
 	`paid_at` int(11) DEFAULT NULL,
@@ -108,7 +111,7 @@ CREATE TABLE `financial_payports_pays` (
 	`payport` int(11) NOT NULL,
 	`transaction` int(11) NOT NULL,
 	`date` int(11) NOT NULL,
-	`price` int(11) NOT NULL,
+	`price` DOUBLE NOT NULL,
 	`currency` int(11) NOT NULL,
 	`ip` varchar(15) COLLATE utf8_persian_ci DEFAULT NULL,
 	`status` tinyint(1) NOT NULL,
@@ -147,7 +150,7 @@ CREATE TABLE `financial_transactions_pays` (
 	`transaction` int(11) NOT NULL,
 	`method` tinyint(4) NOT NULL,
 	`date` int(11) NOT NULL,
-	`price` int(11) NOT NULL,
+	`price` DOUBLE NOT NULL,
 	`currency` int(11) NOT NULL,
 	`status` tinyint(1) NOT NULL,
 	PRIMARY KEY (`id`),
@@ -175,7 +178,7 @@ CREATE TABLE `financial_transactions_products` (
 	`description` varchar(255) DEFAULT NULL,
 	`type` varchar(255) DEFAULT NULL,
 	`method` tinyint(4) NOT NULL,
-	`price` float NOT NULL,
+	`price` DOUBLE NOT NULL,
 	`discount` float NOT NULL,
 	`number` int(11) NOT NULL DEFAULT '1',
 	`currency` int(11) NOT NULL,

@@ -200,7 +200,7 @@ export default class List {
 				$(this).val(isDot ? "0." : "");
 				return;
 			}
-			val = Transaction.formatFlotNumber(parseFloat(val));
+			val = Transaction.formatFloatNumber(parseFloat(val));
 			if (isDot) {
 				val += ".";
 			}
