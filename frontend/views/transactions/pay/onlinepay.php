@@ -53,36 +53,45 @@ class OnlinePay extends OnlinepayView {
 	protected function getPayportsForSelect(): array {
 		$options = array();
 		$currency = $this->transaction->currency;
+		$payablePrice = $this->transaction->payablePrice();
 		foreach ($this->getPayports() as $payport) {
-			$option = array(
-				'title' => $payport->title,
-				'value' => $payport->id,
-				'data' => [
-					'price' => $this->transaction->payablePrice(),
-					'title' => $this->transaction->currency->title,
-					'currency' => $this->transaction->currency->id,
-				],
-			);
-			$payPortSupportedCurrenciesIDs = array_column($payport->getCurrencies(), 'currency');
-			if (!in_array($currency->id, $payPortSupportedCurrenciesIDs)) {
-				$canPayWithThisPayPort = false;
-				$payPortCurrencies = (new Currency())->where('id', $payPortCurrenciesIDs, 'IN')->get();
-				foreach ($payPortCurrencies as $payPortCurrency) {
+			$currenciesID = array_column($payport->getCurrencies(), 'currency');
+			if (!$currenciesID) {
+				continue;
+			}
+			$validCurrencies = [];
+			$key = array_search($currency->id, $currenciesID);
+			if ($key !== false) {
+				$validCurrencies[] = array(
+					'price' => $payablePrice,
+					'currency' => $currency,
+				);
+				unset($currenciesID[$key]);
+				$currenciesID = array_values($currenciesID);
+			}
+			if ($currenciesID) {
+				$currencies = (new Currency())->where('id', $currenciesID, 'IN')->get();
+				foreach ($currencies as $payportCurrency) {
 					try {
-						$option['data'] = array(
-							'price' => $currency->changeTo($payablePrice, $payPortCurrency),
-							'title' => $payPortCurrency->title,
-							'currency' => $payPortCurrency->id,
+						$validCurrencies[] = array(
+							'price' => $currency->changeTo($payablePrice, $payportCurrency),
+							'currency' => $payportCurrency,
 						);
-						$canPayWithThisPayPort = true;
-						break;
 					} catch (UnChangableException $e) {}
 				}
-				if (!$canPayWithThisPayPort) {
-					continue;
-				}
 			}
-			$options[] = $option;
+			$l = count($validCurrencies);
+			foreach ($validCurrencies as $option) {
+				$options[] = array(
+					'title' => $payport->title . ($l > 1 ? ' (' . $option['currency']->title . ')' : ''),
+					'value' => $payport->id,
+					'data' => array(
+						'price' => $option['price'],
+						'title' => $option['currency']->title,
+						'currency' => $option['currency']->id,
+					),
+				);
+			}
 		}
 		return $options;
 	}
