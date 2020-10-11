@@ -21,6 +21,7 @@ class onlinepay extends onlinepayView{
 		$this->setShortDescription(translator::trans('transaction.number',array('number' =>  $this->transaction->id)));
 		$this->setNavigation();
 		$this->addBodyClass("transaction-pay-online");
+		$this->setFormData();
 	}
 	private function setNavigation(){
 		$item = new menuItem("transactions");
@@ -51,32 +52,32 @@ class onlinepay extends onlinepayView{
 	}
 	protected function getPayportsForSelect(){
 		$options = array();
-		$userCurrency = $this->transaction->currency;
-		foreach($this->getPayports() as $payport){
+		$currency = $this->transaction->currency;
+		$remainPriceForPay = $this->transaction->remainPriceForAddPay();
+		foreach ($this->getPayports() as $payport) {
+			$payportcurrency = $payport->getCompatilbeCurrency($currency);
+			if (!$payportcurrency) {
+				continue;
+			}
 			$option = array(
 				'title' => $payport->title,
 				'value' => $payport->id,
 				"data" => [
-					"price" => $this->transaction->payablePrice(),
-					"title" => $userCurrency->title,
-					"currency" => $userCurrency->id,
+					"price" => $currency->changeTo($remainPriceForPay, $payportcurrency),
+					"title" => $payportcurrency->title,
+					"currency" => $payportcurrency->id,
 				],
 			);
-			$payPortCurrencies = array_column($payport->getCurrencies(), "currency");
-			if (!in_array($userCurrency->id, $payPortCurrencies)) {
-				$rate = new currency\rate();
-				$rate->where("currency", $userCurrency->id);
-				$rate->where("changeTo", $payPortCurrencies, "in");
-				if ($rate = $rate->getOne()){
-					$option["data"] = [
-						"price" => $this->transaction->payablePrice() * $rate->price,
-						"title" => $rate->changeTo->title,
-						"currency" => $rate->changeTo->id,
-					];
-				}
-			}
 			$options[] = $option;
 		}
 		return $options;
+	}
+	private function setFormData() {
+		if (!$this->getDataForm("price")) {
+			$this->setDataForm($this->transaction->remainPriceForAddPay(), "price");
+		}
+		if (!$this->getDataForm("currency")) {
+			$this->setDataForm($this->transaction->currency->id, "currency");
+		}
 	}
 }

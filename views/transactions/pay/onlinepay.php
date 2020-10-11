@@ -6,8 +6,6 @@ use packages\financial\{views\Form, Transaction};
 class OnlinePay extends Form {
 	public function setTransaction(transaction $transaction): void {
 		$this->setData($transaction, "transaction");
-		$this->setDataForm($transaction->remainPriceForAddPay(), "price");
-		$this->setDataForm($transaction->currency->id, "currency");
 	}
 	public function getTransaction(): Transaction {
 		return $this->getData("transaction");

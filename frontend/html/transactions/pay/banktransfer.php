@@ -134,10 +134,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							echo $this->createField(array(
 								'name' => 'price',
 								'label' => t("pay.banktransfer.price"),
-								'type' => 'number',
-								'min' => 0,
 								'ltr' => true,
-								'step' => 'any',
 								"input-group" => array(
 									"right" => array(
 										array(

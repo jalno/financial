@@ -3,7 +3,7 @@ namespace packages\financial\controllers\settings;
 use \packages\userpanel;
 use \packages\userpanel\{user, date};
 use \packages\base\{NotFound, http, db, db\parenthesis, db\duplicateRecord, views\FormError, view\error, inputValidation, events, options};
-use packages\financial\{api, view, currency, authentication, controller, authorization, payport as gateway, events\gateways as gatewaysEvent, bankaccount};
+use packages\financial\{api, view, currency, authentication, controller, authorization, payport as gateway, events\gateways as gatewaysEvent, Bank\Account as bankaccount};
 
 class gateways extends controller{
 	protected $authentication = true;
@@ -65,7 +65,7 @@ class gateways extends controller{
 			}
 			if (isset($inputs["account"]) and $inputs["account"]) {
 				$bankaccount = new bankaccount();
-				$bankaccount->where("status", bankaccount::active);
+				$bankaccount->where("status", bankaccount::Active);
 				$bankaccount->where("id", $inputs["account"]);
 				if (!$bankaccount->has()) {
 					throw new inputValidation("account");
@@ -142,7 +142,7 @@ class gateways extends controller{
 				if (isset($inputs["account"])) {
 					if ($inputs["account"]) {
 						$bankaccount = new bankaccount();
-						$bankaccount->where("status", bankaccount::active);
+						$bankaccount->where("status", bankaccount::Active);
 						$bankaccount->where("id", $inputs["account"]);
 						if (!$bankaccount->has()) {
 							throw new inputValidation("account");
@@ -269,7 +269,7 @@ class gateways extends controller{
 				if (isset($inputs["account"])) {
 					if ($inputs["account"]) {
 						$bankaccount = new bankaccount();
-						$bankaccount->where("status", bankaccount::active);
+						$bankaccount->where("status", bankaccount::Active);
 						$bankaccount->where("id", $inputs["account"]);
 						if (!$bankaccount->has()) {
 							throw new inputValidation("account");
