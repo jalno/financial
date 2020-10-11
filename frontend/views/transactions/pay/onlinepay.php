@@ -22,6 +22,7 @@ class OnlinePay extends OnlinepayView {
 		$this->setShortDescription(translator::trans('transaction.number',array('number' =>  $this->transaction->id)));
 		$this->setNavigation();
 		$this->addBodyClass("transaction-pay-online");
+		$this->setFormData();
 	}
 	protected function setNavigation(){
 		$item = new menuItem("transactions");
@@ -53,46 +54,30 @@ class OnlinePay extends OnlinepayView {
 	protected function getPayportsForSelect(): array {
 		$options = array();
 		$currency = $this->transaction->currency;
-		$payablePrice = $this->transaction->payablePrice();
+		$remainPriceForPay = $this->transaction->remainPriceForAddPay();
 		foreach ($this->getPayports() as $payport) {
-			$currenciesID = array_column($payport->getCurrencies(), 'currency');
-			if (!$currenciesID) {
+			$payportcurrency = $payport->getCompatilbeCurrency($currency);
+			if (!$payportcurrency) {
 				continue;
 			}
-			$validCurrencies = [];
-			$key = array_search($currency->id, $currenciesID);
-			if ($key !== false) {
-				$validCurrencies[] = array(
-					'price' => $payablePrice,
-					'currency' => $currency,
-				);
-				unset($currenciesID[$key]);
-				$currenciesID = array_values($currenciesID);
-			}
-			if ($currenciesID) {
-				$currencies = (new Currency())->where('id', $currenciesID, 'IN')->get();
-				foreach ($currencies as $payportCurrency) {
-					try {
-						$validCurrencies[] = array(
-							'price' => $currency->changeTo($payablePrice, $payportCurrency),
-							'currency' => $payportCurrency,
-						);
-					} catch (UnChangableException $e) {}
-				}
-			}
-			$l = count($validCurrencies);
-			foreach ($validCurrencies as $option) {
-				$options[] = array(
-					'title' => $payport->title . ($l > 1 ? ' (' . $option['currency']->title . ')' : ''),
-					'value' => $payport->id,
-					'data' => array(
-						'price' => $option['price'],
-						'title' => $option['currency']->title,
-						'currency' => $option['currency']->id,
-					),
-				);
-			}
+			$options[] = array(
+				'title' => $payport->title,
+				'value' => $payport->id,
+				"data" => [
+					"price" => $currency->changeTo($remainPriceForPay, $payportcurrency),
+					"title" => $payportcurrency->title,
+					"currency" => $payportcurrency->id,
+				],
+			);
 		}
 		return $options;
+	}
+	private function setFormData() {
+		if (!$this->getDataForm("price")) {
+			$this->setDataForm($this->transaction->remainPriceForAddPay(), "price");
+		}
+		if (!$this->getDataForm("currency")) {
+			$this->setDataForm($this->transaction->currency->id, "currency");
+		}
 	}
 }

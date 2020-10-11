@@ -7,7 +7,7 @@ use packages\userpanel\{Date, User};
 use themes\clipone\Utility;
 
 $isLogin = Authentication::check();
-$payablePrice = $this->transaction->payablePrice();
+$remainPriceForAddPay = $this->transaction->remainPriceForAddPay();
 $refundTransaction = $this->transaction->totalPrice() < 0;
 if ($refundTransaction) {
 	$refundInfo = nl2br($this->transaction->param("refund_pay_info"));
@@ -135,26 +135,28 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							<strong><?php echo t("packages.financial.transaction.title"); ?>:</strong> <?php echo $this->transaction->title; ?>
 						</li>
 						<li>
-							<strong><?php echo t("transaction.createdate"); ?>:</strong> <?php echo date::format("Y/m/d H:i:s", $this->transaction->create_at); ?>
+							<strong><?php echo t("transaction.createdate"); ?>:</strong> <span dir="ltr"> <?php echo date::format("Y/m/d H:i:s", $this->transaction->create_at); ?><span>
 						</li>
 						<li>
-							<strong><?php echo t("transaction.add.expire_at"); ?>:</strong> <?php echo date::format("Y/m/d H:i:s", $this->transaction->expire_at); ?>
+							<strong><?php echo t("transaction.add.expire_at"); ?>:</strong> <span dir="ltr"><?php echo date::format("Y/m/d H:i:s", $this->transaction->expire_at); ?></span>
 						</li>
 						<li>
 						<?php
-						$statusClass = utility::switchcase($this->transaction->status, array(
-							'label label-danger' => transaction::unpaid,
-							'label label-success' => transaction::paid,
-							'label label-warning' => transaction::refund,
-							"label label-inverse" => transaction::expired,
-							"label label-danger label-rejected" => transaction::rejected,
+						$statusClass = Utility::switchcase($this->transaction->status, array(
+							'label label-danger' => Transaction::UNPAID,
+							'label label-warning label-pending' => Transaction::PENDING,
+							'label label-success' => Transaction::PAID,
+							'label label-warning' => Transaction::REFUND,
+							'label label-inverse' => Transaction::EXPIRED,
+							'label label-danger label-rejected' => Transaction::REJECTED,
 						));
 						$statusTxt = utility::switchcase($this->transaction->status, array(
-							'transaction.unpaid' => transaction::unpaid,
-							'transaction.paid' => transaction::paid,
-							'transaction.refund' => transaction::refund,
-							"transaction.status.expired" => transaction::expired,
-							"packages.financial.transaction.status.rejected" => transaction::rejected,
+							'transaction.unpaid' => Transaction::UNPAID,
+							'transaction.pending' => Transaction::PENDING,
+							'transaction.paid' => Transaction::PAID,
+							'transaction.refund' => Transaction::REFUND,
+							'transaction.status.expired' => Transaction::EXPIRED,
+							'packages.financial.transaction.status.rejected' => Transaction::REJECTED,
 						));
 						?>
 							<strong><?php echo t("transaction.status"); ?> :</strong> <span class="<?php echo $statusClass; ?>"><?php echo translator::trans($statusTxt); ?></span>
@@ -243,7 +245,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 								<?php if($hasdesc){ ?><th> <?php echo translator::trans('description'); ?> </th><?php } ?>
 								<th> <?php echo translator::trans('pay.price'); ?> </th>
 								<?php if($hastatus){ ?><th> <?php echo translator::trans('pay.status'); ?> </th><?php } ?>
-								<?php if($hasButtons){ ?><th></th><?php } ?>
+								<?php if($hasButtons){ ?><th><?php echo t("financial.actions"); ?></th><?php } ?>
 							</tr>
 						</thead>
 						<tbody>
@@ -253,7 +255,8 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							if($hasButtons){
 								$this->setButtonParam('pay_accept', 'link', userpanel\url("transactions/pay/accept/".$pay->id));
 								$this->setButtonParam('pay_reject', 'link', userpanel\url("transactions/pay/reject/".$pay->id));
-
+								$this->setButtonActive('pay_accept', $this->canPayAccept and $pay->status == Transaction_pay::pending);
+								$this->setButtonActive('pay_reject', $this->canPayReject and $pay->status == Transaction_pay::pending);
 							}
 							if($hastatus){
 								$statusClass = utility::switchcase($pay->status, array(
@@ -270,7 +273,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 						?>
 							<tr data-pay='<?php echo json\encode($pay->toArray()); ?>'>
 								<td><?php echo $x++; ?></td>
-								<td><?php echo $pay->date; ?></td>
+								<td class="ltr-text-center"><?php echo $pay->date; ?></td>
 								<td><?php echo $pay->method; ?></td>
 								<?php if($hasdesc){ ?><td><?php echo $pay->description; ?></td><?php } ?>
 								<td><?php echo $pay->price; ?></td>
@@ -300,35 +303,37 @@ $this->the_header(!$isLogin ? "logedout" : "");
 						<li>
 							<strong><?php echo t("packages.financial.payable_price"); ?>:</strong>
 						<?php
-						echo $this->numberFormat(abs($payablePrice)) . " " .$currency->title;
+						echo $this->numberFormat(abs($remainPriceForAddPay)) . " " .$currency->title;
 						?>
 						</li>
 					</ul>
 					<br>
 					<a onclick="javascript:window.print();" class="btn btn-lg btn-teal hidden-print"> <?php echo t("print"); ?> <i class="fa fa-print"></i></a>
 					<?php
-					if ($this->transaction->status == transaction::unpaid) {
-						if ($payablePrice > 0) {
-							$parameter = array();
-							if ($token = http::getURIData("token")) {
-								$parameter["token"] = $token;
-							}
+					if ($this->transaction->canAddPay()) {
+						$parameter = array();
+						if ($token = http::getURIData("token")) {
+							$parameter["token"] = $token;
+						}
 					?>
-						<a class="btn btn-lg btn-green hidden-print btn-pay" href="<?php echo userpanel\url('transactions/pay/'.$this->transaction->id, $parameter);?>"><?php echo t("packages.financial.transaction.pay"); ?><i class="fa fa-check"></i></a>
+					<a class="btn btn-lg btn-green hidden-print btn-pay" href="<?php echo userpanel\url('transactions/pay/'.$this->transaction->id, $parameter);?>"><?php echo t("packages.financial.transaction.pay"); ?><i class="fa fa-check"></i></a>
 					<?php
-					} else if ($payablePrice < 0 and $this->canAcceptRefund) {
+					} else if (in_array($this->transaction->status, [Transaction::PENDING, Transaction::UNPAID])) {
+					?>
+					<a class="btn btn-lg btn-info hidden-print btn-accept" href="<?php echo userpanel\url("transactions/accept/{$this->transaction->id}");?>"><?php echo t("packages.financial.transaction.accept"); ?><i class="fa fa-check"></i></a>
+					<?php
+					} else if ($remainPriceForAddPay < 0 and $this->canAcceptRefund) {
 						$refundTransaction = true;
 					?>
-						<a class="btn btn-lg btn-success hidden-print" href="#refund-accept-modal" data-toggle="modal">
-							<div class="btn-icons"> <i class="fa fa-check-square-o"></i> </div>
-							<?php echo t("packages.financial.refund.accept"); ?>
-						</a>
-						<a class="btn btn-lg btn-danger hidden-print" href="#refund-reject-modal" data-toggle="modal">
-							<div class="btn-icons"> <i class="fa fa-times-circle"></i> </div>
-							<?php echo t("packages.financial.refund.reject"); ?>
-						</a>
+					<a class="btn btn-lg btn-success hidden-print" href="#refund-accept-modal" data-toggle="modal">
+						<div class="btn-icons"> <i class="fa fa-check-square-o"></i> </div>
+						<?php echo t("packages.financial.refund.accept"); ?>
+					</a>
+					<a class="btn btn-lg btn-danger hidden-print" href="#refund-reject-modal" data-toggle="modal">
+						<div class="btn-icons"> <i class="fa fa-times-circle"></i> </div>
+						<?php echo t("packages.financial.refund.reject"); ?>
+					</a>
 					<?php
-						}
 					}
 					?>
 				</div>

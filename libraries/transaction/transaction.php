@@ -1,12 +1,22 @@
 <?php
 namespace packages\financial;
 
-use packages\base\{db\dbObject, Options, Packages, Utility\Safe, Translator};
-use packages\userpanel\{user, date};
 use packages\dakhl\API as dakhl;
+use packages\userpanel\{user, date};
+use packages\base\{db\dbObject, Options, Packages, Utility\Safe, Translator};
 
 class transaction extends dbObject{
+	/** status */
+	const UNPAID = self::unpaid;
+	const PENDING = self::pending;
+	const PAID = self::paid;
+	const REFUND = self::refund;
+	const EXPIRED = self::expired;
+	const REJECTED = self::rejected;
+
+	/** old style const, we dont removed these for backward compatibility */
 	const unpaid = 1;
+	const pending = 6;
 	const paid = 2;
 	const refund = 3;
 	const expired = 4;
@@ -83,6 +93,28 @@ class transaction extends dbObject{
 			}
 		}
 		$this->user->save();
+	}
+	public function canAddPay(): bool {
+		if (!in_array($this->status, [self::UNPAID, self::PENDING])) {
+			return false;
+		}
+		return $this->remainPriceForAddPay() > 0;
+	}
+	public function remainPriceForAddPay(): float {
+		$remainPrice = $this->totalPrice();
+		unset($this->data["pays"]);
+		foreach ($this->pays as $pay) {
+			if (in_array($pay->status, [Transaction_pay::ACCEPTED, Transaction_pay::PENDING])) {
+				$remainPrice -= $pay->convertPrice();
+			}
+		}
+		return $remainPrice;
+	}
+	public function canPayByCredit(): bool {
+		return !((new Transaction_Product())
+		->where("transaction", $this->id)
+		->where("type", [AddingCredit::class, "\\" . AddingCredit::class], "IN")
+		->has());
 	}
 	protected function addProduct($productdata){
 		$product = new transaction_product($productdata);

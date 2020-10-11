@@ -21,7 +21,7 @@ class payport extends dbObject{
 		'status' => array('type' => 'int', 'required' => true)
     );
 	protected $relations = array(
-		'params' => array('hasMany', Param::class, 'payport'),
+		'params' => array('hasMany', payport\Param::class, 'payport'),
 		"account" => array("hasOne", Bank\Account::class, "account"),
 	);
 	function __construct($data = null, $connection = 'default'){
@@ -152,23 +152,18 @@ class payport extends dbObject{
 		db::where('currency', $currency);
 		return db::delete('financial_payports_currencies');
 	}
-	public function getCompatilbeCurrency(int $currency): ?int {
+	public function getCompatilbeCurrency(Currency $currency): ?Currency {
 		$currencies = array_column($this->getCurrencies(), 'currency');
 		if (empty($currencies)) {
 			return null;
 		}
-		foreach ($currencies as $supportedCurrency) {
-			if ($supportedCurrency == $currency) {
-				return $supportedCurrency;
-			}
+		if (!in_array($currency->id, $currencies)) {
+			$model = new Currency();
+			$model->join(Currency\Rate::class, null, "INNER", "currency");
+			$model->where("financial_currencies_rates.currency", $currencies, "IN");
+			$model->where("financial_currencies_rates.changeTo", $currency->id);
+			$currency = $model->getOne("financial_currencies.*");
 		}
-		$rate = (new Currency\Rate)
-					->where("currency", $currency->id)
-					->where("changeTo", $currencies, "IN")
-					->getOne();
-		if (!$rate) {
-			return null;
-		}
-		return $rate->id;
+		return $currency;
 	}
 }

@@ -76,12 +76,12 @@ class view extends transactionsView {
 			}
 		}
 		if($needacceptbtn){
-			$this->setButton("pay_accept",($this->canPayAccept and $this->transaction->status == transaction::unpaid), array(
+			$this->setButton("pay_accept", $this->canPayAccept, array(
 				"title" => t("pay.accept"),
 				"icon" => "fa fa-check",
 				"classes" => array("btn", "btn-xs", "btn-green")
 			));
-			$this->setButton("pay_reject", ($this->canPayReject and $this->transaction->status == transaction::unpaid), array(
+			$this->setButton("pay_reject", $this->canPayReject, array(
 				"title" => t("pay.reject"),
 				"icon" => "fa fa-times",
 				"classes" => array("btn", "btn-xs", "btn-danger")

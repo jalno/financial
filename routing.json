@@ -47,6 +47,16 @@
 		"controller": "controllers\\transactions@onlinePay"
 	},
 	{
+		"path": "userpanel/transactions/pay/onlinepay/:transaction",
+		"controller": "controllers/transactions@onlinePayView",
+		"method": "get"
+	},
+	{
+		"path": "userpanel/transactions/pay/onlinepay/:transaction",
+		"controller": "controllers/transactions@onlinePay",
+		"method": "post"
+	},
+	{
 		"path": ["transactions","pay", "onlinepay", "callback", {"type":"dynamic", "name":"pay", "regex":"/^\\d+$/"}],
 		"controller": "controllers\\transaction\\OnlinePay@callBack"
 	},
@@ -81,8 +91,14 @@
 		"controller": "controllers\\transactions@addingcredit"
 	},
 	{
-		"path": ["userpanel","transactions","accept", {"type":"dynamic", "name":"id", "regex":"/^\\d+$/"}],
-		"controller": "controllers\\transactions@accepted"
+		"path": "userpanel/transactions/accept/:id",
+		"controller": "controllers/transactions@acceptedView",
+		"method": "get"
+	},
+	{
+		"path": "userpanel/transactions/accept/:id",
+		"controller": "controllers/transactions@accepted",
+		"method": "post"
 	},
 	{
 		"path":["userpanel","settings", "financial","gateways"],
