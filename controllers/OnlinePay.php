@@ -35,10 +35,7 @@ class OnlinePay extends controller {
 		$this->response->setView($view);
 		$view->setPay($pay);
 		try {
-			$status = $pay->verification();
-			if ($status != payport_pay::success) {
-				var_dump($status);
-				die("HERE");
+			if ($pay->verification() != payport_pay::success) {
 				throw new VerificationException();
 			}
 			$this->response->setStatus(true);
@@ -64,8 +61,6 @@ class OnlinePay extends controller {
 				$log->save();
 			}
 			$this->response->setStatus(true);
-		} catch(\Exception $e) {
-			throw $e;
 		} catch(GatewayException $e) {
 			$view->setError("gateway");
 		} catch(VerificationException $e) {
