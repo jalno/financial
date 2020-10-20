@@ -43,10 +43,6 @@
 		"controller": "controllers\\transactions@rejectPay"
 	},
 	{
-		"path": ["userpanel","transactions","pay", "onlinepay", {"type":"dynamic", "name":"transaction", "regex":"/^\\d+$/"}],
-		"controller": "controllers\\transactions@onlinePay"
-	},
-	{
 		"path": "userpanel/transactions/pay/onlinepay/:transaction",
 		"controller": "controllers/transactions@onlinePayView",
 		"method": "get"
