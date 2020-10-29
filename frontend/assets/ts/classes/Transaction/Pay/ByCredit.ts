@@ -84,7 +84,7 @@ export default class ByCredit {
 				credit: Transaction.deFormatNumber($credit.val() as string),
 			};
 			if ($user.length) {
-				data.user = $user.val() as string;
+				data.user = $("input[name=user]:checked", ByCredit.$form).val() as string;
 			}
 			(ByCredit.$form as any).formAjax({
 				data: data,
