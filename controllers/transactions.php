@@ -407,7 +407,7 @@ class Transactions extends Controller {
 		$this->response->setStatus(true);
 		return $this->response;
 	}
-	public function payByCreditView($data): Resposne {
+	public function payByCreditView($data): Response {
 		$transaction = $this->getTransactionForPay($data);
 		$user = $transaction->user;
 		$self = Authentication::getUser();

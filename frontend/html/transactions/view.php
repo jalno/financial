@@ -318,11 +318,11 @@ $this->the_header(!$isLogin ? "logedout" : "");
 					?>
 					<a class="btn btn-lg btn-green hidden-print btn-pay" href="<?php echo userpanel\url('transactions/pay/'.$this->transaction->id, $parameter);?>"><?php echo t("packages.financial.transaction.pay"); ?><i class="fa fa-check"></i></a>
 					<?php
-					} else if (in_array($this->transaction->status, [Transaction::PENDING, Transaction::UNPAID])) {
+					} elseif (!$refundTransaction and in_array($this->transaction->status, [Transaction::PENDING, Transaction::UNPAID])) {
 					?>
 					<a class="btn btn-lg btn-info hidden-print btn-accept" href="<?php echo userpanel\url("transactions/accept/{$this->transaction->id}");?>"><?php echo t("packages.financial.transaction.accept"); ?><i class="fa fa-check"></i></a>
 					<?php
-					} else if ($remainPriceForAddPay < 0 and $this->canAcceptRefund) {
+					} elseif ($remainPriceForAddPay < 0 and $this->canAcceptRefund) {
 						$refundTransaction = true;
 					?>
 					<a class="btn btn-lg btn-success hidden-print" href="#refund-accept-modal" data-toggle="modal">
