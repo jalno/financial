@@ -98,7 +98,7 @@ class transaction extends dbObject{
 		if (!in_array($this->status, [self::UNPAID, self::PENDING])) {
 			return false;
 		}
-		return $this->remainPriceForAddPay() > 0;
+		return $this->remainPriceForAddPay() != 0;
 	}
 	public function remainPriceForAddPay(): float {
 		$remainPrice = $this->totalPrice();

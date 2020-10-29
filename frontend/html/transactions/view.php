@@ -310,7 +310,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 					<br>
 					<a onclick="javascript:window.print();" class="btn btn-lg btn-teal hidden-print"> <?php echo t("print"); ?> <i class="fa fa-print"></i></a>
 					<?php
-					if ($this->transaction->canAddPay()) {
+					if ($this->transaction->canAddPay() and !$refundTransaction) {
 						$parameter = array();
 						if ($token = http::getURIData("token")) {
 							$parameter["token"] = $token;

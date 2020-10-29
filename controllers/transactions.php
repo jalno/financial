@@ -385,7 +385,7 @@ class Transactions extends Controller {
 	 */
 	private function getTransactionForPay($data): Transaction {
 		$transaction = $this->getTransaction($data['transaction']);
-		if (!$transaction->canAddPay() or $transaction->param('UnChangableException')){
+		if (!$transaction->canAddPay() or $transaction->remainPriceForAddPay() < 0 or $transaction->param('UnChangableException')){
 			throw new NotFound;
 		}
 		return $transaction;
@@ -1439,9 +1439,9 @@ class Transactions extends Controller {
 		return $this->response;
 	}
 	public function refundAccept($data) {
-		authorization::haveOrFail("transactions_refund_accept");
+		Authorization::haveOrFail("transactions_refund_accept");
 		$transaction = $this->getTransaction($data["transaction"]);
-		if (!$transaction or !$transaction->canAddPay) {
+		if (!$transaction->canAddPay() or $transaction->remainPriceForAddPay() > 0) {
 			throw new NotFound();
 		}
 		$inputs = $this->checkinputs(array(
@@ -1473,7 +1473,7 @@ class Transactions extends Controller {
 	public function refundReject($data) {
 		Authorization::haveOrFail("transactions_refund_accept");
 		$transaction = $this->getTransaction($data["transaction"]);
-		if (!$transaction->canAddPay()) {
+		if (!$transaction->canAddPay() or $transaction->remainPriceForAddPay() > 0) {
 			throw new NotFound();
 		}
 
