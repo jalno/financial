@@ -421,6 +421,7 @@ class Transactions extends Controller {
 		$this->response->setView($view);
 		$view->setTransaction($transaction);
 		$view->setCredit($payer->credit);
+		$view->setCurrency($transaction->currency);
 		$view->setDataForm($payer->id, 'user');
 		$view->setDataForm(min($transaction->remainPriceForAddPay(), $payer->credit), 'credit');
 		$this->response->setStatus(true);
@@ -440,6 +441,7 @@ class Transactions extends Controller {
 		$view->setTransaction($transaction);
 		$payer = (($types and $self->credit > 0) ? $self : $user);
 		$view->setCredit($payer->credit);
+		$view->setCurrency($transaction->currency);
 		$view->setDataForm($payer->id, 'user');
 		$view->setDataForm(min($transaction->remainPriceForAddPay(), $payer->credit), 'credit');
 		$this->response->setStatus(false);
@@ -451,15 +453,22 @@ class Transactions extends Controller {
 		);
 		if ($types) {
 			$rules['user'] = array(
-				'type' => 'number',
+				'type' => User::class,
 				'optional' => true,
-				'values' => [$user->id, $self->id],
-				'default' => $self->id,
+				'query' => function ($query) use ($user, $self) {
+					$query->where("id", [$user->id, $self->id], "IN");
+				},
 			);
 		}
 		$inputs = $this->checkInputs($rules);
-		$inputs['user'] = ($types ? ($inputs['user'] == $self->id ? $self : $user) : $user);
-		if (!($inputs['credit'] <= $inputs['user']->credit and $inputs['credit'] <= $transaction->remainPriceForAddPay())) {
+		if (!isset($inputs['user'])) {
+			$inputs['user'] = $self;
+		}
+		$payerCurrency = Currency::getDefault($inputs['user']);
+		if ($payerCurrency->id != $transaction->currency->id) {
+			throw new InputValidationException("credit");
+		}
+		if ($inputs['credit'] > $inputs['user']->credit or $inputs['credit'] > $transaction->remainPriceForAddPay()) {
 			throw new InputValidationException('credit');
 		}
 		$pay = $transaction->addPay(array(
