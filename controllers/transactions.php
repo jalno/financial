@@ -759,7 +759,6 @@ class Transactions extends Controller {
 		if ($inputs["price"] > $remainPriceForAddPay) {
 			throw new InputValidationException("price");
 		}
-		$inputs['price'] = $transaction->currency->changeTo($inputs['price'], $inputs["currency"]);
 		$redirect = $inputs["payport"]->PaymentRequest($inputs['price'], $transaction, $inputs["currency"]);
 		$this->response->setStatus(true);
 		if ($redirect->method == Redirect::get) {
