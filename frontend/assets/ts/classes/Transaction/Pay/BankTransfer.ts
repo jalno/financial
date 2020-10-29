@@ -1,37 +1,21 @@
 import * as $ from "jquery";
+import Transaction from "../../Transaction";
 import "webuilder/formAjax";
-import "../jquery.financialUserAutoComplete";
-import { IUser } from "../jquery.financialUserAutoComplete";
-import Transaction from "../Transaction";
 
-export default class Addingcredit {
-	public static init() {
-		if ($("input[name=client_name]", Addingcredit.$form).length) {
-			Addingcredit.runUserSearch();
-		}
-		Addingcredit.runNumberFormatListener();
-		Addingcredit.runSubmitFormListener();
-	}
+export default class BankTransfer {
 	public static initIfNeeded() {
-		if (Addingcredit.$form.length) {
-			Addingcredit.init();
+		BankTransfer.$form = $("body.transaction-pay-banktransfer form.pay_banktransfer_form");
+		if (BankTransfer.$form.length) {
+			BankTransfer.init();
 		}
 	}
-	private static $form = $(".addingcredit_form");
-	private static runUserSearch() {
-		const $input = $("input[name=client_name]", Addingcredit.$form);
-		$input.financialUserAutoComplete();
-		const $currency = $("input[name=price]").parents(".input-group").find(".input-group-addon");
-		$currency.data("default", $currency.html());
-		$input.on("financialUserAutoComplete.select", (e, user: IUser) => {
-			$currency.html(user.currency);
-		});
-		$input.on("financialUserAutoComplete.unselect", () => {
-			$currency.html($currency.data("default"));
-		});
+	private static init() {
+		BankTransfer.runNumberFormatListener();
+		BankTransfer.runSubmitFormListener();
 	}
+	private static $form: JQuery;
 	private static runNumberFormatListener() {
-		$("input[name=price]", Addingcredit.$form).on("keyup", function(e) {
+		$("input[name=price]", BankTransfer.$form).on("keyup change", function(e) {
 			let val = Transaction.deFormatNumber($(this).val() as string);
 			const isDot = e.keyCode === 110;
 			const number = parseInt(val, 10);
@@ -44,27 +28,18 @@ export default class Addingcredit {
 				val += ".";
 			}
 			$(this).val(val);
-		});
+		}).trigger("change");
 	}
 	private static runSubmitFormListener() {
-		const $price = $("input[name=price]", Addingcredit.$form);
-		Addingcredit.$form.on("submit", function(e) {
+		const $price = $("input[name=price]", BankTransfer.$form);
+		BankTransfer.$form.on("submit", function(e) {
 			e.preventDefault();
 			const price = parseFloat(Transaction.deFormatNumber($price.val()));
-			$price.inputMsg("reset");
-			if (isNaN(price) || price <= 0) {
-				$price.inputMsg({
-					type: "error",
-					message: t("packages.financial.data_validation.enter.price.morethan", {
-						price: 0,
-					}),
-				});
-				return;
-			}
+			$(".has-error input, .has-error select").inputMsg("reset");
 			const data = new FormData(this);
 			data.set("price", price.toString());
 			$(this).formAjax({
-				data,
+				data: data,
 				processData: false,
 				contentType: false,
 				success: (response) => {

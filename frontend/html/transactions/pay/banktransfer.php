@@ -2,7 +2,7 @@
 use packages\base\{Date, http, Packages};
 use packages\userpanel;
 use themes\clipone\utility;
-use packages\financial\authentication;
+use packages\financial\{Authentication, transaction_pay};
 
 $parameter = array();
 if ($token = http::getURIData("token")) {
@@ -67,11 +67,22 @@ $this->the_header(!$isLogin ? "logedout" : "");
 									<th><?php echo t("transaction.banktransfer.price"); ?></th>
 									<th><?php echo t("packages.financial.pays.banktransfer_to"); ?></th>
 									<th><?php echo t("description"); ?></th>
+									<th><?php echo t("pay.status"); ?></th>
 								</tr>
 							</thead>
 							<tbody>
 							<?php
 							foreach($this->getBanktransferPays() as $pay){
+								$statusClass = utility::switchcase($pay->status, array(
+									'label label-danger' => transaction_pay::rejected,
+									'label label-success' => transaction_pay::accepted,
+									'label label-warning' => transaction_pay::pending
+								));
+								$statusTxt = utility::switchcase($pay->status, array(
+									'pay.rejected' => transaction_pay::rejected,
+									'pay.accepted' => transaction_pay::accepted,
+									'pay.pending' => transaction_pay::pending
+								));
 							?>
 							<tr>
 								<td class="center ltr"><?php echo Date\jDate::format("Y/m/d H:i", $pay->date); ?></td>
@@ -89,6 +100,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 										echo "<br><a href=\"{$url}\" target=\"_blank\"><i class=\"fa fa-paperclip\"></i>" . t("pay.banktransfer.attachment") . "</a>";
 									}
 								?></td>
+								<td><span class="<?php echo $statusClass; ?>"><?php echo t($statusTxt); ?></span></td>
 							</tr>
 							<?php
 							}
@@ -114,7 +126,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 						<div class="col-xs-12">
 							<div class="well label-info">
 							<?php echo t("packages.financial.remain_price"); ?>:
-								<span class="pull-left"><?php echo number_format($this->transaction->payablePrice()) . " " . $this->transaction->currency->title; ?></span>
+								<span class="pull-left"><?php echo number_format($this->transaction->remainPriceForAddPay()) . " " . $this->transaction->currency->title; ?></span>
 							</div>
 						</div>
 						<div class="col-xs-12">
@@ -122,9 +134,15 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							echo $this->createField(array(
 								'name' => 'price',
 								'label' => t("pay.banktransfer.price"),
-								'type' => 'number',
-								'min' => 0,
 								'ltr' => true,
+								"input-group" => array(
+									"right" => array(
+										array(
+											"type" => "addon",
+											"text" => $this->transaction->currency->title,
+										),
+									),
+								),
 							));
 							?>
 						</div>

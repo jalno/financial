@@ -36,6 +36,7 @@
 		"sms.template.name.financial_transaction_pay":"Pay invoice in financial",
 		"financial.usersettings.transaction.currency": "Currency",
 		"cronjob.task.name.financial_task_reminder": "Payment reminder of invoices",
+		"cronjob.task.name.financial_task_autoexpire": "Auto expire invoices",
 		"email.template.name.financial_transaction_reminder": "Payment  reminder of invoices",
 		"sms.template.name.financial_transaction_reminder": "Payment  reminder of invoices",
 		"financial.pay.online":"Online payment via {payport}",

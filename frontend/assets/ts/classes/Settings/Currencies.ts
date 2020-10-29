@@ -1,4 +1,5 @@
 import "@jalno/translator";
+import "bootstrap";
 import "bootstrap-inputmsg";
 import * as $ from "jquery";
 import "jquery.growl";
@@ -6,6 +7,11 @@ import { webuilder } from "webuilder";
 interface ICurrency {
 	title: string;
 	value: number;
+}
+enum Behaviours {
+	CEIL = 1,
+	ROUND = 2,
+	FLOOR = 3,
 }
 export default class Currencies {
 	public static init() {
@@ -18,6 +24,7 @@ export default class Currencies {
 		Currencies.$panel = $(".panel.panel-white", Currencies.$form);
 		Currencies.setEvents(Currencies.$form);
 		Currencies.runChangeListener();
+		Currencies.runChangebehaviourListener();
 		Currencies.createChangeRatesFields();
 		Currencies.runSubmitFormListener();
 	}
@@ -44,14 +51,17 @@ export default class Currencies {
 			$(".panel-body .rates-currency", Currencies.$panel).each(function() {
 				const $parent = $(this).parents(".form-group");
 				if (!$(this).is($that) && $(this).val() === $that.val()) {
-					$parent.addClass("has-error");
-					$parent.append(`<span class="help-block">${t("packages.data_duplicate.currencies.rate")}</span>`);
+					if (!$parent.hasClass("has-error")) {
+						$parent.addClass("has-error");
+						$parent.append(`<span class="help-block">${t("packages.data_duplicate.currencies.rate")}</span>`);
+					}
 				} else {
 					$parent.removeClass("has-error");
 					$(".help-block", $parent).remove();
 				}
 			});
 		}).trigger("change");
+		$(".tooltips", $row).tooltip();
 	}
 	private static shiftIndex($row: JQuery) {
 		const $rates: JQuery = $(".panel-body .rates", Currencies.$panel);
@@ -73,7 +83,11 @@ export default class Currencies {
 		}
 	}
 	private static runChangeListener(): void {
-		$("input[name=change]", Currencies.$form).on("change", function() {
+		const $change = $("input[name=change]", Currencies.$form);
+		const $roundingContainer = $(".rounding-container", Currencies.$form);
+		const $roundingInputs = $("select[name=rounding-behaviour], input[name=rounding-precision]", Currencies.$form);
+		const $helpbox = $(".rounding-behaviour-guidance");
+		$("input[name=change-checkbox]", Currencies.$form).on("change", function() {
 			const $this = $(this);
 			if (!$this.data("change")) {
 				$this.prop({
@@ -82,9 +96,36 @@ export default class Currencies {
 				});
 			}
 			if ($this.prop("checked")) {
+				$change.val("1");
 				Currencies.$panel.slideDown();
+				$roundingContainer.slideDown();
+				$helpbox.slideDown();
+				$roundingInputs.prop("disabled", false);
 			} else {
+				$change.val("0");
 				Currencies.$panel.slideUp();
+				$roundingContainer.slideUp();
+				$helpbox.slideUp();
+				$roundingInputs.prop("disabled", true);
+			}
+		}).trigger("change");
+		$helpbox.removeClass("text-center");
+	}
+	private static runChangebehaviourListener(): void {
+		const $container = $(".rounding-container", Currencies.$form);
+		const $helpbox = $(".rounding-behaviour-guidance");
+		$("select[name=rounding-behaviour]", $container).on("change", function() {
+			const selected = parseInt($("option:selected", this).val(), 10) as Behaviours;
+			switch (selected) {
+				case(Behaviours.CEIL):
+				$helpbox.html(t("packages.financial.currencies.rounding.behaviour.ceil.help_text"));
+				break;
+				case(Behaviours.ROUND):
+				$helpbox.html(t("packages.financial.currencies.rounding.behaviour.round.help_text"));
+				break;
+				case(Behaviours.FLOOR):
+				$helpbox.html(t("packages.financial.currencies.rounding.behaviour.floor.help_text"));
+				break;
 			}
 		}).trigger("change");
 	}
@@ -107,7 +148,7 @@ export default class Currencies {
 			}
 			const html = `<div class="row rates">
 			<div class="col-sm-5">
-				<div class="form-group"><label class="control-label">${t("financial.settings.currency.price")}</label><input value="" name="rates[0][price]" class="form-control rates-price ltr" type="number" step="0.0001"></div>
+				<div class="form-group"><label class="control-label">${t("financial.settings.currency.price")}</label><input value="" name="rates[0][price]" class="form-control rates-price ltr" type="number" step="any"></div>
 			</div>
 			<div class="col-sm-5">
 				<div class="form-group"><label class="control-label">${t("financial.settings.currency")}</label>
@@ -148,6 +189,10 @@ export default class Currencies {
 			if ($dataDuplicate) {
 				return;
 			}
+			$(".has-error", Currencies.$form).each(function() {
+				$(this).removeClass("has-error");
+				$(".help-block", this).remove();
+			});
 			$(this).formAjax({
 				success: (data: webuilder.AjaxResponse) => {
 					$.growl.notice({
@@ -160,15 +205,18 @@ export default class Currencies {
 				},
 				error: (error: webuilder.AjaxError) => {
 					if (error.error === "data_duplicate" || error.error === "data_validation") {
-						const $input = $("[name=" + error.input + "]");
-						const $params = {
+						const $input = $(`[name="${error.input}"]`);
+						const params = {
 							title: t("error.fatal.title"),
 							message: t(`packages.financial.${error.error}`),
 						};
+						if (error.input === "rates") {
+							params.message = t("packages.financial.error.currency.rates.should_add_rates");
+						}
 						if ($input.length) {
-							$input.inputMsg($params);
+							$input.inputMsg(params);
 						} else {
-							$.growl.error($params);
+							$.growl.error(params);
 						}
 					} else if (error.hasOwnProperty("type") && error.type === "fatal") {
 						const ErrorHtml = `

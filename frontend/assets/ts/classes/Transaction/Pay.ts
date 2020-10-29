@@ -3,6 +3,7 @@ import * as Clipboard from "clipboard";
 import PayByCredit from "./Pay/ByCredit";
 import EditPay from "./Pay/Edit";
 import OnlinePay from "./Pay/OnlinePay";
+import BankTransfer from "./Pay/BankTransfer";
 import Redirect from "./Pay/OnlinePay/Redirect";
 
 export default class Pay {
@@ -11,6 +12,7 @@ export default class Pay {
 		EditPay.initIfNeeded();
 		OnlinePay.initIfNeeded();
 		Redirect.initIfNeeded();
+		BankTransfer.initIfNeeded();
 		if ($("body").hasClass("transaction-pay")) {
 			this.init();
 		}

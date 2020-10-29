@@ -160,23 +160,25 @@ if ($hasTransaction or $this->canRefund) {
 						</thead>
 						<tbody>
 							<?php
-							foreach($this->getTransactions() as $transaction){
+							foreach ($this->getTransactions() as $transaction) {
 								$this->setButtonParam('transactions_view', 'link', userpanel\url("transactions/view/".$transaction->id));
 								$this->setButtonParam('transactions_edit', 'link', userpanel\url("transactions/edit/".$transaction->id));
 								$this->setButtonParam('transactions_delete', 'link', userpanel\url("transactions/delete/".$transaction->id));
-								$statusClass = utility::switchcase($transaction->status, array(
-									'label label-danger' => transaction::unpaid,
-									'label label-success' => transaction::paid,
-									'label label-warning' => transaction::refund,
-									"label label-inverse" => transaction::expired,
-									"label label-danger label-rejected" => transaction::rejected,
+								$statusClass = Utility::switchcase($transaction->status, array(
+									'label label-danger' => Transaction::UNPAID,
+									'label label-warning label-pending' => Transaction::PENDING,
+									'label label-success' => Transaction::PAID,
+									'label label-warning' => Transaction::REFUND,
+									'label label-inverse' => Transaction::EXPIRED,
+									'label label-danger label-rejected' => Transaction::REJECTED,
 								));
 								$statusTxt = utility::switchcase($transaction->status, array(
-									'transaction.unpaid' => transaction::unpaid,
-									'transaction.paid' => transaction::paid,
-									'transaction.refund' => transaction::refund,
-									"transaction.status.expired" => transaction::expired,
-									"packages.financial.transaction.status.rejected" => transaction::rejected,
+									'transaction.unpaid' => Transaction::UNPAID,
+									'transaction.pending' => Transaction::PENDING,
+									'transaction.paid' => Transaction::PAID,
+									'transaction.refund' => Transaction::REFUND,
+									'transaction.status.expired' => Transaction::EXPIRED,
+									'packages.financial.transaction.status.rejected' => Transaction::REJECTED,
 								));
 							?>
 							<tr>

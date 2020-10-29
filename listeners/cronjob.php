@@ -1,12 +1,13 @@
 <?php
 namespace packages\financial\listeners;
-use \packages\cronjob\events\tasks;
-use \packages\cronjob\task;
-use \packages\cronjob\task\schedule;
+
+use packages\cronjob\{task\Schedule, Task, events\Tasks};
 use packages\financial\processes;
-class cronjob{
-	public function tasks(tasks $event){
+
+class Cronjob {
+	public function tasks(tasks $event): void {
 		$event->addTask($this->reminder());
+		$event->addTask($this->autoExpire());
 	}
 	private function reminder(){
 		$task = new task();
@@ -20,6 +21,18 @@ class cronjob{
 			new schedule([
 				'hour' => 0
 			])
+		];
+		return $task;
+	}
+	private function autoExpire(): Task {
+		$task = new Task();
+		$task->name = "financial_task_autoexpire";
+		$task->process = processes\Transactions::class . "@autoExpire";
+		$task->parameters = [];
+		$task->schedules = [
+			new Schedule([
+				'minute' => 0,
+			]),
 		];
 		return $task;
 	}

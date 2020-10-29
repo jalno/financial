@@ -1,19 +1,20 @@
 <?php
 namespace themes\clipone\views\transactions\pay;
-use \packages\base\{translator, json};
-use \packages\userpanel;
-use \packages\userpanel\date;
-use \packages\financial\{views\transactions\pay\onlinepay as onlinepayView, payport, currency};
-use \themes\clipone\breadcrumb;
-use \themes\clipone\navigation;
-use \themes\clipone\navigation\menuItem;
-use \themes\clipone\viewTrait;
-use \themes\clipone\views\formTrait;
 
-class onlinepay extends onlinepayView{
-	use viewTrait,formTrait;
+use packages\base\{Json, Translator};
+use packages\financial\{Currency, Payport, Transaction, Currency\UnChangableException};
+use packages\financial\views\transactions\pay\Onlinepay as OnlinepayView;
+use packages\userpanel;
+use packages\userpanel\{Date};
+use themes\clipone\{Breadcrumb, views\FormTrait, navigation\MenuItem, Navigation, ViewTrait};
+
+class OnlinePay extends OnlinepayView {
+	use ViewTrait, FormTrait;
+
+	/** @var Transaction */
 	protected $transaction;
-	function __beforeLoad(){
+
+	public function __beforeLoad(): void {
 		$this->transaction = $this->getTransaction();
 		$this->setTitle(array(
 			translator::trans('pay.method.onlinepay')
@@ -21,8 +22,9 @@ class onlinepay extends onlinepayView{
 		$this->setShortDescription(translator::trans('transaction.number',array('number' =>  $this->transaction->id)));
 		$this->setNavigation();
 		$this->addBodyClass("transaction-pay-online");
+		$this->setFormData();
 	}
-	private function setNavigation(){
+	protected function setNavigation(){
 		$item = new menuItem("transactions");
 		$item->setTitle(translator::trans('transactions'));
 		$item->setURL(userpanel\url('transactions'));
@@ -49,34 +51,33 @@ class onlinepay extends onlinepayView{
 
 		navigation::active("transactions/list");
 	}
-	protected function getPayportsForSelect(){
+	protected function getPayportsForSelect(): array {
 		$options = array();
-		$userCurrency = $this->transaction->currency;
-		foreach($this->getPayports() as $payport){
-			$option = array(
+		$currency = $this->transaction->currency;
+		$remainPriceForPay = $this->transaction->remainPriceForAddPay();
+		foreach ($this->getPayports() as $payport) {
+			$payportcurrency = $payport->getCompatilbeCurrency($currency);
+			if (!$payportcurrency) {
+				continue;
+			}
+			$options[] = array(
 				'title' => $payport->title,
 				'value' => $payport->id,
 				"data" => [
-					"price" => $this->transaction->payablePrice(),
-					"title" => $userCurrency->title,
-					"currency" => $userCurrency->id,
+					"price" => $currency->changeTo($remainPriceForPay, $payportcurrency),
+					"title" => $payportcurrency->title,
+					"currency" => $payportcurrency->id,
 				],
 			);
-			$payPortCurrencies = array_column($payport->getCurrencies(), "currency");
-			if (!in_array($userCurrency->id, $payPortCurrencies)) {
-				$rate = new currency\rate();
-				$rate->where("currency", $userCurrency->id);
-				$rate->where("changeTo", $payPortCurrencies, "in");
-				if ($rate = $rate->getOne()){
-					$option["data"] = [
-						"price" => $this->transaction->payablePrice() * $rate->price,
-						"title" => $rate->changeTo->title,
-						"currency" => $rate->changeTo->id,
-					];
-				}
-			}
-			$options[] = $option;
 		}
 		return $options;
+	}
+	private function setFormData() {
+		if (!$this->getDataForm("price")) {
+			$this->setDataForm($this->transaction->remainPriceForAddPay(), "price");
+		}
+		if (!$this->getDataForm("currency")) {
+			$this->setDataForm($this->transaction->currency->id, "currency");
+		}
 	}
 }

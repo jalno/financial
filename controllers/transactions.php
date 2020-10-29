@@ -1,14 +1,14 @@
 <?php
 namespace packages\financial\controllers;
 
-use packages\base\{DB, db\duplicateRecord, view\Error, views\FormError, Packages, Http, inputValidation, InputValidationException, NotFound, Options, db\Parenthesis, Response, Translator};
 use packages\userpanel;
 use packages\userpanel\{Date, Log, User};
 use packages\financial\{views\transactions\pay as PayView, views\transactions as financialViews};
 use packages\financial\payport\{AlreadyVerified, GatewayException, Redirect, VerificationException};
+use packages\base\{DB, db\duplicateRecord, view\Error, views\FormError, Packages, Http, inputValidation, InputValidationException, NotFound, Options, db\Parenthesis, Response};
 use packages\financial\{Bank\Account, Authentication, Authorization, Controller, Currency, Events, Logs,
 						Transaction, Transaction_product, Transaction_pay, View, Views, Payport, Payport_pay,
-						Transactions_products_param};
+						Transactions_products_param, products\AddingCredit};
 
 class Transactions extends Controller {
 	public static function getAvailablePayMethods($canPayByCredit = true) {
@@ -117,17 +117,18 @@ class Transactions extends Controller {
 	}
 	public static function payAcceptor(Transaction_pay $pay) {
 		$pay->status = Transaction_pay::accepted;
-		$log = new log();
-		$log->user = Authentication::getUser();
-		$log->type = logs\transactions\pay::class;
 		$pay->setParam('acceptor', Authentication::getID());
 		$pay->setParam('accept_date', date::time());
 		$pay->save();
 		$transaction = $pay->transaction;
+		$log = new Log();
+		$log->user = Authentication::getUser();
+		$log->type = logs\transactions\pay::class;
 		$log->title = t("financial.logs.transaction.pay.accept", ["transaction_id" => $transaction->id, 'pay_id' => $pay->id]);
-		$parameters['pay'] = $pay;
-		$parameters['currency'] = $transaction->currency;
-		$log->parameters = $parameters;
+		$log->parameters = array(
+			"pay" => $pay,
+			"currency" => $transaction->currency,
+		);
 		$log->save();
 	}
 	public static function payRejector(Transaction_pay $pay) {
@@ -168,7 +169,6 @@ class Transactions extends Controller {
 	}
 	public function listtransactions(){
 		authorization::haveOrFail('transactions_list');
-		transaction::autoExpire();
 		$view = view::byName(views\transactions\listview::class);
 		$this->response->setView($view);
 		$canAccept = Authorization::is_accessed("transactions_pay_accept");
@@ -200,7 +200,8 @@ class Transactions extends Controller {
 				'optional' => true,
 			),
 			'status' => array(
-				'values' => [transaction::unpaid, transaction::paid, transaction::refund, transaction::expired],
+				'type' => 'number',
+				'values' => [Transaction::UNPAID, Transaction::PENDING, Transaction::PAID, Transaction::REFUND, Transaction::EXPIRED],
 				'optional' => true,
 			),
 			'download' => array(
@@ -223,6 +224,7 @@ class Transactions extends Controller {
 				'optional' => true,
 			),
 			'comparison' => array(
+				'type' => 'string',
 				'values' => array('equals', 'startswith', 'contains'),
 				'default' => 'contains',
 				'optional' => true
@@ -373,203 +375,178 @@ class Transactions extends Controller {
 		}
 		return $transaction;
 	}
-	private function getTransactionForPay($data):transaction{
+	/**
+	 * get transaction for pay
+	 * also check user permissions for this transaction and can add pay for this transaction
+	 *
+	 * @see packages/financial/Transaction@canAddPay
+	 * @throws packages/base/NotFound if can not find any transaction with t
+	 * @return packages/financial/Transaction
+	 */
+	private function getTransactionForPay($data): Transaction {
 		$transaction = $this->getTransaction($data['transaction']);
-		if($transaction->status != transaction::unpaid or $transaction->param('UnChangableException') or $transaction->payablePrice() < 0){
+		if (!$transaction->canAddPay() or $transaction->param('UnChangableException')){
 			throw new NotFound;
 		}
 		return $transaction;
 	}
-	public function pay($data){
+	public function pay($data): Response {
 		$transaction = $this->getTransactionForPay($data);
-		$view = view::byName(payView::class);
-		if (authentication::check()) {
-			$types = authorization::childrenTypes();
-			$canPayByCredit = true;
-			foreach($transaction->products as $product){
-				if($product->type == '\packages\financial\products\addingcredit'){
-					$canPayByCredit = false;
-					break;
-				}
-			}
-			$canPayByCredit = ($canPayByCredit and ($transaction->user->credit > 0 or ($types and authentication::getUser()->credit > 0)));
-		} else {
-			$canPayByCredit = false;
-		}
+		$view = View::byName(payView::class);
+		$this->response->setView($view);
 		$view->setTransaction($transaction);
-		foreach(self::getAvailablePayMethods($canPayByCredit) as $method){
+		$canPayByCredit = false;
+		if (Authentication::check()) {
+			$me = Authentication::getUser();
+			$types = Authorization::childrenTypes();
+			$canPayByCredit = ($transaction->canPayByCredit() and ($transaction->user->credit > 0 or ($types and $me->credit > 0)));
+		}
+		foreach (self::getAvailablePayMethods($canPayByCredit) as $method) {
 			$view->setMethod($method);
 		}
 		$this->response->setStatus(true);
-		$this->response->setView($view);
 		return $this->response;
 	}
-	public function payByCredit($data){
+	public function payByCreditView($data): Resposne {
 		$transaction = $this->getTransactionForPay($data);
 		$user = $transaction->user;
-		$self = authentication::getUser();
-		$types = authorization::childrenTypes();
-		if($transaction->status != transaction::unpaid){
+		$self = Authentication::getUser();
+		$types = Authorization::childrenTypes();
+		$canPayByCredit = ($transaction->canPayByCredit() and ($user->credit > 0 or ($types and $self->credit > 0)));
+		if (!$canPayByCredit) {
 			throw new NotFound;
 		}
-		$canPayByCredit = true;
-		foreach($transaction->products as $product){
-			if($product->type == '\packages\financial\products\addingcredit'){
-				$canPayByCredit = false;
-				break;
-			}
-		}
-		if(!$canPayByCredit){
-			throw new NotFound();
-		}
-		if(!in_array('credit', self::getAvailablePayMethods($user->credit > 0 or ($types and $self->credit > 0)))){
-			throw new NotFound;			
-		}
-		$view = view::byName(payView\credit::class);
-		$view->setTransaction($transaction);
-		$this->response->setStatus(false);
-		if(http::is_post()){
-			$inputsRoles = [
-				'credit' => [
-					'type' => 'number',
-				]
-			];
-			if($types){
-				$inputsRoles['user'] = [
-					'type' => 'number',
-					'optional' => true,
-					'values' => [$user->id, $self->id],
-					'default' => $self->id
-				];
-			}
-			try{
-				$inputs = $this->checkinputs($inputsRoles);
-				if($types){
-					switch($inputs['user']){
-						case($user->id):
-							$inputs['user'] = $user;
-							break;
-						case($self->id):
-							$inputs['user'] = $self;
-							break;
-					}
-				}else{
-					$inputs['user'] = $user;
-				}
-				if(!($inputs['credit'] > 0 and $inputs['credit'] <= $transaction->payablePrice() and $inputs['credit'] <= $inputs['user']->credit)){
-					throw new inputValidation('credit');
-				}
-				if($pay = $transaction->addPay(array(
-					'method' => transaction_pay::credit,
-					'price' => $inputs['credit'],
-					"currency" => $transaction->currency->id,
-					'params' => [
-						'user' => $inputs['user']->id
-					]
-				))){
-					$inputs['user']->credit -= $inputs['credit'];
-					$inputs['user']->save();
-					if (authentication::check()) { 
-						$log = new log();
-						$log->user = authentication::getUser();
-						$log->type = logs\transactions\pay::class;
-						$log->title = t("financial.logs.transaction.pay", ["transaction_id" => $transaction->id]);
-						$parameters['pay'] = transaction_pay::byId($pay);
-						$parameters['currency'] = $transaction->currency;
-						$log->parameters = $parameters;
-						$log->save();
-					}
-					$this->response->setStatus(true);
-					$redirect = $this->redirectToConfig($transaction);
-					$this->response->Go($redirect ? $redirect : userpanel\url('transactions/view/'.$transaction->id));
-				}
-			}catch(inputValidation $error){
-				$view->setFormError(FormError::fromException($error));
-			}
-		}else{
-			$payer = (($types and $self->credit) ? $self : $user);
-			$view->setCredit($payer->credit);
-			$view->setDataForm($payer->id, 'user');
-			$view->setDataForm(min($transaction->payablePrice(), $payer->credit), 'credit');
-			$this->response->setStatus(true);
-		}
+		$payer = (($types and $self->credit > 0) ? $self : $user);
+		$view = View::byName(payView\credit::class);
 		$this->response->setView($view);
+		$view->setTransaction($transaction);
+		$view->setCredit($payer->credit);
+		$view->setDataForm($payer->id, 'user');
+		$view->setDataForm(min($transaction->remainPriceForAddPay(), $payer->credit), 'credit');
+		$this->response->setStatus(true);
 		return $this->response;
 	}
-	public function payByBankTransferView($data) {
-		if(!in_array('banktransfer', self::getAvailablePayMethods())){
+	public function payByCredit($data): Response {
+		$transaction = $this->getTransactionForPay($data);
+		$user = $transaction->user;
+		$self = Authentication::getUser();
+		$types = Authorization::childrenTypes();
+		$canPayByCredit = ($transaction->canPayByCredit() and ($user->credit > 0 or ($types and $self->credit > 0)));
+		if (!$canPayByCredit) {
+			throw new NotFound;
+		}
+		$view = View::byName(payView\Credit::class);
+		$this->response->setView($view);
+		$view->setTransaction($transaction);
+		$payer = (($types and $self->credit > 0) ? $self : $user);
+		$view->setCredit($payer->credit);
+		$view->setDataForm($payer->id, 'user');
+		$view->setDataForm(min($transaction->remainPriceForAddPay(), $payer->credit), 'credit');
+		$this->response->setStatus(false);
+		$rules = array(
+			'credit' => array(
+				'type' => 'number',
+				'min' => 0,
+			),
+		);
+		if ($types) {
+			$rules['user'] = array(
+				'type' => 'number',
+				'optional' => true,
+				'values' => [$user->id, $self->id],
+				'default' => $self->id,
+			);
+		}
+		$inputs = $this->checkInputs($rules);
+		$inputs['user'] = ($types ? ($inputs['user'] == $self->id ? $self : $user) : $user);
+		if (!($inputs['credit'] <= $inputs['user']->credit and $inputs['credit'] <= $transaction->remainPriceForAddPay())) {
+			throw new InputValidationException('credit');
+		}
+		$pay = $transaction->addPay(array(
+			'method' => transaction_pay::credit,
+			'price' => $inputs['credit'],
+			"currency" => $transaction->currency->id,
+			'params' => array(
+				'user' => $inputs['user']->id,
+			),
+		));
+		if ($pay) {
+			$inputs['user']->credit -= $inputs['credit'];
+			$inputs['user']->save();
+
+			$log = new Log();
+			$log->user = Authentication::getID();
+			$log->type = logs\transactions\Pay::class;
+			$log->title = t("financial.logs.transaction.pay", ["transaction_id" => $transaction->id]);
+			$log->parameters = array(
+				'pay' => Transaction_pay::byID($pay),
+				'currency' => $transaction->currency,
+			);
+			$log->save();
+
+			$this->response->setStatus(true);
+			$redirect = $this->redirectToConfig($transaction);
+			$this->response->Go($redirect ? $redirect : userpanel\url("transactions/view/{$transaction->id}"));
+		}
+		return $this->response;
+	}
+	public function payByBankTransferView($data): Response {
+		if (!in_array('banktransfer', self::getAvailablePayMethods())) {
 			throw new NotFound();
 		}
+		$transaction = $this->getTransactionForPay($data);
 		$view = View::byName(PayView\Banktransfer::class);
 		$this->response->setView($view);
-		$transaction = $this->getTransactionForPay($data);
-		if ($transaction->status != Transaction::unpaid) {
-			throw new NotFound();
-		}
 		$view->setTransaction($transaction);
-		$userBankAccounts = Options::get("packages.financial.pay.tansactions.banka.accounts");
-		$account = new Account();
-		$account->with("user");
-		$account->with("bank");
-		$account->where("financial_banks_accounts.status", Account::Active);
-		if ($userBankAccounts) {
-			$account->where("financial_banks_accounts.id", $userBankAccounts, "IN");
-		}
-		$accounts = $account->get(null, array("financial_banks_accounts.*", "userpanel_users.*", "financial_banks.*"));
-		$transaction_pay = new Transaction_pay();
-		$transaction_pay->where("transaction", $transaction->id);
-		$transaction_pay->where("method", Transaction_pay::banktransfer);
-		$transaction_pay = $transaction_pay->get();
-		if ($transaction_pay) {
-			$view->setBanktransferPays($transaction_pay);
-		}
-		$view->setBankAccounts($accounts);
-		$view->setDataForm($transaction->payablePrice(), 'price');
-		$view->setDataForm(Date::format("Y/m/d H:i:s"), 'date');
+		$banktransferPays = (new Transaction_pay())
+		->where("transaction", $transaction->id)
+		->where("method", Transaction_pay::banktransfer)
+		->get();
+		$view->setBanktransferPays($banktransferPays);
+		$view->setBankAccounts(Account::getAvailableAccounts());
+		$this->response->setStatus(true);
 		return $this->response;
 	} // payByBankTransferView
 
-	public function payByBankTransfer($data){
-		if(!in_array('banktransfer', self::getAvailablePayMethods())){
+	public function payByBankTransfer($data): Response {
+		if (!in_array('banktransfer', self::getAvailablePayMethods())) {
 			throw new NotFound();
 		}
-		/**
-		 * @var PayView\Banktransfer
-		 */
+		/** @var PayView\Banktransfer $view */
+		$transaction = $this->getTransactionForPay($data);
 		$view = View::byName(PayView\Banktransfer::class);
 		$this->response->setView($view);
-		$transaction = $this->getTransactionForPay($data);
-		if ($transaction->status != Transaction::unpaid) {
-			throw new NotFound();
-		}
 		$view->setTransaction($transaction);
-		$userBankAccounts = Options::get("packages.financial.pay.tansactions.banka.accounts");
-		$account = new Account();
-		$account->with("user");
-		$account->with("bank");
-		$account->where("financial_banks_accounts.status", Account::Active);
-		if ($userBankAccounts) {
-			$account->where("financial_banks_accounts.id", $userBankAccounts, "IN");
-		}
-		$accounts = $account->get(null, array("financial_banks_accounts.*", "userpanel_users.*", "financial_banks.*"));
+		$accounts = Account::getAvailableAccounts();
 		$view->setBankAccounts($accounts);
 		$this->response->setStatus(false);
-		$inputsRules = array(
+		$rules = array(
 			"bankaccount" => array(
-				"type" => "number"
+				"type" => function ($data, $rule, $input) use ($accounts) {
+					foreach ($accounts as $account) {
+						if ($account->id == $data) {
+							return $account;
+						}
+					}
+					throw new InputValidationException($input);
+				},
 			),
 			"price" => array(
-				"type" => "number",
+				"type" => "float",
+				"zero" => false,
+				"min" => 0,
+				"max" => $transaction->remainPriceForAddPay(),
 			),
 			"followup" => array(
-				"type" => "string"
+				"type" => "string",
 			),
 			"description" => array(
 				"type" => "string",
 				"optional" => true,
 			),
 			"date" => array(
-				"type" => "date"
+				"type" => "date",
+				"unix" => true,
 			),
 			"attachment" => array(
 				"type" => "file",
@@ -579,32 +556,17 @@ class Transactions extends Controller {
 				"obj" => true,
 			)
 		);
-		$inputs = $this->checkinputs($inputsRules);
-		$found = false;
-		$inputBankAccount = null;
-		foreach ($accounts as $account) {
-			if ($account->id == $inputs["bankaccount"]) {
-				$inputBankAccount = $account;
-				$found = true;
-				break;
-			}
-		}
-		if (!$found) {
-			throw new InputValidationException("bankaccount");
-		}
-		if ($inputs["price"] <= 0 or $inputs["price"] > $transaction->payablePrice()) {
-			throw new InputValidationException("price");
-		}
-		$inputs["date"] = Date::strtotime($inputs["date"]);
+		$inputs = $this->checkInputs($rules);
 		if (!Authorization::is_accessed("transactions_pay_accept") and $inputs["date"] <= Date::time() - ( 86400 * 30)) {
 			throw new InputValidationException("date");
 		}
-		if (self::checkBanktransferFollowup($inputBankAccount->bank_id, $inputs['followup'])) {			
-			throw new duplicateRecord("followup");
+		if (self::checkBanktransferFollowup($inputs["bankaccount"]->bank_id, $inputs['followup'])) {
+			throw new DuplicateRecord("followup");
 		}
 		$params = array(
-			"bankaccount" => $inputs["bankaccount"],
+			"bankaccount" => $inputs["bankaccount"]->id,
 			"followup" => $inputs["followup"],
+			"description" => $inputs['description'] ?? "",
 		);
 		if (isset($inputs['attachment'])) {
 			$path = "storage/public/" . $inputs['attachment']->md5() . "." . $inputs['attachment']->getExtension();
@@ -617,25 +579,18 @@ class Transactions extends Controller {
 			}
 			$params['attachment'] = $path;
 		}
-		$newPay = array(
+		$pay = $transaction->addPay(array(
 			"date" => $inputs["date"],
 			"method" => Transaction_pay::banktransfer,
 			"price" => $inputs["price"],
-			"status" => Transaction_pay::pending,
+			"status" => Transaction_pay::pending, //(Authorization::is_accessed("transactions_pay_accept") ? Transaction_pay::accepted : Transaction_pay::pending),
 			"currency" => $transaction->currency->id,
-			"params" => $params
-		);
-		if (isset($inputs['description']) and $inputs['description']) {
-			$newPay['params']['description'] = $inputs['description'];
-		}
-		if (Authorization::is_accessed("transactions_pay_accept")) {
-			$newPay['status'] = Transaction_pay::accepted;
-		}
-		$pay = $transaction->addPay($newPay);
+			"params" => $params,
+		));
 		if ($pay) {
 			if (Authentication::check()) {
 				$log = new Log();
-				$log->user = Authentication::getUser();
+				$log->user = Authentication::getID();
 				$log->type = logs\transactions\Pay::class;
 				$log->title = t("financial.logs.transaction.pay", ["transaction_id" => $transaction->id]);
 				$log->parameters = array(
@@ -649,13 +604,12 @@ class Transactions extends Controller {
 			if ($token = Http::getURIData("token")) {
 				$parameter["token"] = $token;
 			}
-			$url = '';
-			$url = ($transaction->payablePrice() > 0) ? 'pay/banktransfer/' : 'view/';
+			$this->response->setStatus(true);
+			$url = ($transaction->remainPriceForAddPay() > 0) ? 'pay/banktransfer/' : 'view/';
 			$this->response->Go(userpanel\url('transactions/'  . $url . $transaction->id, $parameter));
 		} else {
 			$this->response->setStatus(false);
 		}
-		$this->response->setStatus(true);		
 		return $this->response;
 	} // payByBankTransfer
 
@@ -671,7 +625,7 @@ class Transactions extends Controller {
 		$this->response->setView($view);
 		$pay = self::getPay($data);
 		$transaction = $pay->transaction;
-		if ($pay->status != transaction_pay::pending or $transaction->status != transaction::unpaid) {
+		if ($pay->status != transaction_pay::pending) {
 			throw new NotFound;
 		}
 		$view->setPay($pay);
@@ -704,96 +658,110 @@ class Transactions extends Controller {
 	public function rejectPay($data){
 		return $this->accept_handler($data, transaction_pay::rejected);
 	}
-	public function onlinePay($data) {
-		if (!in_array('onlinepay',self::getAvailablePayMethods())) {
+	public function onlinePayView($data): Response {
+		if (!in_array('onlinepay', self::getAvailablePayMethods())) {
 			throw new NotFound;
 		}
 		$transaction = $this->getTransactionForPay($data);
 		$currency = $transaction->currency;
-		$payablePrice = $transaction->payablePrice();
-
-		$view = view::byName(views\transactions\pay\onlinepay::class);
+		$view = View::byName(views\transactions\pay\OnlinePay::class);
 		$this->response->setView($view);
+		$view->setTransaction($transaction);
 
 		$model = new Payport();
 		db::join('financial_payports_currencies', 'financial_payports_currencies.payport=financial_payports.id', "INNER");
 		db::join('financial_currencies', 'financial_currencies.id=financial_payports_currencies.currency', "LEFT");
 		db::join('financial_currencies_rates', 'financial_currencies_rates.currency=financial_currencies.id', "LEFT");
-		$parenthesis = new parenthesis();
+		$parenthesis = new Parenthesis();
+		$parenthesis->where("financial_payports_currencies.currency", $currency->id);
+		$parenthesis->orWhere("financial_currencies_rates.changeTo", $currency->id);
+		$model->where($parenthesis);
+		$model->where('financial_payports.status', payport::active);
+		$model->setQueryOption("DISTINCT");
+		$payports = $model->get(null, 'financial_payports.*');
+		$view->setPayports($payports);
+
+		$this->response->setStatus(true);
+		return $this->response;
+	}
+	public function onlinePay($data) {
+		if (!in_array('onlinepay', self::getAvailablePayMethods())) {
+			throw new NotFound;
+		}
+		$this->response->setStatus(false);
+		$transaction = $this->getTransactionForPay($data);
+		$currency = $transaction->currency;
+		$view = View::byName(views\transactions\pay\OnlinePay::class);
+		$this->response->setView($view);
+		$view->setTransaction($transaction);
+
+		$model = new Payport();
+		db::join('financial_payports_currencies', 'financial_payports_currencies.payport=financial_payports.id', "INNER");
+		db::join('financial_currencies', 'financial_currencies.id=financial_payports_currencies.currency', "LEFT");
+		db::join('financial_currencies_rates', 'financial_currencies_rates.currency=financial_currencies.id', "LEFT");
+		$parenthesis = new Parenthesis();
 		$parenthesis->where("financial_payports_currencies.currency", $currency->id, "=", "OR");
 		$parenthesis->where("financial_currencies_rates.changeTo", $currency->id, "=", "OR");
 		$model->where($parenthesis);
 		$model->where('financial_payports.status', payport::active);
 		$model->setQueryOption("DISTINCT");
 		$payports = $model->get(null, 'financial_payports.*');
-		$view->setTransaction($transaction);
 		$view->setPayports($payports);
 
-		if (!isset(http::$data['payport'])) {
-			$this->response->setStatus(true);
-			return $this->response;
-		}
 		$rules = array(
 			'payport' => array(
-				'type' => function ($data) use ($payports) {
+				'type' => function ($data, $rule, $input) use ($payports) {
 					foreach ($payports as $item) {
 						if ($data == $item->id) {
 							return $item;
 						}
 					}
-					throw new InputValidationException("payport");
-				}
+					throw new InputValidationException($input);
+				},
 			),
 			'price' => array(
 				'type' => 'number',
 				'optional' => true,
+				'float' => true,
+				'min' => 0,
 			),
 			"currency" => array(
-				"type" => "number",
+				"type" => Currency::class,
 				'optional' => true,
+				'default' => $transaction->currency,
 			),
 		);
-		try{
-			$inputs = $this->checkinputs($rules);
-			$payport = $inputs['payport'];
-			if (isset($inputs["currency"])) {
-				if (!$payport->getCurrency($inputs["currency"])) {
-					throw new Payport\UnsupportCurrencyTypeException($inputs["currency"]);
-				}
-			} else {
-				$inputs['currency'] = $payport->getCompatilbeCurrency($transaction->currency->id);
-				if (!$inputs['currency']) {
-					throw new payport\UnsupportCurrencyTypeException(null, "cannot find any compatilble currency between payport and transaction");
-				}
-			}
-			if ($transaction->currency->id != $inputs["currency"]) {
-				$currency = Currency::byID($inputs["currency"]);
-				$payablePrice = $transaction->currency->changeTo($payablePrice, $currency);
-			} else {
-				$currency = $transaction->currency;
-			}
-			if (!isset($inputs['price'])) {
-				$inputs['price'] = $payablePrice;
-			}
-			if ($inputs['price'] <= 0 or $inputs['price'] > $payablePrice) {
-				throw new inputValidation("price");
-			}
-			$this->response->setStatus(true);
-			$redirect = $payport->PaymentRequest($inputs['price'], $transaction, $currency);
-			if ($redirect->method == redirect::get) {
-				$this->response->Go($redirect->getURL());
-			} elseif ($redirect->method == redirect::post) {
-				$view = view::byName(views\transactions\pay\onlinepay\redirect::class);
-				$view->setTransaction($transaction);
-				$view->setRedirect($redirect);
-				$this->response->setView($view);
-			}
-		} catch(payport\UnsupportCurrencyTypeException $e) {
-			$error = new error();
+		$view->setDataForm($this->inputsValue($rules));
+		$inputs = $this->checkInputs($rules);
+		if (
+			!$inputs["payport"]->getCurrency($inputs["currency"]->id) or
+			($transaction->currency->id != $inputs["currency"]->id and !$transaction->currency->hasRate($inputs["currency"]->id))
+		) {
+			$error = new Error('financial.transaction.payport.unSupportCurrencyTypeException');
 			$error->setCode('financial.transaction.payport.unSupportCurrencyTypeException');
 			$view->addError($error);
+			$this->response->setStatus(false);
+			return $this->response;
 		}
-		$view->setDataForm($this->inputsvalue($rules));
+		$remainPriceForAddPay = $transaction->currency->changeTo($transaction->remainPriceForAddPay(), $inputs["currency"]);
+		if (!isset($inputs["price"])) {
+			$inputs["price"] = $remainPriceForAddPay;
+		}
+		if ($inputs["price"] > $remainPriceForAddPay) {
+			throw new InputValidationException("price");
+		}
+		$inputs['price'] = $transaction->currency->changeTo($inputs['price'], $inputs["currency"]);
+		$redirect = $inputs["payport"]->PaymentRequest($inputs['price'], $transaction, $inputs["currency"]);
+		$this->response->setStatus(true);
+		if ($redirect->method == Redirect::get) {
+			$this->response->Go($redirect->getURL());
+		} elseif ($redirect->method == Redirect::post) {
+			$view = View::byName(views\transactions\pay\onlinepay\Redirect::class);
+			$view->setTransaction($transaction);
+			$view->setRedirect($redirect);
+			$this->response->setView($view);
+		}
+		$this->response->setStatus(true);
 		return $this->response;
 	}
 	private function redirectToConfig($transaction){
@@ -812,59 +780,6 @@ class Transactions extends Controller {
 			}
 		}
 		return null;
-	}
-	public function onlinePay_callback($data){
-		if($view = view::byName("\\packages\\financial\\views\\transactions\\pay\\onlinepay\\error")){
-			if($pay = payport_pay::byId($data['pay'])){
-				if($pay->status == payport_pay::pending){
-					$this->response->setStatus(false);
-					$view->setPay($pay);
-					try{
-						if($pay->verification() == payport_pay::success){
-							$tPay = $pay->transaction->addPay(array(
-								'date' => date::time(),
-								'method' => transaction_pay::onlinepay,
-								'price' => $pay->price,
-								"currency" => $pay->currency,
-								'status' => transaction_pay::accepted,
-								'params' => array(
-									'payport_pay' => $pay->id,
-								)
-							));
-							if (authentication::check()) {
-								$log = new log();
-								$log->user = authentication::getUser();
-								$log->type = logs\transactions\pay::class;
-								$log->title = t("financial.logs.transaction.pay", ["transaction_id" => $pay->transaction->id]);
-								$parameters['pay'] = transaction_pay::byId($tPay);
-								$parameters['currency'] = $pay->currency;
-								$log->parameters = $parameters;
-								$log->save();
-							}
-							$this->response->setStatus(true);
-							$redirect = $this->redirectToConfig($pay->transaction);
-							$parameter = array();
-							if ($token = http::getURIData("token")) {
-								$parameter["token"] = $token;
-							}
-							$this->response->Go($redirect ? $redirect : userpanel\url('transactions/view/'.$pay->transaction->id, $parameter));
-						}else{
-							$view->setError('verification');
-						}
-					}catch(GatewayException $e){
-						$view->setError('gateway');
-					}catch(VerificationException $e){
-						$view->setError('verification', $e->getMessage());
-					}
-					$this->response->setView($view);
-				}else{
-					throw new NotFound;
-				}
-			}else{
-				throw new NotFound;
-			}
-		}
-		return $this->response;
 	}
 	protected function checkData($data){
 		$types = authorization::childrenTypes();
@@ -1286,10 +1201,6 @@ class Transactions extends Controller {
 					}
 				}
 				$transaction_pay->delete();
-				if($transaction->payablePrice() > 0){
-					$transaction->status = transaction::unpaid;
-				}
-				$transaction->save();
 				$this->response->setStatus(true);
 				$this->response->Go(userpanel\url('transactions/edit/'.$transaction->id));
 			}catch(inputValidation $error){
@@ -1366,48 +1277,62 @@ class Transactions extends Controller {
 		$this->response->setView($view);
 		return $this->response;
 	}
-	public function accepted($data){
-		authorization::haveOrFail('transactions_accept');
-		$view = view::byName("\\packages\\financial\\views\\transactions\\accept");
-		$transaction = transaction::byId($data['id']);
-		if(!$transaction or $transaction->status != transaction::unpaid){
+	public function acceptedView($data): Response {
+		Authorization::haveOrFail('transactions_accept');
+		$transaction = $this->getTransaction($data['id']);
+		if (!in_array($transaction->status, [Transaction::UNPAID, Transaction::PENDING])) {
 			throw new NotFound;
 		}
-		$view->setTransactionData($transaction);
-		if(http::is_post()){
-			try{
-				$pay = $transaction->addPay(array(
-					'date' => time(),
-					'method' => transaction_pay::payaccepted,
-					'price' => $transaction->payablePrice(),
-					'status' => transaction_pay::accepted,
-					"currency" => $transaction->currency->id,
-					'params' => array(
-						'acceptor' => authentication::getID(),
-						'accept_date' => time(),
-					)
-				));
-				$transaction->status = transaction::paid;
-				$transaction->save();
-
-				$log = new log();
-				$log->user = authentication::getUser();
-				$log->type = logs\transactions\pay::class;
-				$log->title = t("financial.logs.transaction.pay", ["transaction_id" => $transaction->id]);
-				$parameters['pay'] = transaction_pay::byId($pay);
-				$parameters['currency'] = $transaction->currency;
-				$log->parameters = $parameters;
-				$log->save();
-
-				$this->response->setStatus(true);
-				$this->response->Go(userpanel\url("transactions/view/".$transaction->id));
-			}catch(inputValidation $error){
-				$view->setFormError(FormError::fromException($error));
-			}
-		}else{
-			$this->response->setStatus(true);
-		}
+		$view = View::byName(views\transactions\Accept::class);
 		$this->response->setView($view);
+		$view->setTransactionData($transaction);
+		$this->response->setStatus(true);
+		return $this->response;
+	}
+	public function accepted($data): Response {
+		Authorization::haveOrFail('transactions_accept');
+		$transaction = $this->getTransaction($data['id']);
+		if (!in_array($transaction->status, [Transaction::UNPAID, Transaction::PENDING])) {
+			throw new NotFound;
+		}
+		$view = View::byName(views\transactions\Accept::class);
+		$this->response->setView($view);
+		$view->setTransactionData($transaction);
+
+		$pendingPays = (new Transaction_Pay())
+		->where("transaction", $transaction->id)
+		->where("status", Transaction_Pay::PENDING)
+		->get();
+		foreach ($pendingPays as $pendingPay) {
+			self::payAcceptor($pendingPay);
+		}
+		$payablePrice = $transaction->payablePrice();
+		if ($payablePrice > 0) {
+			$pay = $transaction->addPay(array(
+				'date' => time(),
+				'method' => Transaction_Pay::payaccepted,
+				'price' => $payablePrice,
+				'status' => Transaction_Pay::accepted,
+				"currency" => $transaction->currency->id,
+				'params' => array(
+					'acceptor' => Authentication::getID(),
+					'accept_date' => Date::time(),
+				)
+			));
+			$log = new Log();
+			$log->user = Authentication::getID();
+			$log->type = logs\transactions\Pay::class;
+			$log->title = t("financial.logs.transaction.pay", ["transaction_id" => $transaction->id]);
+			$log->parameters = array(
+				"pay" => Transaction_Pay::byID($pay),
+				"currency" => $transaction->currency,
+			);
+			$log->save();
+		}
+		$transaction->status = Transaction::paid;
+		$transaction->save();
+		$this->response->Go(userpanel\url("transactions/view/{$transaction->id}"));
+		$this->response->setStatus(true);
 		return $this->response;
 	}
 	public function config($data){
@@ -1507,7 +1432,7 @@ class Transactions extends Controller {
 	public function refundAccept($data) {
 		authorization::haveOrFail("transactions_refund_accept");
 		$transaction = $this->getTransaction($data["transaction"]);
-		if ($transaction->status != transaction::unpaid or $transaction->payablePrice() > 0) {
+		if (!$transaction or !$transaction->canAddPay) {
 			throw new NotFound();
 		}
 		$inputs = $this->checkinputs(array(
@@ -1539,7 +1464,7 @@ class Transactions extends Controller {
 	public function refundReject($data) {
 		Authorization::haveOrFail("transactions_refund_accept");
 		$transaction = $this->getTransaction($data["transaction"]);
-		if ($transaction->status != Transaction::unpaid or $transaction->payablePrice() > 0) {
+		if (!$transaction->canAddPay()) {
 			throw new NotFound();
 		}
 

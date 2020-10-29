@@ -5,6 +5,7 @@
 	},
 	"rtl": false,
 	"phrases":{
+		"financial.actions": "Actions",
 		"services": "Services",
 		"files":"Files",
 		"print": "print",
@@ -16,6 +17,7 @@
 		"title.transaction.view" : "View Invoice",
 		"transactions" : "Invoices",
 		"tranaction" : "Invoice {id}",
+		"transaction.pending" : "Pending",
 		"transaction.unpaid" : "Unpaid",
 		"transaction.paid" : "Paid",
 		"transaction.refund" : "Refunded",
@@ -109,6 +111,8 @@
 		"financial.banks.delete.title": "Delete bank",
 		"financial.banks.delete.alert.text": "All transactions related to this bank will be deleted!",
 		"transaction.accept.warning": "Are you sure want to accept invoice #{transaction_id}?",
+		"transaction.accept.warning.all_pays_will_accept": "This transaction has «{pending_pays_count}» pending pays. If you accept this transaction, all pays will be accepted.",
+		"transaction.accept.warning.add_new_pay_for_remain_price": "If you accept this transaction, one pay with «{price} {currency_title}» will be added to transaction.",
 		"transaction.reject.warning": "Are you sure want to reject this invoice?",
 		"pay.method.payaccepted": "Accepted by {acceptor}",
 		"shortcut.transactions.link": "Invoices List",
@@ -169,6 +173,11 @@
 		
 		"settings.financial.currencies": "Currencies",
 		"error.financial.settings.currency.notfound": "No currencies found. You will see them here after you add them.",
+		"financial.setting.currency.rounding_behaviour": "Rounding behaviour on convert",
+		"financial.setting.currency.rounding_precision": "Precision",
+		"financial.setting.currency.rounding_behaviour.ceil": "Rounding to up",
+		"financial.setting.currency.rounding_behaviour.round": "Fairly",
+		"financial.setting.currency.rounding_behaviour.floor": "Rounding to down",
 		"settings.financial.currency.add": "Add currency",
 		"settings.financial.currency.edit": "Edit currency",
 		"settings.financial.currency.delete": "Delete currency",
@@ -293,6 +302,11 @@
 		"packages.financial.error.IBAN_not_valid": "IBAN code is invalid.",
 		"packages.financial.error.IBAN.exceed": "IBAN code should't exceed from {number} charachters.",
 		"packages.financial.error.IBAN.start_with_country_code": "IBAN code should start with valid country code.",
+		"packages.financial.error.currency.rates.should_add_rates": "If currency conversion is enabled, you must enter at least one conversion rate",
+
+		"packages.financial.currencies.rounding.behaviour.ceil.help_text": "When converting other currencies to this currency, the number obtained will be rounded up. <br> The conversion accuracy will be the number of decimal numbers in the output. Will be rounded. <br> Example: 17.8912 converts 0 to 18 with accuracy <br> Example: 17.8912 converts 1 to 17.9",
+		"packages.financial.currencies.rounding.behaviour.round.help_text": "When converting other currencies to this currency, if there is a decimal part in the output, the decimal part numbers will be the 'precision' number. (The deleted part will be rendered upwards) <br> If the 'precision' is zero, the output number will be without the decimal part. <br>e.g: (precision: 2) 77.89 becomes 77.89<br>e.g: (precision: 1) 77.89 becomes 77.9 <br>e.g: (precision: 0) 77.89 becomes to 78<br>e.g: (precision: -1) 77.89 becomes 80",
+		"packages.financial.currencies.rounding.behaviour.floor.help_text": "When converting other currencies to this currency, the number obtained will be rounded up. <br> The conversion accuracy will be the number of decimal numbers in the output. Will be rounded. <br> Example: 17.8912 converts 0 to 18 with accuracy <br> Example: 17.8912 converts 1 to 17.9...",
 
 		"packages.financial.transaction": "Receive and paid transactions report",
 		"packages.financial.last_month": "{month} Month ago",
@@ -303,6 +317,9 @@
 		"packages.financial.paid": "Paid",
 		"packages.financial.user_paids": "User payments",
 		"packages.financial.paid_touser": "Paid to user",
-		"packages.financial.stats_curreny": "Pays currency is: {currency}"
+		"packages.financial.stats_curreny": "Pays currency is: {currency}",
+		"financial.default_currency": "Default",
+		"financial.settings.currency.changes": "Changes",
+		"financial.settings.currency.changeTo.price": "Price"
 	}
 }

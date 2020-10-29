@@ -37,8 +37,8 @@ export default class Edit {
 			$("input[name=product_title]", ModalEditProduct).val(product.title);
 			$("textarea[name=description]", ModalEditProduct).val(product.description);
 			$("input[name=number]", ModalEditProduct).val(product.number);
-			$("input[name=product_price]", ModalEditProduct).val(Transaction.formatFlotNumber(product.price));
-			$("input[name=discount]", ModalEditProduct).val(Transaction.formatFlotNumber(product.discount));
+			$("input[name=product_price]", ModalEditProduct).val(Transaction.formatFloatNumber(product.price));
+			$("input[name=discount]", ModalEditProduct).val(Transaction.formatFloatNumber(product.discount));
 			$("select[name=product_currency]", ModalEditProduct).val(product.currency);
 			$("#editproductform", ModalEditProduct).data("tr", tr);
 		});
@@ -77,9 +77,9 @@ export default class Edit {
 				<td>${product.title}</td>
 				<td>${product.description}</td>
 				<td>${product.number} عدد</td>
-				<td>${Transaction.formatFlotNumber(product.price)} ${product.currency_title}</td>
-				<td>${Transaction.formatFlotNumber(product.discount)} ${product.currency_title}</td>
-				<td>${Transaction.formatFlotNumber(finalPrice)} ${product.currency_title}</td>
+				<td>${Transaction.formatFloatNumber(product.price)} ${product.currency_title}</td>
+				<td>${Transaction.formatFloatNumber(product.discount)} ${product.currency_title}</td>
+				<td>${Transaction.formatFloatNumber(finalPrice)} ${product.currency_title}</td>
 				<td class="center">
 		`;
 		let className: string = "";
@@ -228,7 +228,7 @@ export default class Edit {
 				$(this).val(isDot ? "0." : "");
 				return;
 			}
-			val = Transaction.formatFlotNumber(parseFloat(val));
+			val = Transaction.formatFloatNumber(parseFloat(val));
 			if (isDot) {
 				val += ".";
 			}

@@ -22,10 +22,11 @@ export default class Transaction {
 	public static deFormatNumber(str: string) {
 		return str.replace(/\,/g, "");
 	}
-	public static formatFlotNumber(float: number) {
+	public static formatFloatNumber(float: number) {
 		const split = float.toString().split(".");
-		const number = Transaction.formatNumber(parseInt(float.toString(), 10));
-		const decimal = split.length > 1 ? parseInt(split[1], 10) : 0;
-		return number + (decimal > 0 ? "." + decimal : "");
+		const int = parseInt(split[0].toString().replace(/\D/g, ""), 10);
+		const number = isNaN(int) ? 0 : Transaction.formatNumber(int);
+		const decimal = split.length > 1 ? (split[1].toString().replace(/\D/g, "")) : "";
+		return number + (decimal.length ? "." + decimal : "");
 	}
 }

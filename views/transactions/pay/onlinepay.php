@@ -1,23 +1,22 @@
 <?php
 namespace packages\financial\views\transactions\pay;
-use \packages\financial\{views\form, transaction};
 
-class onlinepay  extends form{
-	public function setTransaction(transaction $transaction){
+use packages\financial\{views\Form, Transaction};
+
+class OnlinePay extends Form {
+	public function setTransaction(transaction $transaction): void {
 		$this->setData($transaction, "transaction");
-		$this->setDataForm($transaction->payablePrice(), "price");
-		$this->setDataForm($transaction->currency->id, "currency");
 	}
-	public function getTransaction(){
-		return($this->getData("transaction"));
+	public function getTransaction(): Transaction {
+		return $this->getData("transaction");
 	}
-	public function setPayports($payports){
+	public function setPayports($payports): void {
 		$this->setData($payports, "payports");
 	}
-	public function getPayports(){
-		return $this->getData("payports");
+	public function getPayports(): array {
+		return $this->getData("payports") ?? [];
 	}
-	public function export() {
+	public function export(): array {
 		return array(
 			'data' => array(
 				'payports' => array_map(function($payport) {
@@ -26,7 +25,7 @@ class onlinepay  extends form{
 						'title' => $payport->title,
 					);
 				}, $this->getPayports()),
-				'payablePrice' => $this->getTransaction()->payablePrice(),
+				'payablePrice' => $this->getTransaction()->remainPriceForAddPay(),
 				'currency' => $this->getTransaction()->currency->toArray(false),
 			)
 		);

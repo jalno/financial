@@ -1,12 +1,22 @@
 <?php
 namespace packages\financial;
 
-use packages\base\{options, db\dbObject, packages, translator};
-use packages\userpanel\{user, date};
 use packages\dakhl\API as dakhl;
+use packages\userpanel\{user, date};
+use packages\base\{db\dbObject, Options, Packages, Utility\Safe, Translator};
 
 class transaction extends dbObject{
+	/** status */
+	const UNPAID = self::unpaid;
+	const PENDING = self::pending;
+	const PAID = self::paid;
+	const REFUND = self::refund;
+	const EXPIRED = self::expired;
+	const REJECTED = self::rejected;
+
+	/** old style const, we dont removed these for backward compatibility */
 	const unpaid = 1;
+	const pending = 6;
 	const paid = 2;
 	const refund = 3;
 	const expired = 4;
@@ -21,32 +31,6 @@ class transaction extends dbObject{
 		return $pw;
 	}
 
-	public static function autoExpire(){
-		$transactions = (new static)->where('status', self::unpaid)
-									->where('expire_at', null, 'IS NOT')
-									->where('expire_at', date::time(), '<')
-									->get();
-		foreach ($transactions as $transaction) {
-			$transaction->status = self::expired;
-			$transaction->save();
-			$payablePrice = $transaction->payablePrice();
-			if ($payablePrice < 0) {
-				$payablePrice *= -1;
-				$userCurrency = Currency::getDefault($transaction->user);
-				$price = $transaction->currency->changeTo($payablePrice, $userCurrency);
-				$transaction->user->credit += $price;
-				$transaction->user->save();
-			} else {
-				try {
-					$transaction->returnPaymentsToCredit();
-				} catch (Currency\UnChangableException $e) {
-
-				}
-			}
-			$event = new events\transactions\expire($transaction);
-			$event->trigger();
-		}
-	}
 	protected $dbTable = "financial_transactions";
 	protected $primaryKey = "id";
 	protected $dbFields = array(
@@ -71,18 +55,66 @@ class transaction extends dbObject{
 	protected $tmproduct = array();
 	protected $tmpays = array();
 
+	public function expire() {
+		$payablePrice = $this->payablePrice();
+		if ($payablePrice < 0) {
+			$payablePrice *= -1;
+			$userCurrency = Currency::getDefault($this->user);
+			$price = $this->currency->changeTo($payablePrice, $userCurrency);
+			$this->user->credit += $price;
+			$this->user->save();
+		} else {
+			$this->returnPaymentsToCredit([Transaction_Pay::credit, Transaction_Pay::onlinepay, Transaction_Pay::banktransfer]);
+		}
+		$this->status = self::expired;
+		$this->save();
+		$event = new events\transactions\Expire($this);
+		$event->trigger();
+	}
+	/**
+	 * get total price of products based on transaction currency
+	 *
+	 * @return float
+	 */
+	public function totalPrice(): float {
+		return $this->getProductsTotalPrice($this->products);
+	}
+
 	/**
 	 * @throws Currency\UnChangableException
+	 * @return void
 	 */
-	public function returnPaymentsToCredit(array $methods = [Transaction_pay::credit]) {
+	public function returnPaymentsToCredit(array $methods = [Transaction_pay::credit]): void {
 		$userCurrency = Currency::getDefault($this->user);
 		foreach ($this->pays as $pay) {
-			if (in_array($pay->method, $methods)) {
+			if ($pay->status == Transaction_Pay::accepted and in_array($pay->method, $methods)) {
 				$price = $pay->currency->changeTo($pay->price, $userCurrency);
 				$this->user->credit += $price;
 			}
 		}
 		$this->user->save();
+	}
+	public function canAddPay(): bool {
+		if (!in_array($this->status, [self::UNPAID, self::PENDING])) {
+			return false;
+		}
+		return $this->remainPriceForAddPay() > 0;
+	}
+	public function remainPriceForAddPay(): float {
+		$remainPrice = $this->totalPrice();
+		unset($this->data["pays"]);
+		foreach ($this->pays as $pay) {
+			if (in_array($pay->status, [Transaction_pay::ACCEPTED, Transaction_pay::PENDING])) {
+				$remainPrice -= $pay->convertPrice();
+			}
+		}
+		return $remainPrice;
+	}
+	public function canPayByCredit(): bool {
+		return !((new Transaction_Product())
+		->where("transaction", $this->id)
+		->where("type", [AddingCredit::class, "\\" . AddingCredit::class], "IN")
+		->has());
 	}
 	protected function addProduct($productdata){
 		$product = new transaction_product($productdata);
@@ -105,17 +137,18 @@ class transaction extends dbObject{
 			return $pay->id;
 		}
 	}
-	protected function payablePrice(){
+	protected function payablePrice(): float {
 		$payable = $this->totalPrice();
-		if(!$this->isNew){
+		$paid = 0;
+		if (!$this->isNew) {
 			unset($this->data['pays']);
-			foreach($this->pays as $pay){
-				if($pay->status == transaction_pay::accepted){
-					$payable -= $pay->convertPrice();
+			foreach ($this->pays as $pay) {
+				if ($pay->status == transaction_pay::accepted) {
+					$paid += $pay->convertPrice();
 				}
 			}
 		}
-		return $payable;
+		return (Safe::floats_cmp($payable, $paid) == 0 ? 0 : floatval($payable - $paid));
 	}
 	protected function trigger_paid(){
 		if(!$this->param("trigered_paid")){
@@ -139,56 +172,39 @@ class transaction extends dbObject{
 		}
 		return true;
 	}
-	protected function preLoad($data){
+	protected function preLoad(array $data): array {
 		if(!isset($data['status'])){
 			$data['status'] = self::unpaid;
 		}
 		if(!isset($data['create_at']) or !$data['create_at']){
 			$data['create_at'] = time();
 		}
-		if(!isset($data['currency'])){
-			$user = null;
+		$userModel = null;
+		if (!isset($data['currency'])) {
 			if (isset($data['user'])) {
-				if (!($data['user'] instanceof dbObject)) {
-					$user = user::where('id', $data['user'])->getOne();
-				} else {
-					$user = $data['user'];
-				}
+				$userModel = (($data['user'] instanceof dbObject) ? $data['user'] : (new User())->byID($data['user']));
 			}
-			$data['currency'] = currency::getDefault($user);
+			$this->currency = $data['currency'] = Currency::getDefault($userModel);
 		}
 		if($data['currency'] instanceof dbObject){
 			$data['currency'] = $data['currency']->id;
 		}
-		$products = array();
-		if ($this->isNew){
-			$products = &$this->tmproduct;
-		}else{
-			$products = $this->products;
-		}
-		$data['price'] = 0;
-		foreach($products as $product){
-			$price = $product->price;
-			$discount = $product->discount;
-			if(!$product->currency){
-				if(!$data['user'] instanceof dbObject){
-					$user = user::where('id', $data['user'])->getOne();
-				}else{
-					$user = $data['user'];
-				}
-				$product->currency = currency::getDefault($user);
+		if (!isset($data['price'])) {
+			$products = array();
+			if ($this->isNew) {
+				$products = &$this->tmproduct;
+			} else {
+				$products = $this->products;
 			}
-			if($data['currency'] != $product->currency->id){
-				$rate = new currency\rate();
-				$rate->where('currency', $product->currency->id);
-				$rate->where('changeTo', $data['currency']);
-				if(!$rate = $rate->getOne()){
-					throw new currency\UnChangableException($product->currency, $data['currency']);
+			foreach ($products as $product) {
+				if (!$product->currency) {
+					if (!$userModel) {
+						$userModel = (($data['user'] instanceof dbObject) ? $data['user'] : (new User())->byID($data['user']));
+					}
+					$product->currency = Currency::getDefault($userModel);
 				}
-				$price *= $rate->price;
-				$discount *= $rate->price;
 			}
-			$data['price'] += (($price*$product->number) - $discount);
+			$data['price'] = $this->getProductsTotalPrice($products);
 		}
 		if (!isset($data["token"])) {
 			$data["token"] = transaction::generateToken();
@@ -295,18 +311,12 @@ class transaction extends dbObject{
 		$currency = $this->currency;
 		foreach ($this->products as $product) {
 			$pcurrency = $product->currency;
-			if ($pcurrency->id != $currency->id) {
-				$rate = new currency\rate();
-				$rate->where('currency', $pcurrency->id);
-				$rate->where('changeTo', $currency->id);
-				$rate = $rate->getOne();
-				if ($rate) {
-					$product->price *= $rate->price;
-					$product->discount *= $rate->price;
-					$product->currency = $currency->id;
-					$product->save();
-				}
-			}
+			try {
+				$product->price = $pcurrency->changeTo($product->price, $currency);
+				$product->discount = $pcurrency->changeTo($product->discount, $currency);
+				$product->currency = $currency->id;
+				$product->save();
+			} catch (currency\UnChangableException $e) {}
 			if ($invoice) {
 				if (!$product->description) {
 					$product->description = "";
@@ -357,18 +367,19 @@ class transaction extends dbObject{
 			}
 		}
 	}
-	public function totalPrice(): float{
+	/**
+	 * get total price of given products based on currency of transaction
+	 *
+	 * @var packages\financial\transaction_product[] $products
+	 * @return float
+	 */
+	protected function getProductsTotalPrice(array $products): float {
+		$total = 0;
 		$currency = $this->currency;
-		$price = 0;
-		foreach($this->products as $product){
-			$pcurrency = $product->currency;
-			if($pcurrency->id != $currency->id){
-				$price += $pcurrency->changeTo(($product->price * $product->number) - $product->discount, $currency);
-			}else{
-				$price += ($product->price * $product->number) - $product->discount;
-			}
+		foreach ($products as $product) {
+			$total += $product->currency->changeTo((($product->price * $product->number) - $product->discount), $currency);
 		}
-		return $price;
+		return floatval($total);
 	}
 }
 class undefinedCurrencyException extends \Exception{}

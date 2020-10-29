@@ -4,13 +4,27 @@ use \packages\base\{db, db\dbObject, packages};
 use packages\financial\{Bank\Account, events};
 
 class transaction_pay extends dbObject{
+	/** status */
+	const PENDING = self::pending;
+	const ACCEPTED = self::accepted;
+	const REJECTED = self::rejected;
+
+	/** method */
+	const CREDIT = self::credit;
+	const BANKTRANSFER = self::banktransfer;
+	const ONLINEPAY = self::onlinepay;
+	const PAYACCEPTED = self::payaccepted;
+
+
+	/* old style const, we dont removed these for backward compatibility */
+	const pending = 2;
 	const accepted = 1;
 	const rejected = 0;
-	const pending = 2;
 	const credit = 1;
 	const banktransfer = 2;
 	const onlinepay = 3;
 	const payaccepted = 4;
+
 	protected $dbTable = "financial_transactions_pays";
 	protected $primaryKey = "id";
 	protected $dbFields = array(
@@ -79,23 +93,35 @@ class transaction_pay extends dbObject{
 		}
 	}
 	public function save($data = null) {
-		if($return = parent::save($data)){
-			foreach($this->tmparams as $param){
+		$return = parent::save($data);
+		if ($return) {
+			foreach ($this->tmparams as $param) {
 				$param->pay = $this->id;
 				$param->save();
 			}
 			$this->tmparams = array();
-			if($this->transaction->status == transaction::unpaid){
-				if($this->transaction->payablePrice() == 0){
-					$this->transaction->status = transaction::paid;
+			if (in_array($this->transaction->status, [Transaction::PENDING, Transaction::UNPAID])) {
+				if ($this->transaction->payablePrice() == 0) {
+					$this->transaction->status = Transaction::PAID;
 					$this->transaction->expire_at = null;
 					$this->transaction->paid_at = time();
 					$this->transaction->afterPay();
 					$this->transaction->save();
-					$event = new events\transactions\pay($this->transaction);
+					$event = new events\transactions\Pay($this->transaction);
 					$event->trigger();
-					if($this->transaction->isConfigured()){
+					if ($this->transaction->isConfigured()) {
 						$this->transaction->trigger_paid();
+					}
+				} elseif ($this->method == self::BANKTRANSFER and $this->status == self::PENDING and $this->transaction->status != Transaction::PENDING) {
+					$this->transaction->status = Transaction::PENDING;
+					$this->transaction->save();
+				} elseif ($this->transaction->status == Transaction::PENDING) {
+					$hasPendingPay = (new Static)->where("transaction", $this->transaction->id)
+									->where("status", self::PENDING)
+									->has();
+					if (!$hasPendingPay) {
+						$this->transaction->status = Transaction::UNPAID;
+						$this->transaction->save();
 					}
 				}
 			}
@@ -123,20 +149,28 @@ class transaction_pay extends dbObject{
 				->delete("financial_transactions_pays_params");
 		}
 	}
-
-	public function getBanktransferBankAccount() {
+	public function getBanktransferBankAccount(): ?Account {
 		if ($this->method != self::banktransfer) {
 			return null;
 		}
 		$bankaccount_id = $this->param("bankaccount");
-		if ($bankaccount_id) {
-			$bankaccount = new Account();
-			$bankaccount->where("id", $bankaccount_id);
-			$bankaccount = $bankaccount->getOne();
-			return ($bankaccount) ? $bankaccount : null;
+		return ($bankaccount_id ? (new Account())->byID($bankaccount_id) : null);
+	}
+	public function delete() {
+		$transaction = $this->transaction;
+		$return = parent::delete();
+		if ($return) {
+			$hasPendingPay = (new Static)->where("transaction", $transaction->id)
+							->where("status", self::PENDING)
+							->has();
+			if ($hasPendingPay) {
+				$transaction->status = Transaction::PENDING;
+			} elseif ($transaction->payablePrice() > 0) {
+				$transaction->status = Transaction::UNPAID;
+			}
+			$transaction->save();
 		}
 	}
-
 	protected function convertPrice() {
 		if ($this->currency->id == $this->transaction->currency->id) {
 			return $this->price;

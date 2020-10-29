@@ -1,26 +1,24 @@
 <?php
 namespace themes\clipone\views\transactions\pay;
-use \packages\base\translator;
-use \packages\userpanel;
-use \packages\userpanel\date;
-use \packages\financial\views\transactions\pay\credit as creditView;
-use \themes\clipone\breadcrumb;
-use \themes\clipone\navigation;
-use \themes\clipone\navigation\menuItem;
-use \themes\clipone\viewTrait;
-use \themes\clipone\views\formTrait;
 
-class credit extends creditView{
-	use viewTrait,formTrait;
+use packages\base\{Translator};
+use packages\userpanel;
+use packages\userpanel\Date;
+use themes\clipone\{Breadcrumb, views\FormTrait, navigation\MenuItem, Navigation, ViewTrait};
+use packages\financial\views\transactions\pay\credit as CreditView;
+
+class credit extends CreditView {
+	use viewTrait, formTrait;
 	protected $transaction;
-	function __beforeLoad(){
+	public function __beforeLoad(): void {
 		$this->transaction = $this->getTransaction();
 		$this->setTitle(array(
-			translator::trans('pay.byCredit')
+			t('pay.byCredit')
 		));
-		$this->setShortDescription(translator::trans('transaction.number',array('number' =>  $this->transaction->id)));
+		$this->setShortDescription(t('transaction.number', array('number' =>  $this->transaction->id)));
 		$this->setNavigation();
-
+		$this->addBodyClass('pay');
+		$this->addBodyClass('pay-by-credit');
 	}
 	private function setNavigation(){
 		$item = new menuItem("transactions");

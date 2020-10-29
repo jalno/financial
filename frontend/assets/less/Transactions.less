@@ -1,3 +1,27 @@
+body.transaction-view {
+	tr {
+		.ltr-text-center {
+			direction: ltr;
+			text-align: center;
+		}
+	}
+}
+body.transaction-accept {
+	.transaction-accept-form {
+		p {
+			font-size: 1.2em
+		}
+	}
+}
+body.rtl {
+	&.transaction-accept {
+		.transaction-accept-form {
+			p {
+				font-family: yekan;
+			}
+		}
+	}
+}
 .refund-request {
 	font-family: yekan;
 	.user-currenct-credit {
@@ -62,6 +86,38 @@
 					}
 				}
 			}
+		}
+	}
+}
+body.pay-by-credit {
+	form.pay_credit_form {
+		.form-group {
+			input {
+				font-size: 1.7rem;
+				letter-spacing: 3px;
+			}
+		}
+	}
+	&.rtl .panel-pay-by-credit-body {
+		font-family: yekan;
+	}
+}
+body.transaction-pay-online {
+	form.online-pay-form {
+		.form-group {
+			select:-moz-focusring {
+				color: transparent;
+				text-shadow: 0 0 0 #000;
+			}
+			input {
+				font-size: 1.7rem;
+				letter-spacing: 3px;
+			}
+		}
+	}
+	&.rtl {
+		.panel-online-pay-body {
+			font-family: yekan;
 		}
 	}
 }
