@@ -136,8 +136,8 @@
 		"packages.financial.error.transactions.user.delete_user_warn.view_transactions.tell_someone": "در صورتی که قصد مشاهده صورتحساب های این کاربر را دارید، از شخصی که این دسترسی را دارا می باشد درخواست نمایید.",
 		"packages.financial.error.transactions.user.delete_user_warn.view_transactions_btn": "مشاهده صورتحساب های این کاربر",
 
-		"error.packages.financial.error.banks_accounts.user.delete_user_warn": "هشدار در خصوص حساب های این کاربر",
-		"error.packages.financial.error.banks_accounts.user.delete_user_warn.message": "این کاربر دارای حساب یا حساب های بانکی می باشد؛ در صورت حذف این کاربر، تمامی حساب های ایشان نیز حذف خواهند شد.",
+		"error.packages.financial.error.banks_accounts.user.delete_user_warn": "هشدار در خصوص حساب های بانکی این کاربر",
+		"error.packages.financial.error.banks_accounts.user.delete_user_warn.message": "این کاربر دارای حساب یا حساب های بانکی می باشد؛ در صورت حذف این کاربر، تمامی حساب های بانکی ایشان نیز حذف خواهند شد!",
 		"packages.financial.error.banks_accounts.user.delete_user_warn.view_banks_accounts": "در صورت نیاز میتوانید با استفاده از لینک زیر، حساب های بانکی این کاربر را مشاهده بفرمایید.",
 		"packages.financial.error.banks_accounts.user.delete_user_warn.view_banks_accounts.tell_someone": "در صورتی که قصد مشاهده حساب های بانکی این کاربر را دارید، از شخصی که این دسترسی را دارا می باشد درخواست نمایید.",
 		"packages.financial.error.banks_accounts.user.delete_user_warn.view_banks_accounts_btn": "مشاهده حساب های بانکی این کاربر"

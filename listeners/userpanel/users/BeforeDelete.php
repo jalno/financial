@@ -18,7 +18,7 @@ class BeforeDelete {
 			return;
 		}
 		$message = t("error.packages.financial.error.transactions.user.delete_user_warn.message");
-		$error = new Error("error.packages.financial.error.transactions.user.delete_user_warn");
+		$error = new Error("packages.financial.error.transactions.user.delete_user_warn");
 		$error->setType(Error::WARNING);
 		if (Authorization::is_accessed("transactions_list")) {
 			$message .= "<br> " . t("packages.financial.error.transactions.user.delete_user_warn.view_transactions") . " ";
@@ -45,7 +45,7 @@ class BeforeDelete {
 			return;
 		}
 		$message = t("error.packages.financial.error.banks_accounts.user.delete_user_warn.message");
-		$error = new Error("error.packages.financial.error.banks_accounts.user.delete_user_warn");
+		$error = new Error("packages.financial.error.banks_accounts.user.delete_user_warn");
 		$error->setType(Error::WARNING);
 		if (Authorization::is_accessed("settings_banks_accounts_search")) {
 			$message .= "<br> " . t("packages.financial.error.banks_accounts.user.delete_user_warn.view_banks_accounts") . " ";
