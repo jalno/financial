@@ -128,6 +128,18 @@
 		"usertype.permissions.financial_settings_currencies_edit": "ویرایش ارز در صورتحساب",
 		"usertype.permissions.financial_settings_currencies_delete": "حذف ارز در صورتحساب",
 
-		"usertype.permissions.financial_paid_user_profile": "مشاهده مجموع پرداختی هادر نمایش کاربر"
+		"usertype.permissions.financial_paid_user_profile": "مشاهده مجموع پرداختی هادر نمایش کاربر",
+
+		"error.packages.financial.error.transactions.user.delete_user_warn": "هشدار در خصوص صورتحساب های این کاربر",
+		"error.packages.financial.error.transactions.user.delete_user_warn.message": "این کاربر دارای صورتحساب یا صورتحساب هایی می باشد؛ در صورت حذف این کاربر، تمامی صورتحساب های ایشان نیز حذف خواهند شد!",
+		"packages.financial.error.transactions.user.delete_user_warn.view_transactions": "در صورت نیاز میتوانید با استفاده از لینک زیر، صورتحساب های این کاربر را مشاهده بفرمایید.",
+		"packages.financial.error.transactions.user.delete_user_warn.view_transactions.tell_someone": "در صورتی که قصد مشاهده صورتحساب های این کاربر را دارید، از شخصی که این دسترسی را دارا می باشد درخواست نمایید.",
+		"packages.financial.error.transactions.user.delete_user_warn.view_transactions_btn": "مشاهده صورتحساب های این کاربر",
+
+		"error.packages.financial.error.banks_accounts.user.delete_user_warn": "هشدار در خصوص حساب های این کاربر",
+		"error.packages.financial.error.banks_accounts.user.delete_user_warn.message": "این کاربر دارای حساب یا حساب های بانکی می باشد؛ در صورت حذف این کاربر، تمامی حساب های ایشان نیز حذف خواهند شد.",
+		"packages.financial.error.banks_accounts.user.delete_user_warn.view_banks_accounts": "در صورت نیاز میتوانید با استفاده از لینک زیر، حساب های بانکی این کاربر را مشاهده بفرمایید.",
+		"packages.financial.error.banks_accounts.user.delete_user_warn.view_banks_accounts.tell_someone": "در صورتی که قصد مشاهده حساب های بانکی این کاربر را دارید، از شخصی که این دسترسی را دارا می باشد درخواست نمایید.",
+		"packages.financial.error.banks_accounts.user.delete_user_warn.view_banks_accounts_btn": "مشاهده حساب های بانکی این کاربر"
 	}
 }

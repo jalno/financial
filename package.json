@@ -28,6 +28,10 @@
 			"listener": "listeners/userpanel/settings@settings_list"
 		},
 		{
+			"name":"packages/userpanel/events/Users/BeforeDelete",
+			"listener": "listeners/userpanel/users/BeforeDelete@check"
+		},
+		{
 			"name":"packages/cronjob/events/tasks",
 			"listener": "listeners/cronjob@tasks"
 		},
