@@ -70,7 +70,7 @@ class transaction extends dbObject{
 
 			db::where("id", $this->user->id)
 				->update("userpanel_users", array(
-					"increment" => db::inc($price),
+					"credit" => db::inc($price),
 				));
 		} else {
 			$this->returnPaymentsToCredit([Transaction_Pay::credit, Transaction_Pay::onlinepay, Transaction_Pay::banktransfer]);
