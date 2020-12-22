@@ -105,7 +105,7 @@ class transaction extends dbObject{
 		}
 		db::where("id", $this->user->id)
 			->update("userpanel_users", array(
-				"increment" => db::inc($total),
+				"credit" => db::inc($total),
 			));
 	}
 	public function canAddPay(): bool {
