@@ -3,7 +3,7 @@ namespace packages\financial;
 
 use packages\dakhl\API as dakhl;
 use packages\userpanel\{user, date};
-use packages\base\{db\dbObject, Options, Packages, Utility\Safe, Translator};
+use packages\base\{db\dbObject, Options, Packages, Utility\Safe, Translator, db};
 
 class transaction extends dbObject{
 	/** status */
@@ -56,18 +56,29 @@ class transaction extends dbObject{
 	protected $tmpays = array();
 
 	public function expire() {
+		$transaction = (new static)->byId($this->id);
+		$this->data = $transaction->data;
+		if ($this->status != self::UNPAID) {
+			return;
+		}
 		$payablePrice = $this->payablePrice();
 		if ($payablePrice < 0) {
-			$payablePrice *= -1;
+			$payablePrice = abs($payablePrice);
+
 			$userCurrency = Currency::getDefault($this->user);
 			$price = $this->currency->changeTo($payablePrice, $userCurrency);
-			$this->user->credit += $price;
-			$this->user->save();
+
+			db::where("id", $this->user->id)
+				->update("userpanel_users", array(
+					"increment" => db::inc($price),
+				));
 		} else {
 			$this->returnPaymentsToCredit([Transaction_Pay::credit, Transaction_Pay::onlinepay, Transaction_Pay::banktransfer]);
 		}
+
 		$this->status = self::expired;
 		$this->save();
+
 		$event = new events\transactions\Expire($this);
 		$event->trigger();
 	}
@@ -86,13 +97,16 @@ class transaction extends dbObject{
 	 */
 	public function returnPaymentsToCredit(array $methods = [Transaction_pay::credit]): void {
 		$userCurrency = Currency::getDefault($this->user);
+		$total = 0;
 		foreach ($this->pays as $pay) {
 			if ($pay->status == Transaction_Pay::accepted and in_array($pay->method, $methods)) {
-				$price = $pay->currency->changeTo($pay->price, $userCurrency);
-				$this->user->credit += $price;
+				$total += $pay->currency->changeTo($pay->price, $userCurrency);
 			}
 		}
-		$this->user->save();
+		db::where("id", $this->user->id)
+			->update("userpanel_users", array(
+				"increment" => db::inc($total),
+			));
 	}
 	public function canAddPay(): bool {
 		if (!in_array($this->status, [self::UNPAID, self::PENDING])) {
