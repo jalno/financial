@@ -56,8 +56,7 @@ class transaction extends dbObject{
 	protected $tmpays = array();
 
 	public function expire() {
-		$transaction = (new static)->byId($this->id);
-		$this->data = $transaction->data;
+		$this->byId($this->id);
 		if ($this->status != self::UNPAID) {
 			return;
 		}
