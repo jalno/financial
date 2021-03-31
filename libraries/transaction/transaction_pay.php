@@ -8,6 +8,7 @@ class transaction_pay extends dbObject{
 	const PENDING = self::pending;
 	const ACCEPTED = self::accepted;
 	const REJECTED = self::rejected;
+	const REIMBURSE = 3;
 
 	/** method */
 	const CREDIT = self::credit;
@@ -20,6 +21,7 @@ class transaction_pay extends dbObject{
 	const pending = 2;
 	const accepted = 1;
 	const rejected = 0;
+
 	const credit = 1;
 	const banktransfer = 2;
 	const onlinepay = 3;

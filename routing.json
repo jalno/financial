@@ -247,6 +247,16 @@
 		"method": "post"
 	},
 	{
+		"path": "userpanel/transactions/:transaction_id/reimburse",
+		"controller": "controllers/transactions@reimburseTransactionView",
+		"method": "get"
+	},
+	{
+		"path": "userpanel/transactions/:transaction_id/reimburse",
+		"controller": "controllers/transactions@reimburseTransaction",
+		"method": "post"
+	},
+	{
 		"paths": [
 			"transactions/"
 		],

@@ -59,6 +59,7 @@
 		"pay.rejected":"رد شده",
 		"pay.accepted":"تائید شده",
 		"pay.pending" : "منتظر تائید",
+		"pay.reimburse": "بازگشت داده شده",
 		"pay.byId" : "پرداخت {id}",
 		"pay.number": "شماره {number}",
 		"pay.accept.warning" : "آیا شما از تائید پرداخت {pay_id} به مبلغ {pay_price} که  در تاریخ {pay_date} به ثبت رسیده اطمینان دارید؟",
@@ -185,6 +186,7 @@
 		"financial.settings.currency": "ارز",
 		"financial.setting.currency.delete.warning": "لطفا دقت کنید هیچ راه برگشتی وجود ندارد، تمامی تبدیلات پاک خواهند شد .",
 		"error.financial.transaction.currency.UnChangableException": "صورتحساب شما در تبدیلات ارزی مشکل دارد . برای پیگیری و رفع خطا با ما تماس بگیرید.</br> از پرداخت صورتحساب جدا خودداری کنید.",
+		"error.financial.transaction.currency.UnChangableException.reimburse": "این صورتحساب در تبدیلات ارزی دارای مشکل می باشد و امکان عودت وجه به حساب کاربر میسر نیست! برای پیگیری و رفع خطا با پشتیبانی تماس حاصل بفرمایید.",
 		"error.financial.transaction.payport.unSupportCurrencyTypeException": "درگاه پرداختی نوع واحد پولی صورتحساب را پشتیبانی نمیکنید.",
 		"error.financial.currencies.terminate.dependenciesTransactionException": "صورتحساب هایی با این نوع واحد ارز وجود دارند، ابتدا صورتحساب ها را ویرایش کنید .",
 		"error.financial.currencies.edit.dependenciesChangebleRateException": "محصولاتی در صورتحساب ها نیاز به تبدیل ارز {currency} دارند .",
@@ -308,6 +310,11 @@
 		"packages.financial.currencies.rounding.behaviour.ceil.help_text": "در هنگام تبدیل سایر ارز ها به این ارز، عدد بدست آمده رو به بالا گرد خواهد شد.<br>دقت تبدیل تعداد اعداد اعشاری در خروجی خواهد بود.<br>در صورت صفر بودن دقت تبدیل، عدد حداکثر یک واحد به سمت بالا گرد خواهد شد.<br>مثال: عدد 17.8912 با دقت تبدیل 0 تبدیل می شود به 18<br>مثال: عدد 17.8912 با دقت تبدیل 1 تبدیل می شود به 17.9",
 		"packages.financial.currencies.rounding.behaviour.round.help_text": "در هنگام تبدیل سایر ارز ها به این ارز، در صورت وجود قسمت اعشاری در خروجی، اعداد قسمت اعشاری به تعداد «دقت تبدیل» خواهند بود. (قسمت حذف شده به سمت بالا رند خواهد شد)<br>در صورت صفر بودن «دقت تبدیل» عدد خروجی بدون قسمت اعشاری خواهد بود.<br>مثال: 77.89 با دقت تبدیل 2 تبدیل می شود به 77.89<br>مثال: 77.89 با دقت تبدیل 1 تبدیل می شود به 77.9<br>مثال: 77.89 با دقت تبدیل 0 تبدیل می شود به 78<br>مثال: 77.89 با دقت تبدیل -1 تبدیل می شود به 80",
 		"packages.financial.currencies.rounding.behaviour.floor.help_text": "در هنگام تبدیل سایر ارز ها به این ارز، عدد بدست آمده رو به پایین گرد خواهد شد.<br>دقت تبدیل تعداد اعداد اعشاری در خروجی خواهد بود.<br>در صورت صفر بودن دقت تبدیل، عدد حداکثر یک واحد به سمت پایین گرد خواهد شد.<br>مثال: عدد 17.8912 با دقت تبدیل 0 تبدیل می شود به 17<br>مثال: عدد 17.8912 با دقت تبدیل 1 تبدیل می شود به 17.8",
+
+		"packages.financial.reimburse.title": "عودت وجه صورتحساب",
+		"packages.financial.reimburse.title_with_id": "عودت وجه صورتحساب #{transaction_id}",
+		"packages.financial.reimburse.btn_title": "عودت وجه",
+		"packages.financial.reimburse.help_text": "این صورتحساب دارای «{pay_count}» پرداخت قابل عودت می باشد؛ در صورت تایید، مبلغ «{amount} {currency_name}» به موجودی حساب کاربری «{user_name}» افزوده خواهد شد.",
 
 		"packages.financial.transaction": "گزارش صورتحساب های دریافتی و پرداختی",
 		"packages.financial.last_month": "{month} ماه گذشته",

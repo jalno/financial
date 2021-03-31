@@ -87,6 +87,10 @@
 		"usertype.permissions.financial_transactions_accept": "تایید صورتحساب ها",
 		"usertype.permissions.financial_transactions_anonymous": "مدیریت صورتحساب های بدون کاربر",
 
+		"usertype.permissions.financial_transactions_reimburse": "بازگشت (عودت) صورتحساب",
+		"usertype.permissions.financial_transactions_reimburse.tooltip": "با داشتن این دسترسی می‌توان پرداخت های یک صورتحساب را به موجود کاربر بازگشت داد.",
+
+
 		"usertype.permissions.financial_transactions_refund": "درخواست تسویه حساب",
 		"usertype.permissions.financial_transactions_refund_add": "ایجاد درخواست تسویه حساب",
 		"usertype.permissions.financial_transactions_refund_accept": "تایید درخواست های تسویه حساب",

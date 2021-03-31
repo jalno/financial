@@ -9,6 +9,7 @@ class usertype{
 			'transactions_edit',
 			'transactions_delete',
 			'transactions_view',
+			"transactions_reimburse",
 			"transactions_anonymous",
 			"transactions_refund_add",
 			"transactions_refund_accept",
