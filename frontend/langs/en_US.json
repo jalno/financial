@@ -112,8 +112,8 @@
 		"financial.banks.delete.title": "Delete bank",
 		"financial.banks.delete.alert.text": "All transactions related to this bank will be deleted!",
 		"transaction.accept.warning": "Are you sure want to accept invoice #{transaction_id}?",
-		"transaction.accept.warning.all_pays_will_accept": "This transaction has «{pending_pays_count}» pending pays. If you accept this transaction, all pays will be accepted.",
-		"transaction.accept.warning.add_new_pay_for_remain_price": "If you accept this transaction, one pay with «{price} {currency_title}» will be added to transaction.",
+		"transaction.accept.warning.all_pays_will_accept": "This transaction has {pending_pays_count} pending pays. If you accept this transaction, all pays will be accepted.",
+		"transaction.accept.warning.add_new_pay_for_remain_price": "If you accept this transaction, one pay with {price} {currency_title} will be added to transaction.",
 		"transaction.reject.warning": "Are you sure want to reject this invoice?",
 		"pay.method.payaccepted": "Accepted by {acceptor}",
 		"shortcut.transactions.link": "Invoices List",
@@ -313,7 +313,8 @@
 		"packages.financial.reimburse.title": "Reimburse Transaction",
 		"packages.financial.reimburse.title_with_id": "Reimburse Transaction #{transaction_id}",
 		"packages.financial.reimburse.btn_title": "reimburse",
-		"packages.financial.reimburse.help_text": "This transaction has «{pay_count}» pays that can be reimbursed. If you confirm, the amount of «{amount} {currency_name}» will be added to the «{user_name}» credit.",
+		"packages.financial.reimburse.help_text": "This transaction has {pay_count} pays that can be reimbursed. If you confirm, the amount of {amount} {currency_name} will be added to the {user_name} credit.",
+		"packages.financial.reimburse.error_text": "Pays with error mark cannot change to user currency. Please add add rate transfer for them and then try again.",
 
 		"packages.financial.transaction": "Receive and paid transactions report",
 		"packages.financial.last_month": "{month} Month ago",
@@ -327,6 +328,8 @@
 		"packages.financial.stats_curreny": "Pays currency is: {currency}",
 		"financial.default_currency": "Default",
 		"financial.settings.currency.changes": "Changes",
-		"financial.settings.currency.changeTo.price": "Price"
+		"financial.settings.currency.changeTo.price": "Price",
+		"packages.financial.reimburse.pay_refundable": "Can refund",
+		"packages.financial.reimburse.pay_not_refundable": "Can not refund"
 	}
 }

@@ -8,15 +8,23 @@ use themes\clipone\{ViewTrait, views\ListTrait, views\FormTrait, breadcrumb, Nav
 class Reimburse extends TransactionReimburse {
 	use viewTrait, listTrait, formTrait, TransactionTrait;
 	
-	/** @var Transaction $transaction */
+	/** @var Transaction|null */
 	protected $transaction;
 
 	/** @var Transaction_Pay[] */
-	protected $pays;
+	protected $pays = [];
+
+	/** @var Curreny|null */
+	protected $userDefaultCurrency;
+
+	/** @var int[] */
+	protected $notRefundablePays = [];
 
 	public function __beforeLoad(): void {
 		$this->transaction = $this->getTransaction();
 		$this->pays = $this->getPays();
+		$this->userDefaultCurrency = Currency::getDefault($this->transaction->user);
+		Navigation::active("transactions/list");
 
 		$this->setTitle(t("packages.financial.reimburse.title"));
 		$this->setShortDescription(t("transaction.number", array(
@@ -27,13 +35,16 @@ class Reimburse extends TransactionReimburse {
 		$this->addBodyClass("transaction-reimburse");
 	}
 
-	private function setNavigation(): void {
-		Navigation::active("transactions/list");
-	}
-
-	protected function getPaysTotalAmountByCurrency(Currency $currency): int {
+	protected function getPaysTotalAmountByCurrency(): int {
+		$currency = $this->userDefaultCurrency;
 		return array_reduce($this->getPays(), function($carry, Transaction_Pay $pay) use (&$currency) {
-			return $carry + $pay->currency->changeTo($pay->price, $currency);
+			$price = 0;
+			try {
+				$price = $pay->currency->changeTo($pay->price, $currency);
+			} catch (Currency\UnChangableException $e) {
+				$this->notRefundablePays[] = $pay->id;
+			}
+			return $carry + $price;
 		}, 0);
 	}
 
