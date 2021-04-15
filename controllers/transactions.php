@@ -1621,12 +1621,15 @@ class Transactions extends Controller {
 
 		$myID = Authentication::getID();
 		$userCurrency = Currency::getDefault($transaction->user);
+		$reimbursePays = array();
+		$amountOfReimburse = 0;
 		foreach ($pays as $key => $pay) {
 			try {
 				$amountOfReimburse = $pay->currency->changeTo($pay->price, $userCurrency);
 			} catch (Currency\UnChangableException $e) {
+				unset($pays[$key]);
 				$view->setPays($pays);
-				throw new Error("financial.transaction.currency.UnChangableException.reimburse");
+				continue;
 			}
 			$pay->status = Transaction_Pay::REIMBURSE;
 			$pay->save();
@@ -1637,19 +1640,36 @@ class Transactions extends Controller {
 				->update("userpanel_users", array(
 					"credit" => DB::inc($amountOfReimburse),
 				));
-			unset($pays[$key]);
+
+			$reimbursePays[] = $pay;
 		}
 
-		try {
-			$transactionTotalPrice = $transaction->totalPrice();
-			$reimbursePaysByTransactionCurrency = $userCurrency->changeTo($amountOfReimburse, $transaction->currency);
-			if (Safe::floats_cmp($transactionTotalPrice, $reimbursePaysByTransactionCurrency) == 0) {
-				$transaction->status = Transaction::REFUND;
-				$transaction->save();
+		if ($reimbursePays) {
+			$log = new Log();
+			$log->user = Authentication::getID();
+			$log->type = logs\transactions\Reimburse::class;
+			$log->title = t("financial.logs.transaction.pays.reimburse", array(
+				"transaction_id" => $transaction->id,
+			));
+			$log->parameters = array(
+				"pays" => $reimbursePays,
+				"user_currency" => $userCurrency,
+				"user" => (new User)->byID($transaction->user->id),
+			);
+			$log->save();
+
+			try {
+				$transactionTotalPrice = $transaction->totalPrice();
+				$reimbursePaysByTransactionCurrency = $userCurrency->changeTo($amountOfReimburse, $transaction->currency);
+				if (Safe::floats_cmp($transactionTotalPrice, $reimbursePaysByTransactionCurrency) == 0) {
+					$transaction->status = Transaction::REFUND;
+					$transaction->save();
+				}
+			} catch (Currency\UnChangableException $e) {
+				throw new Error("financial.transaction.currency.UnChangableException.reimburse");
 			}
-		} catch (Currency\UnChangableException $e) {
-			throw new Error("financial.transaction.currency.UnChangableException.reimburse");
 		}
+
 
 		$this->response->go(userpanel\url("transactions/view/{$transaction->id}"));
 		$this->response->setStatus(true);

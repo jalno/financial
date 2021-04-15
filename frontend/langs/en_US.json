@@ -202,6 +202,7 @@
 		"financial.logs.transaction.delete": "Deleted invoice #{transaction_id}.",
 		"financial.logs.transaction.pay": "Paid invoice #{transaction_id}.",
 		"financial.pay.information": "Payment Details",
+		"financial.pays.information": "Payments details",
 		"financial.pay.id": "Payment ID",
 		"financial.logs.transaction.pay.accept": "Accepted payment #{pay_id} of invoice #{transaction_id}.",
 		"financial.logs.transaction.pay.reject": "Rejected payment #{pay_id} of invoice #{transaction_id}.",
@@ -315,6 +316,12 @@
 		"packages.financial.reimburse.btn_title": "reimburse",
 		"packages.financial.reimburse.help_text": "This transaction has {pay_count} pays that can be reimbursed. If you confirm, the amount of {amount} {currency_name} will be added to the {user_name} credit.",
 		"packages.financial.reimburse.error_text": "Pays with error mark cannot change to user currency. Please add add rate transfer for them and then try again.",
+
+		"financial.logs.transaction.pays.reimburse": "Reimburse transaction #{transaction_id}",
+		"packages.financial.logs.transaction.reimburse.user.panel.title": "Transaction user information",
+		"packages.financial.logs.transaction.reimburse.transaction.user.id": "ID",
+		"packages.financial.logs.transaction.reimburse.transaction.user_full_name": "Full name",
+		"packages.financial.logs.transaction.reimburse.user_credit_after_reimburse": "User's credit after reimburse payements",
 
 		"packages.financial.transaction": "Receive and paid transactions report",
 		"packages.financial.last_month": "{month} Month ago",
