@@ -262,12 +262,14 @@ $this->the_header(!$isLogin ? "logedout" : "");
 								$statusClass = utility::switchcase($pay->status, array(
 									'label label-danger' => transaction_pay::rejected,
 									'label label-success' => transaction_pay::accepted,
-									'label label-warning' => transaction_pay::pending
+									'label label-warning' => transaction_pay::pending,
+									'label label-info' => transaction_pay::REIMBURSE,
 								));
 								$statusTxt = utility::switchcase($pay->status, array(
 									'pay.rejected' => transaction_pay::rejected,
 									'pay.accepted' => transaction_pay::accepted,
-									'pay.pending' => transaction_pay::pending
+									'pay.pending' => transaction_pay::pending,
+									'pay.reimburse' => transaction_pay::REIMBURSE
 								));
 							}
 						?>
@@ -332,6 +334,13 @@ $this->the_header(!$isLogin ? "logedout" : "");
 					<a class="btn btn-lg btn-danger hidden-print" href="#refund-reject-modal" data-toggle="modal">
 						<div class="btn-icons"> <i class="fa fa-times-circle"></i> </div>
 						<?php echo t("packages.financial.refund.reject"); ?>
+					</a>
+					<?php
+					}
+					if ($this->canReimburse) {
+					?>
+					<a class="btn btn-lg btn-warning hidden-print" href="<?php echo userpanel\url("transactions/{$this->transaction->id}/reimburse");?>">
+						<?php echo t("packages.financial.reimburse.btn_title"); ?> <i class="fa fa-undo"></i>
 					</a>
 					<?php
 					}

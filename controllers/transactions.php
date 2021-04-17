@@ -5,7 +5,7 @@ use packages\userpanel;
 use packages\userpanel\{Date, Log, User};
 use packages\financial\{views\transactions\pay as PayView, views\transactions as financialViews};
 use packages\financial\payport\{AlreadyVerified, GatewayException, Redirect, VerificationException};
-use packages\base\{DB, db\duplicateRecord, view\Error, views\FormError, Packages, Http, inputValidation, InputValidationException, NotFound, Options, db\Parenthesis, Response};
+use packages\base\{DB, db\duplicateRecord, view\Error, views\FormError, Packages, Http, inputValidation, InputValidationException, NotFound, Options, db\Parenthesis, Response, Utility\Safe};
 use packages\financial\{Bank\Account, Authentication, Authorization, Controller, Currency, Events, Logs,
 						Transaction, Transaction_product, Transaction_pay, View, Views, Payport, Payport_pay,
 						Transactions_products_param, products\AddingCredit};
@@ -1551,6 +1551,127 @@ class Transactions extends Controller {
 			"description" => $pay->param("description"),
 			"status" => $pay->status,
 		), "pay");
+		$this->response->setStatus(true);
+		return $this->response;
+	}
+	/**
+	 * The view of reimburse (pay back) transaction
+	 *
+	 * @param array $data that should contains "transaction_id" index
+	 * @return \packages\base\Response
+	 */
+	public function reimburseTransactionView(array $data): Response {
+		Authorization::haveOrFail("transactions_reimburse");
+		$transaction = $this->getTransaction($data["transaction_id"]);
+		$pays = (new Transaction_Pay)
+				->where("transaction", $transaction->id)
+				->where("method",
+						array(
+							Transaction_Pay::CREDIT,
+							Transaction_Pay::ONLINEPAY,
+							Transaction_Pay::BANKTRANSFER,
+						),
+						"IN"
+				)
+				->where("status", Transaction_Pay::ACCEPTED)
+		->get();
+
+		if (empty($pays)) {
+			throw new NotFound;
+		}
+
+		$view = View::byName(views\transactions\Reimburse::class);
+		$view->setTransaction($transaction);
+		$view->setPays($pays);
+
+		$this->response->setView($view);
+		$this->response->setStatus(true);
+		return $this->response;
+	}
+	/**
+	 * return transaction amount to user's credit and change transaction status
+	 *
+	 * @param array $data
+	 * @return \packages\base\Response
+	 */
+	public function reimburseTransaction(array $data): Response {
+		Authorization::haveOrFail("transactions_reimburse");
+		$transaction = $this->getTransaction($data["transaction_id"]);
+		$pays = (new Transaction_Pay)
+				->where("transaction", $transaction->id)
+				->where("method",
+						array(
+							Transaction_Pay::CREDIT,
+							Transaction_Pay::ONLINEPAY,
+							Transaction_Pay::BANKTRANSFER,
+						),
+						"IN"
+				)
+				->where("status", Transaction_Pay::ACCEPTED)
+		->get();
+
+		if (empty($pays)) {
+			throw new NotFound;
+		}
+
+		$view = View::byName(views\transactions\Reimburse::class);
+		$view->setTransaction($transaction);
+		$this->response->setView($view);
+		$view->setPays($pays);
+
+		$myID = Authentication::getID();
+		$userCurrency = Currency::getDefault($transaction->user);
+		$reimbursePays = array();
+		$amountOfReimburse = 0;
+		foreach ($pays as $key => $pay) {
+			try {
+				$amountOfReimburse = $pay->currency->changeTo($pay->price, $userCurrency);
+			} catch (Currency\UnChangableException $e) {
+				unset($pays[$key]);
+				$view->setPays($pays);
+				continue;
+			}
+			$pay->status = Transaction_Pay::REIMBURSE;
+			$pay->save();
+			$pay->setParam("reimburse_by_user_id", $myID);
+			$pay->setParam("user_credit_before_reimburse", (new User)->byID($transaction->user->id)->credit);
+
+			DB::where("id", $transaction->user->id)
+				->update("userpanel_users", array(
+					"credit" => DB::inc($amountOfReimburse),
+				));
+
+			$reimbursePays[] = $pay;
+		}
+
+		if ($reimbursePays) {
+			$log = new Log();
+			$log->user = Authentication::getID();
+			$log->type = logs\transactions\Reimburse::class;
+			$log->title = t("financial.logs.transaction.pays.reimburse", array(
+				"transaction_id" => $transaction->id,
+			));
+			$log->parameters = array(
+				"pays" => $reimbursePays,
+				"user_currency" => $userCurrency,
+				"user" => (new User)->byID($transaction->user->id),
+			);
+			$log->save();
+
+			try {
+				$transactionTotalPrice = $transaction->totalPrice();
+				$reimbursePaysByTransactionCurrency = $userCurrency->changeTo($amountOfReimburse, $transaction->currency);
+				if (Safe::floats_cmp($transactionTotalPrice, $reimbursePaysByTransactionCurrency) == 0) {
+					$transaction->status = Transaction::REFUND;
+					$transaction->save();
+				}
+			} catch (Currency\UnChangableException $e) {
+				throw new Error("financial.transaction.currency.UnChangableException.reimburse");
+			}
+		}
+
+
+		$this->response->go(userpanel\url("transactions/view/{$transaction->id}"));
 		$this->response->setStatus(true);
 		return $this->response;
 	}

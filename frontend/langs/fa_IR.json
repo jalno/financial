@@ -59,6 +59,7 @@
 		"pay.rejected":"رد شده",
 		"pay.accepted":"تائید شده",
 		"pay.pending" : "منتظر تائید",
+		"pay.reimburse": "بازگشت داده شده",
 		"pay.byId" : "پرداخت {id}",
 		"pay.number": "شماره {number}",
 		"pay.accept.warning" : "آیا شما از تائید پرداخت {pay_id} به مبلغ {pay_price} که  در تاریخ {pay_date} به ثبت رسیده اطمینان دارید؟",
@@ -110,8 +111,8 @@
 		"financial.banks.delete.title": "حذف بانک",
 		"financial.banks.delete.alert.text": "تمامی سوابق تراکنش های مربوط به این بانک از بین خواهد رفت!",
 		"transaction.accept.warning": "آیا شما از تایید صورتحساب به شناسه #{transaction_id} اطمینان دارید؟",
-		"transaction.accept.warning.all_pays_will_accept": "این صورتحساب دارای «{pending_pays_count}» پرداخت تایید نشده می باشد؛ در صورت تایید صورتحساب، همه پرداخت های تایید نشده، تایید خواهند شد.",
-		"transaction.accept.warning.add_new_pay_for_remain_price": "در صورت تایید صورتحساب یک پرداخت با مبلغ «{price} {currency_title}» به صورتحساب اضافه خواهد شد.",
+		"transaction.accept.warning.all_pays_will_accept": "این صورتحساب دارای {pending_pays_count} پرداخت تایید نشده می باشد؛ در صورت تایید صورتحساب، همه پرداخت های تایید نشده، تایید خواهند شد.",
+		"transaction.accept.warning.add_new_pay_for_remain_price": "در صورت تایید صورتحساب یک پرداخت با مبلغ {price} {currency_title} به صورتحساب اضافه خواهد شد.",
 		"transaction.reject.warning": "آیا از عدم تایید این صورتحساب اطمینان دارید؟",
 		"shortcut.transactions.link": "لیست صورتحساب ها",
 		"pay.redirect":"ارجاع به درگاه پرداخت",
@@ -185,6 +186,7 @@
 		"financial.settings.currency": "ارز",
 		"financial.setting.currency.delete.warning": "لطفا دقت کنید هیچ راه برگشتی وجود ندارد، تمامی تبدیلات پاک خواهند شد .",
 		"error.financial.transaction.currency.UnChangableException": "صورتحساب شما در تبدیلات ارزی مشکل دارد . برای پیگیری و رفع خطا با ما تماس بگیرید.</br> از پرداخت صورتحساب جدا خودداری کنید.",
+		"error.financial.transaction.currency.UnChangableException.reimburse": "این صورتحساب در تبدیلات ارزی دارای مشکل می باشد و امکان عودت وجه به حساب کاربر میسر نیست! برای پیگیری و رفع خطا با پشتیبانی تماس حاصل بفرمایید.",
 		"error.financial.transaction.payport.unSupportCurrencyTypeException": "درگاه پرداختی نوع واحد پولی صورتحساب را پشتیبانی نمیکنید.",
 		"error.financial.currencies.terminate.dependenciesTransactionException": "صورتحساب هایی با این نوع واحد ارز وجود دارند، ابتدا صورتحساب ها را ویرایش کنید .",
 		"error.financial.currencies.edit.dependenciesChangebleRateException": "محصولاتی در صورتحساب ها نیاز به تبدیل ارز {currency} دارند .",
@@ -197,7 +199,9 @@
 		"financial.logs.transaction.products": "محصولات",
 		"financial.logs.transaction.delete": "صورتحساب #{transaction_id} را حذف کرد",
 		"financial.logs.transaction.pay": "صورتحساب #{transaction_id} را پرداخت کرد",
+		"financial.logs.transaction.pays.reimburse": "صورتحساب #{transaction_id} را عودت داد",
 		"financial.pay.information": "مشخصات پرداخت",
+		"financial.pays.information": "مشخصات پرداخت ها",
 		"financial.pay.id": "شناسه پرداخت",
 		"financial.logs.transaction.pay.accept": "پرداخت #{pay_id} از صورتحساب #{transaction_id} را تایید کرد ",
 		"financial.logs.transaction.pay.reject": "پرداخت #{pay_id} از صورتحساب #{transaction_id} را تایید نکرد ",
@@ -309,6 +313,17 @@
 		"packages.financial.currencies.rounding.behaviour.round.help_text": "در هنگام تبدیل سایر ارز ها به این ارز، در صورت وجود قسمت اعشاری در خروجی، اعداد قسمت اعشاری به تعداد «دقت تبدیل» خواهند بود. (قسمت حذف شده به سمت بالا رند خواهد شد)<br>در صورت صفر بودن «دقت تبدیل» عدد خروجی بدون قسمت اعشاری خواهد بود.<br>مثال: 77.89 با دقت تبدیل 2 تبدیل می شود به 77.89<br>مثال: 77.89 با دقت تبدیل 1 تبدیل می شود به 77.9<br>مثال: 77.89 با دقت تبدیل 0 تبدیل می شود به 78<br>مثال: 77.89 با دقت تبدیل -1 تبدیل می شود به 80",
 		"packages.financial.currencies.rounding.behaviour.floor.help_text": "در هنگام تبدیل سایر ارز ها به این ارز، عدد بدست آمده رو به پایین گرد خواهد شد.<br>دقت تبدیل تعداد اعداد اعشاری در خروجی خواهد بود.<br>در صورت صفر بودن دقت تبدیل، عدد حداکثر یک واحد به سمت پایین گرد خواهد شد.<br>مثال: عدد 17.8912 با دقت تبدیل 0 تبدیل می شود به 17<br>مثال: عدد 17.8912 با دقت تبدیل 1 تبدیل می شود به 17.8",
 
+		"packages.financial.reimburse.title": "عودت وجه صورتحساب",
+		"packages.financial.reimburse.title_with_id": "عودت وجه صورتحساب #{transaction_id}",
+		"packages.financial.reimburse.btn_title": "عودت وجه",
+		"packages.financial.reimburse.help_text": "این صورتحساب دارای {pay_count} پرداخت قابل عودت می باشد؛ در صورت تایید، مبلغ {amount} {currency_name} به موجودی حساب کاربری {user_name} افزوده خواهد شد.",
+		"packages.financial.reimburse.error_text": "پرداخت هایی که وضعیت قرمز مشخص شده اند به دلیل خطای تبدیل نرخ ارز به نرخ ارز حساب کاربر، قابل تبدیل نیستند. ابتدا نرخ تبدیل ارز برای این پرداخت ها اضافه کنید و سپس مجددا تلاش کنید.",
+
+		"packages.financial.logs.transaction.reimburse.user.panel.title": "مشخصات کاربر",
+		"packages.financial.logs.transaction.reimburse.transaction.user.id": "شناسه کاربر",
+		"packages.financial.logs.transaction.reimburse.transaction.user_full_name": "نام کاربر",
+		"packages.financial.logs.transaction.reimburse.user_credit_after_reimburse": "موجودی کاربر بعد از عودت",
+
 		"packages.financial.transaction": "گزارش صورتحساب های دریافتی و پرداختی",
 		"packages.financial.last_month": "{month} ماه گذشته",
 		"packages.financial.last_year": "{year} سال گذشته",
@@ -321,6 +336,8 @@
 		"packages.financial.stats_curreny": "قیمت ها به {currency} می باشد",
 		"financial.default_currency": "ارز پیشفرض",
 		"financial.settings.currency.changes": "تبدیل ها",
-		"financial.settings.currency.changeTo.price": "قیمت"
+		"financial.settings.currency.changeTo.price": "قیمت",
+		"packages.financial.reimburse.pay_refundable": "قابل بازگشت است",
+		"packages.financial.reimburse.pay_not_refundable": "قابل بازگشت نیست"
 	}
 }

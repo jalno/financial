@@ -3,7 +3,7 @@ namespace themes\clipone\views\transactions;
 use packages\base\{options, packages};
 use packages\userpanel;
 use packages\userpanel\{user, date};
-use packages\financial\{Bank\Account, transaction, payport_pay, transaction_pay, views\transactions\view as transactionsView};
+use packages\financial\{Authorization, Bank\Account, transaction, payport_pay, transaction_pay, views\transactions\view as transactionsView};
 use themes\clipone\{viewTrait, views\listTrait, views\formTrait, breadcrumb, navigation, navigation\menuItem, views\TransactionTrait};
 
 class view extends transactionsView {
@@ -21,6 +21,11 @@ class view extends transactionsView {
 		$this->SetNoteBox();
 		$this->setPays();
 		$this->addBodyClass("transaction-view");
+
+		$this->canReimburse = (
+			Authorization::is_accessed("transactions_reimburse") and
+			$this->transactionHasPaysToReimburse($this->transaction)
+		);
 	}
 	private function setNavigation(){
 		navigation::active("transactions/list");
@@ -109,5 +114,20 @@ class view extends transactionsView {
 			return packages::package("financial")->url($logoPath);
 		}
 		return null;
+	}
+	protected function transactionHasPaysToReimburse(Transaction $transaction): bool {
+		return boolval(
+			(new Transaction_Pay)
+				->where("transaction", $transaction->id)
+				->where("method",
+						array(
+							Transaction_Pay::CREDIT,
+							Transaction_Pay::ONLINEPAY,
+							Transaction_Pay::BANKTRANSFER,
+						),
+						"IN"
+				)
+				->where("status", Transaction_Pay::ACCEPTED)
+		->has());
 	}
 }

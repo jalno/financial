@@ -61,6 +61,7 @@
 		"pay.rejected":"Rejected",
 		"pay.accepted":"Accepted",
 		"pay.pending" : "Pending",
+		"pay.reimburse": "Reimburse",
 		"pay.byId" : "Payment {id}",
 		"pay.number": "{number}",
 		"pay.accept.warning" : "Are you sure want to accept payment {pay_id} with amount {pay_price} that submited at {pay_date}?",
@@ -111,8 +112,8 @@
 		"financial.banks.delete.title": "Delete bank",
 		"financial.banks.delete.alert.text": "All transactions related to this bank will be deleted!",
 		"transaction.accept.warning": "Are you sure want to accept invoice #{transaction_id}?",
-		"transaction.accept.warning.all_pays_will_accept": "This transaction has «{pending_pays_count}» pending pays. If you accept this transaction, all pays will be accepted.",
-		"transaction.accept.warning.add_new_pay_for_remain_price": "If you accept this transaction, one pay with «{price} {currency_title}» will be added to transaction.",
+		"transaction.accept.warning.all_pays_will_accept": "This transaction has {pending_pays_count} pending pays. If you accept this transaction, all pays will be accepted.",
+		"transaction.accept.warning.add_new_pay_for_remain_price": "If you accept this transaction, one pay with {price} {currency_title} will be added to transaction.",
 		"transaction.reject.warning": "Are you sure want to reject this invoice?",
 		"pay.method.payaccepted": "Accepted by {acceptor}",
 		"shortcut.transactions.link": "Invoices List",
@@ -187,6 +188,7 @@
 		"financial.settings.currency": "Currency",
 		"financial.setting.currency.delete.warning": "Please consider that this an unreserved auction and all the related exchanges will be removed.",
 		"error.financial.transaction.currency.UnChangableException": "Unfortunately there is an error in currency changes, Please contact us for support.</br> Please do not try agian for payment.",
+		"error.financial.transaction.currency.UnChangableException.reimburse": "Unfortunately there is an error in currency changes, Please contact us for support.",
 		"error.financial.transaction.payport.unSupportCurrencyTypeException": "Selected payment gateway does not support this currency.",
 		"error.financial.currencies.terminate.dependenciesTransactionException": "There are some invoices with this currency, Please edit them to another currency.",
 		"error.financial.currencies.edit.dependenciesChangebleRateException": "Some products in invoices need to change to {currency} currency.",
@@ -200,6 +202,7 @@
 		"financial.logs.transaction.delete": "Deleted invoice #{transaction_id}.",
 		"financial.logs.transaction.pay": "Paid invoice #{transaction_id}.",
 		"financial.pay.information": "Payment Details",
+		"financial.pays.information": "Payments details",
 		"financial.pay.id": "Payment ID",
 		"financial.logs.transaction.pay.accept": "Accepted payment #{pay_id} of invoice #{transaction_id}.",
 		"financial.logs.transaction.pay.reject": "Rejected payment #{pay_id} of invoice #{transaction_id}.",
@@ -308,6 +311,18 @@
 		"packages.financial.currencies.rounding.behaviour.round.help_text": "When converting other currencies to this currency, if there is a decimal part in the output, the decimal part numbers will be the 'precision' number. (The deleted part will be rendered upwards) <br> If the 'precision' is zero, the output number will be without the decimal part. <br>e.g: (precision: 2) 77.89 becomes 77.89<br>e.g: (precision: 1) 77.89 becomes 77.9 <br>e.g: (precision: 0) 77.89 becomes to 78<br>e.g: (precision: -1) 77.89 becomes 80",
 		"packages.financial.currencies.rounding.behaviour.floor.help_text": "When converting other currencies to this currency, the number obtained will be rounded up. <br> The conversion accuracy will be the number of decimal numbers in the output. Will be rounded. <br> Example: 17.8912 converts 0 to 18 with accuracy <br> Example: 17.8912 converts 1 to 17.9...",
 
+		"packages.financial.reimburse.title": "Reimburse Transaction",
+		"packages.financial.reimburse.title_with_id": "Reimburse Transaction #{transaction_id}",
+		"packages.financial.reimburse.btn_title": "reimburse",
+		"packages.financial.reimburse.help_text": "This transaction has {pay_count} pays that can be reimbursed. If you confirm, the amount of {amount} {currency_name} will be added to the {user_name} credit.",
+		"packages.financial.reimburse.error_text": "Pays with error mark cannot change to user currency. Please add add rate transfer for them and then try again.",
+
+		"financial.logs.transaction.pays.reimburse": "Reimburse transaction #{transaction_id}",
+		"packages.financial.logs.transaction.reimburse.user.panel.title": "Transaction user information",
+		"packages.financial.logs.transaction.reimburse.transaction.user.id": "ID",
+		"packages.financial.logs.transaction.reimburse.transaction.user_full_name": "Full name",
+		"packages.financial.logs.transaction.reimburse.user_credit_after_reimburse": "User's credit after reimburse payements",
+
 		"packages.financial.transaction": "Receive and paid transactions report",
 		"packages.financial.last_month": "{month} Month ago",
 		"packages.financial.last_year": "{year} Year ago",
@@ -320,6 +335,8 @@
 		"packages.financial.stats_curreny": "Pays currency is: {currency}",
 		"financial.default_currency": "Default",
 		"financial.settings.currency.changes": "Changes",
-		"financial.settings.currency.changeTo.price": "Price"
+		"financial.settings.currency.changeTo.price": "Price",
+		"packages.financial.reimburse.pay_refundable": "Can refund",
+		"packages.financial.reimburse.pay_not_refundable": "Can not refund"
 	}
 }
