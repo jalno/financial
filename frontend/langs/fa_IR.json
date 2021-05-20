@@ -324,6 +324,9 @@
 		"packages.financial.logs.transaction.reimburse.transaction.user_full_name": "نام کاربر",
 		"packages.financial.logs.transaction.reimburse.user_credit_after_reimburse": "موجودی کاربر بعد از عودت",
 
+		"packages.financial.logs.transaction.merged.new_transaction.panel.title": "صورتحساب جدید",
+		"packages.financial.logs.transaction.merged.transaction.panel.title": "صورتحساب ادغام شده",
+
 		"packages.financial.transaction": "گزارش صورتحساب های دریافتی و پرداختی",
 		"packages.financial.last_month": "{month} ماه گذشته",
 		"packages.financial.last_year": "{year} سال گذشته",

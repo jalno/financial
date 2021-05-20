@@ -257,6 +257,11 @@
 		"method": "post"
 	},
 	{
+		"path": "userpanel/transactions/merge",
+		"controller": "controllers/transactions@merge",
+		"method": "post"
+	},
+	{
 		"paths": [
 			"transactions/"
 		],

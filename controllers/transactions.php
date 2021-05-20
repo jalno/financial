@@ -1675,6 +1675,136 @@ class Transactions extends Controller {
 		$this->response->setStatus(true);
 		return $this->response;
 	}
+
+	public function merge(): Response {
+		Authorization::haveOrFail("transactions_merge");
+
+		$types = Authorization::childrenTypes();
+		$anonymous = Authorization::is_accessed("transactions_anonymous");
+
+		$inputs = $this->checkInputs(array(
+			"transactions" => array(
+				"type" => function ($data, array $rule, string $input) use (&$types, &$anonymous) {
+					if (empty($data) or !is_array($data)) {
+						throw new InputValidationException($input);
+					}
+
+					foreach ($data as $key => $transactionID) {
+						if (empty($transactionID) or !is_numeric($transactionID)) {
+							throw new InputValidationException("{$input}[{$key}]", "not-valid-id");
+						}
+						foreach ($data as $key1 => $tID) {
+							if ($key != $key1 and $transactionID == $tID) {
+								throw new DuplicateRecord("{$input}[{$key1}]");
+							}
+						}
+					}
+
+					$transactions = new Transaction();
+					$transactions->where("financial_transactions.id", $data, "IN");
+					$transactions->where(
+						"financial_transactions.status",
+						array(Transaction::UNPAID, Transaction::PAID),
+						"IN"
+					);
+					if ($anonymous) {
+						$transactions->join(User::class, "user", "LEFT");
+						$parenthesis = new Parenthesis();
+						$parenthesis->where("userpanel_users.type",  $types, "IN");
+						$parenthesis->orWhere("financial_transactions.user", null, "IS");
+						$transactions->where($parenthesis);
+					} else {
+						$transactions->join(User::class, "user", "INNER");
+						if ($types) {
+							$transactions->where("userpanel_users.type", $types, "IN");
+						} else {
+							$transactions->where("userpanel_users.id", Authentication::getID());
+						}
+					}
+					$transactions->with("pays");
+					$transactions->with("products");
+					$transactions = $transactions->get(null, "financial_transactions.*");
+
+					if (count($transactions) != count($data)) {
+						$tdbIDs = array_column($transactions, "id");
+						foreach ($data as $key => $transactionID) {
+							if (!in_array($transactionID, $tdbIDs)) {
+								throw new InputValidationException("{$input}[{$key}]", "missing-transaction");
+							}
+						}
+					}
+					if (count($transactions) == 1) {
+						throw new InputValidationException($input, "should-bigger-than-one-transaction");
+					}
+
+					$transactionsUsersIDs = array();
+					foreach ($transactions as $transaction) {
+						$userID = $transaction->data["user"];
+						if ($userID and !in_array($userID, $transactionsUsersIDs)) {
+							$transactionsUsersIDs[] = $userID;
+						}
+					}
+					if (count($transactionsUsersIDs) > 1) {
+						throw new InputValidationException($input, "not-same-users");
+					}
+
+					return $transactions;
+				},
+			),
+			"title" => array(
+				"type" => "string",
+			),
+			"expire_at" => array(
+				"type" => "date",
+				"unix" => true,
+			),
+		));
+
+		$mergedTransaction = new Transaction();
+		$mergedTransaction->title = $inputs["title"];
+		$mergedTransaction->create_at = Date::time();
+		$mergedTransaction->expire_at = $inputs["expire_at"];
+		foreach ($inputs["transactions"] as $t) {
+			if ($t->data["user"]) {
+				$mergedTransaction->user = $t->data["user"];
+				break;
+			}
+		}
+		$mergedTransaction->save();
+
+		foreach ($inputs["transactions"] as $transaction) {
+			if ($transaction->pays) {
+				DB::where("transaction", $transaction->id)
+				->update("financial_transactions_pays", array(
+					"transaction" => $mergedTransaction->id,
+				));
+			}
+			if ($transaction->products) {
+				DB::where("transaction", $transaction->id)
+				->update("financial_transactions_products", array(
+					"transaction" => $mergedTransaction->id,
+				));
+			}
+			$transaction->delete();
+		}
+
+		$transactionsIDs = array_column($inputs["transactions"], "id");
+		$log = new Log();
+		$log->user = Authentication::getID();
+		$log->type = logs\transactions\Merge::class;
+		$log->title = t("financial.logs.transaction.pays.merge", array(
+			"transaction_ids" => implode(", ", array_map(fn($id) => "#" . $id, $transactionsIDs)),
+		));
+		$log->parameters = array(
+			"transactions" => $inputs["transactions"],
+			"merged_transaction" => $mergedTransaction,
+		);
+		$log->save();
+
+		$this->response->setData($mergedTransaction->toArray(true), "transaction");
+		$this->response->setStatus(true);
+		return $this->response;
+	}
 }
 class transactionNotFound extends NotFound{}
 class illegalTransaction extends \Exception{}
