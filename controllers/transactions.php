@@ -8,7 +8,7 @@ use packages\financial\payport\{AlreadyVerified, GatewayException, Redirect, Ver
 use packages\base\{DB, db\duplicateRecord, view\Error, views\FormError, Packages, Http, inputValidation, InputValidationException, NotFound, Options, db\Parenthesis, Response, Utility\Safe};
 use packages\financial\{Bank\Account, Authentication, Authorization, Controller, Currency, Events, Logs,
 						Transaction, Transaction_product, Transaction_pay, View, Views, Payport, Payport_pay,
-						Transactions_products_param, products\AddingCredit};
+						Transactions_products_param, products\AddingCredit, validators};
 
 class Transactions extends Controller {
 	public static function getAvailablePayMethods($canPayByCredit = true) {
@@ -798,21 +798,36 @@ class Transactions extends Controller {
 		$this->response->setStatus(true);
 		return $this->response;
 	}
-	public function destroy(array $data): Response {
+	public function destroy(?array $data = null): Response {
 		Authorization::haveOrFail('transactions_delete');
-		$transaction = $this->getTransaction($data["id"]);
-		$view = View::byName(Views\transactions\Delete::class);
-		$this->response->setView($view);
-		$view->setTransactionData($transaction);
-		$this->response->setStatus(false);
-		$log = new Log();
-		$log->user = Authentication::getUser();
-		$log->type = logs\transactions\Delete::class;
-		$log->title = t("financial.logs.transaction.delete", ["transaction_id" => $transaction->id]);
-		$log->parameters = ['transaction' => $transaction];
-		$log->save();
-		$transaction->delete();
-		$this->response->Go(userpanel\url('transactions'));
+
+		$transactions = array();
+
+		if (isset($data["id"])) {
+			$transaction = $this->getTransaction($data["id"]);
+			$view = View::byName(Views\transactions\Delete::class);
+			$this->response->setView($view);
+			$view->setTransactionData($transaction);
+			$this->response->Go(userpanel\url('transactions'));
+			$transactions[] = $transaction;
+		} else {
+			$inputs = $this->checkInputs(array(
+				"transactions" => array(
+					"type" => validators\TransactionsValidator::class,
+				),
+			));
+			$transactions = $inputs["transactions"];
+		}
+
+		foreach ($transactions as $transaction) {
+			$log = new Log();
+			$log->user = Authentication::getUser();
+			$log->type = logs\transactions\Delete::class;
+			$log->title = t("financial.logs.transaction.delete", ["transaction_id" => $transaction->id]);
+			$log->parameters = ['transaction' => $transaction];
+			$log->save();
+			$transaction->delete();
+		}
 		$this->response->setStatus(true);
 		return $this->response;
 	}
