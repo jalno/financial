@@ -58,7 +58,13 @@
 	},
 	{
 		"path": ["userpanel","transactions","delete", {"type":"dynamic", "name":"id", "regex":"/^\\d+$/"}],
-		"controller": "controllers\\transactions@delete"
+		"controller": "controllers/transactions@delete",
+		"method": "get"
+	},
+	{
+		"path": ["userpanel","transactions","delete", {"type":"dynamic", "name":"id", "regex":"/^\\d+$/"}],
+		"controller": "controllers/transactions@destroy",
+		"method": "post"
 	},
 	{
 		"path": ["userpanel","transactions","edit", {"type":"dynamic", "name":"id", "regex":"/^\\d+$/"}],

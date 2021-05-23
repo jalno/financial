@@ -345,7 +345,7 @@ class Transactions extends Controller {
 		$this->response->setView($view);
 		return $this->response;
 	}
-	private function getTransaction($id){
+	private function getTransaction($id): Transaction {
 		$transaction = new transaction();
 		$parenthesis = new parenthesis();
 		if(authorization::is_accessed("transactions_anonymous")) {
@@ -789,44 +789,37 @@ class Transactions extends Controller {
 		}
 		return null;
 	}
-	protected function checkData($data){
-		$types = authorization::childrenTypes();
-		db::join("userpanel_users", "userpanel_users.id=financial_transactions.user", "LEFT");
-		if($types){
-			db::where("userpanel_users.type", $types, 'in');
-		}else{
-			db::where("userpanel_users.id", authentication::getID());
-		}
-		db::where("financial_transactions.id", $data['id']);
-		$transaction = new transaction(db::getOne("financial_transactions", "financial_transactions.*"));
-		return ($transaction ? $transaction : new transactionNotFound);
+	public function delete(array $data): Response {
+		Authorization::haveOrFail('transactions_delete');
+		$transaction = $this->getTransaction($data["id"]);
+		$view = View::byName(Views\transactions\Delete::class);
+		$this->response->setView($view);
+		$view->setTransactionData($transaction);
+		$this->response->setStatus(true);
+		return $this->response;
 	}
-	public function delete($data){
-		authorization::haveOrFail('transactions_delete');
-		$view = view::byName("\\packages\\financial\\views\\transactions\\delete");
-		$transaction = $this->checkData($data);
+	public function destroy(array $data): Response {
+		Authorization::haveOrFail('transactions_delete');
+		$transaction = $this->getTransaction($data["id"]);
+		$view = View::byName(Views\transactions\Delete::class);
+		$this->response->setView($view);
 		$view->setTransactionData($transaction);
 		$this->response->setStatus(false);
-		if(http::is_post()){
-			$log = new log();
-			$log->user = authentication::getUser();
-			$log->type = logs\transactions\delete::class;
-			$log->title = t("financial.logs.transaction.delete", ["transaction_id" => $transaction->id]);
-			$log->parameters = ['transaction' => $transaction];
-			$log->save();
-			$transaction->delete();
-			$this->response->setStatus(true);
-			$this->response->Go(userpanel\url('transactions'));
-		}else{
-			$this->response->setStatus(true);
-			$this->response->setView($view);
-		}
+		$log = new Log();
+		$log->user = Authentication::getUser();
+		$log->type = logs\transactions\Delete::class;
+		$log->title = t("financial.logs.transaction.delete", ["transaction_id" => $transaction->id]);
+		$log->parameters = ['transaction' => $transaction];
+		$log->save();
+		$transaction->delete();
+		$this->response->Go(userpanel\url('transactions'));
+		$this->response->setStatus(true);
 		return $this->response;
 	}
 	public function edit($data){
 		authorization::haveOrFail('transactions_edit');
 		$view = view::byName("\\packages\\financial\\views\\transactions\\edit");
-		$transaction = $this->checkData($data);
+		$transaction = $this->getTransaction($data["id"]);
 
 		$view->setTransactionData($transaction);
 		$view->setCurrencies(currency::get());
