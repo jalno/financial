@@ -10,6 +10,7 @@
 		"financial.transactions": "Invoice {title}",
 		"financial.transactions.description": "ID: #{id} Date: {create_at} User: {user}",
 		"error.illegalTransaction": "You can't delete all products of invoice.Must at least one product remain.",
+		"error.packages.financial.views.transactions.ListView.export.debt.unchangeable_price_exception": "The amount of debt is not accurate! It is not possible to convert the amount of some of your bills",
 		"email.template.name.financial_transaction_add":"Add new invoice in financial",
 		"email.template.variable.transaction->id":"Invoice ID",
 		"email.template.variable.transaction->user":"Invoice user",
