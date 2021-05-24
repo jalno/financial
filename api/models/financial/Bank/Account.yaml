@@ -1,0 +1,34 @@
+components:
+  schemas:
+    Account:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        bank_id:
+          type: integer
+          format: int32
+        user_id:
+          type: integer
+          format: int32
+        owner:
+          type: string
+        account:
+          type: string
+        cart:
+          type: string
+        shaba:
+          type: string
+        oprator_id:
+          type: string
+        reject_reason:
+          type: string
+        status:
+          $ref: './Account/AccountStatus.yaml#/components/schemas/AccountStatus'
+      required:
+        - id
+        - bank_id
+        - user_id
+        - owner
+        - status

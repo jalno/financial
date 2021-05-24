@@ -1,0 +1,34 @@
+components:
+  schemas:
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        token:
+          type: string
+        user:
+          type: string
+        title:
+          type: string
+        price:
+          type: string
+        create_at:
+          type: string
+        expire_at:
+          type: string
+        paid_at:
+          type: string
+        currency:
+          type: string
+        status:
+          $ref: './Transaction/TransactionStatus.yaml#/components/schemas/TransactionStatus'
+      required:
+        - id
+        - title
+        - price
+        - create_at
+        - paid_at
+        - currency
+        - status

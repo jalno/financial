@@ -1,0 +1,12 @@
+components:
+  schemas:
+    AccountStatus:
+      type: integer
+      format: int32
+      enum:
+        - 1 #Active
+        - 2 #WaitForAccept
+        - 3 #Rejected
+        - 4 #Deactive
+      description: >
+      

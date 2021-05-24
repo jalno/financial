@@ -1,0 +1,10 @@
+components:
+  schemas:
+    UserStatus:
+      type: integer
+      enum:
+        - 1 #ACTIVE
+        - 2 #SUSPEND
+        - 3 #DEACTIVE
+      description: >
+      

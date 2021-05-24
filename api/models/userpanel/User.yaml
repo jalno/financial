@@ -1,0 +1,62 @@
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        email:
+          type: string
+        name:
+          type: string
+        lastname:
+          type: string
+        cellphone:
+          type: string
+        password:
+          type: string
+        type:
+          type: integer
+          format: int32
+        phone:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        zip:
+          type: integer
+          format: int32
+        address:
+          type: string
+        web:
+          type: string
+        avatar:
+          type: string
+        credit:
+          type: number
+          format: double
+        lastonline:
+          type: integer
+          format: int32
+        remember_token:
+          type: string
+        registered_at:
+          type: integer
+          format: int32
+        has_custom_permissions:
+          type: boolean
+        status:
+          type: integer
+          format: int32
+          schema:
+            $ref: './User/UserStatus.yaml#/components/schemas/UserStatus'
+      required:
+        - id
+        - email
+        - name
+        - cellphone
+        - type
+        - registered_at
+        - status
