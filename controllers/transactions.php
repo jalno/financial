@@ -8,7 +8,7 @@ use packages\financial\payport\{AlreadyVerified, GatewayException, Redirect, Ver
 use packages\base\{DB, db\duplicateRecord, view\Error, views\FormError, Packages, Http, inputValidation, InputValidationException, NotFound, Options, db\Parenthesis, Response, Utility\Safe};
 use packages\financial\{Bank\Account, Authentication, Authorization, Controller, Currency, Events, Logs,
 						Transaction, Transaction_product, Transaction_pay, View, Views, Payport, Payport_pay,
-						Transactions_products_param, products\AddingCredit, validators};
+						Transactions_products_param, Stats, products\AddingCredit, validators};
 
 class Transactions extends Controller {
 	public static function getAvailablePayMethods($canPayByCredit = true) {
@@ -1680,6 +1680,51 @@ class Transactions extends Controller {
 
 
 		$this->response->go(userpanel\url("transactions/view/{$transaction->id}"));
+		$this->response->setStatus(true);
+		return $this->response;
+	}
+
+	/**
+	 * get the user's gain and spent chart data
+	 */
+	public function userStats(): Response {
+		Authorization::haveOrFail("transactions_user-stats");
+
+		$inputs = $this->checkInputs(array(
+			"type" => array(
+				"type" => "string",
+				"values" => array("gain", "spend"),
+			),
+			"from" => array(
+				"type" => "date",
+				"unix" => true,
+			),
+			"to" => array(
+				"type" => "date",
+				"unix" => true,
+				"optional" => true,
+				"default" => Date::time(),
+			),
+			"interval" => array(
+				"type" => validators\IntervalValidator::class,
+				"values" => array("1D", "1M", "1Y"),
+			),
+			"limit" => array(
+				"type" => "uint",
+				"max" => 30,
+				"min" => 1,
+				"optional" => true,
+				"default" => 6,
+			),
+		));
+
+		$me = Authentication::getUser();
+		$spend = $inputs["type"] == "spend";
+		$defaultCurrency = Currency::getDefault($me);
+		$items = Stats::getStatsChartDataByUser($me, $spend, $inputs["from"], $inputs["to"], $inputs["interval"], $inputs["limit"]);
+
+		$this->response->setData($defaultCurrency->toArray(), "currency");
+		$this->response->setData($items, "items");
 		$this->response->setStatus(true);
 		return $this->response;
 	}

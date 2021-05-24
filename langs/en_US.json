@@ -66,6 +66,8 @@
 
 		"usertype.permissions.financial_transactions_reimburse": "Reimburse transaction",
 
+		"usertype.permissions.financial_transactions_user-stats": "َUser's spend and balance statics",
+
 		"usertype.permissions.financial_transactions_refund": "Withdraw request",
 		"usertype.permissions.financial_transactions_refund_add": "Submit withdraw request",
 		"usertype.permissions.financial_transactions_refund_accept": "Accept withdraw payments",
