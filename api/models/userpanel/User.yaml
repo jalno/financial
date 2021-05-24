@@ -48,10 +48,7 @@ components:
         has_custom_permissions:
           type: boolean
         status:
-          type: integer
-          format: int32
-          schema:
-            $ref: './User/UserStatus.yaml#/components/schemas/UserStatus'
+          $ref: './User/UserStatus.yaml#/components/schemas/UserStatus'
       required:
         - id
         - email

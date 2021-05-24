@@ -9,19 +9,29 @@ components:
         token:
           type: string
         user:
-          type: string
+          oneOf:
+            - type: number
+              format: int32
+            - $ref: '../userpanel/User.yaml#/components/schemas/User'
         title:
           type: string
         price:
-          type: string
+          type: number
+          format: double
         create_at:
-          type: string
+          type: number
+          format: int32
         expire_at:
-          type: string
+          type: number
+          format: int32
         paid_at:
-          type: string
+          type: number
+          format: int32
         currency:
-          type: string
+          oneOf:
+            - type: number
+              format: int32
+            - $ref: './Currency.yaml#/components/schemas/Currency'
         status:
           $ref: './Transaction/TransactionStatus.yaml#/components/schemas/TransactionStatus'
       required:

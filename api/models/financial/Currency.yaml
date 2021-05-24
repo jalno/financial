@@ -11,9 +11,11 @@ components:
         update_at:
           type: string
         rounding_behaviour:
-          type: string
+          type: number
+          format: int32
         rounding_precision:
-          type: string
+          type: number
+          format: int32
         status:
           type: integer
           format: int32

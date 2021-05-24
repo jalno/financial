@@ -7,4 +7,7 @@ components:
         - 2 #SUSPEND
         - 3 #DEACTIVE
       description: >
+        `1` - Active
+        `2` - Suspend
+        `3` - Deactive
       

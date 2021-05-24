@@ -10,8 +10,10 @@ components:
           type: integer
           format: int32
         user_id:
-          type: integer
-          format: int32
+          oneOf:
+            - type: number
+              format: int32
+            - $ref: '../../userpanel/User.yaml#/components/schemas/User'
         owner:
           type: string
         account:
