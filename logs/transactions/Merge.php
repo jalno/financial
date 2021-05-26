@@ -146,7 +146,7 @@ class Merge extends Logs {
 			case Transaction_Pay::rejected: return t('pay.rejected');
 			case Transaction_Pay::accepted: return t('pay.accepted');
 			case Transaction_Pay::pending: return t('pay.pending');
-			case Transaction_Pay::REIMBURS: return t('pay.reimburse');
+			case Transaction_Pay::REIMBURSE: return t('pay.reimburse');
 			default: return "";
 			
 		}
