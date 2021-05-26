@@ -60,9 +60,7 @@ trait MergeTrait {
 		$log = new Log();
 		$log->user = Authentication::getID();
 		$log->type = logs\transactions\Merge::class;
-		$log->title = t("financial.logs.transaction.pays.merge", array(
-			"transaction_ids" => implode(", ", array_map(fn($id) => "#" . $id, $transactionsIDs)),
-		));
+		$log->title = t("financial.logs.transaction.pays.merge");
 		$log->parameters = array(
 			"transactions" => $inputs["transactions"],
 			"merged_transaction" => $mergedTransaction,

@@ -48,7 +48,7 @@
 		"packages.financial.bankaccount.shaba": "IBAN",
 		"packages.financial.bankaccount.credit_cart": "Credit card",
 
-		"financial.logs.transaction.pays.merge": "Merged ({transaction_ids}) transactions",
+		"financial.logs.transaction.pays.merge": "Merged some transactions",
 
 		"usertype.permissions.financial": "Financial",
 		"usertype.permissions.financial_transactions_guest-pay-link": "view guest pay link",

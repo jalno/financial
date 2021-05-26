@@ -72,7 +72,7 @@
 		"packages.financial.bankaccount.shaba": "کد شبا",
 		"packages.financial.bankaccount.credit_cart": "شماره کارت",
 
-		"financial.logs.transaction.pays.merge": "صورتحساب های ({transaction_ids}) را با یکدیگر ادغام نمود",
+		"financial.logs.transaction.pays.merge": "صورتحساب‌هایی را ادغام کرد.",
 
 		"usertype.permissions.financial": "مالی",
 
