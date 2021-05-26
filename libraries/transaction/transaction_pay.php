@@ -118,7 +118,7 @@ class transaction_pay extends dbObject{
 					$this->transaction->status = Transaction::PENDING;
 					$this->transaction->save();
 				} elseif ($this->transaction->status == Transaction::PENDING) {
-					$hasPendingPay = (new Static)->where("transaction", $this->transaction->id)
+					$hasPendingPay = (new self)->where("transaction", $this->transaction->id)
 									->where("status", self::PENDING)
 									->has();
 					if (!$hasPendingPay) {
@@ -162,7 +162,7 @@ class transaction_pay extends dbObject{
 		$transaction = $this->transaction;
 		$return = parent::delete();
 		if ($return) {
-			$hasPendingPay = (new Static)->where("transaction", $transaction->id)
+			$hasPendingPay = (new self)->where("transaction", $transaction->id)
 							->where("status", self::PENDING)
 							->has();
 			if ($hasPendingPay) {

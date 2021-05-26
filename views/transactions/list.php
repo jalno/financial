@@ -5,6 +5,7 @@ use \packages\financial\authorization;
 use \packages\base\views\traits\form as formTrait;
 class listview extends  list_view{
 	use formTrait;
+	protected $canView;
 	protected $canAdd;
 	protected $canEdit;
 	protected $canDel;
