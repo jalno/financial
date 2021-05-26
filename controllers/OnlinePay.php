@@ -1,28 +1,22 @@
 <?php
 namespace packages\financial\controllers\transaction;
 use packages\base;
-use packages\base\{controller, view, response, translator, date, NotFound, http, db};
+use packages\base\{view, response, translator, date, NotFound, http, db};
 use packages\financial\{views, logs, payport_pay, payport\VerificationException, payport\GatewayException, transaction, transaction_pay, authorization, authentication};
-use packages\userpanel\log;
+use packages\userpanel\{Controller, log};
 
-class OnlinePay extends controller {
+class OnlinePay extends Controller {
 	public function __construct() {
-		$this->response = new response();
-		if (authentication::check()) {
-			$this->page = http::getURIData('page');
-			$this->items_per_page = http::getURIData('ipp');
-			if ($this->page < 1) $this->page = 1;
-			if ($this->items_per_page < 1) $this->items_per_page = 25;
-			db::pageLimit($this->items_per_page);
-			$this->response = new response();
-		} elseif ($token = http::getURIData("token")) {
-			$transaction = new transaction();
-			$transaction->where("token", $token);
-			if (!$transaction = $transaction->getOne()) {
-				parent::response(authentication::FailResponse());
+		if (!Authentication::check()) {
+			$token = http::getURIData("token");
+			if ($token) {
+				$isValidToken = (new Transaction)->where("token", $token)->has();
+				if (!$isValidToken) {
+					parent::response(Authentication::FailResponse());
+				}
+			} else {
+				parent::response(Authentication::FailResponse());
 			}
-		} else {
-			parent::response(authentication::FailResponse());
 		}
 	}
 	public function callBack($data): response {

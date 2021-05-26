@@ -1,7 +1,9 @@
 <?php
 namespace packages\financial;
-use \packages\base\db\dbObject;
-use \packages\financial\transactions_product_param;
+
+use packages\base\db\dbObject;
+use packages\financial\{events\gateways\InputNameException, transactions_product_param};
+
 class transaction_product extends dbObject{
 	const host = 1;
 	const domain = 2;
@@ -121,7 +123,7 @@ class transaction_product extends dbObject{
 		if(isset($input['name'])){
 			$this->inputs[$input['name']] = $input;
 		}else{
-			throw new inputNameException($input);
+			throw new InputNameException($input);
 		}
 	}
 	public function getInputs(){

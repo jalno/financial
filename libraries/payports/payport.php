@@ -4,10 +4,8 @@ namespace packages\financial;
 use packages\base\db;
 use packages\base\db\dbObject;
 use packages\financial\{payport\param, Bank};
+use packages\financial\payport\{GatewayException, VerificationException};
 
-use payport\GatewayException;
-use payport\VerificationException;
-use payport\AlreadyVerified;
 class payport extends dbObject{
 	const active = 1;
 	const deactive = 2;

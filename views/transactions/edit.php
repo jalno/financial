@@ -10,6 +10,8 @@ class edit extends form{
 	protected $canPaydelete;
 	protected $canEditProduct;
 	protected $canDeleteProduct;
+	protected $canEditPays;
+
 	function __construct(){
 		$this->canPayAccept = $this->canPayReject = authorization::is_accessed('transactions_pay_accept');
 		$this->canEditProduct = authorization::is_accessed('transactions_product_edit');

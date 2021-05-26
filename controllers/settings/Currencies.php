@@ -8,7 +8,7 @@ use function packages\userpanel\url;
 
 class Currencies extends Controller {
 	public static function getCurrency($data): Currency {
-		$currency = Currency::byID($data["currency"]);
+		$currency = (new Currency)->byID($data["currency"]);
 		if (!$currency) {
 			throw new NotFound();
 		}

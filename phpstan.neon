@@ -1,0 +1,9 @@
+parameters:
+  level: 0
+  scanDirectories:
+    - ../base
+    - ../userpanel
+    - ../notifications
+    - ../cronjob
+  ignoreErrors:
+    - "/(Class|Interface|Trait) .+ referenced with incorrect case/"

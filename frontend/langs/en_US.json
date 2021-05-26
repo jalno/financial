@@ -318,6 +318,7 @@
 		"packages.financial.reimburse.error_text": "Pays with error mark cannot change to user currency. Please add add rate transfer for them and then try again.",
 
 		"financial.logs.transaction.pays.reimburse": "Reimburse transaction #{transaction_id}",
+		"financial.logs.transaction.pays.merge": "Merged {transaction_ids} transactions",
 		"packages.financial.logs.transaction.reimburse.user.panel.title": "Transaction user information",
 		"packages.financial.logs.transaction.reimburse.transaction.user.id": "ID",
 		"packages.financial.logs.transaction.reimburse.transaction.user_full_name": "Full name",

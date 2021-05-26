@@ -126,7 +126,7 @@ class transaction extends dbObject{
 	public function canPayByCredit(): bool {
 		return !((new Transaction_Product())
 		->where("transaction", $this->id)
-		->where("type", [AddingCredit::class, "\\" . AddingCredit::class], "IN")
+		->where("type", [products\AddingCredit::class, "\\" . products\AddingCredit::class], "IN")
 		->has());
 	}
 	protected function addProduct($productdata){
@@ -302,7 +302,7 @@ class transaction extends dbObject{
 		$invoice = false;
 		$dcurrency = false;
 		$pays = array();
-		if ($dakhlPackage) {
+		if ($dakhlPackage and class_exists(dakhl::class)) {
 			$pay = new transaction_pay();
 			$pay->where("transaction", $this->id);
 			$pay->where("status", transaction_pay::accepted);

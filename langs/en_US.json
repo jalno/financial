@@ -48,7 +48,7 @@
 		"packages.financial.bankaccount.shaba": "IBAN",
 		"packages.financial.bankaccount.credit_cart": "Credit card",
 
-
+		"financial.logs.transaction.pays.merge": "Merged some transactions",
 
 		"usertype.permissions.financial": "Financial",
 		"usertype.permissions.financial_transactions_guest-pay-link": "view guest pay link",
@@ -64,6 +64,8 @@
 		"usertype.permissions.financial_transactions_anonymous": "Access to anonymous invoices",
 
 		"usertype.permissions.financial_transactions_reimburse": "Reimburse transaction",
+
+		"usertype.permissions.financial_transactions_merge": "Merge transactions",
 
 		"usertype.permissions.financial_transactions_refund": "Withdraw request",
 		"usertype.permissions.financial_transactions_refund_add": "Submit withdraw request",

@@ -1,7 +1,7 @@
 <?php
 namespace packages\financial\controllers\settings\Banks;
 use packages\userpanel;
-use packages\base\{NotFound, views\FormError, inputValidation, view\error, response};
+use packages\base\{NotFound, views\FormError, inputValidation, view\error, DB\Parenthesis, response};
 use packages\financial\{view, views, usertype, controller, authorization, authentication, Bank, Bank\Account, payport, Validators};
 
 class Accounts extends controller{
@@ -90,7 +90,7 @@ class Accounts extends controller{
 			}
 		}
 		if (isset($inputs["word"])) {
-			$parenthesis = new parenthesis();
+			$parenthesis = new Parenthesis();
 			foreach (array("owner", "account", "cart", "shaba") as $item) {
 				if (!isset($inputs[$item])) {
 					$parenthesis->orWhere("financial_banks_accounts.{$item}", $inputs[$item], $inputs["comparison"]);

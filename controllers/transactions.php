@@ -11,6 +11,8 @@ use packages\financial\{Bank\Account, Authentication, Authorization, Controller,
 						Transactions_products_param, products\AddingCredit};
 
 class Transactions extends Controller {
+	use Transactions\MergeTrait;
+
 	public static function getAvailablePayMethods($canPayByCredit = true) {
 		$methods = array();
 		$userBankAccounts = options::get("packages.financial.pay.tansactions.banka.accounts");
@@ -488,7 +490,7 @@ class Transactions extends Controller {
 			$log->type = logs\transactions\Pay::class;
 			$log->title = t("financial.logs.transaction.pay", ["transaction_id" => $transaction->id]);
 			$log->parameters = array(
-				'pay' => Transaction_pay::byID($pay),
+				'pay' => (new Transaction_pay)->byID($pay),
 				'currency' => $transaction->currency,
 			);
 			$log->save();
@@ -1332,7 +1334,7 @@ class Transactions extends Controller {
 			$log->type = logs\transactions\Pay::class;
 			$log->title = t("financial.logs.transaction.pay", ["transaction_id" => $transaction->id]);
 			$log->parameters = array(
-				"pay" => Transaction_Pay::byID($pay),
+				"pay" => (new Transaction_Pay)->byID($pay),
 				"currency" => $transaction->currency,
 			);
 			$log->save();
@@ -1675,6 +1677,7 @@ class Transactions extends Controller {
 		$this->response->setStatus(true);
 		return $this->response;
 	}
+
 }
 class transactionNotFound extends NotFound{}
 class illegalTransaction extends \Exception{}

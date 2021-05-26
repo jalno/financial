@@ -9,7 +9,7 @@ class controllerException extends \Exception {
 		return $this->controller;
 	}
 }
-class inputNameException extends \Exception {
+class InputNameException extends \Exception {
 	private $input;
 	public function __construct($input){
 		$this->input = $input;
