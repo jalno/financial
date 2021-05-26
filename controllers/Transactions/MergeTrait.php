@@ -51,6 +51,11 @@ trait MergeTrait {
 			$transaction->delete();
 		}
 
+		$payabilePrice = $mergedTransaction->payablePrice();
+		$mergedTransaction->status = $payabilePrice > 0 ? Transaction::UNPAID : Transaction::PAID;
+		$mergedTransaction->price = $mergedTransaction->totalPrice();
+		$mergedTransaction->save();
+
 		$transactionsIDs = array_column($inputs["transactions"], "id");
 		$log = new Log();
 		$log->user = Authentication::getID();
