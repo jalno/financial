@@ -1,9 +1,9 @@
 <?php
 namespace packages\financial\controllers\Transactions;
 
-use packages\base\{Response, DB, InputValidationException, Date};
-use packages\userpanel\{Log, User, Authentication};
-use packages\financial\{Authorization, Transaction, validators};
+use packages\base\{Response, DB, Date};
+use packages\userpanel\{Log, Authentication};
+use packages\financial\{Authorization, Transaction, validators, logs};
 
 trait MergeTrait {
 	public function merge(): Response {
