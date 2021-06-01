@@ -16,16 +16,20 @@ components:
             - $ref: '../../userpanel/User.yaml#/components/schemas/User'
         owner:
           type: string
+          x-faker: name.findName
         account:
           type: string
+          x-faker: finance.acount
         cart:
           type: string
+          x-faker: finance.creditCardNumber
         shaba:
           type: string
         oprator_id:
           type: string
         reject_reason:
           type: string
+          x-faker: lorem.sentence
         status:
           $ref: './Account/AccountStatus.yaml#/components/schemas/AccountStatus'
       required:

@@ -6,45 +6,75 @@ components:
         id:
           type: integer
           format: int32
+          minimum: 0
         email:
           type: string
+          format: email
         name:
           type: string
+          x-faker: name.firstName
+          examples:
+            - "Amir"
+            - "Hossein"
+            - "امیرعلی"
+            - "سیده فاطمه نازنین"
         lastname:
           type: string
+          nullable: true
+          x-faker: name.lastName
+          examples:
+            - "Afshar"
+            - "حسنی"
+            - "خلیلی"
+            - "Yeganemehr"
         cellphone:
           type: string
-        password:
-          type: string
+          examples:
+            - "IR.91234567890"
+            - "IR.91987654321"
+            - "US.45165135442"
         type:
           type: integer
           format: int32
+          minimum: 0
         phone:
           type: string
+          examples:
+            - "IR.3134420301"
         city:
           type: string
+          x-faker: address.city
         country:
-          type: string
-        zip:
           type: integer
           format: int32
+          minimum: 0
+        zip:
+          type: string
+          nullable: true
+          x-faker: address.zipCode
         address:
           type: string
+          x-faker: address.streetAddress
         web:
           type: string
+          x-faker: internet.domainName
         avatar:
           type: string
+          x-faker: system.commonFileName
         credit:
           type: number
           format: double
+          x-faker: finance.amount
         lastonline:
           type: integer
           format: int32
-        remember_token:
-          type: string
+          minimum: 0
+          x-faker: time.recent
         registered_at:
           type: integer
           format: int32
+          minimum: 0
+          x-faker: time.recent
         has_custom_permissions:
           type: boolean
         status:

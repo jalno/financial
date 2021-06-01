@@ -6,27 +6,34 @@ components:
         id:
           type: integer
           format: int32
+          minimum: 0
         token:
           type: string
         user:
           oneOf:
-            - type: number
+            - type: integer
               format: int32
+              minimum: 0
             - $ref: '../userpanel/User.yaml#/components/schemas/User'
         title:
           type: string
+          x-faker: lorem.words
         price:
           type: number
           format: double
+          x-faker: finance.amount
         create_at:
           type: number
           format: int32
+          x-faker: time.recent
         expire_at:
           type: number
           format: int32
+          x-faker: time.recent
         paid_at:
           type: number
           format: int32
+          x-faker: time.recent
         currency:
           oneOf:
             - type: number

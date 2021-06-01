@@ -150,14 +150,17 @@ paths:
                   items_per_page:
                     type: integer
                     format: int32
+                    minimum: 0
 
                   current_page:
                     type: integer
                     format: int32
+                    minimum: 0
 
                   total_items:
                     type: integer
                     format: int32
+                    minimum: 0
 
                   balance:
                     type: object
@@ -464,9 +467,11 @@ paths:
                         unix:
                           type: number
                           format: int32
+                          x-faker: time.recent
                         sum:
                           type: number
                           format: double
+                          minimum: 0
         "403":
           description: your session is revoked or you have not permission to access this route
         "5XX":

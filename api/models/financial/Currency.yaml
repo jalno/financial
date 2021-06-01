@@ -6,10 +6,13 @@ components:
         id:
           type: integer
           format: int32
+          minimum: 0
         title:
           type: string
+          x-faker: finance.currencyCode
         update_at:
           type: string
+          x-faker: time.recent
         rounding_behaviour:
           type: number
           format: int32
