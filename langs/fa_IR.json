@@ -90,8 +90,6 @@
 
 		"usertype.permissions.financial_transactions_reimburse": "بازگشت (عودت) صورتحساب",
 		"usertype.permissions.financial_transactions_reimburse.tooltip": "با داشتن این دسترسی می‌توان پرداخت های یک صورتحساب را به موجود کاربر بازگشت داد.",
-		
-		"usertype.permissions.financial_transactions_user-stats": "آمار هزینه و موجودی کاربر",
 
 		"usertype.permissions.financial_transactions_refund": "درخواست تسویه حساب",
 		"usertype.permissions.financial_transactions_refund_add": "ایجاد درخواست تسویه حساب",
@@ -134,7 +132,7 @@
 		"usertype.permissions.financial_settings_currencies_edit": "ویرایش ارز در صورتحساب",
 		"usertype.permissions.financial_settings_currencies_delete": "حذف ارز در صورتحساب",
 
-		"usertype.permissions.financial_paid_user_profile": "مشاهده مجموع پرداختی هادر نمایش کاربر",
+		"usertype.permissions.financial_paid_user_profile": "مشاهده مجموع پرداختی ها و درآمدهای کاربر",
 
 		"error.packages.financial.error.transactions.user.delete_user_warn": "هشدار در خصوص صورتحساب های این کاربر",
 		"error.packages.financial.error.transactions.user.delete_user_warn.message": "این کاربر دارای صورتحساب یا صورتحساب هایی می باشد؛ در صورت حذف این کاربر، تمامی صورتحساب های ایشان نیز حذف خواهند شد!",

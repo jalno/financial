@@ -23,7 +23,6 @@ class Stats {
 			"financial_transactions_pays.currency",
 			"SUM(`financial_transactions_pays`.`price`) as `sum`"
 		));
-		// var_dump(\packages\base\db::getLastQuery());
 		$sum = 0;
 		foreach ($pays as $pay) {
 			$currency =  (new Currency)->byId($pay["currency"]);

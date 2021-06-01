@@ -1690,7 +1690,7 @@ class Transactions extends Controller {
 	 * get the user's gain and spent chart data
 	 */
 	public function userStats(): Response {
-		Authorization::haveOrFail("transactions_user-stats");
+		Authorization::haveOrFail("paid_user_profile");
 
 		$inputs = $this->checkInputs(array(
 			"type" => array(

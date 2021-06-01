@@ -64,9 +64,9 @@
 		"usertype.permissions.financial_transactions_accept": "Accept invoices",
 		"usertype.permissions.financial_transactions_anonymous": "Access to anonymous invoices",
 
-		"usertype.permissions.financial_transactions_reimburse": "Reimburse transaction",
+		"usertype.permissions.financial_paid_user_profile": "Show user's spend and gain activity in the system",
 
-		"usertype.permissions.financial_transactions_user-stats": "َUser's spend and balance statics",
+		"usertype.permissions.financial_transactions_reimburse": "Reimburse transaction",
 
 		"usertype.permissions.financial_transactions_refund": "Withdraw request",
 		"usertype.permissions.financial_transactions_refund_add": "Submit withdraw request",

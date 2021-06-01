@@ -13,7 +13,6 @@ class usertype{
 			"transactions_anonymous",
 			"transactions_refund_add",
 			"transactions_refund_accept",
-			"transactions_user-stats",
 			
 			'transactions_pay_accept',
 			'transactions_pay_delete',
