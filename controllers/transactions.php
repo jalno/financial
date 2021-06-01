@@ -813,7 +813,9 @@ class Transactions extends Controller {
 		} else {
 			$inputs = $this->checkInputs(array(
 				"transactions" => array(
-					"type" => validators\TransactionsValidator::class,
+					"type" => "array",
+					"convert-to-array" => true,
+					"each" => Transaction::class,
 				),
 			));
 			$transactions = $inputs["transactions"];

@@ -69,7 +69,7 @@
 	{
 		"path": ["userpanel","transactions","delete"],
 		"controller": "controllers/transactions@destroy",
-		"method": ["post", "get"]
+		"method": "post"
 	},
 	{
 		"path": ["userpanel","transactions","edit", {"type":"dynamic", "name":"id", "regex":"/^\\d+$/"}],
