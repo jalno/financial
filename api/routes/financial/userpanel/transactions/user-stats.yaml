@@ -79,7 +79,8 @@ components:
                       type: boolean
                       enum:
                         - true
-
+                    currency:
+                      $ref: ../../../../models/financial/Currency.yaml#/components/schemas/Currency
                     items:
                       type: array
                       items:
