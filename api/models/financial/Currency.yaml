@@ -11,7 +11,9 @@ components:
           type: string
           x-faker: finance.currencyCode
         update_at:
-          type: string
+          type: number
+          format: int32
+          minimum: 0
           x-faker: time.recent
         rounding_behaviour:
           type: number
