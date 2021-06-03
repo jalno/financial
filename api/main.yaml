@@ -10,7 +10,7 @@ info:
     email: info@jeyserver.com
 
 servers:
-  - url: '{schema}://{domain}/'
+  - url: '{schema}://{domain}/{language}'
     description: Financial API documentation sample
     variables:
       schema:
@@ -20,6 +20,8 @@ servers:
         default: 'https'
       domain:
         default: some-test-domain.com
+      language:
+        default: fa
 
 paths:
   /userpanel/transactions:
