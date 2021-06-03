@@ -1,0 +1,47 @@
+components:
+  parameters:
+    paths:
+      post:
+        tags:
+          - Transaction
+        summary: create new refund transaction
+        requestBody:
+          required: true
+          content:
+            application/x-www-form-urlencoded:
+              schema:
+                type: object
+                properties:
+
+                  refund_user:
+                    type: integer
+                    format: int32
+                    description: "if you can access to create refund transaction for another user, pass the id of the user, else this will be ignored"
+
+                  refund_price:
+                    type: number
+                    format: double
+                    description: "the amount of refund request, the currency of this amount is based on user's currency"
+
+                  refund_account:
+                    type: integer
+                    format: int32
+                    description: "the id of bank account that you request for refund to this bank account"
+        responses:
+          "200":
+            description: sucessfull
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                      type: boolean
+                      description: "if true, the result is ok, if false, some input is not valid!"
+                    redirect:
+                      type: string
+                      description: "the url of created transaction for refund"
+          "403":
+            description: your session is revoked or you have not permission to access this route
+          "5XX":
+            description: Unexpected error.

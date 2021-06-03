@@ -1,0 +1,47 @@
+components:
+  parameters:
+    paths:
+      post:
+        tags:
+          - Transaction
+        summary: merge transaction into one transaction
+        description: ""
+        requestBody:
+          required: true
+          content:
+            application/x-www-form-urlencoded:
+              schema:
+                type: object
+                properties:
+
+                  transactions:
+                    type: array
+                    items:
+                      type: number
+                      format: int32
+                    description: "the id of transactions you want to merge it in one transaction, remind transactions should have same user to merge!"
+
+                  title:
+                    type: string
+                    description: "title of new transaction that will contains merged transactions"
+
+                  expire_at:
+                    type: number
+                    format: int32
+                    description: "the expire date of new transaction"
+        responses:
+          "200":
+            description: sucessfull
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                      type: boolean
+                    transaction:
+                      $ref: "../../../../models/financial/Transaction.yaml#/components/schemas/Transaction"
+          "403":
+            description: your session is revoked or you have not permission to access this route
+          "5XX":
+            description: Unexpected error.

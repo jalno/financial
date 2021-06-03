@@ -1,0 +1,144 @@
+components:
+  parameters:
+    paths:
+      get:
+        tags:
+          - BankAccount
+        summary: Search and get list of bank accounts
+        description: ""
+        parameters:
+
+          - in: query
+            name: api
+            schema:
+              type: boolean
+              enum:
+                - true
+            required: true
+            description: "you should pass this option or 'ajax' option in order to get json result"
+          
+          - in: query
+            name: ajax
+            schema:
+              type: boolean
+              enum:
+                - true
+            description: "you should pass this option or 'api' option in order to get json result"
+
+          - in: query
+            name: ipp
+            schema:
+              type: integer
+              format: int32
+              minimum: 1
+              default: 25
+            description: "Items per page"
+
+          - in: query
+            name: page
+            schema:
+              type: integer
+              format: int32
+              minimum: 1
+            description: "the page number"
+
+          - in: query
+            name: id
+            schema:
+              type: integer
+              format: int32
+            description: "The ID of the transaction you search for it"
+
+          - in: query
+            name: bank
+            schema:
+              type: integer
+              format: int32
+            description: "The ID of bank that the bankaccount is exists in"
+
+          - in: query
+            name: user
+            schema:
+              type: integer
+              format: int32
+            description: "The ID of user that owns bankaccount"
+
+          - in: query
+            name: account
+            schema:
+              type: string
+            description: "the account number of bank account"
+
+          - in: query
+            name: cart
+            schema:
+              type: string
+            description: "the card number of bank account"
+
+          - in: query
+            name: shaba
+            schema:
+              type: string
+            description: "the shaba of bank account"
+
+          - in: query
+            name: owner
+            schema:
+              type: string
+            description: "the owner name of bank account"
+
+          - in: query
+            name: status
+            schema:
+              $ref: "../../../../../../models/financial/Bank/Account/AccountStatus.yaml#/components/schemas/AccountStatus"
+            description: "status of the transaction"
+
+          - in: query
+            name: word
+            schema:
+              type: string
+            description: "in case you search for something, pass this option"
+
+          - in: query
+            name: comparison
+            schema:
+              type: string
+              enum:
+                - contains
+                - equals
+                - startswith
+            description: "the types of comparison in search"
+
+        responses:
+          "200":
+            description: sucessfull
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                      type: boolean
+                      enum:
+                        - true
+
+                    items:
+                      type: array
+                      items:
+                        $ref: "../../../../../../models/financial/Bank/Account.yaml#/components/schemas/Account"
+
+                    items_per_page:
+                      type: integer
+                      format: int32
+
+                    current_page:
+                      type: integer
+                      format: int32
+
+                    total_items:
+                      type: integer
+                      format: int32
+          "403":
+            description: your session is revoked or you have not permission to access this route
+          "5XX":
+            description: Unexpected error.
