@@ -23,9 +23,7 @@ components:
           type: string
           example: "IR.9387654321"
         type:
-          type: integer
-          format: int32
-          minimum: 0
+          $ref: './UserType.yaml#/components/schemas/UserType'
         phone:
           type: string
           example: "IR.3134420301"

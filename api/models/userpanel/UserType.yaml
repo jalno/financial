@@ -1,0 +1,17 @@
+components:
+  schemas:
+    UserType:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          minimum: 0
+        title:
+          type: string
+          nullable: true
+          x-faker: lorem.word
+          example: "Admin"
+      required:
+        - id
+        - title
