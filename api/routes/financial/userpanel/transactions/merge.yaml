@@ -26,8 +26,7 @@ components:
                     description: "title of new transaction that will contains merged transactions"
 
                   expire_at:
-                    type: number
-                    format: int32
+                    type: string
                     description: "the expire date of new transaction"
         responses:
           "200":
