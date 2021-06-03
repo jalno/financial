@@ -1,7 +1,7 @@
 <?php
 namespace packages\financial\views\transactions;
 
-use packages\base\{view\Error, views\traits\Form as FormTrait};
+use packages\base\{DB\DBObject, view\Error, views\traits\Form as FormTrait};
 use packages\financial\{Authorization, Currency, views\ListView as ParentListView, Transaction};
 use packages\userpanel\{Authentication};
 
@@ -27,7 +27,14 @@ class ListView extends ParentListView {
 		$this->canDel = authorization::is_accessed('transactions_delete');
 	}
 	public function export(): array {
-		$export = parent::export();
+		$export = array(
+			'data' => array(
+				'items' => DBObject::objectToArray($this->dataList, true),
+				'items_per_page' => (int)$this->itemsPage,
+				'current_page' => (int)$this->currentPage,
+				'total_items' => (int)$this->totalItems,
+			),
+		);
 
 		$me = Authentication::getUser();
 		$userCurrency = Currency::getDefault($me);
