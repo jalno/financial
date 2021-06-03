@@ -280,14 +280,15 @@ class Transactions extends Controller {
 			$searched = true;
 			$transaction->where($parenthesis);
 		}
+
 		if($anonymous){
-			$transaction->join(User::class, "user", "LEFT");
+			$transaction->with("user", "LEFT");
 			$parenthesis = new Parenthesis();
 			$parenthesis->where("userpanel_users.type",  $types, "in");
 			$parenthesis->orWhere("financial_transactions.user", null, "is");
 			$transaction->where($parenthesis);
 		} else {
-			$transaction->join(User::class, "user", "INNER");
+			$transaction->with("user", "INNER");
 			if ($types) {
 				$transaction->where("userpanel_users.type", $types, "in");
 			} else {
