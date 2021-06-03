@@ -16,11 +16,10 @@ components:
         rounding_behaviour:
           type: number
           format: int32
+          minimum: 1
+          maximum: 3
         rounding_precision:
           type: number
-          format: int32
-        status:
-          type: integer
           format: int32
       required:
         - id
@@ -28,4 +27,3 @@ components:
         - update_at
         - rounding_behaviour
         - rounding_precision
-        - status

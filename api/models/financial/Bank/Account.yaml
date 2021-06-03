@@ -6,14 +6,19 @@ components:
         id:
           type: integer
           format: int32
+          minimum: 0
         bank_id:
           type: integer
           format: int32
+          minimum: 0
+        bank:
+          $ref: '../Bank.yaml#/components/schemas/Bank'
         user_id:
-          oneOf:
-            - type: number
-              format: int32
-            - $ref: '../../userpanel/User.yaml#/components/schemas/User'
+          type: integer
+          format: int32
+          minimum: 0
+        user:
+          $ref: '../../userpanel/User.yaml#/components/schemas/User'
         owner:
           type: string
           x-faker: name.findName
@@ -26,7 +31,9 @@ components:
         shaba:
           type: string
         oprator_id:
-          type: string
+          type: integer
+          format: int32
+          minimum: 0
         reject_reason:
           type: string
           x-faker: lorem.sentence
