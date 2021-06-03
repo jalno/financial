@@ -10,11 +10,7 @@ components:
         token:
           type: string
         user:
-          oneOf:
-            - type: integer
-              format: int32
-              minimum: 0
-            - $ref: '../userpanel/User.yaml#/components/schemas/User'
+            $ref: '../userpanel/User.yaml#/components/schemas/User'
         title:
           type: string
           x-faker: lorem.words
