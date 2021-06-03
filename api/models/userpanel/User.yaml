@@ -13,34 +13,22 @@ components:
         name:
           type: string
           x-faker: name.firstName
-          examples:
-            - "Amir"
-            - "Hossein"
-            - "امیرعلی"
-            - "سیده فاطمه نازنین"
+          example: "Hossein"
         lastname:
           type: string
           nullable: true
           x-faker: name.lastName
-          examples:
-            - "Afshar"
-            - "حسنی"
-            - "خلیلی"
-            - "Yeganemehr"
+          example: "Hosni"
         cellphone:
           type: string
-          examples:
-            - "IR.91234567890"
-            - "IR.91987654321"
-            - "US.45165135442"
+          example: "IR.9387654321"
         type:
           type: integer
           format: int32
           minimum: 0
         phone:
           type: string
-          examples:
-            - "IR.3134420301"
+          example: "IR.3134420301"
         city:
           type: string
           x-faker: address.city
