@@ -1,10 +1,10 @@
 <?php
 namespace packages\financial\listeners\userpanel;
-use \packages\base\options;
-use \packages\base\translator;
-use \packages\financial\currency;
-use \packages\userpanel\events\settings as settingsEvent;
-use \packages\financial\controllers\userpanel\settings as controller;
+
+use packages\base\{Options, Translator};
+use packages\financial\{Authorization, Currency, controllers\userpanel\settings as Controller};
+use packages\userpanel\events\settings as SettingsEvent;
+
 class settings{
 	private function getCurrencyForSelect():array{
 		$currencies = [];
@@ -23,7 +23,11 @@ class settings{
 		}
 		return $currencies;
 	}
-	public function settings_list(settingsEvent $settings){
+	public function settings_list(SettingsEvent $settings): void {
+		$canChangeCurrency = Authorization::is_accessed("profile_change_currency");
+		if (!$canChangeCurrency) {
+			return;
+		}
 		$tuning = new settingsEvent\tuning("financial");
 		$tuning->setController(controller::class);
 		$tuning->addInput([

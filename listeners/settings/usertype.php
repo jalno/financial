@@ -49,6 +49,8 @@ class usertype{
 			'transactions_guest-pay-link',
 			
 			"paid_user_profile",
+
+			"profile_change_currency",
 		);
 		foreach($permissions as $permission){
 			permissions::add('financial_'.$permission);
