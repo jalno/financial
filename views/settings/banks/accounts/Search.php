@@ -1,7 +1,8 @@
 <?php
 namespace packages\financial\views\settings\banks\accounts;
+
+use packages\base\{DB\DBObject, views\traits\form as formTrait};
 use packages\financial\{views\listview, authorization};
-use packages\base\views\traits\form as formTrait;
 
 class Search extends listview {
 	use formTrait;
@@ -19,5 +20,15 @@ class Search extends listview {
 	}
 	public function getBankaccounts(){
 		return $this->dataList;
+	}
+	public function export(): array {
+		return array(
+			'data' => array(
+				'items' => DBObject::objectToArray($this->dataList, true),
+				'items_per_page' => (int)$this->itemsPage,
+				'current_page' => (int)$this->currentPage,
+				'total_items' => (int)$this->totalItems,
+			),
+		);
 	}
 }

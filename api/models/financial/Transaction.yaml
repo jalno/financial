@@ -9,6 +9,7 @@ components:
           minimum: 0
         token:
           type: string
+          x-faker: datatype.uuid
         user:
             $ref: '../userpanel/User.yaml#/components/schemas/User'
         title:
@@ -19,20 +20,17 @@ components:
           format: double
           x-faker: finance.amount
         create_at:
-          type: number
+          type: integer
           format: int32
           minimum: 0
-          x-faker: time.recent
         expire_at:
-          type: number
+          type: integer
           format: int32
           minimum: 0
-          x-faker: time.recent
         paid_at:
-          type: number
+          type: integer
           format: int32
           minimum: 0
-          x-faker: time.recent
         currency:
             $ref: './Currency.yaml#/components/schemas/Currency'
         status:

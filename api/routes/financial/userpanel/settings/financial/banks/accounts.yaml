@@ -7,15 +7,6 @@ components:
         summary: Search and get list of bank accounts
         description: ""
         parameters:
-
-          - in: query
-            name: api
-            schema:
-              type: boolean
-              enum:
-                - true
-            required: true
-            description: "you should pass this option or 'ajax' option in order to get json result"
           
           - in: query
             name: ajax
@@ -47,6 +38,7 @@ components:
             schema:
               type: integer
               format: int32
+              minimum: 1
             description: "The ID of the transaction you search for it"
 
           - in: query
@@ -54,6 +46,7 @@ components:
             schema:
               type: integer
               format: int32
+              minimum: 1
             description: "The ID of bank that the bankaccount is exists in"
 
           - in: query
@@ -61,6 +54,7 @@ components:
             schema:
               type: integer
               format: int32
+              minimum: 1
             description: "The ID of user that owns bankaccount"
 
           - in: query

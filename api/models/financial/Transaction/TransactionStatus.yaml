@@ -3,7 +3,8 @@ components:
     TransactionStatus:
       type: integer
       format: int32
-      minimum: 0
+      minimum: 1
+      maximum: 6
       enum:
         - 1 #UNPAID
         - 2 #PAID
