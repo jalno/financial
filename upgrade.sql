@@ -38,3 +38,8 @@ ALTER TABLE `financial_currencies`
 ADD `rounding_behaviour` TINYINT NOT NULL AFTER `update_at`,
 ADD `rounding_precision` TINYINT NOT NULL AFTER `rounding_behaviour`;
 
+--
+--	Commit:	7b6225097cfdbf934866fe37e191ffe70705a1b1
+--
+ALTER TABLE `financial_currencies` ADD `prefix` VARCHAR(31) NULL AFTER `id`;
+ALTER TABLE `financial_currencies` ADD `postfix` VARCHAR(31) NULL AFTER `title`;
