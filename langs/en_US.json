@@ -108,6 +108,8 @@
 		"usertype.permissions.financial_settings_currencies_edit": "Edit Currency",
 		"usertype.permissions.financial_settings_currencies_delete": "Delete currency",
 
+		"usertype.permissions.financial_profile_change_currency": "Change currency in profile setting",
+
 		"error.packages.financial.error.transactions.user.delete_user_warn": "Warning about user transactions",
 		"error.packages.financial.error.transactions.user.delete_user_warn.message": "This user has transaction(s). If you delete this user, all user's transactions will be deleted!",
 		"packages.financial.error.transactions.user.delete_user_warn.view_transactions": "You can we user's transactions(s)",

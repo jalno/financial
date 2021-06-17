@@ -1,15 +1,16 @@
 <?php
 namespace packages\financial\controllers\userpanel;
 use packages\base\{inputValidation, translator};
-use packages\financial\currency;
+use packages\financial\{Authorization, Currency};
 use packages\userpanel\{user, events\settings\Controller, events\settings\Log};
 
 class settings implements Controller {
 	public function store(array $inputs, user $user): array {
 		$logs = array();
-		if (isset($inputs["financial_transaction_currency"])) {
+		$canChangeCurrency = Authorization::is_accessed("profile_change_currency");
+		if (isset($inputs["financial_transaction_currency"]) and $canChangeCurrency) {
 			$currency = currency::getDefault($user);
-			$newCurrency = currency::byId($inputs["financial_transaction_currency"]);
+			$newCurrency = (new Currency)->byId($inputs["financial_transaction_currency"]);
 			if (!$newCurrency) {
 				throw new inputValidation("financial_transaction_currency");
 			}
