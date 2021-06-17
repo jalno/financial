@@ -33,7 +33,9 @@ class Currency extends dbObject {
 	protected $dbTable = "financial_currencies";
 	protected $primaryKey = "id";
 	protected $dbFields = [
+		'prefix' => ['type' => 'text'],
         'title' => ['type' => 'text', 'required' => true],
+		'postfix' => ['type' => 'text'],
 		'update_at' => ['type' => 'int', 'required' => true],
 		'rounding_behaviour' => ['type' => 'int'],
 		'rounding_precision' => ['type' => 'int'],
@@ -42,6 +44,10 @@ class Currency extends dbObject {
 		'params' => ['hasMany', Param::class, 'currency'],
 		'rates' => ['hasMany', Rate::class, 'currency'],
 	];
+
+	public function format(float $amount): string {
+		return $this->prefix . number_format($amount, $this->rounding_precision) . $this->postfix;
+	}
 	public function addRate(Currency $currency, float $price): void {
 		$rate = $this->getRate($currency->id);
 		if ($rate) {

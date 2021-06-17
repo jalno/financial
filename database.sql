@@ -28,7 +28,9 @@ CREATE TABLE `financial_banks_accounts` (
 
 CREATE TABLE `financial_currencies` (
 	`id` int(11) NOT NULL AUTO_INCREMENT,
+	`prefix` varchar(31) DEFAULT NULL,
 	`title` varchar(25) NOT NULL,
+	`postfix` varchar(31) DEFAULT NULL,
 	`update_at` int(11) NOT NULL,
 	`rounding_behaviour` tinyint(4) NOT NULL,
 	`rounding_precision` tinyint(4) NOT NULL,

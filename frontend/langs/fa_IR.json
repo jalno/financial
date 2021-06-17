@@ -183,6 +183,8 @@
 		"financial.settings.currency.title": "عنوان",
 		"financial.settings.currency.change": "تبدیل ارز",
 		"financial.settings.currency.price": "قیمت",
+		"financial.settings.currency.prefix": "پیشوند",
+		"financial.settings.currency.postfix": "پسوند",
 		"financial.settings.currency": "ارز",
 		"financial.setting.currency.delete.warning": "لطفا دقت کنید هیچ راه برگشتی وجود ندارد، تمامی تبدیلات پاک خواهند شد .",
 		"error.financial.transaction.currency.UnChangableException": "صورتحساب شما در تبدیلات ارزی مشکل دارد . برای پیگیری و رفع خطا با ما تماس بگیرید.</br> از پرداخت صورتحساب جدا خودداری کنید.",

@@ -27,6 +27,20 @@ $this->the_header();
 							<div class="row">
 								<div class="col-xs-7">
 								<?php $this->createField(array(
+									"name" => "prefix",
+									"label" => t("financial.settings.currency.prefix"),
+								)); ?>
+								</div>
+								<div class="col-xs-5">
+								<?php $this->createField(array(
+									"name" => "postfix",
+									"label" => t("financial.settings.currency.postfix"),
+								)); ?>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-xs-7">
+								<?php $this->createField(array(
 									"name" => "update_at",
 									"label" => t("financial.settings.currency.update_at"),
 									"ltr" => true
