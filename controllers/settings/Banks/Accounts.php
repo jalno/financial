@@ -1,7 +1,7 @@
 <?php
 namespace packages\financial\controllers\settings\Banks;
 use packages\userpanel;
-use packages\base\{NotFound, views\FormError, inputValidation, view\error, response};
+use packages\base\{NotFound, views\FormError, inputValidation, view\error, DB\Parenthesis, response};
 use packages\financial\{view, views, usertype, controller, authorization, authentication, Bank, Bank\Account, payport, Validators};
 
 class Accounts extends controller{
@@ -96,7 +96,7 @@ class Accounts extends controller{
 					$parenthesis->orWhere("financial_banks_accounts.{$item}", $inputs[$item], $inputs["comparison"]);
 				}
 			}
-			if ($parenthesis) {
+			if (!$parenthesis->isEmpty()) {
 				$account->where($parenthesis);
 			}
 		}
