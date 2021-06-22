@@ -93,6 +93,18 @@ class Currencies extends Controller {
 			"title" => [
 				"type" => validators\CurrencyTitleValidator::class,
 			],
+			"prefix" => [
+				"type" => "string",
+				"optional" => true,
+				"empty" => true,
+				"trim" => false,
+			],
+			"postfix" => [
+				"type" => "string",
+				"optional" => true,
+				"empty" => true,
+				"trim" => false,
+			],
 			"update_at" => [
 				"type" => "date",
 				"unix" => true,
@@ -137,6 +149,12 @@ class Currencies extends Controller {
 		if (isset($inputs["rounding-precision"])) {
 			$currency->rounding_precision = $inputs["rounding-precision"];
 		}
+		if (isset($inputs["prefix"])) {
+			$currency->prefix = $inputs["prefix"];
+		}
+		if (isset($inputs["postfix"])) {
+			$currency->prefix = $inputs["postfix"];
+		}
 		$currency->save();
 		if (isset($inputs["rates"])) {
 			foreach ($inputs["rates"] as $rate) {
@@ -175,6 +193,18 @@ class Currencies extends Controller {
 				"type" => validators\CurrencyTitleValidator::class,
 				"self" => $currency->id,
 				"optional" => true,
+			],
+			"prefix" => [
+				"type" => "string",
+				"optional" => true,
+				"empty" => true,
+				"trim" => false,
+			],
+			"postfix" => [
+				"type" => "string",
+				"optional" => true,
+				"empty" => true,
+				"trim" => false,
 			],
 			"update_at" => [
 				"type" => "date",
@@ -254,7 +284,7 @@ class Currencies extends Controller {
 				$currency->addRate($rate["currency"], $rate["price"]);
 			}
 		}
-		foreach (["title", "update_at"] as $item) {
+		foreach (["title", "update_at", "prefix", "postfix"] as $item) {
 			if (!isset($inputs[$item])) {
 				continue;
 			}

@@ -185,6 +185,8 @@
 		"financial.settings.currency.title": "Title",
 		"financial.settings.currency.change": "Exchange",
 		"financial.settings.currency.price": "Amount",
+		"financial.settings.currency.prefix": "Prefix",
+		"financial.settings.currency.postfix": "Postfix",
 		"financial.settings.currency": "Currency",
 		"financial.setting.currency.delete.warning": "Please consider that this an unreserved auction and all the related exchanges will be removed.",
 		"error.financial.transaction.currency.UnChangableException": "Unfortunately there is an error in currency changes, Please contact us for support.</br> Please do not try agian for payment.",
