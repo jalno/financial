@@ -97,11 +97,13 @@ class Currencies extends Controller {
 				"type" => "string",
 				"optional" => true,
 				"empty" => true,
+				"trim" => false,
 			],
 			"postfix" => [
 				"type" => "string",
 				"optional" => true,
 				"empty" => true,
+				"trim" => false,
 			],
 			"update_at" => [
 				"type" => "date",
@@ -196,11 +198,13 @@ class Currencies extends Controller {
 				"type" => "string",
 				"optional" => true,
 				"empty" => true,
+				"trim" => false,
 			],
 			"postfix" => [
 				"type" => "string",
 				"optional" => true,
 				"empty" => true,
+				"trim" => false,
 			],
 			"update_at" => [
 				"type" => "date",
