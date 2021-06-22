@@ -46,7 +46,7 @@ class Currency extends dbObject {
 	];
 
 	public function format(float $amount): string {
-		return $this->prefix . number_format($amount, $this->rounding_precision) . $this->postfix;
+		return $this->prefix . number_format($amount, $this->rounding_precision) . $this->postfix . ((!$this->prefix and !$this->postfix) ? " " . $this->title : "");
 	}
 	public function addRate(Currency $currency, float $price): void {
 		$rate = $this->getRate($currency->id);
