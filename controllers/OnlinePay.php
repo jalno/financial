@@ -18,6 +18,7 @@ class OnlinePay extends Controller {
 				parent::response(Authentication::FailResponse());
 			}
 		}
+		parent::__construct();
 	}
 	public function callBack($data): response {
 		$pay = payport_pay::byId($data["pay"]);
