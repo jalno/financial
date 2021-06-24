@@ -11,7 +11,8 @@ components:
           type: string
           x-faker: datatype.uuid
         user:
-            $ref: '../userpanel/User.yaml#/components/schemas/User'
+          $ref: '../userpanel/User.yaml#/components/schemas/User'
+          nullable: true
         title:
           type: string
           x-faker: lorem.words
@@ -26,10 +27,12 @@ components:
         expire_at:
           type: integer
           format: int32
+          nullable: true
           minimum: 0
         paid_at:
           type: integer
           format: int32
+          nullable: true
           minimum: 0
         currency:
             $ref: './Currency.yaml#/components/schemas/Currency'

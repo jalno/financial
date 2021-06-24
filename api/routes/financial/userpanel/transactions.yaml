@@ -7,15 +7,6 @@ components:
         summary: Search and get list of transactions
         description: ""
         parameters:
-
-          - in: query
-            name: api
-            schema:
-              type: boolean
-              enum:
-                - true
-            required: true
-            description: "you should pass this option or 'ajax' option in order to get json result"
           
           - in: query
             name: ajax
@@ -23,7 +14,7 @@ components:
               type: boolean
               enum:
                 - true
-            description: "you should pass this option or 'api' option in order to get json result"
+            description: "you should pass this option to get json result"
 
           - in: query
             name: ipp
@@ -120,8 +111,12 @@ components:
                   properties:
                     status:
                       type: boolean
-                      enum:
-                        - true
+                      description: "if true, the request is valid, else you pass some parameter wrong!"
+                    error:
+                      type: array
+                      items:
+                        $ref: "../../../models/base/view/Error.yaml#/components/schemas/Error"
+                      description: "In case of invalid data, this key is exists and contain an Error that have the invalid input"
 
                     items:
                       type: array
@@ -136,7 +131,7 @@ components:
                     current_page:
                       type: integer
                       format: int32
-                      minimum: 1
+                      minimum: 0
 
                     total_items:
                       type: integer
@@ -172,6 +167,14 @@ components:
                       required:
                         - amount
                         - currency
+                  required:
+                    - status
+                    - items
+                    - items_per_page
+                    - current_page
+                    - total_items
+                    - balance
+                    - debt
           "403":
             description: your session is revoked or you have not permission to access this route
           "5XX":

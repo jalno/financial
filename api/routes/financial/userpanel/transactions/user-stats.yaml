@@ -9,21 +9,12 @@ components:
         parameters:
 
           - in: query
-            name: api
-            schema:
-              type: boolean
-              enum:
-                - true
-            required: true
-            description: "you should pass this option or 'ajax' option in order to get json result"
-
-          - in: query
             name: ajax
             schema:
               type: boolean
               enum:
                 - true
-            description: "you should pass this option or 'api' option in order to get json result"
+            description: "you should pass this option to get json result"
 
           - in: query
             name: type

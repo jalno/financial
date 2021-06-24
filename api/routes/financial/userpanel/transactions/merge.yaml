@@ -13,6 +13,9 @@ components:
               schema:
                 type: object
                 properties:
+                  ajax:
+                    type: boolean
+                    description: " you should pass this options in order to get json result"
 
                   transactions:
                     type: array
@@ -28,6 +31,12 @@ components:
                   expire_at:
                     type: string
                     description: "the expire date of new transaction"
+                required:
+                  - ajax
+                  - transactions
+                  - title
+                  - expire_at
+
         responses:
           "200":
             description: sucessfull
@@ -38,8 +47,15 @@ components:
                   properties:
                     status:
                       type: boolean
+                    error:
+                      type: array
+                      items:
+                        $ref: "../../../../models/base/view/Error.yaml#/components/schemas/Error"
+                      description: "In case of invalid data, this key is exists and contain an Error that have the invalid input"
                     transaction:
                       $ref: "../../../../models/financial/Transaction.yaml#/components/schemas/Transaction"
+                  required:
+                    - status
           "403":
             description: your session is revoked or you have not permission to access this route
           "5XX":

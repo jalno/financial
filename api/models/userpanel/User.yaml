@@ -29,11 +29,10 @@ components:
           example: "IR.3134420301"
         city:
           type: string
+          nullable: true
           x-faker: address.city
         country:
-          type: integer
-          format: int32
-          minimum: 0
+          $ref: './Country.yaml#/components/schemas/Country'
         zip:
           type: string
           nullable: true
@@ -43,6 +42,7 @@ components:
           x-faker: address.streetAddress
         web:
           type: string
+          nullable: true
           x-faker: internet.domainName
         avatar:
           type: string
@@ -60,7 +60,13 @@ components:
           format: int32
           minimum: 0
         has_custom_permissions:
-          type: boolean
+          oneOf:
+            - type: boolean
+            - type: integer
+              format: int32
+              enum:
+                - 0
+                - 1
         status:
           $ref: './User/UserStatus.yaml#/components/schemas/UserStatus'
       required:

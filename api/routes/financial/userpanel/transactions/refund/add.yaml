@@ -12,6 +12,9 @@ components:
               schema:
                 type: object
                 properties:
+                  ajax:
+                    type: boolean
+                    description: " you should pass this options in order to get json result"
 
                   refund_user:
                     type: integer
@@ -27,6 +30,11 @@ components:
                     type: integer
                     format: int32
                     description: "the id of bank account that you request for refund to this bank account"
+                required:
+                  - ajax
+                  - refund_user
+                  - refund_price
+                  - refund_account
         responses:
           "200":
             description: sucessfull
@@ -38,9 +46,16 @@ components:
                     status:
                       type: boolean
                       description: "if true, the result is ok, if false, some input is not valid!"
+                    error:
+                      type: array
+                      items:
+                        $ref: "../../../../../models/base/view/Error.yaml#/components/schemas/Error"
+                      description: "In case of invalid data, this key is exists and contain an Error that have the invalid input"
                     redirect:
                       type: string
                       description: "the url of created transaction for refund"
+                  required:
+                    - status
           "403":
             description: your session is revoked or you have not permission to access this route
           "5XX":
