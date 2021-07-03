@@ -30,25 +30,6 @@ class Currency extends dbObject {
 		return (new Currency())->byID($currencyID);
 	}
 
-	public static function roundAmountByCurrency(float $amount, Currency $currency): float {
-		switch ($currency->rounding_behaviour) {
-			case(self::CEIL):
-				$precision = pow(10, $currency->rounding_precision);
-				$amount = ceil($amount * $precision);
-				$amount /= $precision;
-				break;
-			case(self::ROUND):
-				$amount = round($amount, $currency->rounding_precision);
-				break;
-			case(self::FLOOR):
-				$precision = pow(10, $currency->rounding_precision);
-				$amount = floor($amount * $precision);
-				$amount /= $precision;
-				break;
-		}
-		return floatval($amount);
-	}
-
 	protected $dbTable = "financial_currencies";
 	protected $primaryKey = "id";
 	protected $dbFields = [
@@ -107,7 +88,22 @@ class Currency extends dbObject {
 		return (new Rate())->where('currency', $this->id)->where('changeTo', $changeTo)->getOne();
 	}
 	public function round(float $amount): float {
-		return self::roundAmountByCurrency($amount, $this);
+		switch ($this->rounding_behaviour) {
+			case(self::CEIL):
+				$precision = pow(10, $this->rounding_precision);
+				$amount = ceil($amount * $precision);
+				$amount /= $precision;
+				break;
+			case(self::ROUND):
+				$amount = round($amount, $this->rounding_precision);
+				break;
+			case(self::FLOOR):
+				$precision = pow(10, $this->rounding_precision);
+				$amount = floor($amount * $precision);
+				$amount /= $precision;
+				break;
+		}
+		return floatval($amount);
 	}
 	public function changeTo(float $price, Currency $other): float {
 		if ($other->id == $this->id) {
@@ -118,6 +114,6 @@ class Currency extends dbObject {
 			throw new UnChangableException($other, $this);
 		}
 		$changed = $price * $rate->price;
-		return self::roundAmountByCurrency($changed, $other);
+		$other->round($changed);
 	}
 }
