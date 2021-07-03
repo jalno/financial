@@ -114,6 +114,6 @@ class Currency extends dbObject {
 			throw new UnChangableException($other, $this);
 		}
 		$changed = $price * $rate->price;
-		$other->round($changed);
+		return $other->round($changed);
 	}
 }
