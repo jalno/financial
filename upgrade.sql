@@ -43,3 +43,8 @@ ADD `rounding_precision` TINYINT NOT NULL AFTER `rounding_behaviour`;
 --
 ALTER TABLE `financial_currencies` ADD `prefix` VARCHAR(31) NULL AFTER `id`;
 ALTER TABLE `financial_currencies` ADD `postfix` VARCHAR(31) NULL AFTER `title`;
+
+--
+-- Commit:
+--
+ALTER TABLE `financial_transactions_products` CHANGE `description` `description` varchar(255) COLLATE 'utf8_general_ci' NULL AFTER `title`;
