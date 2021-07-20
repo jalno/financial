@@ -1,0 +1,42 @@
+openapi: 3.0.0
+
+info:
+  description: ""
+  version: 0.0.1
+  title: Financial API documentation
+  contact:
+    name: JeyServer
+    url: http://www.jeyserver.com
+    email: info@jeyserver.com
+
+servers:
+  - url: '{schema}://{domain}/{language}'
+    description: Financial API documentation sample
+    variables:
+      schema:
+        enum:
+          - 'http'
+          - 'https'
+        default: 'https'
+      domain:
+        default: some-test-domain.com
+      language:
+        default: fa
+
+paths:
+  /userpanel/transactions:
+    $ref: "./routes/financial/userpanel/transactions.yaml#/components/parameters/paths"
+
+  /userpanel/transactions/refund/add:
+    $ref: "./routes/financial/userpanel/transactions/refund/add.yaml#/components/parameters/paths"
+
+  /userpanel/settings/financial/banks/accounts:
+    $ref: "./routes/financial/userpanel/settings/financial/banks/accounts.yaml#/components/parameters/paths"
+
+  /userpanel/transactions/user-stats:
+    $ref: "./routes/financial/userpanel/transactions/user-stats.yaml#/components/parameters/paths"
+
+  /userpanel/transactions/merge:
+    $ref: "./routes/financial/userpanel/transactions/merge.yaml#/components/parameters/paths"
+
+ 

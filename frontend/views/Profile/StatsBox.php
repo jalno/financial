@@ -4,7 +4,7 @@ namespace themes\clipone\views\financial\Profile;
 use themes\clipone\views\Dashboard\Box;
 use packages\base\{json, Date, db, Options};
 use packages\userpanel\{User, Log, Authentication};
-use packages\financial\{logs, Authorization, Difficulty, Transaction, currency, Transaction_pay as Pay};
+use packages\financial\{logs, Authorization, Difficulty, Transaction, currency, Transaction_pay as Pay, Stats};
 
 class StatsBox extends Box {
 
@@ -42,32 +42,11 @@ class StatsBox extends Box {
 			return $this->html;
 		}
 		$defaultCurrency = Currency::getDefault($this->user);
-		$queryBuilder = function (bool $paid = true, int $from = 0,int $to = 0) use ($defaultCurrency) {
-			$pay = new Pay();
-			$pay->join(Transaction::class, "transaction", "INNER");
-			$pay->where("financial_transactions.user", $this->user->id);
-			if ($paid) {
-				$pay->where("financial_transactions_pays.method", [Pay::banktransfer, Pay::onlinepay], "IN");
-				$pay->where("financial_transactions.price", 0, ">=");
-			} else {
-				$pay->where("financial_transactions.price", 0, "<");
-			}
-			if ($from > 0 and $to > 0) {
-				$pay->where("financial_transactions.paid_at", $from, "<");
-				$pay->where("financial_transactions.paid_at", $to, ">=");
-			}
-			$pay->where("financial_transactions.status", Transaction::paid);
-			$pay->groupBy("financial_transactions_pays.currency");
-			$pay->ArrayBuilder();
-			$pays = $pay->get(null, array("financial_transactions_pays.currency", "SUM(`financial_transactions_pays`.`price`) as `sum`"));
-			$sum = 0;
-			foreach ($pays as $pay) {
-				$currency =  (new Currency)->byId($pay["currency"]);
-				$sum += $currency->changeTo(abs($pay["sum"]), $defaultCurrency);
-			}
-			return $sum;
-		};
 		$periods = Options::get("packages.financial.user_pay_stats_period");
+		$periods = [];
+		for ($x = 1; $x <= 8; $x++) {
+			$periods[] = 86400 * $x;
+		}
 		if (!$periods) {
 			$periods = array();
 		}
@@ -83,9 +62,9 @@ class StatsBox extends Box {
 					foreach ($periods as $period) {
 						$days = $period / 86400;
 						if ($days >= 365) {
-							$this->html .= '<th class="center">' . t("packages.financial.last_year", ["year" => $days / 365]) . "</th>";
+							$this->html .= '<th class="center">' . t("packages.financial.last_year", ["year" => round($days / 365, 1)]) . "</th>";
 						} else if ($days >= 30) {
-							$this->html .= '<th class="center">' . t("packages.financial.last_month", ["month" => $days / 30]) . "</th>";
+							$this->html .= '<th class="center">' . t("packages.financial.last_month", ["month" => round($days / 30, 1)]) . "</th>";
 						} else {
 							$this->html .= '<th class="center">' . t("packages.financial.last_day", array("day" => $days)) . "</th>";
 						}
@@ -97,17 +76,17 @@ class StatsBox extends Box {
 					$this->html .= "<tr>";
 						$this->html .= '<td class="center"><i class="fa fa-' . ($isme ? "upload text-info" : "download text-success") . '"></i> ' . ($isme ? t("packages.financial.paid") : t("packages.financial.user_paids")) .'</td>';
 					foreach ($periods as $period) {
-						$this->html .= '<td class="center">' . number_format($queryBuilder(true, Date::time(), Date::time() - $period)) . '</td>';
+						$this->html .= '<td class="center">' . number_format(Stats::getStatsSumByUser($this->user, true, Date::time() - $period, Date::time())) . '</td>';
 					}
-						$this->html .= '<td class="center">' . number_format($queryBuilder()) . '</td>';
+						$this->html .= '<td class="center">' . number_format(Stats::getStatsSumByUser($this->user, true, 0, 0)) . '</td>';
 					$this->html .= "</tr>";
 				if (Authorization::is_accessed("transactions_refund_add")) {
 					$this->html .= "<tr>";
 						$this->html .= '<td class="center"><i class="fa fa-' . ($isme ? "download text-info" : "upload text-danger") . '"></i> ' . ($isme ? t("packages.financial.receive") : t("packages.financial.paid_touser")) .'</td>';
 					foreach ($periods as $period) {
-						$this->html .= '<td class="center">' . number_format($queryBuilder(false, Date::time(), Date::time() - $period)) . '</td>';
+						$this->html .= '<td class="center">' . number_format(Stats::getStatsSumByUser($this->user, false, Date::time() - $period, Date::time())) . '</td>';
 					}
-						$this->html .= '<td class="center">' . number_format(abs($queryBuilder(false))) . '</td>';
+						$this->html .= '<td class="center">' . number_format(abs(Stats::getStatsSumByUser($this->user, false, 0, 0))) . '</td>';
 					$this->html .= "</tr>";
 				}
 				$this->html .= '</tbody>';

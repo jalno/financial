@@ -8,7 +8,7 @@ use packages\financial\payport\{AlreadyVerified, GatewayException, Redirect, Ver
 use packages\base\{DB, db\duplicateRecord, view\Error, views\FormError, Packages, Http, inputValidation, InputValidationException, NotFound, Options, db\Parenthesis, Response, Utility\Safe};
 use packages\financial\{Bank\Account, Authentication, Authorization, Controller, Currency, Events, Logs,
 						Transaction, Transaction_product, Transaction_pay, View, Views, Payport, Payport_pay,
-						Transactions_products_param, products\AddingCredit};
+						Transactions_products_param, Stats, products\AddingCredit, validators};
 
 class Transactions extends Controller {
 	use Transactions\MergeTrait;
@@ -282,14 +282,15 @@ class Transactions extends Controller {
 			$searched = true;
 			$transaction->where($parenthesis);
 		}
+
 		if($anonymous){
-			$transaction->join(User::class, "user", "LEFT");
+			$transaction->with("user", "LEFT");
 			$parenthesis = new Parenthesis();
 			$parenthesis->where("userpanel_users.type",  $types, "in");
 			$parenthesis->orWhere("financial_transactions.user", null, "is");
 			$transaction->where($parenthesis);
 		} else {
-			$transaction->join(User::class, "user", "INNER");
+			$transaction->with("user", "INNER");
 			if ($types) {
 				$transaction->where("userpanel_users.type", $types, "in");
 			} else {
@@ -347,7 +348,7 @@ class Transactions extends Controller {
 		$this->response->setView($view);
 		return $this->response;
 	}
-	private function getTransaction($id){
+	private function getTransaction($id): Transaction {
 		$transaction = new transaction();
 		$parenthesis = new parenthesis();
 		if(authorization::is_accessed("transactions_anonymous")) {
@@ -791,44 +792,54 @@ class Transactions extends Controller {
 		}
 		return null;
 	}
-	protected function checkData($data){
-		$types = authorization::childrenTypes();
-		db::join("userpanel_users", "userpanel_users.id=financial_transactions.user", "LEFT");
-		if($types){
-			db::where("userpanel_users.type", $types, 'in');
-		}else{
-			db::where("userpanel_users.id", authentication::getID());
-		}
-		db::where("financial_transactions.id", $data['id']);
-		$transaction = new transaction(db::getOne("financial_transactions", "financial_transactions.*"));
-		return ($transaction ? $transaction : new transactionNotFound);
-	}
-	public function delete($data){
-		authorization::haveOrFail('transactions_delete');
-		$view = view::byName("\\packages\\financial\\views\\transactions\\delete");
-		$transaction = $this->checkData($data);
+	public function delete(array $data): Response {
+		Authorization::haveOrFail('transactions_delete');
+		$transaction = $this->getTransaction($data["id"]);
+		$view = View::byName(Views\transactions\Delete::class);
+		$this->response->setView($view);
 		$view->setTransactionData($transaction);
-		$this->response->setStatus(false);
-		if(http::is_post()){
-			$log = new log();
-			$log->user = authentication::getUser();
-			$log->type = logs\transactions\delete::class;
+		$this->response->setStatus(true);
+		return $this->response;
+	}
+	public function destroy(?array $data = null): Response {
+		Authorization::haveOrFail('transactions_delete');
+
+		$transactions = array();
+
+		if (isset($data["id"])) {
+			$transaction = $this->getTransaction($data["id"]);
+			$view = View::byName(Views\transactions\Delete::class);
+			$this->response->setView($view);
+			$view->setTransactionData($transaction);
+			$this->response->Go(userpanel\url('transactions'));
+			$transactions[] = $transaction;
+		} else {
+			$inputs = $this->checkInputs(array(
+				"transactions" => array(
+					"type" => "array",
+					"convert-to-array" => true,
+					"each" => Transaction::class,
+				),
+			));
+			$transactions = $inputs["transactions"];
+		}
+
+		foreach ($transactions as $transaction) {
+			$log = new Log();
+			$log->user = Authentication::getUser();
+			$log->type = logs\transactions\Delete::class;
 			$log->title = t("financial.logs.transaction.delete", ["transaction_id" => $transaction->id]);
 			$log->parameters = ['transaction' => $transaction];
 			$log->save();
 			$transaction->delete();
-			$this->response->setStatus(true);
-			$this->response->Go(userpanel\url('transactions'));
-		}else{
-			$this->response->setStatus(true);
-			$this->response->setView($view);
 		}
+		$this->response->setStatus(true);
 		return $this->response;
 	}
 	public function edit($data){
 		authorization::haveOrFail('transactions_edit');
 		$view = view::byName("\\packages\\financial\\views\\transactions\\edit");
-		$transaction = $this->checkData($data);
+		$transaction = $this->getTransaction($data["id"]);
 
 		$view->setTransactionData($transaction);
 		$view->setCurrencies(currency::get());
@@ -1678,6 +1689,50 @@ class Transactions extends Controller {
 		return $this->response;
 	}
 
+	/**
+	 * get the user's gain and spent chart data
+	 */
+	public function userStats(): Response {
+		Authorization::haveOrFail("paid_user_profile");
+
+		$inputs = $this->checkInputs(array(
+			"type" => array(
+				"type" => "string",
+				"values" => array("gain", "spend"),
+			),
+			"from" => array(
+				"type" => "date",
+				"unix" => true,
+			),
+			"to" => array(
+				"type" => "date",
+				"unix" => true,
+				"optional" => true,
+				"default" => Date::time(),
+			),
+			"interval" => array(
+				"type" => validators\IntervalValidator::class,
+				"values" => array("1D", "1M", "1Y"),
+			),
+			"limit" => array(
+				"type" => "uint",
+				"max" => 30,
+				"min" => 1,
+				"optional" => true,
+				"default" => 6,
+			),
+		));
+
+		$me = Authentication::getUser();
+		$spend = $inputs["type"] == "spend";
+		$defaultCurrency = Currency::getDefault($me);
+		$items = Stats::getStatsChartDataByUser($me, $spend, $inputs["from"], $inputs["to"], $inputs["interval"], $inputs["limit"]);
+
+		$this->response->setData($defaultCurrency->toArray(), "currency");
+		$this->response->setData($items, "items");
+		$this->response->setStatus(true);
+		return $this->response;
+	}
 }
 class transactionNotFound extends NotFound{}
 class illegalTransaction extends \Exception{}

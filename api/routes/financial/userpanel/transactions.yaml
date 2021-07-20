@@ -1,0 +1,181 @@
+components:
+  parameters:
+    paths:
+      get:
+        tags:
+          - Transaction
+        summary: Search and get list of transactions
+        description: ""
+        parameters:
+          
+          - in: query
+            name: ajax
+            schema:
+              type: boolean
+              enum:
+                - true
+            description: "you should pass this option to get json result"
+
+          - in: query
+            name: ipp
+            schema:
+              type: integer
+              format: int32
+              minimum: 1
+              default: 25
+            description: "Items per page"
+
+          - in: query
+            name: page
+            schema:
+              type: integer
+              format: int32
+              minimum: 1
+            description: "the page number"
+
+          - in: query
+            name: id
+            schema:
+              type: integer
+              format: int32
+              minimum: 1
+            description: "The ID of the transaction you search for it"
+
+          - in: query
+            name: title
+            schema:
+              type: string
+            description: "The transaction title you search for it"
+
+          - in: query
+            name: user
+            schema:
+              type: integer
+              format: int32
+            description: "The ID of user that owns transaction"
+
+          - in: query
+            name: status
+            schema:
+              $ref: "../../../models/financial/Transaction/TransactionStatus.yaml#/components/schemas/TransactionStatus"
+            description: "status of the transaction"
+
+          - in: query
+            name: download
+            schema:
+              type: string
+              enum:
+                - csv
+              description: |
+                if you pass this option, the search result will be downloaded in the given format
+                the available formats is
+                * `csv` - Comma-separated values
+
+          - in: query
+            name: word
+            schema:
+              type: string
+            description: "in case you search for something, pass this option"
+
+          - in: query
+            name: create_from
+            schema:
+              type: string
+            example: "1333/03/03 14:20"
+            description: "search by create_from, the format should ne like: 'Y/m/d H:i:s'"
+
+          - in: query
+            name: create_to
+            schema:
+              type: string
+            example: "1400/10/10 10:10"
+            description: "search by create_to, the format should ne like: 'Y/m/d H:i:s'"
+
+          - in: query
+            name: comparison
+            schema:
+              type: string
+              enum:
+                - contains
+                - equals
+                - startswith
+            description: "the types of comparison in search"
+
+        responses:
+          "200":
+            description: sucessfull
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                      type: boolean
+                      description: "if true, the request is valid, else you pass some parameter wrong!"
+                    error:
+                      type: array
+                      items:
+                        $ref: "../../../models/base/view/Error.yaml#/components/schemas/Error"
+                      description: "In case of invalid data, this key is exists and contain an Error that have the invalid input"
+
+                    items:
+                      type: array
+                      items:
+                        $ref: "../../../models/financial/Transaction.yaml#/components/schemas/Transaction"
+
+                    items_per_page:
+                      type: integer
+                      format: int32
+                      minimum: 0
+
+                    current_page:
+                      type: integer
+                      format: int32
+                      minimum: 0
+
+                    total_items:
+                      type: integer
+                      format: int32
+                      minimum: 0
+
+                    balance:
+                      type: object
+                      properties:
+                        amount:
+                          type: number
+                          format: double
+                          x-faker: finance.amount
+                        currency:
+                          $ref: "../../../models/financial/Currency.yaml#/components/schemas/Currency"
+                      required:
+                        - amount
+                        - currency
+
+                    debt:
+                      type: object
+                      properties:
+                        amount:
+                          type: number
+                          format: double
+                          x-faker: finance.amount
+                        currency:
+                          $ref: "../../../models/financial/Currency.yaml#/components/schemas/Currency"
+                        error:
+                          type: array
+                          items:
+                            $ref: "../../../models/base/view/Error.yaml#/components/schemas/Error"
+                      required:
+                        - amount
+                        - currency
+                  required:
+                    - status
+                    - items
+                    - items_per_page
+                    - current_page
+                    - total_items
+                    - balance
+                    - debt
+          "403":
+            description: your session is revoked or you have not permission to access this route
+          "5XX":
+            description: Unexpected error.

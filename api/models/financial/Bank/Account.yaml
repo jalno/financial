@@ -1,0 +1,50 @@
+components:
+  schemas:
+    Account:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          minimum: 0
+        bank_id:
+          type: integer
+          format: int32
+          minimum: 0
+        bank:
+          $ref: '../Bank.yaml#/components/schemas/Bank'
+        user_id:
+          type: integer
+          format: int32
+          minimum: 0
+        user:
+          $ref: '../../userpanel/User.yaml#/components/schemas/User'
+        owner:
+          type: string
+          x-faker: name.findName
+        account:
+          type: string
+          nullable: true
+          x-faker: finance.acount
+        cart:
+          type: string
+          x-faker: finance.creditCardNumber
+        shaba:
+          type: string
+        oprator_id:
+          type: integer
+          format: int32
+          minimum: 0
+          nullable: true
+        reject_reason:
+          type: string
+          nullable: true
+          x-faker: lorem.sentence
+        status:
+          $ref: './Account/AccountStatus.yaml#/components/schemas/AccountStatus'
+      required:
+        - id
+        - bank_id
+        - user_id
+        - owner
+        - status

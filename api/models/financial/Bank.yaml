@@ -1,0 +1,19 @@
+components:
+  schemas:
+    Bank:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          minimum: 0
+        title:
+          type: string
+          x-faker: name.findName
+        status:
+          $ref: './Bank/BankStatus.yaml#/components/schemas/BankStatus'
+      required:
+        - id
+        - title
+        - status
+

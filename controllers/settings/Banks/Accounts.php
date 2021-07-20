@@ -96,7 +96,7 @@ class Accounts extends controller{
 					$parenthesis->orWhere("financial_banks_accounts.{$item}", $inputs[$item], $inputs["comparison"]);
 				}
 			}
-			if ($parenthesis) {
+			if (!$parenthesis->isEmpty()) {
 				$account->where($parenthesis);
 			}
 		}

@@ -1,0 +1,47 @@
+components:
+  schemas:
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          minimum: 0
+        token:
+          type: string
+          x-faker: datatype.uuid
+        user:
+          $ref: '../userpanel/User.yaml#/components/schemas/User'
+          nullable: true
+        title:
+          type: string
+          x-faker: lorem.words
+        price:
+          type: number
+          format: double
+          x-faker: finance.amount
+        create_at:
+          type: integer
+          format: int32
+          minimum: 0
+        expire_at:
+          type: integer
+          format: int32
+          nullable: true
+          minimum: 0
+        paid_at:
+          type: integer
+          format: int32
+          nullable: true
+          minimum: 0
+        currency:
+            $ref: './Currency.yaml#/components/schemas/Currency'
+        status:
+          $ref: './Transaction/TransactionStatus.yaml#/components/schemas/TransactionStatus'
+      required:
+        - id
+        - title
+        - price
+        - create_at
+        - currency
+        - status

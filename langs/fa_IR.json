@@ -10,6 +10,7 @@
 		"financial.transactions": "صورتحساب {title}",
 		"financial.transactions.description": "شناسه: #{id} ساخته شده در: {create_at} کاربر: {user}",
 		"error.illegalTransaction": "شما نمیتوانید تمام محصولات صورتحساب را پاک کنید! باید حداقل یک محصول موجود باشد",
+		"error.packages.financial.views.transactions.ListView.export.debt.unchangeable_price_exception": "مبلغ بدهی دقیق نیست! امکان تبدیل مبلغ تعدادی از صورتحساب های شما وجود ندارد",
 		"email.template.name.financial_transaction_add":"ایجاد صورتحساب جدید در بخش مالی",
 		"email.template.variable.transaction->id":"شناسه صورتحساب",
 		"email.template.variable.transaction->user":"کاربر صورتحساب",
@@ -133,7 +134,7 @@
 		"usertype.permissions.financial_settings_currencies_edit": "ویرایش ارز در صورتحساب",
 		"usertype.permissions.financial_settings_currencies_delete": "حذف ارز در صورتحساب",
 
-		"usertype.permissions.financial_paid_user_profile": "مشاهده مجموع پرداختی هادر نمایش کاربر",
+		"usertype.permissions.financial_paid_user_profile": "مشاهده مجموع پرداختی ها و درآمدهای کاربر",
 
 		"usertype.permissions.financial_profile_change_currency": "تغییر ارز در قسمت تنظیمات پروفایل کاربر",
 

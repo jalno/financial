@@ -1,0 +1,23 @@
+components:
+  schemas:
+    Country:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          minimum: 0
+        code:
+          type: string
+          x-faker: address.countryCode
+        name:
+          type: string
+          x-faker: address.country
+        dialing_code:
+          type: string
+          x-faker: name.firstName
+          example: "Hossein"
+      required:
+        - id
+        - code
+        - name

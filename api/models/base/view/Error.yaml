@@ -1,0 +1,26 @@
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+          x-faker: lorem.word
+        message:
+          type: string
+          x-faker: lorem.sentence
+        "type":
+          type: string
+          enum:
+            - success
+            - warning
+            - fatal
+            - notice
+        input:
+          type: string
+          x-faker: lorem.word
+        error:
+          type: string
+          x-faker: lorem.word
+      required:
+        - code

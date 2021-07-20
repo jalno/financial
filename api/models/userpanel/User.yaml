@@ -1,0 +1,80 @@
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          minimum: 0
+        email:
+          type: string
+          x-faker: internet.email
+        name:
+          type: string
+          x-faker: name.firstName
+          example: "Hossein"
+        lastname:
+          type: string
+          nullable: true
+          x-faker: name.lastName
+          example: "Hosni"
+        cellphone:
+          type: string
+          example: "IR.9387654321"
+        type:
+          $ref: './UserType.yaml#/components/schemas/UserType'
+        phone:
+          type: string
+          example: "IR.3134420301"
+        city:
+          type: string
+          nullable: true
+          x-faker: address.city
+        country:
+          $ref: './Country.yaml#/components/schemas/Country'
+        zip:
+          type: string
+          nullable: true
+          x-faker: address.zipCode
+        address:
+          type: string
+          x-faker: address.streetAddress
+        web:
+          type: string
+          nullable: true
+          x-faker: internet.domainName
+        avatar:
+          type: string
+          nullable: true
+          x-faker: system.commonFileName
+        credit:
+          type: number
+          format: double
+          x-faker: finance.amount
+        lastonline:
+          type: integer
+          format: int32
+          minimum: 0
+        registered_at:
+          type: integer
+          format: int32
+          minimum: 0
+        has_custom_permissions:
+          oneOf:
+            - type: boolean
+            - type: integer
+              format: int32
+              enum:
+                - 0
+                - 1
+        status:
+          $ref: './User/UserStatus.yaml#/components/schemas/UserStatus'
+      required:
+        - id
+        - email
+        - name
+        - cellphone
+        - type
+        - registered_at
+        - status

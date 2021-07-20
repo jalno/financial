@@ -1,0 +1,91 @@
+components:
+  parameters:
+    paths:
+      get:
+        tags:
+          - Transaction
+        summary: get chart data for spend and gain of user
+        description: ""
+        parameters:
+
+          - in: query
+            name: ajax
+            schema:
+              type: boolean
+              enum:
+                - true
+            description: "you should pass this option to get json result"
+
+          - in: query
+            name: type
+            schema:
+              type: string
+              enum:
+                - gain
+                - spend
+            required: true
+            description: "the type of chart"
+
+          - in: query
+            name: from
+            schema:
+              type: string
+            required: true
+            description: "the start of chart, should be in format: 'Y/m/d H:i:s'"
+
+          - in: query
+            name: to
+            schema:
+              type: string
+            description: "the end of chart, should be in format: 'Y/m/d H:i:s'"
+
+          - in: query
+            name: interval
+            schema:
+              type: string
+              enum:
+                - 1D
+                - 1M
+                - 1Y
+            required: true
+            description: "the interval of the chart, it can be daily (1D), monthly (1M) and yearly (1Y)"
+
+          - in: query
+            name: limit
+            schema:
+              type: number
+              format: int32
+              default: 6
+            description: "the count of chart data"
+
+        responses:
+          "200":
+            description: sucessfull
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                      type: boolean
+                      enum:
+                        - true
+                    currency:
+                      $ref: ../../../../models/financial/Currency.yaml#/components/schemas/Currency
+                    items:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          unix:
+                            type: number
+                            format: int32
+                            x-faker: time.recent
+                          sum:
+                            type: number
+                            format: double
+                            minimum: 0
+          "403":
+            description: your session is revoked or you have not permission to access this route
+          "5XX":
+            description: Unexpected error.

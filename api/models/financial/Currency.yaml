@@ -1,0 +1,37 @@
+components:
+  schemas:
+    Currency:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          minimum: 0
+        prefix:
+          type: string
+          nullable: true
+        title:
+          type: string
+          x-faker: finance.currencyCode
+        postfix:
+          type: string
+          nullable: true
+        update_at:
+          type: integer
+          format: int32
+          minimum: 0
+        rounding_behaviour:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 3
+        rounding_precision:
+          type: integer
+          format: int32
+          minimum: 0
+      required:
+        - id
+        - title
+        - update_at
+        - rounding_behaviour
+        - rounding_precision
