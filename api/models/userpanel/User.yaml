@@ -46,6 +46,7 @@ components:
           x-faker: internet.domainName
         avatar:
           type: string
+          nullable: true
           x-faker: system.commonFileName
         credit:
           type: number

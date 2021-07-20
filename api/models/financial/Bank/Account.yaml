@@ -24,6 +24,7 @@ components:
           x-faker: name.findName
         account:
           type: string
+          nullable: true
           x-faker: finance.acount
         cart:
           type: string
@@ -34,8 +35,10 @@ components:
           type: integer
           format: int32
           minimum: 0
+          nullable: true
         reject_reason:
           type: string
+          nullable: true
           x-faker: lorem.sentence
         status:
           $ref: './Account/AccountStatus.yaml#/components/schemas/AccountStatus'
