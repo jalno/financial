@@ -43,10 +43,6 @@ class StatsBox extends Box {
 		}
 		$defaultCurrency = Currency::getDefault($this->user);
 		$periods = Options::get("packages.financial.user_pay_stats_period");
-		$periods = [];
-		for ($x = 1; $x <= 8; $x++) {
-			$periods[] = 86400 * $x;
-		}
 		if (!$periods) {
 			$periods = array();
 		}
