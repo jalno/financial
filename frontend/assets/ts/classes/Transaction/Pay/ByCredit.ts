@@ -14,6 +14,7 @@ interface IFormAjaxError {
 
 export default class ByCredit {
 	public static initIfNeeded() {
+		ByCredit.$form = $("form.pay_credit_form");
 		if (ByCredit.$form.length) {
 			ByCredit.init();
 		}
@@ -25,43 +26,50 @@ export default class ByCredit {
 		}
 		ByCredit.runSubmitListener();
 	}
-	private static $form = $(".pay_credit_form");
+	private static $form: JQuery;
 	private static runUserListener(): void {
-		$("input[name=user]", ByCredit.$form).on("change", function(e) {
-			const $this = $(this);
-			if ($this.data("credit") === 0) {
-				$this.prop("checked", false);
-				$this.prop("disabled", true);
-				$this.parent().css({
+		const $user = $("input[name=user]", ByCredit.$form);
+
+		$user.each(function() {
+			if ($(this).data("credit") === 0) {
+				$(this).prop("checked", false);
+				$(this).prop("disabled", true);
+				$(this).parent().css({
 					opacity: 0.5,
 					cursor: "not-allowed",
 				});
-				$this.parent().tooltip({
+				$(this).parent().tooltip({
 					title: t("shortcut.transactions.user.credit.iszero"),
 					trigger: "hover",
 				});
-				$this.tooltip();
+				$(this).tooltip();
 			}
+		});
+
+		$user.on("change", function() {
+
 			const $parent = ByCredit.$form.parent();
-			if ($this.prop("checked")) {
-				const price = ByCredit.$form.data("price");
-				const credit = $this.data("credit");
-				$("input[name=currentcredit]", ByCredit.$form).attr("value", credit);
-				$("input[name=credit]", ByCredit.$form).attr("value", Math.min(credit, price));
-				$(".alert", $parent).remove();
-				if (credit < price) {
-					if (!$(".alertes", $parent).length) {
-						$parent.prepend(`<div class="alertes"></div>`);
-					}
-					const alert = `<div class="alert alert-block alert-info fade in">
-										<button data-dismiss="alert" class="close" type="button">&times;</button>
-										<h4 class="alert-heading"><i class="fa fa-info-circle"></i> ${t("attention")}!</h4>
-										<p>${t("pay.credit.attention.notpaidcomplatly", {
-											remain: price - credit,
-										})}</p>
-									</div>`;
-					$(".alertes", $parent).html(alert);
+			const price = ByCredit.$form.data("price");
+			const credit = $(this).data("credit");
+			console.log("credit", credit);
+			console.log("price", price);
+
+			$("input[name=currentcredit]", ByCredit.$form).attr("value", Transaction.formatFloatNumber(parseFloat(Transaction.deFormatNumber(credit.toString()))));
+			$("input[name=credit]", ByCredit.$form).val(Transaction.formatFloatNumber(parseFloat(Transaction.deFormatNumber(Math.min(credit, price).toString()))));
+			$(".alert", $parent).remove();
+
+			if (credit < price) {
+				if (!$(".alertes", $parent).length) {
+					$parent.prepend(`<div class="alertes"></div>`);
 				}
+				const alert = `<div class="alert alert-block alert-info fade in">
+									<button data-dismiss="alert" class="close" type="button">&times;</button>
+									<h4 class="alert-heading"><i class="fa fa-info-circle"></i> ${t("attention")}!</h4>
+									<p>${t("pay.credit.attention.notpaidcomplatly", {
+										remain: price - credit,
+									})}</p>
+								</div>`;
+				$(".alertes", $parent).html(alert);
 			}
 		});
 	}

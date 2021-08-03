@@ -41,14 +41,14 @@ $this->the_header();
                                     'value' => $self->id,
                                     'data' => [
                                         'credit' => $self->credit
-                                    ]
+									],
                                 ],
                                 [
                                     'label' => t('financial.transaction.pay.byCredit.user.owner'),
                                     'value' => $user->id,
                                     'data' => [
                                         'credit' => $user->credit
-                                    ]
+									],
                                 ]
                             ]
                         ]);
