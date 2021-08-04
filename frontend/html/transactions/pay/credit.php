@@ -29,29 +29,29 @@ $this->the_header();
 				<?php } ?>
 				<form class="pay_credit_form" action="<?php echo userpanel\url("transactions/pay/credit/{$this->transaction->id}"); ?>" method="POST" role="form" data-price="<?php echo $this->transaction->payablePrice(); ?>">
 					<?php
-                    if ($types and $self->id != $user->id) {
-                        $this->createField([
-                            'name' => 'user',
-                            'type' => 'radio',
-                            'label' => t('financial.transaction.pay.byCredit.user'),
-                            'inline' => true,
-                            'options' => [
-                                [
-                                    'label' => t('financial.transaction.pay.byCredit.user.my'),
-                                    'value' => $self->id,
-                                    'data' => [
-                                        'credit' => $self->credit
-                                    ]
-                                ],
-                                [
-                                    'label' => t('financial.transaction.pay.byCredit.user.owner'),
-                                    'value' => $user->id,
-                                    'data' => [
-                                        'credit' => $user->credit
-                                    ]
-                                ]
-                            ]
-                        ]);
+					if ($types and $self->id != $user->id) {
+						$this->createField([
+							'name' => 'user',
+							'type' => 'radio',
+							'label' => t('financial.transaction.pay.byCredit.user'),
+							'inline' => true,
+							'options' => [
+								[
+									'label' => t('financial.transaction.pay.byCredit.user.my'),
+									'value' => $self->id,
+									'data' => [
+										'credit' => $self->credit
+									],
+								],
+								[
+									'label' => t('financial.transaction.pay.byCredit.user.owner'),
+									'value' => $user->id,
+									'data' => [
+										'credit' => $user->credit
+									],
+								]
+							]
+						]);
 					}
 					$fields = array(
 						array(
