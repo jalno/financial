@@ -1,7 +1,7 @@
 <?php
 namespace packages\financial\controllers\userpanel;
 
-use packages\base\{view\Error, InputValidationException, translator};
+use packages\base\{DB, view\Error, InputValidationException, Log as BaseLog, translator};
 use packages\financial\{Authorization, Currency};
 use packages\userpanel\{user, events\settings\Controller, events\settings\Log};
 
@@ -37,24 +37,59 @@ class settings implements Controller {
 		$currency = Currency::getDefault($user);
 
 		if ($newCurrency->id != $currency->id) {
+			$log = BaseLog::getInstance();
+			$log->info("change currency of user: #" . $user->id);
+
 			$freshUser = (new User)->byID($user->id);
 			$oldCredit = $freshUser->credit;
 
+			$log->info("the old credit of user: #" . $user->id . " is: " . $oldCredit . " " . $currency->title);
+
+			$log->info("try to change credit of user: #" . $user->id);
 			$user->credit = $currency->changeTo($oldCredit, $newCurrency);
+			$log->reply("done, new credit is:", $user->credit);
+
+			$log->info("save user: #" . $user->id);
 			$saveUserResult = $user->save();
-			if (!$saveUserResult) {
+			if ($saveUserResult) {
+				$log->reply("done");
+			} else {
+				$log->reply()->error(
+					"can not save user!",
+					"DB::getLastError:", DB::getLastError(),
+					"DB::getLastQuery:", DB::getLastQuery()
+				);
 				$error = new Error("packages.financial.controller.userpanel.settings.change_currency_failed");
 				$error->setMessage("error.{$error->getCode()}");
 				throw $error;
 			}
 
+			$log->info("set user: #" . $user->id . " financial_transaction_currency option to:", $newCurrency->id);
 			$setOptionResult = $user->setOption(
 				"financial_transaction_currency",
 				$newCurrency->id
 			);
-			if (!$setOptionResult) {
+			if ($setOptionResult) {
+				$log->reply("done");
+			} else {
+				$log->reply()->warn(
+					"faild!",
+					"DB::getLastError:", DB::getLastError(),
+					"DB::getLastQuery:", DB::getLastQuery()
+				);
+
+				$log->warn("change user: #" . $user->id . " credit to old credit");
 				$user->credit = $oldCredit;
-				$user->save();
+				$saveUserResult = $user->save();
+				if (!$saveUserResult) {
+					$log->reply()->warn(
+						"faild!",
+						"DB::getLastError:", DB::getLastError(),
+						"DB::getLastQuery:", DB::getLastQuery()
+					);
+				} else {
+					$log->reply("done");
+				}
 
 				$error = new Error("packages.financial.controller.userpanel.settings.change_currency_failed");
 				$error->setMessage("error.{$error->getCode()}");
