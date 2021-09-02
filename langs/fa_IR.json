@@ -11,6 +11,7 @@
 		"financial.transactions.description": "شناسه: #{id} ساخته شده در: {create_at} کاربر: {user}",
 		"error.illegalTransaction": "شما نمیتوانید تمام محصولات صورتحساب را پاک کنید! باید حداقل یک محصول موجود باشد",
 		"error.packages.financial.views.transactions.ListView.export.debt.unchangeable_price_exception": "مبلغ بدهی دقیق نیست! امکان تبدیل مبلغ تعدادی از صورتحساب های شما وجود ندارد",
+		"error.packages.financial.controller.userpanel.settings.change_currency_failed": "خطایی در هنگام تغییر ارز رخ داده است؛ لطفا با پشتیبانی تماس حاصل بفرمایید.",
 		"email.template.name.financial_transaction_add":"ایجاد صورتحساب جدید در بخش مالی",
 		"email.template.variable.transaction->id":"شناسه صورتحساب",
 		"email.template.variable.transaction->user":"کاربر صورتحساب",
