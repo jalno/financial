@@ -84,9 +84,6 @@ export default class Currencies {
 	}
 	private static runChangeListener(): void {
 		const $change = $("input[name=change]", Currencies.$form);
-		const $roundingContainer = $(".rounding-container", Currencies.$form);
-		const $roundingInputs = $("select[name=rounding-behaviour], input[name=rounding-precision]", Currencies.$form);
-		const $helpbox = $(".rounding-behaviour-guidance");
 		$("input[name=change-checkbox]", Currencies.$form).on("change", function() {
 			const $this = $(this);
 			if (!$this.data("change")) {
@@ -98,18 +95,11 @@ export default class Currencies {
 			if ($this.prop("checked")) {
 				$change.val("1");
 				Currencies.$panel.slideDown();
-				$roundingContainer.slideDown();
-				$helpbox.slideDown();
-				$roundingInputs.prop("disabled", false);
 			} else {
 				$change.val("0");
 				Currencies.$panel.slideUp();
-				$roundingContainer.slideUp();
-				$helpbox.slideUp();
-				$roundingInputs.prop("disabled", true);
 			}
 		}).trigger("change");
-		$helpbox.removeClass("text-center");
 	}
 	private static runChangebehaviourListener(): void {
 		const $container = $(".rounding-container", Currencies.$form);

@@ -116,44 +116,33 @@ class Currencies extends Controller {
 			"rounding-behaviour" => [
 				"type" => "number",
 				"values" => [Currency::CEIL, Currency::ROUND, Currency::FLOOR],
-				"optional" => true,
 			],
 			"rounding-precision" => [
 				"type" => "int8",
 				"zero" => true,
-				"optional" => true,
+				"default" => 0,
 			],
 			"rates" => [
 				"type" => validators\CurrencyRatesValidator::class,
 				"optional" => true,
 			],
 		));
-		if (isset($inputs["change"]) and $inputs["change"]) {
-			foreach (["rounding-behaviour", "rounding-precision", "rates"] as $field) {
-				if (!isset($inputs[$field])) {
-					throw new InputValidationException($field);
-				}
+		if (isset($inputs["change"]) and $inputs["change"] and !isset($inputs["rates"])) {
+			if (!isset($inputs["rates"])) {
+				throw new InputValidationException("rates");
 			}
-		} else {
-			unset($inputs["rates"]);
-			unset($inputs["rounding-behaviour"]);
-			unset($inputs["rounding-precision"]);
 		}
 
 		$currency = new Currency();
 		$currency->title = $inputs["title"];
 		$currency->update_at = $inputs["update_at"];
-		if (isset($inputs["rounding-behaviour"])) {
-			$currency->rounding_behaviour = $inputs["rounding-behaviour"];
-		}
-		if (isset($inputs["rounding-precision"])) {
-			$currency->rounding_precision = $inputs["rounding-precision"];
-		}
+		$currency->rounding_behaviour = $inputs["rounding-behaviour"];
+		$currency->rounding_precision = $inputs["rounding-precision"];
 		if (isset($inputs["prefix"])) {
 			$currency->prefix = $inputs["prefix"];
 		}
 		if (isset($inputs["postfix"])) {
-			$currency->prefix = $inputs["postfix"];
+			$currency->postfix = $inputs["postfix"];
 		}
 		$currency->save();
 		if (isset($inputs["rates"])) {
@@ -235,17 +224,10 @@ class Currencies extends Controller {
 			],
 		));
 
-		if (isset($inputs["change"]) and $inputs["change"]) {
+		if (isset($inputs["change"]) and $inputs["change"] and (!isset($inputs["rates"]) or !$inputs["rates"])) {
 			if (!isset($inputs["rates"]) or !$inputs["rates"]) {
 				throw new InputValidationException("rates");
 			}
-			if (!isset($inputs["rounding-behaviour"]) and !$currency->rounding_behaviour) {
-				throw new InputValidationException("rounding-behaviour");
-			}
-		} else {
-			unset($inputs["rates"]);
-			unset($inputs["rounding-behaviour"]);
-			unset($inputs["rounding-precision"]);
 		}
 
 		if (isset($inputs["change"]) and !$inputs["change"]) {

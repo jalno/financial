@@ -82,7 +82,7 @@ $this->the_header();
 								));
 								?>
 								</div>
-								<div class="col-sm-9 rounding-container rate-inputs">
+								<div class="col-sm-9 rounding-container">
 									<div class="row">
 										<div class="col-sm-8 col-rounding-behaviour">
 											<?php
@@ -108,7 +108,7 @@ $this->the_header();
 									</div>
 								</div>
 							</div>
-							<div class="alert alert-info rounding-behaviour-guidance rate-inputs"></div>
+							<div class="alert alert-info rounding-behaviour-guidance"></div>
 						</div>
 						<div class="col-sm-6">
 							<div class="panel panel-white rate-inputs" data-currencies='<?php echo json\encode($this->geCurrenciesForSelect()); ?>''>
