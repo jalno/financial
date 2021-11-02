@@ -206,6 +206,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							$finalPrice = $productPrice - $productDiscount;
 
 							$this->discounts += $productDiscount;
+							$this->vats += ($product->vat * $productPrice) / 100
 						?>
 							<tr>
 								<td><?php echo $x++; ?></td>
@@ -299,9 +300,9 @@ $this->the_header(!$isLogin ? "logedout" : "");
 			<div class="row">
 				<div class="col-sm-12 invoice-block">
 					<ul class="list-unstyled amounts">
-						<li><strong><?php echo t("packages.financial.total_price"); ?>:</strong> <?php echo($this->numberFormat(abs($this->transaction->price)). " " . $currency->title); ?></li>
+						<li><strong><?php echo t("packages.financial.total_price"); ?>:</strong> <?php echo($this->numberFormat(abs($this->transaction->price - $this->vats)). " " . $currency->title); ?></li>
 						<li><strong><?php echo t("transaction.add.discount"); ?>:</strong> <?php echo($this->numberFormat($this->discounts) . " " . $currency->title); ?></li>
-						<li><strong><?php echo t("packages.financial.tax"); ?>:</strong> 0 <?php echo $currency->title; ?></li>
+						<li><strong><?php echo t("packages.financial.tax"); ?>:</strong> <?php echo $this->numberFormat($this->vats) . " " .$currency->title; ?></li>
 						<li>
 							<strong><?php echo t("packages.financial.payable_price"); ?>:</strong>
 						<?php

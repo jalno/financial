@@ -28,6 +28,7 @@ class transaction_product extends dbObject{
 		'price' => array('type' => 'double', 'required' => true),
 		'discount' => array('type' => 'double', 'required' => true),
 		'number' => array('type' => 'int', 'required' => true),
+		'vat' => array('type' => 'double'),
 		'currency' => ['type' => 'int', 'required' => true],
 		'configure' => array('type' => 'bool', 'required' => true)
 	);
@@ -62,9 +63,15 @@ class transaction_product extends dbObject{
 		if(!isset($data['discount'])){
 			$newdata['discount'] = 0;
 		}
+
 		if(!isset($data['configure'])){
 			$newdata['configure'] = 1;
 		}
+
+		if (!isset($data['vat'])) {
+			$newdata['vat'] = 0;
+		}
+
 		if(isset($data['type']) and $data['type'] and substr($data['type'], 0, 1) != "\\"){
 			$newdata['type'] = "\\".$data['type'];
 		}
@@ -94,6 +101,16 @@ class transaction_product extends dbObject{
 			return $param->save();
 		}
 	}
+
+	public function preLoad(array $data): array {
+
+		if (!$data["vat"] or $data["vat"] < 0) {
+			$data["vat"] = 0;
+		}
+
+		return $data;
+	}
+
 	public function param($name){
 		if(!$this->id){
 			return(isset($this->tmparams[$name]) ? $this->tmparams[$name]->value : null);
@@ -106,6 +123,11 @@ class transaction_product extends dbObject{
 			return false;
 		}
 	}
+
+	public function getPriceWithVat(): float {
+		return floatval($this->price + ((abs($this->vat) * $this->price) / 100));
+	}
+
 	public function save($data = null) {
 		if($return = parent::save($data)){
 			foreach($this->tmparams as $param){
@@ -119,6 +141,7 @@ class transaction_product extends dbObject{
 		}
 		return $return;
 	}
+
 	public function addInput($input){
 		if(isset($input['name'])){
 			$this->inputs[$input['name']] = $input;
