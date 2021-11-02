@@ -48,3 +48,9 @@ ALTER TABLE `financial_currencies` ADD `postfix` VARCHAR(31) NULL AFTER `title`;
 -- Commit:
 --
 ALTER TABLE `financial_transactions_products` CHANGE `description` `description` varchar(255) COLLATE 'utf8_general_ci' NULL AFTER `title`;
+
+--
+-- Commit: 8fcf7d5fde04323c5b43c90c920668f69a80da73
+--
+
+ALTER TABLE `financial_transactions_products` ADD `vat` DOUBLE NULL DEFAULT NULL AFTER `number`;
