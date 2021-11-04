@@ -124,8 +124,11 @@ class transaction_product extends dbObject{
 		}
 	}
 
-	public function getPriceWithVat(): float {
-		return floatval($this->price + ((abs($this->vat) * $this->price) / 100));
+	public function totalPrice(): float {
+
+		$price = ($this->price * $this->number) - $this->discount;
+
+		return $price + (($price * abs($this->vat)) / 100);
 	}
 
 	public function save($data = null) {

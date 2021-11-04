@@ -343,6 +343,7 @@
 		"financial.settings.currency.changes": "تبدیل ها",
 		"financial.settings.currency.changeTo.price": "قیمت",
 		"packages.financial.reimburse.pay_refundable": "قابل بازگشت است",
-		"packages.financial.reimburse.pay_not_refundable": "قابل بازگشت نیست"
+		"packages.financial.reimburse.pay_not_refundable": "قابل بازگشت نیست",
+		"transaction.tax": "مالیات"
 	}
 }

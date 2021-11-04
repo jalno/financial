@@ -279,7 +279,7 @@ class transaction extends dbObject{
 
 				if (isset($options["users"][$userModel->id])) {
 					foreach ($products as $product) {
-						if (in_array(strtolower($product->type), $options["exclude-products"])) {
+						if (in_array(strtolower($product->type), $options["exclude-products"]) or $product->vat) {
 							continue;
 						}
 						$product->vat = $options["users"][$userModel->id];
@@ -290,7 +290,7 @@ class transaction extends dbObject{
 
 						$type = strtolower($product->type);
 
-						if (in_array($type, $options["exclude-products"]) or !isset($options["products"][$type])) {
+						if (in_array($type, $options["exclude-products"]) or !isset($options["products"][$type]) or $product->vat) {
 							continue;
 						}
 
@@ -478,7 +478,7 @@ class transaction extends dbObject{
 		$total = 0;
 		$currency = $this->currency;
 		foreach ($products as $product) {
-			$total += $product->currency->changeTo((($product->getPriceWithVat() * $product->number) - $product->discount), $currency);
+			$total += $product->currency->changeTo($product->totalPrice(), $currency);
 		}
 		return floatval($total);
 	}

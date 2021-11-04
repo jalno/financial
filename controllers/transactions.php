@@ -954,14 +954,19 @@ class Transactions extends Controller {
 							$product = new transaction_product;
 							$product->transaction = $transaction->id;
 							$product->method  = transaction_product::other;
-
 						}
+
+						if (!isset($row['vat']) or $row['vat'] < 0 or $row['vat'] > 100) {
+							$row['vat'] = $product->vat ?? 0;
+						}
+
 						$product->title = $row['title'];
 						$product->description = isset($row['description']) ? $row['description'] : null;
 						$product->number = $row['number'];
 						$product->price = $row['price'];
 						$product->discount = $row['discount'];
 						$product->currency = $row['currency'];
+						$product->vat = $row['vat'];
 						$product->save();
 						$data = $product->toArray();
 						$data["currency_title"] = $row['currency_title'];
@@ -1105,6 +1110,11 @@ class Transactions extends Controller {
 			} else {
 				$product['number'] = 1;
 			}
+
+			if (!isset($product["vat"]) or $product["vat"] < 0 or $product["vat"] > 100) {
+				$product["vat"] = 0;
+			}
+
 			$product['currency'] = $product['currency']->id;
 			$product['method'] = Transaction_product::other;
 			$products[] = $product;

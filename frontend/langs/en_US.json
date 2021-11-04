@@ -340,6 +340,7 @@
 		"financial.settings.currency.changes": "Changes",
 		"financial.settings.currency.changeTo.price": "Price",
 		"packages.financial.reimburse.pay_refundable": "Can refund",
-		"packages.financial.reimburse.pay_not_refundable": "Can not refund"
+		"packages.financial.reimburse.pay_not_refundable": "Can not refund",
+		"transaction.tax": "Vat"
 	}
 }

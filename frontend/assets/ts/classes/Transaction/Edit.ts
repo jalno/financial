@@ -39,6 +39,7 @@ export default class Edit {
 			$("input[name=number]", ModalEditProduct).val(product.number);
 			$("input[name=product_price]", ModalEditProduct).val(Transaction.formatFloatNumber(product.price));
 			$("input[name=discount]", ModalEditProduct).val(Transaction.formatFloatNumber(product.discount));
+			$("input[name=vat]", ModalEditProduct).val(product.vat);
 			$("select[name=product_currency]", ModalEditProduct).val(product.currency);
 			$("#editproductform", ModalEditProduct).data("tr", tr);
 		});
@@ -70,7 +71,13 @@ export default class Edit {
 		if (!product.discount  || isNaN(product.price)) {
 			product.discount = 0;
 		}
-		const finalPrice = ((product.price * product.number) - product.discount);
+
+		product.vat = product.vat || 0;
+
+		const price = ((product.price * product.number) - product.discount);
+
+		const finalPrice = price + ((price * product.vat) / 100);
+
 		let code = `
 			<tr data-product='${JSON.stringify(product)}'>
 				<td>${index}</td>
@@ -79,6 +86,7 @@ export default class Edit {
 				<td>${product.number} عدد</td>
 				<td>${Transaction.formatFloatNumber(product.price)} ${product.currency_title}</td>
 				<td>${Transaction.formatFloatNumber(product.discount)} ${product.currency_title}</td>
+				<td>${product.vat} %</td>
 				<td>${Transaction.formatFloatNumber(finalPrice)} ${product.currency_title}</td>
 				<td class="center">
 		`;
@@ -113,6 +121,7 @@ export default class Edit {
 				number: $("input[name=number]", this).val(),
 				price: parseFloat(Transaction.deFormatNumber($("input[name=product_price]", this).val())),
 				discount: parseFloat(Transaction.deFormatNumber($("input[name=discount]", this).val())),
+				vat: $("input[name=vat]", this).val() || 0,
 				currency: $("select[name=product_currency] option:selected", this).val(),
 				currency_title: $("select[name=product_currency] option:selected", this).data("title"),
 			};

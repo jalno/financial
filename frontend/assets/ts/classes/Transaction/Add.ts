@@ -25,7 +25,23 @@ export default class Add {
 		$("input[name=user_name]", Add.$form).financialUserAutoComplete();
 	}
 	private static getProductsCode() {
-		const code = '<table class="table table-striped table-hover product-table"> <thead> <tr> <th> # </th> <th> محصول </th> <th class="hidden-480"> توضیحات </th> <th class="hidden-480"> تعداد </th> <th class="hidden-480"> قیمت واحد </th> <th>تخفیف</th> <th> قیمت نهایی </th> <th></th> </tr> </thead> <tbody> </tbody></table> ';
+		const code = `<table class="table table-striped table-hover product-table">
+			<thead>
+				<tr>
+					<th> # </th>
+					<th> ${t("financial.transaction.product")} </th>
+					<th class="hidden-480"> ${t("financial.transaction.product.decription")} </th>
+					<th class="hidden-480"> ${t("financial.transaction.product.number")} </th>
+					<th class="hidden-480"> ${t("financial.transaction.product.price_unit")} </th>
+					<th class="hidden-480"> ${t("financial.transaction.product.discount")} </th>
+					<th class="hidden-480"> ${t("transaction.tax")} </th>
+					<th> ${t("financial.transaction.product.price.final")} </th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>`;
 		const $table = $(".products > table");
 		if ($table.length) {
 			return $table;
@@ -34,7 +50,7 @@ export default class Add {
 		}
 	}
 	private static addProductTocode(product) {
-		// product.title, product.price, product.number, product.discount, product.desc, product.currency, product.currency_title
+
 		if (!product.number.length) {
 			product.number = 1;
 		}
@@ -44,17 +60,24 @@ export default class Add {
 		if (!product.discount || isNaN(product.discount)) {
 			product.discount = 0;
 		}
-		const finalPrice = (product.number * product.price) - product.discount;
+
+		product.vat = product.vat || 0;
+
+		const price = (product.number * product.price) - product.discount;
+
+		const finalPrice = price + ((product.vat * price) / 100);
+
 		const $table = Add.getProductsCode();
 		const id = $("tr", $table).length;
 		const code = `
 			<tr>
 				<td>${id}</td>
 				<td>${product.title}</td>
-				<td>${product.description}</td>
-				<td>${t("product.xnumber", {number: product.number})}</td>
-				<td>${Transaction.formatFloatNumber(product.price)} ${product.currency_title}</td>
-				<td>${Transaction.formatFloatNumber(product.discount)} ${product.currency_title}</td>
+				<td class="hidden-480">${product.description}</td>
+				<td class="hidden-480">${t("product.xnumber", {number: product.number})}</td>
+				<td class="hidden-480">${Transaction.formatFloatNumber(product.price)} ${product.currency_title}</td>
+				<td class="hidden-480">${Transaction.formatFloatNumber(product.discount)} ${product.currency_title}</td>
+				<td class="hidden-480">${product.vat} %</td>
 				<td>${Transaction.formatFloatNumber(finalPrice)} ${product.currency_title}</td> <td><a href="#" class="btn btn-xs btn-bricky btn-remove tooltips" title="${t("delete")}"><i class="fa fa-times fa fa-white"></i></a></td>
 			</tr>
 		`;
@@ -138,6 +161,7 @@ export default class Add {
 				price: parseFloat(Transaction.deFormatNumber($("input[name=price]", this).val())),
 				discount: parseFloat(Transaction.deFormatNumber($("input[name=discount]", this).val())),
 				currency: $("select[name=currency] option:selected", this).val(),
+				vat: $("input[name=vat]", this).val(),
 				currency_title: $("select[name=currency] option:selected", this).data("title"),
 			};
 			$(this).parents(".modal").modal("hide");
