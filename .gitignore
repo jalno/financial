@@ -1,1 +1,4 @@
-storage/public/
+/storage/public/
+/index.php
+/config
+/vendor
