@@ -1,6 +1,6 @@
 {
-	"name": "jalno/financial",
-	"license": "MIT",
+	"name": "abedi/financial",
+	"license": "private",
 	"require": {
 		"jalno/base": "3.x-dev",
 		"jalno/notifications": "master-dev",
