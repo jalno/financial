@@ -1,16 +1,14 @@
 stages:
   - test
+  - deploy
 
-variables:
-  REPO_SERVER_HOST: ${CI_SERVER_PROTOCOL}://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}:${CI_SERVER_PORT}
-
-
-static analyse:
+static analyse legecy:
   image: registry.git.jeyserver.com/jalno/phpstan:master
   stage: test
   variables:
     GIT_ROOT_PATH: $CI_BUILDS_DIR/$CI_CONCURRENT_ID/$CI_PROJECT_NAME
     GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_CONCURRENT_ID/$CI_PROJECT_NAME/packages/financial
+    REPO_SERVER_HOST: ${CI_SERVER_PROTOCOL}://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}:${CI_SERVER_PORT}
   before_script:
     - cd $GIT_ROOT_PATH
     - rm -fr base && git clone --depth 1 ${REPO_SERVER_HOST}/jalno/base.git base
@@ -20,4 +18,18 @@ static analyse:
     - rm -fr notifications && git clone --depth 1 ${REPO_SERVER_HOST}/yeganemehr/notifications.git
     - rm -fr cronjob && git clone --depth 1 ${REPO_SERVER_HOST}/yeganemehr/cronjob.git
   script:
-    - phpstan analyse -c $GIT_CLONE_PATH/phpstan.neon $GIT_CLONE_PATH
+    - phpstan analyse -c $GIT_CLONE_PATH/phpstan.legecy.neon $GIT_CLONE_PATH
+
+static analyse composer:
+  image: ghcr.io/dnj/php-alpine:8.0-mysql-nginx
+  stage: test
+  script:
+    - composer install
+    - composer run test:types
+
+publish composer:
+  image: curlimages/curl:latest
+  stage: deploy
+  script: 
+    - PACKAGE_VERSION=$([[ -z "$CI_COMMIT_TAG" ]] && echo "branch=$CI_COMMIT_REF_NAME" || echo "tag=$CI_COMMIT_TAG")
+    - 'curl --header "Job-Token: $CI_JOB_TOKEN" --data $PACKAGE_VERSION "${CI_API_V4_URL}/projects/$CI_PROJECT_ID/packages/composer"'

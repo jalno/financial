@@ -6,5 +6,14 @@
 		"jalno/notifications": "master-dev",
 		"jalno/node_webpack": "master-dev",
 		"jalno/userpanel": "master-dev"
+	},
+	"require-dev": {
+		"phpstan/phpstan": "^1.1.2"
+	},
+	"scripts": {
+		"test:types": "vendor/bin/phpstan analyse",
+		"test": [
+			"@test:types"
+		]
 	}
 }
