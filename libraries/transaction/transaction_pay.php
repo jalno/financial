@@ -172,6 +172,7 @@ class transaction_pay extends dbObject{
 			}
 			$transaction->save();
 		}
+		return $return;
 	}
 	protected function convertPrice() {
 		if ($this->currency->id == $this->transaction->currency->id) {
