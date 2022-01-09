@@ -5,6 +5,7 @@ use packages\financial\{Authentication, Currency, Transaction, Transaction_pay};
 use packages\userpanel;
 use packages\userpanel\{Date, User};
 use themes\clipone\Utility;
+use themes\clipone\views\TransactionUtilities;
 
 $isLogin = Authentication::check();
 $remainPriceForAddPay = $this->transaction->remainPriceForAddPay();
@@ -138,28 +139,14 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							<strong><?php echo t("transaction.createdate"); ?>:</strong> <span dir="ltr"> <?php echo date::format("Y/m/d H:i:s", $this->transaction->create_at); ?><span>
 						</li>
 						<li>
-							<strong><?php echo t("transaction.add.expire_at"); ?>:</strong> <span dir="ltr"><?php echo date::format("Y/m/d H:i:s", $this->transaction->expire_at); ?></span>
+							<strong><?php echo t("transaction.add.expire_at"); ?>:</strong>
+							<span dir="ltr">
+								<?php echo $this->transaction->expire_at ? Date::format("Y/m/d H:i:s", $this->transaction->expire_at) : '-'; ?>
+							</span>
 						</li>
 						<li>
-						<?php
-						$statusClass = Utility::switchcase($this->transaction->status, array(
-							'label label-danger' => Transaction::UNPAID,
-							'label label-warning label-pending' => Transaction::PENDING,
-							'label label-success' => Transaction::PAID,
-							'label label-warning' => Transaction::REFUND,
-							'label label-inverse' => Transaction::EXPIRED,
-							'label label-danger label-rejected' => Transaction::REJECTED,
-						));
-						$statusTxt = utility::switchcase($this->transaction->status, array(
-							'transaction.unpaid' => Transaction::UNPAID,
-							'transaction.pending' => Transaction::PENDING,
-							'transaction.paid' => Transaction::PAID,
-							'transaction.refund' => Transaction::REFUND,
-							'transaction.status.expired' => Transaction::EXPIRED,
-							'packages.financial.transaction.status.rejected' => Transaction::REJECTED,
-						));
-						?>
-							<strong><?php echo t("transaction.status"); ?> :</strong> <span class="<?php echo $statusClass; ?>"><?php echo translator::trans($statusTxt); ?></span>
+							<strong><?php echo t("transaction.status"); ?>:</strong>
+							<?php echo TransactionUtilities::getStatusLabelSpan($this->transaction) ?? '-'; ?>
 						</li>
 					</ul>
 				</div>

@@ -2,6 +2,8 @@
 use packages\userpanel;
 use themes\clipone\utility;
 use packages\financial\transaction;
+use themes\clipone\views\TransactionUtilities;
+
 $this->the_header();
 $transactions = $this->getTransactions();
 $hasTransaction = !empty($transactions);
@@ -164,22 +166,6 @@ if ($hasTransaction or $this->canRefund) {
 								$this->setButtonParam('transactions_view', 'link', userpanel\url("transactions/view/".$transaction->id));
 								$this->setButtonParam('transactions_edit', 'link', userpanel\url("transactions/edit/".$transaction->id));
 								$this->setButtonParam('transactions_delete', 'link', userpanel\url("transactions/delete/".$transaction->id));
-								$statusClass = Utility::switchcase($transaction->status, array(
-									'label label-danger' => Transaction::UNPAID,
-									'label label-warning label-pending' => Transaction::PENDING,
-									'label label-success' => Transaction::PAID,
-									'label label-warning' => Transaction::REFUND,
-									'label label-inverse' => Transaction::EXPIRED,
-									'label label-danger label-rejected' => Transaction::REJECTED,
-								));
-								$statusTxt = utility::switchcase($transaction->status, array(
-									'transaction.unpaid' => Transaction::UNPAID,
-									'transaction.pending' => Transaction::PENDING,
-									'transaction.paid' => Transaction::PAID,
-									'transaction.refund' => Transaction::REFUND,
-									'transaction.status.expired' => Transaction::EXPIRED,
-									'packages.financial.transaction.status.rejected' => Transaction::REJECTED,
-								));
 							?>
 							<tr>
 								<td class="center"><?php echo $transaction->id; ?></td>
@@ -197,7 +183,7 @@ if ($hasTransaction or $this->canRefund) {
 								</td>
 								<?php } ?>
 								<td class="ltr"><?php echo $transaction->create_at; ?></td>
-								<td><span class="<?php echo $statusClass; ?>"><?php echo t($statusTxt); ?></span></td>
+								<td><?php echo TransactionUtilities::getStatusLabelSpan($transaction) ?? '-'; ?></td>
 								<?php
 								if($hasButtons){
 									echo("<td class=\"center\">".$this->genButtons()."</td>");
