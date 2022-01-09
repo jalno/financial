@@ -139,7 +139,10 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							<strong><?php echo t("transaction.createdate"); ?>:</strong> <span dir="ltr"> <?php echo date::format("Y/m/d H:i:s", $this->transaction->create_at); ?><span>
 						</li>
 						<li>
-							<strong><?php echo t("transaction.add.expire_at"); ?>:</strong> <span dir="ltr"><?php echo date::format("Y/m/d H:i:s", $this->transaction->expire_at); ?></span>
+							<strong><?php echo t("transaction.add.expire_at"); ?>:</strong>
+							<span dir="ltr">
+								<?php echo $this->transaction->expire_at ? Date::format("Y/m/d H:i:s", $this->transaction->expire_at) : '-'; ?>
+							</span>
 						</li>
 						<li>
 							<strong><?php echo t("transaction.status"); ?>:</strong>
