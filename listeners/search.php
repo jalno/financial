@@ -24,13 +24,10 @@ class search{
 		db::join("financial_transactions_products", "financial_transactions_products.transaction=financial_transactions.id", "LEFT");
 		$transaction = new transaction();
 		$parenthesis = new parenthesis();
-		foreach(array("name","lastname","email","cellphone","phone") as $item){
-			$parenthesis->where("userpanel_users.{$item}", $word, "contains", "OR");
-		}
-		foreach(array("title", "description", "price") as $item){
+		foreach(array("title", "description") as $item){
 			$parenthesis->where("financial_transactions_products.{$item}", $word, "contains", "OR");
 		}
-		foreach(array("title", "price") as $item){
+		foreach(array("title") as $item){
 			$parenthesis->where("financial_transactions.{$item}", $word, "contains", "OR");
 		}
 		$transaction->where($parenthesis);
