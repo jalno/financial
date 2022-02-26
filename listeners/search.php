@@ -20,7 +20,9 @@ class search{
 		}
 	}
 	public function transActions($word){
-		db::join("userpanel_users", "userpanel_users.id=financial_transactions.user", "LEFT");
+		$anonymous = authorization::is_accessed("transactions_anonymous");
+
+		db::join("userpanel_users", "userpanel_users.id=financial_transactions.user", $anonymous ? "LEFT" : "INNER");
 		db::join("financial_transactions_products", "financial_transactions_products.transaction=financial_transactions.id", "LEFT");
 		$transaction = new transaction();
 		$parenthesis = new parenthesis();
@@ -40,7 +42,7 @@ class search{
 			$result->setDescription(translator::trans("financial.transactions.description", array(
 				"id" => $transaction->id,
 				"create_at" => date::format("Y/m/d H:i:s", $transaction->create_at),
-				"user" => $transaction->user->getFullName()
+				"user" => $transaction->user ? $transaction->user->getFullName() : null,
 			)));
 			saerchHandler::addResult($result);
 		}
