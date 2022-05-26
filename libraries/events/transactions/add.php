@@ -6,7 +6,7 @@ use \packages\notifications\notifiable;
 use \packages\financial\transaction;
 use \packages\financial\authentication;
 class add extends event implements notifiable{
-	private $transaction;
+	public $transaction;
 	public function __construct(transaction $transaction){
 		$this->transaction = $transaction;
 	}
