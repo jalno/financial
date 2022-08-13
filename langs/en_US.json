@@ -112,6 +112,7 @@
 		"usertype.permissions.financial_settings_currencies_delete": "Delete currency",
 
 		"usertype.permissions.financial_profile_change_currency": "Change currency in profile setting",
+		"usertype.permissions.financial_profile_checkout_limits": "Change checkout limits in profile setting",
 
 		"error.packages.financial.error.transactions.user.delete_user_warn": "Warning about user transactions",
 		"error.packages.financial.error.transactions.user.delete_user_warn.message": "This user has transaction(s). If you delete this user, all user's transactions will be deleted!",
@@ -123,6 +124,12 @@
 		"error.packages.financial.error.banks_accounts.user.delete_user_warn.message": "This user has bank account(s). If you delete this user, all user's bank accounts will be deleted!",
 		"packages.financial.error.banks_accounts.user.delete_user_warn.view_banks_accounts": "You can view this user bank accounts.",
 		"packages.financial.error.banks_accounts.user.delete_user_warn.view_banks_accounts.tell_someone": "Please Tell your supervisor to confirm that.",
-		"packages.financial.error.banks_accounts.user.delete_user_warn.view_banks_accounts_btn": "User's bank accounts"
+		"packages.financial.error.banks_accounts.user.delete_user_warn.view_banks_accounts_btn": "User's bank accounts",
+
+		"titles.checkout_limits.price": "Minimum Price for checkout",
+		"titles.checkout_limits.currency": "Currency",
+		"titles.checkout_limits.period": "Time between two checkout transactions",
+		"titles.day": "Day",
+		"titles.settings_financial": "Financial"
 	}
 }

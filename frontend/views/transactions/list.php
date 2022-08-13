@@ -15,6 +15,7 @@ class ListView extends TransactionsListView {
 	protected $canRefund = false;
 	protected $canAccept = false;
 	protected $user;
+	protected ?User $selectedUserForRefund = null;
 	private $exporters = array();
 
 	public function __beforeLoad(){
@@ -31,21 +32,10 @@ class ListView extends TransactionsListView {
 		}
 		$this->canRefund = authorization::is_accessed("transactions_refund_add");
 		$this->canAccept = Authorization::is_accessed("transactions_pay_accept");
-		if ($this->canRefund) {
-			$this->user = authentication::getUser();
-			$this->user->currency = currency::getDefault($this->user);
-			if ($this->multiuser) {
-				if ($user = $this->getDataForm("refund_user")) {
-					if ($user = user::byId($user)) {
-						$this->setDataForm($user->getFullName(), "refund_user_name");
-					}
-				} else {
-					$this->setDataForm($this->user->id, "refund_user");
-					$this->setDataForm($this->user->getFullName(), "refund_user_name");
-				}
-			}
-		}
+
+		$this->initFormData();
 	}
+
 	public static function onSourceLoad(){
 		parent::onSourceLoad();
 		if(self::$navigation){
@@ -115,6 +105,18 @@ class ListView extends TransactionsListView {
 	public function setExporters(array $exporters) {
 		$this->exporters = $exporters;
 	}
+
+	public function getCheckoutLimits(User $user): array
+	{
+		$limits = Transaction::getCheckoutLimits($user->id);
+
+		if (isset($limits['period'])) {
+			$limits['last_time'] = $user->option('financial_last_checkout_time');
+		}
+
+		return $limits;
+	}
+
 	protected function getStatusForSelect(): array {
 		return [
 			[
@@ -242,5 +244,31 @@ class ListView extends TransactionsListView {
 		}
 		$error->setData($btns, 'btns');
 		$this->addError($error);
+	}
+
+	private function initFormData()
+	{
+		if ($this->canRefund) {
+			$this->user = Authentication::getUser();
+			$this->user->currency = Currency::getDefault($this->user);
+			if ($this->multiuser) {
+				$user = $this->getDataForm("refund_user");
+				if ($user) {
+					$user = User::byId($user);
+					if ($user) {
+						$this->setDataForm($user->getFullName(), "refund_user_name");
+						$user->currency = Currency::getDefault($user);
+						$this->selectedUserForRefund = $user;
+					}
+				} else {
+					$this->setDataForm($this->user->id, "refund_user");
+					$this->setDataForm($this->user->getFullName(), "refund_user_name");
+				}
+
+				if (!$this->selectedUserForRefund) {
+					$this->selectedUserForRefund = $this->user;
+				}
+			}
+		}
 	}
 }

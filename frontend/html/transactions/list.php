@@ -1,4 +1,6 @@
 <?php
+use packages\base\Date;
+use packages\base\Utility\Safe;
 use packages\userpanel;
 use themes\clipone\utility;
 use packages\financial\transaction;
@@ -53,61 +55,65 @@ if ($hasTransaction or $this->canRefund) {
 			<div class="panel-body">
 			<?php if ($accounts = $this->getBanksAccountForSelect()) { ?>
 				<form id="refund-form" action="<?php echo userpanel\url("transactions/refund/add"); ?>" method="POST">
-				<?php if ($this->multiuser) { ?>
-					<div class="row">
-						<div class="col-xs-12">
-						<?php
-						$this->createField(array(
-							"name" => "refund_user",
-							"type" => "hidden",
-						));
-						$this->createField(array(
-							"name" => "refund_user_name",
-							"label" => t("packages.financial.refund.user"),
-							"input-group" => array(
-								"right" => array(
-									array(
-										"type" => "addon",
-										"text" => '<i class="fa fa-user-o"></i>',
-									),
-								),
+				<?php
+				if ($this->multiuser) {
+					$this->createField(array(
+					"name" => "refund_user",
+					"type" => "hidden",
+				));
+				$this->createField(array(
+					"name" => "refund_user_name",
+					"label" => t("packages.financial.refund.user"),
+					"input-group" => array(
+						"right" => array(
+							array(
+								"type" => "addon",
+								"text" => '<i class="fa fa-user-o"></i>',
 							),
-						));
-						?>
-						<p class="text-muted"><small class="user-currenct-credit">موجودی فعلی:‌ <span class="ltr user-credit"></span> <span class="user-currency"></span></small></p>
-						</div>
-					</div>
-				<?php } ?>
-					<div class="row">
-						<div class="col-xs-12">
-						<?php $this->createField(array(
-							"name" => "refund_price",
-							"label" => t("packages.financial.refund.price"),
-							"ltr" => true,
-							"input-group" => array(
-								"right" => array(
-									array(
-										"type" => "addon",
-										"text" => $this->user->currency->title,
-									),
-								),
+						),
+					),
+				));
+				?>
+				<p class="text-muted"><small class="user-currenct-credit">موجودی فعلی:‌ <span class="ltr user-credit"></span> <span class="user-currency"></span></small></p>
+				<?php
+				}
+				$this->createField(array(
+					"name" => "refund_price",
+					"label" => t("packages.financial.refund.price"),
+					"ltr" => true,
+					"input-group" => array(
+						"right" => array(
+							array(
+								"type" => "addon",
+								"text" => $this->selectedUserForRefund->currency->title,
 							),
-						)); ?>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-xs-12">
-						<?php $this->createField(array(
-							"type" => "select",
-							"name" => "refund_account",
-							"label" => t("packages.financial.refund.bank.account"),
-							"options" => $accounts,
-						)); ?>
-						</div>
+						),
+					),
+				));
+				$this->createField(array(
+					"type" => "select",
+					"name" => "refund_account",
+					"label" => t("packages.financial.refund.bank.account"),
+					"options" => $accounts,
+				));
+				$errorMessage = '';
+				if ($this->selectedUserForRefund) {
+					if ($this->selectedUserForRefund->credit > 0) {
+						$limits = $this->getCheckoutLimits($this->selectedUserForRefund);
+						if (isset($limits['price'], $limits['currency']) and Safe::floats_cmp($limits['price'], $this->selectedUserForRefund->credit) > 0) {
+							$errorMessage = t('error.checkout_limit.price.with_price', ['price' => $limits['price']]);
+						} elseif (isset($limits['last_time']) and Date::time() - $limits['last_time'] < $limits['period']) {
+							$errorMessage = t('error.checkout_limit.period', ['time' => Date::format('Q QT', $limits['last_time'] + $limits['period'])]);
+						}
+					}
+				}
+				?>
+					<div class="alert alert-danger form-group text-center<?php echo !$errorMessage ? ' hide' : ''; ?>">
+						<h5 class="alert-heading"><?php echo $errorMessage; ?></h5>
 					</div>
 					<div class="row">
 						<div class="col-md-6 col-md-offset-6 col-sm-6 col-sm-offset-6 col-xs-12">
-							<button type="submit" class="btn btn-success btn-sm btn-block btn-refund"<?php echo !$this->user->credit ? " disabled": ""; ?>>
+							<button type="submit" class="btn btn-success btn-sm btn-block btn-refund"<?php echo $errorMessage ? " disabled": ""; ?>>
 								<div class="btn-icons"> <i class="fa fa-credit-card"></i> </div>
 							<?php echo t("packages.financial.create"); ?>
 							</button>

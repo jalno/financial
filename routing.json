@@ -278,6 +278,16 @@
 		"method": "get"
 	},
 	{
+		"path": "userpanel/financial/users/:user/checkout-limits",
+		"controller": "controllers/userpanel/Users@getCheckoutLimits",
+		"method": "get"
+	},
+	{
+		"path": "userpanel/financial/checkout-limits",
+		"controller": "controllers/userpanel/Users@getCheckoutLimits",
+		"method": "get"
+	},
+	{
 		"paths": [
 			"transactions/"
 		],
