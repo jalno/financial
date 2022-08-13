@@ -1,8 +1,9 @@
 <?php
 namespace packages\financial\controllers\userpanel;
 
-use packages\userpanel\{controllers\Users as UserpanelUsers, User\Option};
+use packages\userpanel\{controllers\Users as UserpanelUsers, User\Option, Authentication};
 use packages\financial\{Controller, Currency, Transaction};
+use packages\base\NotFound;
 use packages\base\Response;
 
 class Users extends Controller
@@ -67,7 +68,7 @@ class Users extends Controller
 
 	public function getCheckoutLimitsForUser(): Response
 	{
-		return $this->getCheckoutLimit([
+		return $this->getCheckoutLimits([
 			'user' => Authentication::getID(),
 		]);
 	}
