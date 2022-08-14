@@ -1463,7 +1463,7 @@ class Transactions extends Controller {
 		));
 		$transaction->save();
 
-		$inputs['refunt_user']->option('financial_last_checkout_time', Date::time());
+		$inputs['refund_user']->option('financial_last_checkout_time', Date::time());
 
 		$inputs["refund_user"]->credit -= $inputs["refund_price"];
 		$inputs["refund_user"]->save();

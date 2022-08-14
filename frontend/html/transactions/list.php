@@ -101,7 +101,7 @@ if ($hasTransaction or $this->canRefund) {
 					if ($this->selectedUserForRefund->credit > 0) {
 						$limits = $this->getCheckoutLimits($this->selectedUserForRefund);
 						if (isset($limits['price'], $limits['currency']) and Safe::floats_cmp($limits['price'], $this->selectedUserForRefund->credit) > 0) {
-							$errorMessage = t('error.checkout_limit.price.with_price', ['price' => $limits['price']]);
+							$errorMessage = t('error.checkout_limit.price.with_price', ['price' => $limits['price'].' '.$this->selectedUserForRefund->currency->title]);
 						} elseif (isset($limits['last_time']) and Date::time() - $limits['last_time'] < $limits['period']) {
 							$errorMessage = t('error.checkout_limit.period', ['time' => Date::format('Q QT', $limits['last_time'] + $limits['period'])]);
 						}
@@ -113,7 +113,7 @@ if ($hasTransaction or $this->canRefund) {
 					</div>
 					<div class="row">
 						<div class="col-md-6 col-md-offset-6 col-sm-6 col-sm-offset-6 col-xs-12">
-							<button type="submit" class="btn btn-success btn-sm btn-block btn-refund"<?php echo $errorMessage ? " disabled": ""; ?>>
+							<button type="submit" class="btn btn-success btn-sm btn-block btn-refund"<?php echo !empty($errorMessage) ? " disabled": ""; ?>>
 								<div class="btn-icons"> <i class="fa fa-credit-card"></i> </div>
 							<?php echo t("packages.financial.create"); ?>
 							</button>
