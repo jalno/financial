@@ -31,6 +31,70 @@ class transaction extends dbObject{
 		return $pw;
 	}
 
+	public static function canCreateCheckoutTransaction(int $userID, ?float $price = null): bool
+	{
+		$limits = self::getCheckoutLimits($userID);
+
+		if (!$limits or !isset($limits['price']) or !isset($limits['currency']) or !isset($limits['period'])) {
+			return true;
+		}
+
+		$query = new User();
+		$user = $query->byId($userID);
+		if (!$user) {
+			return false;
+		}
+
+		$lastCheckoutAt = $user->option('financial_last_checkout_time');
+
+		if ($lastCheckoutAt and (Date::time() - $lastCheckoutAt) > $limits['period']) {
+			return false;
+		}
+
+
+		if ($price) {
+			if (Safe::floats_cmp($limits['price'], $price) < 0) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	public static function getCheckoutLimits(?int $userID = null): array
+	{
+		$limits = [];
+		$user = null;
+		if ($userID) {
+			$query = new User();
+			$user = $query->byId($userID);
+
+			if ($user) {
+				$limits = $user->option('financial_checkout_limits');
+			}
+		}
+
+		if (!$limits) {
+			$limits = Options::get('packages.financial.checkout_limits') ?: [];
+		}
+
+		if (isset($limits['currency'])) {
+			$query = new Currency();
+			$limits['currency'] = $query->byId($limits['currency']);
+
+			if (!$limits['currency']) {
+				unset($limits['currency']);
+			}
+		}
+
+		if ($user and isset($limits['currency'], $limits['price'])) {
+			$currency = Currency::getDefault($user);
+			$limits['price'] = $limits['currency']->changeTo($limits['price'], $currency);
+		}
+
+		return $limits;
+	}
+
 	protected $dbTable = "financial_transactions";
 	protected $primaryKey = "id";
 	protected $dbFields = array(

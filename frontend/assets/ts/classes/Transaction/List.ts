@@ -5,7 +5,7 @@ import * as moment from "jalali-moment";
 import * as $ from "jquery";
 import "jquery.growl";
 import "webuilder";
-import { Router } from "webuilder";
+import { AjaxRequest, Router } from "webuilder";
 import "webuilder/formAjax";
 import "../jquery.financialUserAutoComplete";
 import { IUser } from "../jquery.financialUserAutoComplete";
@@ -46,16 +46,70 @@ export default class List {
 			return;
 		}
 		$input.financialUserAutoComplete();
-		const $currency = $("input[name=refund_price]", List.$refundForm).parents(".input-group").find(".input-group-addon");
+
+		const $price = $("input[name=refund_price]", List.$refundForm);
+		const $currency = $price.parents(".input-group").find(".input-group-addon");
 		const $userinfo = $(".user-currenct-credit", List.$refundForm);
-		$input.on("financialUserAutoComplete.select", (e, user: IUser) => {
+
+		const $btn = $('.btn-refund', List.$refundForm);
+		const $icon = $('.btn-icons > i', $btn);
+		let $errorContainer = $('.alert.alert-danger', this.$refundForm);
+		const toggleLoading = () => {
+			$icon.toggleClass('fa-credit-card fa-spinner fa-spin fa-fw');
+
+			if ($errorContainer && $errorContainer.length) {
+				$errorContainer.addClass('hide');
+			}
+		};
+
+		const showError = (message: string) => {
+			$errorContainer.removeClass('hide');
+			$('.alert-heading', $errorContainer).html(message);
+		};
+		moment.locale(Translator.getActiveShortLang());
+
+		const checkLimits = (userID: number, credit: number, currency: string) => {
+			toggleLoading();
+			$btn.prop("disabled", true);
+			this.getCheckoutLimits(userID, (response) => {
+				toggleLoading();
+				$price.attr('min', response.price);
+				$price.data('min', response.price);
+
+				if (credit < response.price) {
+					showError(t('error.checkout_limit.price.with_price', {price: Transaction.formatFloatNumber(response.price)+' '+currency}));
+				} else {
+					const timeFromLastTime = Date.now() - (response.last_time * 1000);
+					if (timeFromLastTime < response.period * 1000) {
+						showError(t('error.checkout_limit.period', {'time': moment(Date.now()).add((response.period * 1000) - timeFromLastTime, 'milliseconds').format('L LT')}));
+					} else {
+						$btn.prop("disabled", false);
+					}
+				}
+			}, (response) => {
+				toggleLoading();
+				let message = t('userpanel.formajax.error');
+				if (response.hasOwnProperty('error') && response.error.hasOwnProperty('code')) {
+					message = response.error.hasOwnProperty('message') && response.error.message ? response.error.message : t(`error.${response.error.code}`);
+				}
+
+				showError(message);
+			});
+		}
+
+		$input.on("financialUserAutoComplete.select", (e, user: IUser, type: 'autocompletefocus' | 'autocompleteselect') => {
 			List.$refundForm.data("credit", user.credit);
-			$(".btn.btn-refund", List.$refundForm).prop("disabled", !user.credit);
 			$currency.html(user.currency);
 			$(".user-credit", $userinfo).html(user.credit.toString());
 			$(".user-currency", $userinfo).html(user.currency);
 			$userinfo.slideDown();
+
+			$btn.prop("disabled", true);
+			if (type === 'autocompleteselect' && user.credit > 0) {
+				checkLimits(user.id, user.credit, user.currency);
+			}
 		});
+
 		const $accounts = $("select[name=refund_account]", List.$refundForm);
 		$("input[name=refund_user]", List.$refundForm).on("change", function() {
 			const val = parseInt($(this).val(), 10);
@@ -127,6 +181,11 @@ export default class List {
 						} else {
 							$.growl.error($params);
 						}
+					} else if (error.hasOwnProperty('code')) {
+						$.growl.error({
+							title: t("error.fatal.title"),
+							message: error.hasOwnProperty('message') && error.message ? error.message : t(`error.${error.code}`),
+						});
 					} else {
 						$.growl.error({
 							title: t("error.fatal.title"),
@@ -205,6 +264,15 @@ export default class List {
 				val += ".";
 			}
 			$(this).val(val);
+		});
+	}
+
+	private static getCheckoutLimits(userID: number, onsuccess: (response: {price: number, period: number, last_time: number}) => void, onerror: (response: any) => void)
+	{
+		AjaxRequest({
+			url: `userpanel/financial/users/${userID}/checkout-limits?ajax=1`,
+			success: onsuccess as any,
+			error: onerror,
 		});
 	}
 }

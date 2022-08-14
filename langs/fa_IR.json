@@ -137,7 +137,9 @@
 
 		"usertype.permissions.financial_paid_user_profile": "مشاهده مجموع پرداختی ها و درآمدهای کاربر",
 
-		"usertype.permissions.financial_profile_change_currency": "تغییر ارز در قسمت تنظیمات پروفایل کاربر",
+		"usertype.permissions.financial_profile": "تنظیمات کاربر",
+		"usertype.permissions.financial_profile_change_currency": "تغییر ارز در قسمت تنظیمات کاربر",
+		"usertype.permissions.financial_profile_checkout_limits": "تغییر محدودیت های ایجاد صورتحساب تسویه در قسمت تنظیمات کاربر",
 
 		"error.packages.financial.error.transactions.user.delete_user_warn": "هشدار در خصوص صورتحساب های این کاربر",
 		"error.packages.financial.error.transactions.user.delete_user_warn.message": "این کاربر دارای صورتحساب یا صورتحساب هایی می باشد؛ در صورت حذف این کاربر، تمامی صورتحساب های ایشان نیز حذف خواهند شد!",
@@ -149,6 +151,12 @@
 		"error.packages.financial.error.banks_accounts.user.delete_user_warn.message": "این کاربر دارای حساب یا حساب های بانکی می باشد؛ در صورت حذف این کاربر، تمامی حساب های بانکی ایشان نیز حذف خواهند شد!",
 		"packages.financial.error.banks_accounts.user.delete_user_warn.view_banks_accounts": "در صورت نیاز میتوانید با استفاده از لینک زیر، حساب های بانکی این کاربر را مشاهده بفرمایید.",
 		"packages.financial.error.banks_accounts.user.delete_user_warn.view_banks_accounts.tell_someone": "در صورتی که قصد مشاهده حساب های بانکی این کاربر را دارید، از شخصی که این دسترسی را دارا می باشد درخواست نمایید.",
-		"packages.financial.error.banks_accounts.user.delete_user_warn.view_banks_accounts_btn": "مشاهده حساب های بانکی این کاربر"
+		"packages.financial.error.banks_accounts.user.delete_user_warn.view_banks_accounts_btn": "مشاهده حساب های بانکی این کاربر",
+
+		"titles.checkout_limits.price": "حداقل مبلغ برای ایجاد صورتحساب تسویه",
+		"titles.checkout_limits.currency": "واحد مالی",
+		"titles.checkout_limits.period": "حداقل زمان بین دو تسویه حساب",
+		"titles.day": "روز",
+		"titles.settings_financial": "مالی"
 	}
 }

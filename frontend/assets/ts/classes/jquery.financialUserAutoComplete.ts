@@ -22,7 +22,7 @@ $.fn.financialUserAutoComplete = function() {
 		name = name.substr(0, name.length - 5);
 		$(this).val(ui.item.name + (ui.item.lastname ? " " + ui.item.lastname : ""));
 		$(`input[name="${name}"]`, $form).val(ui.item.id).trigger("change");
-		$(this).trigger("financialUserAutoComplete.select", [ui.item]);
+		$(this).trigger("financialUserAutoComplete.select", [ui.item, event.type]);
 		return false;
 	}
 	function unselect() {

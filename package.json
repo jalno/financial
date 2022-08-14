@@ -25,7 +25,7 @@
 		},
 		{
 			"name":"packages/userpanel/events/settings",
-			"listener": "listeners/userpanel/settings@settings_list"
+			"listener": "listeners/userpanel/SettingsListener@settings_list"
 		},
 		{
 			"name":"packages/userpanel/events/Users/BeforeDelete",
@@ -38,6 +38,10 @@
 		{
 			"name":"events/Exporters",
 			"listener": "listeners/Exporters@add"
+		},
+		{
+			"name":"packages/userpanel/events/General/Settings",
+			"listener": "listeners/SettingsListener@init"
 		}
 	]
 }

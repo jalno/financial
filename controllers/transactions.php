@@ -1409,17 +1409,35 @@ class Transactions extends Controller {
 		} else {
 			$inputs["refund_user"] = Authentication::getUser();
 		}
+
 		if (!$inputs["refund_account"] = (new Account)->where("user_id", $inputs["refund_user"]->id)->where("id", $inputs["refund_account"])->where("status", Account::Active)->getOne()) {
 			throw new InputValidationException("refund_account");
 		}
-		if ($inputs["refund_price"] <= 0 or $inputs["refund_price"] > $inputs["refund_user"]->credit) {
+
+		$currency = Currency::getDefault($inputs["refund_user"]);
+		$limits = Transaction::getCheckoutLimits($inputs["refund_user"]->id);
+
+		if (
+			$inputs["refund_price"] <= 0 or
+			(
+				isset($limits['currency']) and
+				isset($limits['price']) and
+				$inputs['refund_price'] < $limits['price']
+			) or
+			$inputs["refund_price"] > $inputs["refund_user"]->credit
+		) {
 			throw new InputValidationException("refund_price");
 		}
+
+		if (!Transaction::canCreateCheckoutTransaction($inputs["refund_user"]->id, $inputs["refund_price"])) {
+			throw new Error('checkout_limits');
+		}
+
 		$expire = Options::get("packages.financial.refund_expire");
 		if (!$expire) {
 			$expire = 432000;
 		}
-		$currency = Currency::getDefault($inputs["refund_user"]);
+
 		$transaction = new Transaction;
 		$transaction->title = t("packages.financial.transactions.title.refund");
 		$transaction->user = $inputs["refund_user"]->id;
@@ -1444,6 +1462,9 @@ class Transactions extends Controller {
 			),
 		));
 		$transaction->save();
+
+		$inputs['refunt_user']->option('financial_last_checkout_time', Date::time());
+
 		$inputs["refund_user"]->credit -= $inputs["refund_price"];
 		$inputs["refund_user"]->save();
 		$this->response->setStatus(true);
@@ -1500,6 +1521,9 @@ class Transactions extends Controller {
 		$transaction->setParam("refund_rejector", Authentication::getID());
 		$transaction->status = Transaction::rejected;
 		$transaction->save();
+		
+		$transaction->user->option('financial_last_checkout_time', 0);
+
 		$transaction->user->credit += abs($transaction->payablePrice());
 		$transaction->user->save();
 
