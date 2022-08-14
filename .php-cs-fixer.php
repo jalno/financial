@@ -5,7 +5,7 @@ $finder = PhpCsFixer\Finder::create()
     ->path("listeners/userpanel/SettingsListener.php")
     ->path("controllers/userpanel/Settings.php")
     ->path("controllers/Settings.php")
-    ->path("validators");
+    ->path("libraries/validators/CheckoutLimitValidator.php");
 
 $config = new PhpCsFixer\Config();
 return $config->setRules([

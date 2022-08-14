@@ -3,7 +3,7 @@
 	"routing": "routing.json",
 	"frontend":"frontend",
 	"autoload": {
-		"directories": ["controllers", "libraries", "listeners", "logs", "processes", "views", "validators"]
+		"directories": ["controllers", "libraries", "listeners", "logs", "processes", "views"]
 	},
 	"dependencies": ["base", "userpanel", "notifications"],
 	"languages":{
