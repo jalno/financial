@@ -126,9 +126,9 @@
 		"packages.financial.error.banks_accounts.user.delete_user_warn.view_banks_accounts.tell_someone": "Please Tell your supervisor to confirm that.",
 		"packages.financial.error.banks_accounts.user.delete_user_warn.view_banks_accounts_btn": "User's bank accounts",
 
-		"titles.checkout_limits.price": "Minimum Price for checkout",
+		"titles.checkout_limits.price": "Minimum Price for Withdraw",
 		"titles.checkout_limits.currency": "Currency",
-		"titles.checkout_limits.period": "Time between two checkout transactions",
+		"titles.checkout_limits.period": "Time between two Withdraw transactions",
 		"titles.day": "Day",
 		"titles.settings_financial": "Financial"
 	}
