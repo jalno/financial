@@ -51,11 +51,8 @@ class transaction extends dbObject{
 			return false;
 		}
 
-
-		if ($price) {
-			if (Safe::floats_cmp($limits['price'], $price) < 0) {
-				return false;
-			}
+		if ($price and Safe::floats_cmp($limits['price'], $price) > 0) {
+			return false;
 		}
 
 		return true;
