@@ -25,10 +25,10 @@ class add extends transactionsAdd{
 	}
 	private function FormDate(){
 		if(!$this->getDataForm('create_at')){
-			$this->setDataForm(userpanel\date::format('Y/m/d h:i:s', userpanel\date::time()), 'create_at');
+			$this->setDataForm(userpanel\date::format('Y/m/d H:i:s', userpanel\date::time()), 'create_at');
 		}
 		if(!$this->getDataForm('expire_at')){
-			$this->setDataForm(userpanel\date::format('Y/m/d h:i:s', (userpanel\date::time() + 86400)), 'expire_at');
+			$this->setDataForm(userpanel\date::format('Y/m/d H:i:s', (userpanel\date::time() + 86400)), 'expire_at');
 		}
 	}
 	private function setNavigation(){
