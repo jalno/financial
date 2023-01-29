@@ -130,6 +130,9 @@
 		"titles.checkout_limits.currency": "Currency",
 		"titles.checkout_limits.period": "Time between two Withdraw transactions",
 		"titles.day": "Day",
-		"titles.settings_financial": "Financial"
+		"titles.settings_financial": "Financial",
+		"titles.financial.paid_at": "Paid At",
+		"titles.financial.pays_methods": "Pays Methods",
+		"titles.financial.accepted": "Accepted"
 	}
 }

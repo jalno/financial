@@ -157,6 +157,9 @@
 		"titles.checkout_limits.currency": "واحد مالی",
 		"titles.checkout_limits.period": "حداقل زمان بین دو تسویه حساب",
 		"titles.day": "روز",
-		"titles.settings_financial": "مالی"
+		"titles.settings_financial": "مالی",
+		"titles.financial.paid_at": "زمان پرداخت",
+		"titles.financial.pays_methods": "طریقه‌ی پرداخت",
+		"titles.financial.accepted": "تایید شده"
 	}
 }

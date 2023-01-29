@@ -2,6 +2,7 @@
 namespace packages\financial\exporters;
 
 use packages\base\{Response\File, IO, db};
+use packages\financial\Transaction_pay;
 use packages\userpanel\Date;
 use packages\financial\{Transaction, Transaction_product, Transactions_products_param, Transaction\IExporterHandler};
 
@@ -62,6 +63,9 @@ class CSVExporter implements IExporterHandler {
 		if ($this->isAllRefund) {
 			$header .= t("packages.financial.bankaccount.credit_cart") . ";" .
 				t("packages.financial.bankaccount.shaba") . ";";
+		} else {
+			$header .= t('titles.financial.paid_at').';';
+			$header .= t('titles.financial.pays_methods').';';
 		}
 		$header .= t("packages.financial.transaction.status");
 		return $header;
@@ -140,8 +144,38 @@ class CSVExporter implements IExporterHandler {
 					$csv .= "-;";
 				}
 			}
+		} else {
+			$getTransactionPayGates = function(Transaction $transaction): string {
+				$pays = [];
+
+				foreach ($transaction->pays as $pay) {
+					switch ($pay->method) {
+						case Transaction_pay::CREDIT:
+							$pays[] = t('pay.method.credit');
+							break;
+						case Transaction_pay::BANKTRANSFER:
+							$pays[] = t('pay.byBankTransfer');
+							break;
+						case Transaction_pay::ONLINEPAY:
+							$pays[] = t('pay.byPayOnline');
+							break;
+						case Transaction_pay::PAYACCEPTED:
+							$pays[] = t('titles.financial.accepted');
+							break;
+					}
+				}
+
+				if (empty($pays)) {
+					$pays[] = '-';
+				}
+
+				return implode('، ', array_unique($pays)).';';
+			};
+
+			$csv .= Date::format('Y/m/d H:i', $transaction->paid_at).';';
+			$csv .= $getTransactionPayGates($transaction);
 		}
-		$csv .= $status . ";";
+		$csv .= $status.';';
 		return $csv;
 	}
 }
