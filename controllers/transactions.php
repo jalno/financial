@@ -9,31 +9,18 @@ use packages\base\{DB, db\duplicateRecord, view\Error, views\FormError, Packages
 use packages\financial\{Bank\Account, Authentication, Authorization, Controller, Currency, Events, Logs,
 						Transaction, Transaction_product, Transaction_pay, View, Views, Payport, Payport_pay,
 						Transactions_products_param, Stats, products\AddingCredit, validators};
+use packages\financial\Contracts\ITransactionManager;
+use packages\financial\FinancialService;
 
-class Transactions extends Controller {
+class Transactions extends Controller
+{
 	use Transactions\MergeTrait;
 
-	public static function getAvailablePayMethods($canPayByCredit = true) {
-		$methods = array();
-		$userBankAccounts = options::get("packages.financial.pay.tansactions.banka.accounts");
-		$account = new Account();
-		$account->where("status", Account::Active);
-		if ($userBankAccounts) {
-			$account->where("id", $userBankAccounts, "IN");
-		}
-		$bankaccounts = $account->has();
-		$payports = payport::where("status", 1)->has();
-		if($canPayByCredit){
-			$methods[] = 'credit';
-		}
-		if($bankaccounts){
-			$methods[] = 'banktransfer';
-		}
-		if($payports){
-			$methods[] = 'onlinepay';
-		}
-		return $methods;
+	public static function getAvailablePayMethods(bool $canPayByCredit = true, ?int $transactionID = null): array
+	{
+		return (new self())->getAvailablePaymentMethods($canPayByCredit, $transactionID);
 	}
+
 	public static function getBankAccountsForPay(): array {
 		$paymentsMethods = self::getAvailablePayMethods(false);
 		$accounts = array();
@@ -149,9 +136,15 @@ class Transactions extends Controller {
 		$log->save();
 	}
 
+	public ITransactionManager $transactionManager;
 	protected $authentication = true;
-	public function __construct() {
-		$this->response = new response();
+
+	public function __construct(?ITransactionManager $transactionManager = null)
+	{
+		$this->response = new Response();
+
+		$this->transactionManager = $transactionManager ?? (new FinancialService())->getTransactionManager();
+
 		if (authentication::check()) {
 			$this->page = http::getURIData('page');
 			$this->items_per_page = http::getURIData('ipp');
@@ -404,9 +397,11 @@ class Transactions extends Controller {
 			$types = Authorization::childrenTypes();
 			$canPayByCredit = ($transaction->canPayByCredit() and ($transaction->user->credit > 0 or ($types and $me->credit > 0)));
 		}
-		foreach (self::getAvailablePayMethods($canPayByCredit) as $method) {
+
+		foreach ($this->getAvailablePaymentMethods($canPayByCredit, $transaction->id) as $method) {
 			$view->setMethod($method);
 		}
+
 		$this->response->setStatus(true);
 		return $this->response;
 	}
@@ -503,7 +498,7 @@ class Transactions extends Controller {
 		return $this->response;
 	}
 	public function payByBankTransferView($data): Response {
-		if (!in_array('banktransfer', self::getAvailablePayMethods())) {
+		if (!in_array('banktransfer', $this->getAvailablePaymentMethods())) {
 			throw new NotFound();
 		}
 		$transaction = $this->getTransactionForPay($data);
@@ -521,7 +516,7 @@ class Transactions extends Controller {
 	} // payByBankTransferView
 
 	public function payByBankTransfer($data): Response {
-		if (!in_array('banktransfer', self::getAvailablePayMethods())) {
+		if (!in_array('banktransfer', $this->getAvailablePaymentMethods())) {
 			throw new NotFound();
 		}
 		/** @var PayView\Banktransfer $view */
@@ -670,62 +665,47 @@ class Transactions extends Controller {
 	public function rejectPay($data){
 		return $this->accept_handler($data, transaction_pay::rejected);
 	}
-	public function onlinePayView($data): Response {
-		if (!in_array('onlinepay', self::getAvailablePayMethods())) {
-			throw new NotFound;
-		}
+	public function onlinePayView($data): Response
+	{
 		$transaction = $this->getTransactionForPay($data);
-		$currency = $transaction->currency;
+
+		$payports = $this->transactionManager->getOnlinePayports($transaction->id);
+
+		if (!$payports) {
+			throw new NotFound();
+		}
+
 		$view = View::byName(views\transactions\pay\OnlinePay::class);
 		$this->response->setView($view);
-		$view->setTransaction($transaction);
 
-		$model = new Payport();
-		db::join('financial_payports_currencies', 'financial_payports_currencies.payport=financial_payports.id', "INNER");
-		db::join('financial_currencies', 'financial_currencies.id=financial_payports_currencies.currency', "LEFT");
-		db::join('financial_currencies_rates', 'financial_currencies_rates.currency=financial_currencies.id', "LEFT");
-		$parenthesis = new Parenthesis();
-		$parenthesis->where("financial_payports_currencies.currency", $currency->id);
-		$parenthesis->orWhere("financial_currencies_rates.changeTo", $currency->id);
-		$model->where($parenthesis);
-		$model->where('financial_payports.status', payport::active);
-		$model->setQueryOption("DISTINCT");
-		$payports = $model->get(null, 'financial_payports.*');
+		$view->setTransaction($transaction);
 		$view->setPayports($payports);
 
 		$this->response->setStatus(true);
 		return $this->response;
 	}
-	public function onlinePay($data) {
-		if (!in_array('onlinepay', self::getAvailablePayMethods())) {
-			throw new NotFound;
-		}
-		$this->response->setStatus(false);
+	public function onlinePay($data)
+	{
 		$transaction = $this->getTransactionForPay($data);
-		$currency = $transaction->currency;
+
+		$payports = $this->transactionManager->getOnlinePayports($transaction->id);
+
+		if (!$payports) {
+			throw new NotFound();
+		}
+
 		$view = View::byName(views\transactions\pay\OnlinePay::class);
 		$this->response->setView($view);
-		$view->setTransaction($transaction);
 
-		$model = new Payport();
-		db::join('financial_payports_currencies', 'financial_payports_currencies.payport=financial_payports.id', "INNER");
-		db::join('financial_currencies', 'financial_currencies.id=financial_payports_currencies.currency', "LEFT");
-		db::join('financial_currencies_rates', 'financial_currencies_rates.currency=financial_currencies.id', "LEFT");
-		$parenthesis = new Parenthesis();
-		$parenthesis->where("financial_payports_currencies.currency", $currency->id, "=", "OR");
-		$parenthesis->where("financial_currencies_rates.changeTo", $currency->id, "=", "OR");
-		$model->where($parenthesis);
-		$model->where('financial_payports.status', payport::active);
-		$model->setQueryOption("DISTINCT");
-		$payports = $model->get(null, 'financial_payports.*');
+		$view->setTransaction($transaction);
 		$view->setPayports($payports);
 
 		$rules = array(
 			'payport' => array(
 				'type' => function ($data, $rule, $input) use ($payports) {
-					foreach ($payports as $item) {
-						if ($data == $item->id) {
-							return $item;
+					foreach ($payports as $payport) {
+						if ($data == $payport->id) {
+							return $payport;
 						}
 					}
 					throw new InputValidationException($input);
@@ -743,6 +723,7 @@ class Transactions extends Controller {
 				'default' => $transaction->currency,
 			),
 		);
+
 		$view->setDataForm($this->inputsValue($rules));
 		$inputs = $this->checkInputs($rules);
 		if (
@@ -1756,6 +1737,37 @@ class Transactions extends Controller {
 		$this->response->setData($items, "items");
 		$this->response->setStatus(true);
 		return $this->response;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	private function getAvailablePaymentMethods(bool $canPayByCredit = true, ?int $transactionID = null): array
+	{
+		$methods = [];
+		$userBankAccounts = Options::get("packages.financial.pay.tansactions.banka.accounts");
+
+		$query = new Account();
+		$query->where("status", Account::Active);
+		if ($userBankAccounts) {
+			$query->where("id", $userBankAccounts, "IN");
+		}
+
+		$bankaccounts = $query->has();
+
+		if ($canPayByCredit) {
+			$methods[] = 'credit';
+		}
+
+		if ($bankaccounts) {
+			$methods[] = 'banktransfer';
+		}
+
+		if ($transactionID and $this->transactionManager->canOnlinePay($transactionID)) {
+			$methods[] = 'onlinepay';
+		}
+
+		return $methods;
 	}
 }
 class transactionNotFound extends NotFound{}
