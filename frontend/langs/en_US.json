@@ -343,6 +343,7 @@
 		"packages.financial.reimburse.pay_not_refundable": "Can not refund",
 		"error.checkout_limit.period": "Can not create Withdraw transaction until <span class=\"ltr\">{time}</span>.",
 		"error.checkout_limit.price.with_price": "Minimum price for create Withdraw transactions is: {price}",
-		"error.checkout_limits": "Can not create new Withdraw transaction."
+		"error.checkout_limits": "Can not create new Withdraw transaction.",
+		"transaction.tax": "Vat"
 	}
 }

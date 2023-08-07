@@ -12,6 +12,7 @@ class view extends transactionsView {
 	protected $pays;
 	protected $hasdesc;
 	protected $discounts = 0;
+	protected $vats = 0;
 	public function __beforeLoad(){
 		$this->transaction = $this->getTransaction();
 		$this->pays = $this->transaction->pays;

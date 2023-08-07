@@ -67,8 +67,9 @@ $this->the_header();
 											<th><?php echo translator::trans('financial.transaction.product'); ?></th>
 											<th class="hidden-xs"><?php echo translator::trans('financial.transaction.product.decription'); ?></th>
 											<th><?php echo translator::trans('financial.transaction.product.number'); ?></th>
-											<th><?php echo translator::trans('financial.transaction.product.price.base'); ?></th>
+											<th><?php echo translator::trans('financial.transaction.product.price_unit'); ?></th>
 											<th><?php echo translator::trans('financial.transaction.product.discount'); ?></th>
+											<th><?php echo translator::trans('transaction.tax'); ?></th>
 											<th><?php echo translator::trans('financial.transaction.product.price.final'); ?></th>
 											<?php if($hasButtons){ ?>
 											<th>
@@ -91,6 +92,7 @@ $this->the_header();
 												'price' => $product->price,
 												'currency' => $product->currency->id,
 												'discount' => $product->discount,
+												"vat" => $product->vat,
 												"currency_title" => $product->currency->title,
 											];
 											$this->setButtonParam('productEdit', 'link', '#product-edit');
@@ -103,7 +105,8 @@ $this->the_header();
 												<td><?php echo translator::trans('financial.number', ['number' => $product->number]); ?></td>
 												<td><?php echo $this->numberFormat($product->price) . " " . $product->currency->title; ?></td>
 												<td><?php echo $this->numberFormat($product->discount ? $product->discount : 0) . " " . $product->currency->title; ?></td>
-												<td><?php echo $this->numberFormat(($product->price * $product->number) - $product->discount) . " " . $product->currency->title; ?></td>
+												<td><?php echo $product->vat; ?> %</td>
+												<td><?php echo $this->numberFormat($product->totalPrice()) . " " . $product->currency->title; ?></td>
 												<?php
 													if($hasButtons){
 														echo("<td class=\"center\">".$this->genButtons(['productEdit', 'productDelete'])."</td>");
@@ -239,6 +242,23 @@ $this->the_header();
 					'label' => translator::trans("transaction.add.discount"),
 					'ltr' => true,
 					'step' => 0.001
+				],
+				[
+					'name' => 'vat',
+					'type' => 'number',
+					'label' => t("transaction.tax"),
+					'ltr' => true,
+					'input-group' => array(
+						'first' => array(
+							array(
+								'type' => 'addon',
+								'text' => '%',
+							),
+						),
+					),
+					'step' => 0.001,
+					'min' => 0,
+					'max' => 100,
 				],
 				[
 					'name' => 'product_currency',

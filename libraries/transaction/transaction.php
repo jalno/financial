@@ -91,6 +91,58 @@ class transaction extends dbObject{
 
 		return $limits;
 	}
+	private static function getVatConfig(): array {
+
+		$options = Options::get("packages.financial.vat_config");
+
+		if (!$options) {
+			return [];
+		}
+
+		if (!isset($options["exclude-products"]) or !$options["exclude-products"]) {
+			$options["exclude-products"] = [];
+		}
+
+		if (!is_array($options["exclude-products"])) {
+			$options["exclude-products"] = [$options["exclude-products"]];
+		}
+
+		if (!isset($options["products"]) or !$options["products"]) {
+			$options["products"] = [];
+		}
+
+		if (!is_array($options["products"])) {
+			$options["products"] = [$options["products"]];
+		}
+
+		$options["exclude-products"] = array_merge($options["exclude-products"], [products\AddingCredit::class, "\\" . products\AddingCredit::class]);
+
+		$options["exclude-products"] = array_map("strtolower", $options["exclude-products"]);
+
+		$options["default_vat"] = $options["default_vat"] ?? 9;
+
+		if (!isset($options["users"]) or !$options["users"]) {
+			$options["users"] = [];
+		}
+
+		if (!is_array($options["users"])) {
+			$options["users"] = [$options["users"]];
+		}
+
+		$products = [];
+
+		foreach ($options["products"] as $key => $value) {
+			if (is_string($key)) {
+				$products[strtolower($key)] = $value;
+			} elseif (is_string($value)) {
+				$products[strtolower($value)] = $options["default_vat"];
+			}
+		}
+
+		$options["products"] = $products;
+
+		return $options;
+	}
 
 	protected $dbTable = "financial_transactions";
 	protected $primaryKey = "id";
@@ -254,35 +306,70 @@ class transaction extends dbObject{
 			$data['create_at'] = time();
 		}
 		$userModel = null;
+		if (isset($data['user'])) {
+			$userModel = (($data['user'] instanceof dbObject) ? $data['user'] : (new User())->byID($data['user']));
+		}
+
 		if (!isset($data['currency'])) {
-			if (isset($data['user'])) {
-				$userModel = (($data['user'] instanceof dbObject) ? $data['user'] : (new User())->byID($data['user']));
-			}
 			$this->currency = $data['currency'] = Currency::getDefault($userModel);
 		}
-		if($data['currency'] instanceof dbObject){
-			$data['currency'] = $data['currency']->id;
+
+		$products = array();
+
+		if ($this->isNew) {
+			$products = &$this->tmproduct;
+		} else {
+			$products = $this->products;
 		}
-		if (!isset($data['price'])) {
-			$products = array();
-			if ($this->isNew) {
-				$products = &$this->tmproduct;
-			} else {
-				$products = $this->products;
+
+		foreach ($products as $product) {
+			if (!$product->currency) {
+				$product->currency = $data['currency'];
 			}
-			foreach ($products as $product) {
-				if (!$product->currency) {
-					if (!$userModel) {
-						$userModel = (($data['user'] instanceof dbObject) ? $data['user'] : (new User())->byID($data['user']));
+		}
+
+		if ($userModel) {
+			$options = self::getVatConfig();
+
+			if ($options) {
+
+				if (!isset($options["users"][$userModel->id]) and in_array($userModel->id, $options["users"])) {
+					$options["users"][$userModel->id] = $options["default_vat"];
+				}
+
+				if (isset($options["users"][$userModel->id])) {
+					foreach ($products as $product) {
+						if (in_array(strtolower($product->type), $options["exclude-products"]) or $product->vat) {
+							continue;
+						}
+						$product->vat = $options["users"][$userModel->id];
 					}
-					$product->currency = Currency::getDefault($userModel);
+				} elseif ($options["products"]) {
+
+					foreach ($products as $product) {
+
+						$type = strtolower($product->type);
+
+						if (in_array($type, $options["exclude-products"]) or !isset($options["products"][$type]) or $product->vat) {
+							continue;
+						}
+
+						$product->vat = $options["products"][$type];
+					}
 				}
 			}
-			$data['price'] = $this->getProductsTotalPrice($products);
 		}
+
+		$data['price'] = $this->getProductsTotalPrice($products);
+
 		if (!isset($data["token"])) {
 			$data["token"] = transaction::generateToken();
 		}
+
+		if ($data['currency'] instanceof dbObject) {
+			$data['currency'] = $data['currency']->id;
+		}
+
 		return $data;
 	}
 	protected $tmparams = array();
@@ -451,10 +538,14 @@ class transaction extends dbObject{
 		$total = 0;
 		$currency = $this->currency;
 		foreach ($products as $product) {
+<<<<<<< HEAD
 			$price = $product->currency->changeTo(($product->price * $product->number), $currency);
 			$discount = $product->currency->changeTo($product->discount, $currency);
 
 			$total += ($price - $discount);
+=======
+			$total += $product->currency->changeTo($product->totalPrice(), $currency);
+>>>>>>> origin/88-tax
 		}
 		return floatval($total);
 	}

@@ -346,6 +346,7 @@
 		"packages.financial.reimburse.pay_not_refundable": "قابل بازگشت نیست",
 		"error.checkout_limit.period": "نمیتوانید تا زمان <span class=\"ltr\">{time}</span> درخواست تسویه دیگری ایجاد کنید.",
 		"error.checkout_limit.price.with_price": "حداقل مبلغ مورد نیاز برای ایجاد صورتحساب تسویه {price} میباشد.",
-		"error.checkout_limits": "به دلیل محدودیت های ایجاد صورتحساب تسویه قادر به ایجاد صورتحساب تسویه جدید نیستید."
+		"error.checkout_limits": "به دلیل محدودیت های ایجاد صورتحساب تسویه قادر به ایجاد صورتحساب تسویه جدید نیستید.",
+		"transaction.tax": "مالیات"
 	}
 }
