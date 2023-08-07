@@ -538,14 +538,7 @@ class transaction extends dbObject{
 		$total = 0;
 		$currency = $this->currency;
 		foreach ($products as $product) {
-<<<<<<< HEAD
-			$price = $product->currency->changeTo(($product->price * $product->number), $currency);
-			$discount = $product->currency->changeTo($product->discount, $currency);
-
-			$total += ($price - $discount);
-=======
 			$total += $product->currency->changeTo($product->totalPrice(), $currency);
->>>>>>> origin/88-tax
 		}
 		return floatval($total);
 	}

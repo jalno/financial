@@ -151,7 +151,7 @@
 		"financial.transaction.product": "محصول",
 		"financial.transaction.product.decription": "توضیحات",
 		"financial.transaction.product.number": "تعداد",
-		"financial.transaction.product.price_unit": "قیمت واحد",
+		"financial.transaction.product.price_unit": "مبلغ واحد",
 		"financial.transaction.product.discount": "تخفیف",
 		"financial.transaction.product.price.final": "قیمت نهایی",
 		"financial.number": "{number} عدد",
