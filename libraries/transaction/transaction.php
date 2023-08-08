@@ -22,6 +22,10 @@ class transaction extends dbObject{
 	const expired = 4;
 	const rejected = 5;
 
+	const ONLINE_PAYMENT_METHOD = 'onlinepay';
+	const BANK_TRANSFER_PAYMENT_METHOD = 'banktransfer';
+	const CREDIT_PAYMENT_METHOD = 'credit';
+
 	public static function generateToken(int $length = 15): string {
 		$numberChar = "0123456789";
 		$pw = "";
