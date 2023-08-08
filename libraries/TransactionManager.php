@@ -5,8 +5,10 @@ namespace packages\financial;
 use packages\base\DB;
 use packages\base\DB\Parenthesis;
 use packages\base\Options;
+use packages\financial\Bank\Account;
 use packages\financial\Contracts\IFinancialService;
 use packages\financial\Contracts\ITransactionManager;
+use packages\userpanel\User;
 
 class TransactionManager implements ITransactionManager
 {
@@ -30,7 +32,8 @@ class TransactionManager implements ITransactionManager
 
     public function canOnlinePay(int $id): bool
     {
-        return !empty($this->getOnlinePayports($id));
+        return in_array(Transaction::ONLINE_PAYMENT_METHOD, $this->getPaymentMethods($id)) and
+            !empty($this->getOnlinePayports($id));
     }
 
     /**
@@ -38,6 +41,10 @@ class TransactionManager implements ITransactionManager
      */
     public function getOnlinePayports(int $id): array
     {
+        if (!in_array(Transaction::ONLINE_PAYMENT_METHOD, $this->getPaymentMethods($id))) {
+            throw new \Exception('Can not pay with online payports');
+        }
+
         $transaction = $this->getByID($id);
 
         $payportIDs = $transaction->param('available_online_payports');
@@ -70,5 +77,92 @@ class TransactionManager implements ITransactionManager
         $payports = $query->get(null, 'financial_payports.*');
 
         return $payports;
+    }
+
+    public function canPayByTransferBank(int $id): bool
+    {
+        return in_array(Transaction::BANK_TRANSFER_PAYMENT_METHOD, $this->getPaymentMethods($id)) and
+            !empty($this->getBankAccountsForTransferPay($id));
+    }
+
+    public function getBankAccountsForTransferPay(int $id): array
+    {
+        if (!in_array(Transaction::BANK_TRANSFER_PAYMENT_METHOD, $this->getPaymentMethods($id))) {
+            throw new \Exception('Can not pay with bank transfer');
+        }
+
+        $transaction = $this->getByID($id);
+
+        $bankAccountIDs = $transaction->param('available_bank_accounts');
+
+        if (!$bankAccountIDs) {
+            $bankAccountIDs = Options::get('packages.financial.pay.tansactions.banka.accounts');
+        }
+
+        $query = new Account();
+        $query->with('bank');
+        $query->where('financial_banks_accounts.status', Account::Active);
+        if ($bankAccountIDs) {
+            $query->where('financial_banks_accounts.id', $bankAccountIDs, 'IN');
+        }
+
+        return $query->get();
+    }
+
+    public function canPayByCredit(int $id, ?int $operatorID = null): bool
+    {
+        if (!in_array(Transaction::CREDIT_PAYMENT_METHOD, $this->getPaymentMethods($id))) {
+            return false;
+        }
+
+        $transaction = $this->getByID($id);
+
+        $operator = null;
+        if ($operatorID) {
+            $operator = (new User())->byId($operatorID);
+
+            if (!$operator) {
+                throw new \Exception('Can not fin operator by id: '.$operatorID);
+            }
+        }
+
+        if ((!$operator or $operator->credit <= 0) and $transaction->user->credit <= 0) {
+            return false;
+        }
+
+        return $transaction->canPayByCredit();
+    }
+
+    public function getAvailablePaymentMethods(int $id, ?int $operatorID = null): array
+    {
+        return array_filter($this->getPaymentMethods($id), function (string $method) use ($id, $operatorID) {
+            switch ($method) {
+                case Transaction::CREDIT_PAYMENT_METHOD:
+                    return $this->canPayByCredit($id, $operatorID);
+                case Transaction::BANK_TRANSFER_PAYMENT_METHOD:
+                    return $this->canPayByTransferBank($id);
+                case Transaction::ONLINE_PAYMENT_METHOD:
+                    return $this->canOnlinePay($id);
+                default:
+                    return false;
+            }
+        });
+    }
+
+    public function getPaymentMethods($id): array
+    {
+        $transaction = $this->getByID($id);
+
+        $methods = $transaction->param('available_payment_methods');
+
+        if (!is_array($methods)) {
+            $methods = [
+                Transaction::CREDIT_PAYMENT_METHOD,
+                Transaction::BANK_TRANSFER_PAYMENT_METHOD,
+                Transaction::ONLINE_PAYMENT_METHOD,
+            ];
+        }
+
+        return $methods;
     }
 }

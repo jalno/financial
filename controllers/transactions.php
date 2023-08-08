@@ -16,26 +16,6 @@ class Transactions extends Controller
 {
 	use Transactions\MergeTrait;
 
-	public static function getAvailablePayMethods(bool $canPayByCredit = true, ?int $transactionID = null): array
-	{
-		return (new self())->getAvailablePaymentMethods($canPayByCredit, $transactionID);
-	}
-
-	public static function getBankAccountsForPay(): array {
-		$paymentsMethods = self::getAvailablePayMethods(false);
-		$accounts = array();
-		if (in_array("banktransfer", $paymentsMethods)) {
-			$userBankAccounts = Options::get("packages.financial.pay.tansactions.banka.accounts");
-			$account = new Account();
-			$account->with("bank");
-			$account->where("financial_banks_accounts.status", Account::Active);
-			if ($userBankAccounts) {
-				$account->where("financial_banks_accounts.id", $userBankAccounts, "IN");
-			}
-			$accounts = $account->get();
-		}
-		return $accounts;
-	}
 	public static function checkBanktransferFollowup(int $bank, string $code) {
 		$account = new Account();
 		$account->where("bank_id", $bank);
@@ -52,23 +32,7 @@ class Transactions extends Controller
 		db::joinWhere("financial_transactions_pays_params params2", "params2.value", $code);
 		return $banktransferPays->has();
 	}
-	public static function getBankAccountForPayById(int $id): ?Account {
-		$paymentsMethods = self::getAvailablePayMethods(false);
-		$account = null;
-		if (in_array("banktransfer", $paymentsMethods)) {
-			$userBankAccounts = Options::get("packages.financial.pay.tansactions.banka.accounts");
-			$account = new Account();
-			$account->with("user");
-			$account->with("bank");
-			$account->where("financial_banks_accounts.status", Account::Active);
-			$account->where("financial_banks_accounts.id", $id);
-			if ($userBankAccounts) {
-				$account->where("financial_banks_accounts.id", $userBankAccounts, "IN");
-			}
-			$account = $account->getOne();
-		}
-		return $account;
-	}
+
 	public static function getPay($data): Transaction_pay {
 		$check = Authentication::check();
 		$isOperator = false;
@@ -386,89 +350,129 @@ class Transactions extends Controller
 		}
 		return $transaction;
 	}
-	public function pay($data): Response {
+
+	public function pay($data): Response
+	{
 		$transaction = $this->getTransactionForPay($data);
+
 		$view = View::byName(payView::class);
 		$this->response->setView($view);
+
 		$view->setTransaction($transaction);
-		$canPayByCredit = false;
+
+		$operatorID = null;
 		if (Authentication::check()) {
-			$me = Authentication::getUser();
-			$types = Authorization::childrenTypes();
-			$canPayByCredit = ($transaction->canPayByCredit() and ($transaction->user->credit > 0 or ($types and $me->credit > 0)));
+			$currentUserID = Authentication::getID();
+
+			if (!empty(Authorization::childrenTypes()) and $currentUserID !== $transaction->user->id) {
+				$operatorID = $currentUserID;
+			}
 		}
 
-		foreach ($this->getAvailablePaymentMethods($canPayByCredit, $transaction->id) as $method) {
+		$paymentMethods = $this->transactionManager->getAvailablePaymentMethods($transaction->id, $operatorID);
+
+		foreach ($paymentMethods as $method) {
 			$view->setMethod($method);
 		}
 
 		$this->response->setStatus(true);
 		return $this->response;
 	}
-	public function payByCreditView($data): Response {
+
+	public function payByCreditView($data): Response
+	{
 		$transaction = $this->getTransactionForPay($data);
-		$user = $transaction->user;
-		$self = Authentication::getUser();
-		$types = Authorization::childrenTypes();
-		$canPayByCredit = ($transaction->canPayByCredit() and ($user->credit > 0 or ($types and $self->credit > 0)));
-		if (!$canPayByCredit) {
-			throw new NotFound;
+	
+		$operator = null;
+		if (Authentication::check()) {
+			$currentUser = Authentication::getUser();
+
+			if (!empty(Authorization::childrenTypes()) and $currentUser->id !== $transaction->user->id) {
+				$operator = $currentUser;
+			}
 		}
-		$payer = (($types and $self->credit > 0) ? $self : $user);
+
+		if (!$this->transactionManager->canPayByCredit($transaction->id, $operator ? $operator->id : null)) {
+			throw new NotFound();
+		}
+
+		$payer = (($transaction->user->credit <= 0 and $operator) ? $operator : $transaction->user);
+
 		$view = View::byName(payView\credit::class);
 		$this->response->setView($view);
+
 		$view->setTransaction($transaction);
 		$view->setCredit($payer->credit);
 		$view->setCurrency($transaction->currency);
 		$view->setDataForm($payer->id, 'user');
 		$view->setDataForm(min($transaction->remainPriceForAddPay(), $payer->credit), 'credit');
+
 		$this->response->setStatus(true);
+
 		return $this->response;
 	}
-	public function payByCredit($data): Response {
+
+	public function payByCredit($data): Response
+	{
 		$transaction = $this->getTransactionForPay($data);
-		$user = $transaction->user;
-		$self = Authentication::getUser();
-		$types = Authorization::childrenTypes();
-		$canPayByCredit = ($transaction->canPayByCredit() and ($user->credit > 0 or ($types and $self->credit > 0)));
-		if (!$canPayByCredit) {
-			throw new NotFound;
+
+		$operator = null;
+		if (Authentication::check()) {
+			$currentUser = Authentication::getUser();
+
+			if (!empty(Authorization::childrenTypes()) and $currentUser->id !== $transaction->user->id) {
+				$operator = $currentUser;
+			}
 		}
-		$view = View::byName(payView\Credit::class);
+
+		if (!$this->transactionManager->canPayByCredit($transaction->id, $operator ? $operator->id : null)) {
+			throw new NotFound();
+		}
+
+		$payer = (($transaction->user->credit <= 0 and $operator) ? $operator : $transaction->user);
+
+		$view = View::byName(payView\credit::class);
 		$this->response->setView($view);
+
 		$view->setTransaction($transaction);
-		$payer = (($types and $self->credit > 0) ? $self : $user);
 		$view->setCredit($payer->credit);
 		$view->setCurrency($transaction->currency);
 		$view->setDataForm($payer->id, 'user');
 		$view->setDataForm(min($transaction->remainPriceForAddPay(), $payer->credit), 'credit');
-		$this->response->setStatus(false);
+
 		$rules = array(
 			'credit' => array(
 				'type' => 'number',
 				'min' => 0,
 			),
 		);
-		if ($types) {
+
+		if ($operator) {
 			$rules['user'] = array(
 				'type' => User::class,
 				'optional' => true,
-				'query' => function ($query) use ($user, $self) {
-					$query->where("id", [$user->id, $self->id], "IN");
+				'query' => function ($query) use ($transaction, $operator) {
+					$query->where("id", [$transaction->user->id, $operator->id], "IN");
 				},
 			);
 		}
+
 		$inputs = $this->checkInputs($rules);
+
 		if (!isset($inputs['user'])) {
-			$inputs['user'] = $self;
+			$inputs['user'] = $transaction->user;
 		}
+
 		$payerCurrency = Currency::getDefault($inputs['user']);
+
 		if ($payerCurrency->id != $transaction->currency->id) {
 			throw new InputValidationException("credit");
 		}
+
 		if ($inputs['credit'] > $inputs['user']->credit or $inputs['credit'] > $transaction->remainPriceForAddPay()) {
 			throw new InputValidationException('credit');
 		}
+
 		$pay = $transaction->addPay(array(
 			'method' => transaction_pay::credit,
 			'price' => $inputs['credit'],
@@ -477,6 +481,7 @@ class Transactions extends Controller
 				'user' => $inputs['user']->id,
 			),
 		));
+
 		if ($pay) {
 			$inputs['user']->credit -= $inputs['credit'];
 			$inputs['user']->save();
@@ -495,38 +500,59 @@ class Transactions extends Controller
 			$redirect = $this->redirectToConfig($transaction);
 			$this->response->Go($redirect ? $redirect : userpanel\url("transactions/view/{$transaction->id}"));
 		}
+
 		return $this->response;
 	}
-	public function payByBankTransferView($data): Response {
-		if (!in_array('banktransfer', $this->getAvailablePaymentMethods())) {
-			throw new NotFound();
-		}
-		$transaction = $this->getTransactionForPay($data);
-		$view = View::byName(PayView\Banktransfer::class);
-		$this->response->setView($view);
-		$view->setTransaction($transaction);
-		$banktransferPays = (new Transaction_pay())
-		->where("transaction", $transaction->id)
-		->where("method", Transaction_pay::banktransfer)
-		->get();
-		$view->setBanktransferPays($banktransferPays);
-		$view->setBankAccounts(Account::getAvailableAccounts());
-		$this->response->setStatus(true);
-		return $this->response;
-	} // payByBankTransferView
 
-	public function payByBankTransfer($data): Response {
-		if (!in_array('banktransfer', $this->getAvailablePaymentMethods())) {
+	public function payByBankTransferView($data): Response
+	{
+		$transaction = $this->getTransactionForPay($data);
+
+		if (!$this->transactionManager->canPayByTransferBank($transaction->id)) {
 			throw new NotFound();
 		}
-		/** @var PayView\Banktransfer $view */
-		$transaction = $this->getTransactionForPay($data);
+
 		$view = View::byName(PayView\Banktransfer::class);
 		$this->response->setView($view);
+
 		$view->setTransaction($transaction);
-		$accounts = Account::getAvailableAccounts();
+
+		$banktransferPays = (new Transaction_pay())
+			->where("transaction", $transaction->id)
+			->where("method", Transaction_pay::banktransfer)
+			->get();
+
+		$view->setBanktransferPays($banktransferPays);
+		$view->setBankAccounts($this->transactionManager->getBankAccountsForTransferPay($transaction->id));
+
+		$this->response->setStatus(true);
+
+		return $this->response;
+	}
+
+	public function payByBankTransfer($data): Response
+	{
+		$transaction = $this->getTransactionForPay($data);
+
+		if (!$this->transactionManager->canPayByTransferBank($transaction->id)) {
+			throw new NotFound();
+		}
+
+		$view = View::byName(PayView\Banktransfer::class);
+		$this->response->setView($view);
+
+		$view->setTransaction($transaction);
+
+		$banktransferPays = (new Transaction_pay())
+			->where("transaction", $transaction->id)
+			->where("method", Transaction_pay::banktransfer)
+			->get();
+
+		$view->setBanktransferPays($banktransferPays);
+
+		$accounts = $this->transactionManager->getBankAccountsForTransferPay($transaction->id);
 		$view->setBankAccounts($accounts);
-		$this->response->setStatus(false);
+
 		$rules = array(
 			"bankaccount" => array(
 				"type" => function ($data, $rule, $input) use ($accounts) {
@@ -564,17 +590,21 @@ class Transactions extends Controller
 			)
 		);
 		$inputs = $this->checkInputs($rules);
+
 		if (!Authorization::is_accessed("transactions_pay_accept") and $inputs["date"] <= Date::time() - ( 86400 * 30)) {
 			throw new InputValidationException("date");
 		}
+
 		if (self::checkBanktransferFollowup($inputs["bankaccount"]->bank_id, $inputs['followup'])) {
 			throw new DuplicateRecord("followup");
 		}
+
 		$params = array(
 			"bankaccount" => $inputs["bankaccount"]->id,
 			"followup" => $inputs["followup"],
 			"description" => $inputs['description'] ?? "",
 		);
+
 		if (isset($inputs['attachment'])) {
 			$path = "storage/public/" . $inputs['attachment']->md5() . "." . $inputs['attachment']->getExtension();
 			$storage = Packages::package("financial")->getFile($path);
@@ -586,6 +616,7 @@ class Transactions extends Controller
 			}
 			$params['attachment'] = $path;
 		}
+
 		$pay = $transaction->addPay(array(
 			"date" => $inputs["date"],
 			"method" => Transaction_pay::banktransfer,
@@ -594,6 +625,7 @@ class Transactions extends Controller
 			"currency" => $transaction->currency->id,
 			"params" => $params,
 		));
+
 		if ($pay) {
 			if (Authentication::check()) {
 				$log = new Log();
@@ -618,7 +650,7 @@ class Transactions extends Controller
 			$this->response->setStatus(false);
 		}
 		return $this->response;
-	} // payByBankTransfer
+	}
 
 	private function accept_handler($data, $newstatus){
 		Authorization::haveOrFail("transactions_pay_accept");
@@ -669,9 +701,7 @@ class Transactions extends Controller
 	{
 		$transaction = $this->getTransactionForPay($data);
 
-		$payports = $this->transactionManager->getOnlinePayports($transaction->id);
-
-		if (!$payports) {
+		if (!$this->transactionManager->canOnlinePay($transaction->id)) {
 			throw new NotFound();
 		}
 
@@ -679,7 +709,7 @@ class Transactions extends Controller
 		$this->response->setView($view);
 
 		$view->setTransaction($transaction);
-		$view->setPayports($payports);
+		$view->setPayports($this->transactionManager->getOnlinePayports($transaction->id));
 
 		$this->response->setStatus(true);
 		return $this->response;
@@ -688,9 +718,7 @@ class Transactions extends Controller
 	{
 		$transaction = $this->getTransactionForPay($data);
 
-		$payports = $this->transactionManager->getOnlinePayports($transaction->id);
-
-		if (!$payports) {
+		if (!$this->transactionManager->canOnlinePay($transaction->id)) {
 			throw new NotFound();
 		}
 
@@ -698,6 +726,8 @@ class Transactions extends Controller
 		$this->response->setView($view);
 
 		$view->setTransaction($transaction);
+
+		$payports = $this->transactionManager->getOnlinePayports($transaction->id);
 		$view->setPayports($payports);
 
 		$rules = array(
@@ -1747,37 +1777,6 @@ class Transactions extends Controller
 		$this->response->setData($items, "items");
 		$this->response->setStatus(true);
 		return $this->response;
-	}
-
-	/**
-	 * @return string[]
-	 */
-	private function getAvailablePaymentMethods(bool $canPayByCredit = true, ?int $transactionID = null): array
-	{
-		$methods = [];
-		$userBankAccounts = Options::get("packages.financial.pay.tansactions.banka.accounts");
-
-		$query = new Account();
-		$query->where("status", Account::Active);
-		if ($userBankAccounts) {
-			$query->where("id", $userBankAccounts, "IN");
-		}
-
-		$bankaccounts = $query->has();
-
-		if ($canPayByCredit) {
-			$methods[] = 'credit';
-		}
-
-		if ($bankaccounts) {
-			$methods[] = 'banktransfer';
-		}
-
-		if ($transactionID and $this->transactionManager->canOnlinePay($transactionID)) {
-			$methods[] = 'onlinepay';
-		}
-
-		return $methods;
 	}
 }
 class transactionNotFound extends NotFound{}
