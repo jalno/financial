@@ -2,12 +2,17 @@
 
 namespace packages\financial;
 
+use packages\base\Date;
 use packages\base\DB;
 use packages\base\DB\Parenthesis;
+use packages\base\Exception;
 use packages\base\Options;
 use packages\financial\Bank\Account;
 use packages\financial\Contracts\IFinancialService;
 use packages\financial\Contracts\ITransactionManager;
+use packages\financial\events\transactions as Events;
+use packages\financial\logs\transactions as Logs;
+use packages\userpanel\Log;
 use packages\userpanel\User;
 
 class TransactionManager implements ITransactionManager
@@ -164,5 +169,107 @@ class TransactionManager implements ITransactionManager
         }
 
         return $methods;
+    }
+
+    public function store(array $data, ?int $operatorID = null, bool $sendNotification = true): Transaction
+    {
+        $transactionFields = ['user', 'title', 'products'];
+        foreach ($transactionFields as $field) {
+            if (!isset($data[$field])) {
+                throw new \InvalidArgumentException($field);
+            }
+        }
+
+        if (!isset($data['currency'])) {
+            $user = User::byId($data['user']);
+            $data['currency'] = Currency::getDefault($user);
+        }
+
+        $productFields = ['title', 'price', 'method'];
+        foreach ($data['products'] as $key => $item) {
+            foreach ($productFields as $field) {
+                if (!isset($item[$field])) {
+                    throw new \InvalidArgumentException("products[{$key}][{$field}]");
+                }
+            }
+        }
+
+        try {
+            DB::startTransaction();
+
+            $model = new Transaction();
+
+            $transactionFields[] = 'create_at';
+            $transactionFields[] = 'expire_at';
+            if (!isset($data['create_at'])) {
+                $data['create_at'] = Date::time();
+            }
+
+            foreach ($transactionFields as $field) {
+                $model->{$field} = $data[$field] ?? null;
+            }
+
+            $transactionID = $model->save();
+
+            if (isset($data['params'])) {
+                foreach ($data['params'] as $name => $value) {
+                    $paramID = $model->setParam($name, $value);
+
+                    if (!$paramID) {
+                        throw new \Exception('Can not save transaction param');
+                    }
+                }
+            }
+
+            if (!$transactionID) {
+                throw new Exception('Can not store transaction');
+            }
+
+            foreach ($data['products'] as $product) {
+                foreach (['discount', 'vat'] as $item) {
+                    if (!isset($product[$item])) {
+                        $product[$item] = 0;
+                    }
+                }
+
+                if (!isset($product['number']) or $product['number'] < 1) {
+                    $product['number'] = 1;
+                }
+
+                if (!isset($product['currency'])) {
+                    $product['currency'] = $data['currency'];
+                }
+
+                $productID = $model->addProduct($product);
+
+                if (!$productID) {
+                    throw new Exception('Can not store transction product');
+                }
+            }
+
+            $model->price = $model->totalPrice();
+            $model->save();
+
+            if ($operatorID) {
+                $log = new Log();
+                $log->user = $operatorID;
+                $log->type = Logs\Add::class;
+                $log->title = t('financial.logs.transaction.add', ['transaction_id' => $model->id]);
+                $log->parameters = [];
+                $log->save();
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            throw $e;
+        }
+
+        if ($sendNotification) {
+            (new Events\Add($model))->trigger();
+        }
+
+        return $model;
     }
 }

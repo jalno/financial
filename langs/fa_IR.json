@@ -160,6 +160,21 @@
 		"titles.settings_financial": "مالی",
 		"titles.financial.paid_at": "زمان پرداخت",
 		"titles.financial.pays_methods": "طریقه‌ی پرداخت",
-		"titles.financial.accepted": "تایید شده"
+		"titles.financial.accepted": "تایید شده",
+		"financial.logs.transaction.add": "صورتحساب #{transaction_id} را ایجاد کرد",
+		"financial.logs.transaction.edit": "صورتحساب #{transaction_id} را ویرایش کرد",
+		"financial.logs.transaction.information": "مشخصات",
+		"financial.logs.transaction.products": "محصولات",
+		"financial.logs.transaction.delete": "صورتحساب #{transaction_id} را حذف کرد",
+		"financial.logs.transaction.pay": "صورتحساب #{transaction_id} را پرداخت کرد",
+		"financial.logs.transaction.pays.reimburse": "صورتحساب #{transaction_id} را عودت داد",
+		"financial.logs.transaction.pay.accept": "پرداخت #{pay_id} از صورتحساب #{transaction_id} را تایید کرد ",
+		"financial.logs.transaction.pay.reject": "پرداخت #{pay_id} از صورتحساب #{transaction_id} را تایید نکرد ",
+		"packages.financial.logs.transaction.reimburse.user.panel.title": "مشخصات کاربر",
+		"packages.financial.logs.transaction.reimburse.transaction.user.id": "شناسه کاربر",
+		"packages.financial.logs.transaction.reimburse.transaction.user_full_name": "نام کاربر",
+		"packages.financial.logs.transaction.reimburse.user_credit_after_reimburse": "موجودی کاربر بعد از عودت",
+		"packages.financial.logs.transaction.merged.new_transaction.panel.title": "صورتحساب جدید",
+		"packages.financial.logs.transaction.merged.transaction.panel.title": "صورتحساب ادغام شده"
 	}
 }
