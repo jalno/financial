@@ -836,14 +836,9 @@ class Transactions extends Controller
 		}
 
 		foreach ($transactions as $transaction) {
-			$log = new Log();
-			$log->user = Authentication::getUser();
-			$log->type = logs\transactions\Delete::class;
-			$log->title = t("financial.logs.transaction.delete", ["transaction_id" => $transaction->id]);
-			$log->parameters = ['transaction' => $transaction];
-			$log->save();
-			$transaction->delete();
+			$this->transactionManager->delete($transaction->id, Authentication::getID());
 		}
+
 		$this->response->setStatus(true);
 		return $this->response;
 	}

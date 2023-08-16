@@ -272,4 +272,25 @@ class TransactionManager implements ITransactionManager
 
         return $model;
     }
+
+    public function delete(int $id, ?int $operatorID = null): Transaction
+    {
+        $transaction = $this->getByID($id);
+
+        $data = $transaction->toArray(false);
+        $result = $transaction->delete();
+
+        if (!$result) {
+            throw new \Exception('Can not delete transaction');
+        }
+
+        $log = new Log();
+        $log->user = $operatorID;
+        $log->type = Logs\Delete::class;
+        $log->title = t('financial.logs.transaction.delete', ['transaction_id' => $id]);
+        $log->parameters = ['transaction' => $data];
+        $log->save();
+
+        return $transaction;
+    }
 }
