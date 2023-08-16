@@ -317,6 +317,23 @@ $this->the_header();
 					'step' => 0.001
 				],
 				[
+					'name' => 'vat',
+					'type' => 'number',
+					'label' => t("transaction.tax"),
+					'ltr' => true,
+					'input-group' => array(
+						'first' => array(
+							array(
+								'type' => 'addon',
+								'text' => '%',
+							),
+						),
+					),
+					'step' => 0.001,
+					'min' => 0,
+					'max' => 100,
+				],
+				[
 					'name' => 'product_currency',
 					'type' => 'select',
 					'label' => translator::trans("financial.settings.currency"),

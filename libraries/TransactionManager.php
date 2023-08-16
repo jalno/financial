@@ -293,4 +293,171 @@ class TransactionManager implements ITransactionManager
 
         return $transaction;
     }
+
+    public function update(int $id, array $data, ?int $operatorID = null): Transaction
+    {
+        $transaction = $this->getByID($id);
+
+        $changes = [
+            'newData' => [],
+            'oldData' => [],
+        ];
+
+        foreach (['title', 'create_at', 'expire_at'] as $item) {
+            if (isset($data[$item]) and $transaction->{$item} != $data[$item]) {
+                $changes['oldData'][$item] = $transaction->{$item};
+                $changes['newData'][$item] = $data[$item];
+
+                $transaction->{$item} = $data[$item];
+            }
+        }
+
+        foreach (['currency', 'user'] as $item) {
+            if (isset($data[$item]) and $transaction->{$item}->id != $data[$item]) {
+                $changes['oldData'][$item] = $transaction->{$item}->id;
+                $changes['newData'][$item] = $data[$item];
+
+                $transaction->{$item} = $data[$item];
+            }
+        }
+
+        if ($changes['newData'] or $changes['oldData']) {
+            $result = $transaction->save();
+
+            if (!$result) {
+                throw new \Exception('Can not update transacton');
+            }
+        }
+
+        if (isset($data['params'])) {
+            $paramChanges = [
+                'new' => [],
+                'old' => [],
+            ];
+
+            foreach ($data['params'] as $key => $value) {
+                $param = $transaction->param($key);
+                if (!$param) {
+                    $paramChanges['new'][$key] = $value;
+                } elseif ($param != $value) {
+                    $paramChanges['new'][$key] = $value;
+                    $paramChanges['old'][$key] = $value;
+                }
+
+                $transaction->setParam($key, $value);
+            }
+
+            if ($paramChanges['new']) {
+                $changes['newData']['params'] = $paramChanges['new'];
+            }
+            if ($paramChanges['old']) {
+                $changes['oldData']['params'] = $paramChanges['old'];
+            }
+        }
+
+        if (isset($data['products'])) {
+            $productsChanges = [
+                'new' => [],
+                'old' => [],
+            ];
+
+            foreach ($data['products'] as $product) {
+                foreach (['discount', 'vat'] as $item) {
+                    if (!isset($product[$item])) {
+                        $product[$item] = 0;
+                    }
+                }
+
+                if (!isset($product['number']) or $product['number'] < 1) {
+                    $product['number'] = 1;
+                }
+
+                if (!isset($product['currency'])) {
+                    $product['currency'] = $data['currency'] ?? $transaction->currency->id;
+                }
+
+                if (isset($product['id'])) {
+                    $query = new Transaction_product();
+                    $query->where('id', $product['id']);
+                    $query->where('transaction', $id);
+
+                    $model = $query->getOne();
+                    if (!$model) {
+                        throw new \Exception('Can not find transaction product with id :'.$product['id']);
+                    }
+
+                    $productChanges = [
+                        'new' => [],
+                        'old' => [],
+                    ];
+
+                    foreach (['title', 'number', 'price', 'discount', 'vat', 'description'] as $item) {
+                        if (isset($product[$item]) and $model->{$item} != $product[$item]) {
+                            $productChanges['new'][$item] = $product[$item] ?: '-';
+                            $productChanges['old'][$item] = $model->{$item};
+
+                            $model->{$item} = $product[$item];
+                        }
+                    }
+
+                    if (isset($product['currency']) and $model->currency->id != $product['currency']) {
+                        $productChanges['new']['currency'] = $product['currency'];
+                        $productChanges['old']['currency'] = $model->currency->id;
+
+                        $model->currency = $product['currency'];
+                    }
+
+                    if ($productChanges['new'] or $productChanges['old']) {
+                        $result = $model->save();
+
+                        if (!$result) {
+                            throw new Exception('Can not update transaction product');
+                        }
+
+                        if ($productChanges['new']) {
+                            $productsChanges['new'][$model->id] = $productChanges['new'];
+                        }
+                        if ($productChanges['old']) {
+                            $productsChanges['old'][$model->id] = $productChanges['old'];
+                        }
+                    }
+                } else {
+                    $productID = $transaction->addProduct($product);
+
+                    if (!$productID) {
+                        throw new Exception('Can not store transction product');
+                    }
+
+                    $query = new Transaction_product();
+                    $query->where('id', $productID);
+                    $query->ArrayBuilder();
+
+                    $product = $query->getOne();
+
+                    $productsChanges['new'][$productID] = $product;
+                }
+            }
+
+            if ($productsChanges['new']) {
+                $changes['newData']['products'] = $productsChanges['new'];
+            }
+            if ($productsChanges['old']) {
+                $changes['oldData']['products'] = $productsChanges['old'];
+            }
+        }
+
+        if ($changes['newData'] or $changes['oldData']) {
+            $log = new log();
+            $log->user = $operatorID;
+            $log->type = Logs\edit::class;
+            $log->title = t('financial.logs.transaction.edit', ['transaction_id' => $transaction->id]);
+            $log->parameters = $changes;
+            $log->save();
+
+            $event = new Events\Edit($transaction);
+            $event->trigger();
+        }
+
+        return $transaction;
+    }
 }

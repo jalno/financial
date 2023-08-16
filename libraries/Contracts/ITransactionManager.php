@@ -47,4 +47,9 @@ interface ITransactionManager
     public function store(array $data, ?int $operatorID, bool $sendNotification): Transaction;
 
     public function delete(int $id, ?int $operatorID);
+
+    /**
+     * @param array{user?:int,title?:string,currency?:int,create_at?:int,expire?:int,params?:array<string,mixed>,products:array{id?:int,title?:string,price?:float,method?:int,type?:string,description?:string,discount?:float,vat?:float,number?:positive-int,currency?:int,params?:array<string,mixed>}} $data
+     */
+    public function update(int $id, array $data, ?int $operatorID): Transaction;
 }

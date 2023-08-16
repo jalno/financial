@@ -1,7 +1,10 @@
 <?php
 namespace packages\financial\logs\transactions;
 use \packages\base\{view, translator};
+use packages\financial\Currency;
+use packages\financial\Transaction_product;
 use \packages\userpanel\{logs\panel, logs, date};
+use packages\userpanel\User;
 class edit extends logs{
 	public function getColor():string{
 		return "circle-teal";
@@ -21,16 +24,27 @@ class edit extends logs{
 			$panel->title = translator::trans('financial.logs.transaction.information');
 			$html = '';
 			if(isset($oldData['user'])){
+				$user = $oldData['user'];
+				if (is_numeric($user)) {
+					$user = User::byId($oldData['user']);
+				}
+
 				$html .= '<div class="form-group">';
 				$html .= '<label class="col-xs-4 control-label">'.translator::trans("transaction.user").': </label>';
-				$html .= '<div class="col-xs-8">'.$oldData['user']->getFullName().'</div>';
+				$html .= '<div class="col-xs-8">'.($user ? $user->getFullName() : "#{$oldData['user']}").'</div>';
 				$html .= "</div>";
+
 				unset($oldData['user']);
 			}
 			if(isset($oldData['currency'])){
+				$currency = $oldData['currency'];
+				if (is_numeric($currency)) {
+					$currency = Currency::byId($oldData['currency']);
+				}
+
 				$html .= '<div class="form-group">';
 				$html .= '<label class="col-xs-4 control-label">'.translator::trans("transaction.currency").': </label>';
-				$html .= '<div class="col-xs-8">'.$oldData['currency']->title.'</div>';
+				$html .= '<div class="col-xs-8">'.($currency ? $currency->title : "#{$oldData['currency']}").'</div>';
 				$html .= "</div>";
 				unset($oldData['currency']);
 			}
@@ -72,10 +86,12 @@ class edit extends logs{
 			$html .= "<th>قیمت</th>";
 			$html .= "</tr></thead>";
 			$html .= "<tbody>";
-			foreach($products as $product){
-				$html .= "<tr><td>{$product->id}</th>";
-				$html .= "<td>{$product->title}</td>";
-				$html .= "<td><span class=\"ltr\">{$product->price}</span> {$product->currency->title}</td></tr>";
+			foreach($products as $id => $data) {
+				$product = Transaction_product::byId($id);
+
+				$html .= "<tr><td>{$id}</th>";
+				$html .= '<td>'.($data['title'] ?? $product->title).'</td>';
+				$html .= '<td><span class="ltr">'.($data['price'] ?? $product->price).'</span> '.($product ? $product->currency->title : '').'</td></tr>';
 			}
 			$html .= "</tbody></table></div>";
 
