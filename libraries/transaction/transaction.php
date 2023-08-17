@@ -204,7 +204,7 @@ class transaction extends dbObject{
 	 * @return float
 	 */
 	public function totalPrice(): float {
-		return $this->getProductsTotalPrice($this->products);
+		return $this->getTotalPrice();
 	}
 
 	/**
@@ -364,7 +364,7 @@ class transaction extends dbObject{
 			}
 		}
 
-		$data['price'] = $this->getProductsTotalPrice($products);
+		$data['price'] = $this->getTotalPrice();
 
 		if (!isset($data["token"])) {
 			$data["token"] = transaction::generateToken();
@@ -532,19 +532,25 @@ class transaction extends dbObject{
 			}
 		}
 	}
-	/**
-	 * get total price of given products based on currency of transaction
-	 *
-	 * @var packages\financial\transaction_product[] $products
-	 * @return float
-	 */
-	protected function getProductsTotalPrice(array $products): float {
-		$total = 0;
-		$currency = $this->currency;
-		foreach ($products as $product) {
-			$total += $product->currency->changeTo($product->totalPrice(), $currency);
-		}
-		return floatval($total);
+
+	public function getVat(): float
+	{
+		return array_sum(array_map(fn (Transaction_product $product) => $product->getVat($this->currency), $this->products));
+	}
+
+	public function getPrice(): float
+	{
+		return array_sum(array_map(fn (Transaction_product $product) => $product->getPrice($this->currency), $this->products));
+	}
+
+	public function getDiscount(): float
+	{
+		return array_sum(array_map(fn (Transaction_product $product) => $product->getDiscount($this->currency), $this->products));
+	}
+
+	public function getTotalPrice(): float
+	{
+		return array_sum(array_map(fn (Transaction_product $product) => $product->totalPrice($this->currency), $this->isNew ? $this->tmproduct : $this->products));
 	}
 }
 class undefinedCurrencyException extends \Exception{}

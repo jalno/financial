@@ -124,11 +124,30 @@ class transaction_product extends dbObject{
 		}
 	}
 
-	public function totalPrice(): float {
+	public function getPrice(Currency $currency = null): float
+	{
+		return $this->currency->changeTo($this->price, $currency);
+	}
 
-		$price = ($this->price * $this->number) - $this->discount;
+	public function getDiscount(Currency $currency = null): float
+	{
+		return $this->discount ? $this->currency->changeTo($this->discount, $currency) : 0;
+	}
 
-		return $price + (($price * abs($this->vat)) / 100);
+	public function getVat(Currency $currency = null, ?float $price = null): float
+	{
+		if (!$price) {
+			$price = $this->getPrice($currency);
+		}
+
+		return $currency->round($price * abs($this->vat) / 100);
+	}
+
+	public function totalPrice(Currency $currency = null): float
+	{
+		$price = ($this->getPrice($currency) * $this->number) - $this->getDiscount($currency);
+
+		return $price + $this->getVat($currency, $price);
 	}
 
 	public function save($data = null) {

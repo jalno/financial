@@ -189,26 +189,17 @@ $this->the_header(!$isLogin ? "logedout" : "");
 						$x = 1;
 						$currency = $this->transaction->currency;
 						foreach($this->transaction->products as $product){
-							$productPrice = $product->currency->changeTo(($product->price * $product->number), $currency);
-							$productDiscount = $product->currency->changeTo($product->discount, $currency);
-
-							$this->discounts += $productDiscount;
-
-							$finalPrice = $product->currency->changeTo($product->totalPrice(), $currency);
-
-							$vat = ($product->vat * $productPrice) / 100;
-
-							$this->vats += $vat;
+							$price = $product->getPrice($currency);
 						?>
 							<tr>
 								<td><?php echo $x++; ?></td>
 								<td><?php echo $product->title; ?></td>
 								<td class="hidden-480"><?php echo $product->description; ?></td>
 								<td class="hidden-480"><?php echo t("product.xnumber", array("number" => $product->number)); ?></td>
-								<td class="hidden-480"> <?php echo $this->numberFormat($productPrice) . " " . $currency->title; ?></td>
-								<td class="hidden-480"> <?php echo $this->numberFormat($productDiscount) . " " . $currency->title; ?></td>
-								<td class="hidden-480"> <?php echo $this->numberFormat($vat) . " " . $currency->title; ?></td>
-								<td><?php echo $this->numberFormat($finalPrice) . " " . $currency->title; ?></td>
+								<td class="hidden-480"> <?php echo $this->numberFormat($price) . " " . $currency->title; ?></td>
+								<td class="hidden-480"> <?php echo $this->numberFormat($product->getDiscount($currency)) . " " . $currency->title; ?></td>
+								<td class="hidden-480"> <?php echo $this->numberFormat($product->getVat($currency, $price)) . " " . $currency->title; ?></td>
+								<td><?php echo $this->numberFormat($product->totalPrice($currency)) . " " . $currency->title; ?></td>
 								<?php if($this->transaction->status == transaction::paid and !$product->configure){ ?>
 								<td><a href="<?php echo userpanel\url("transactions/config/".$product->id); ?>" class="btn btn-sm btn-teal"><i class="fa fa-cog"></i> <?php echo translator::trans("financial.configure"); ?></a></td>
 								<?php } ?>
@@ -293,9 +284,9 @@ $this->the_header(!$isLogin ? "logedout" : "");
 			<div class="row">
 				<div class="col-sm-12 invoice-block">
 					<ul class="list-unstyled amounts">
-						<li><strong><?php echo t("packages.financial.total_price"); ?>:</strong> <?php echo($this->numberFormat(abs($this->transaction->price)). " " . $currency->title); ?></li>
-						<li><strong><?php echo t("transaction.add.discount"); ?>:</strong> <?php echo($this->numberFormat($this->discounts) . " " . $currency->title); ?></li>
-						<li><strong><?php echo t("packages.financial.tax"); ?>:</strong> <?php echo $this->numberFormat($this->vats) . " " .$currency->title; ?></li>
+						<li><strong><?php echo t("packages.financial.total_price"); ?>:</strong> <?php echo($this->numberFormat(abs($this->transaction->getPrice())). " " . $currency->title); ?></li>
+						<li><strong><?php echo t("transaction.add.discount"); ?>:</strong> <?php echo($this->numberFormat($this->transaction->getDiscount()) . " " . $currency->title); ?></li>
+						<li><strong><?php echo t("packages.financial.tax"); ?>:</strong> <?php echo $this->numberFormat($this->transaction->getVat()) . " " .$currency->title; ?></li>
 						<li>
 							<strong><?php echo t("packages.financial.payable_price"); ?>:</strong>
 						<?php
