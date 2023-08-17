@@ -52,11 +52,18 @@ export default class Edit {
 			});
 		});
 	}
-	private static rebuildProductsTable() {
+	private static rebuildProductsTable(items?: Object[]) {
 		let $trs = "";
-		$("tbody > tr", Edit.table).each(function(index) {
-			$trs += Edit.buildProductRow($(this).data("product"), index + 1);
-		});
+		if (items) {
+			let index = 0;
+			for (const item of items) {
+				$trs += Edit.buildProductRow(item, ++index);
+			}
+		} else {
+			$("tbody > tr", Edit.table).each(function(index) {
+				$trs += Edit.buildProductRow($(this).data("product"), index + 1);
+			});
+		}
 		$("tbody", Edit.table).html($trs);
 		Edit.RmoveProduct();
 		Edit.productEditListener();
@@ -92,7 +99,7 @@ export default class Edit {
 		`;
 		let className: string = "";
 		let link = "";
-		if (product.id && /^\d+$/.test(product.id.toString())) {
+		if (product?.id) {
 			link = Router.url("userpanel/transactions/product/delete/" + product.id);
 			code += Edit.productEdit + " ";
 		} else {
@@ -155,12 +162,12 @@ export default class Edit {
 			}
 			$(this).parents(".modal").modal("hide");
 			const newdata = {
-				id: Math.random().toString(36).substring(2),
 				title: $("input[name=product_title]", this).val(),
 				description: $("textarea[name=description]", this).val(),
 				number: $("input[name=number]", this).val(),
 				price: parseFloat(Transaction.deFormatNumber($("input[name=product_price]", this).val())),
 				discount: parseFloat(Transaction.deFormatNumber($("input[name=discount]", this).val())),
+				vat: parseFloat(Transaction.deFormatNumber($("input[name=vat]", this).val())),
 				currency: $("select[name=product_currency] option:selected", this).val(),
 				currency_title: $("select[name=product_currency] option:selected", this).data("title"),
 			};
@@ -180,19 +187,7 @@ export default class Edit {
 						title: t("packages.financial.success"),
 						message: t("packages.financial.request.success"),
 					});
-					$("tbody > tr", Edit.table).each(function() {
-						const product = $(this).data("product");
-						for (const item of response.products) {
-							if (product.id == item.id) {
-								if (typeof item.pId !== 'undefined') {
-									item.id = item.pId;
-								}
-								$(this).data("product", item);
-								break;
-							}
-						}
-					});
-					Edit.rebuildProductsTable();
+					Edit.rebuildProductsTable(response.products);
 				},
 				error: (error: webuilder.AjaxError) => {
 					if (error.error === "data_duplicate" || error.error === "data_validation") {

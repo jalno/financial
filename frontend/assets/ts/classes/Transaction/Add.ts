@@ -82,7 +82,7 @@ export default class Add {
 			</tr>
 		`;
 		const $row = $(code).appendTo($("tbody", $table));
-		$row.data(product);
+		$row.data('product', product);
 		$(".btn-remove", $row ).click(Add.productRemove);
 		$table.css("display", "table");
 	}
@@ -113,7 +113,7 @@ export default class Add {
 			products: [],
 		};
 		$(".product-table tbody > tr").each(function() {
-			info.products.push($(this).data());
+			info.products.push($(this).data('product'));
 		});
 		return info;
 	}

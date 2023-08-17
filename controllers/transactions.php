@@ -836,214 +836,157 @@ class Transactions extends Controller
 		}
 
 		foreach ($transactions as $transaction) {
-			$log = new Log();
-			$log->user = Authentication::getUser();
-			$log->type = logs\transactions\Delete::class;
-			$log->title = t("financial.logs.transaction.delete", ["transaction_id" => $transaction->id]);
-			$log->parameters = ['transaction' => $transaction];
-			$log->save();
-			$transaction->delete();
+			$this->transactionManager->delete($transaction->id, Authentication::getID());
 		}
+
 		$this->response->setStatus(true);
 		return $this->response;
 	}
-	public function edit($data){
-		authorization::haveOrFail('transactions_edit');
-		$view = view::byName("\\packages\\financial\\views\\transactions\\edit");
+	public function edit($data)
+	{
+		Authorization::haveOrFail('transactions_edit');
+
 		$transaction = $this->getTransaction($data["id"]);
 
+		$view = view::byName("\\packages\\financial\\views\\transactions\\edit");
+		$this->response->setView($view);
+
 		$view->setTransactionData($transaction);
-		$view->setCurrencies(currency::get());
+		$view->setCurrencies(Currency::get());
+
 		$inputsRules = [
 			'title' => [
 				'type' => 'string',
 				'optional' => true
 			],
 			'user' => [
-				'type' => 'number',
+				'type' => User::class,
 				'optional' => true
 			],
 			'create_at' => [
 				'type' => 'date',
-				'optional' => true
+				'optional' => true,
+				'unix' => true,
+				'default' => $transaction->create_at,
 			],
 			'expire_at' => [
 				'type' => 'date',
-				'optional' => true
+				'optional' => true,
+				'unix' => true,
+				'default' => $transaction->expire_at,
 			],
 			'products' => [
-				'optional' => true
-			]
+				'type' => function($data) use ($transaction) {
+					if (!is_array($data)) {
+						throw new InputValidationException('products');
+					}
+
+					$products = [];
+
+					foreach ($data as $key => $item) {
+						$product = [];
+
+						if (isset($item['id'])) {
+							$query = new Transaction_product();
+							$query->where('transaction', $transaction->id);
+							$query->where('id', $item['id']);
+
+							if (!$query->has()) {
+								throw new InputValidationException('product_id');
+							}
+
+							$product['id'] = $item['id'];
+						} else {
+							if (!isset($item['price'])) {
+								throw new InputValidationException('product_price');
+							}
+							if (!isset($item['title'])) {
+								throw new InputValidationException('product_title');
+							}
+
+							if (isset($item['currency'])) {
+								$query = new Currency();
+								$query->where('id', $item['currency']);
+								$currency = $query->getOne();
+
+								if (!$currency) {
+									throw new InputValidationException('product_currency');
+								}
+
+								if (!$currency->hasRate($transaction->currency->id)) {
+									$e = new Error('financial.transaction.edit.currency.UnChangableException');
+									$e->setMessage(t('error.financial.transaction.edit.currency.UnChangableException', [
+										'currency' => $currency->title,
+										'changeTo' => $transaction->currency->getChangeTo()->title
+									]));
+
+									throw $e;
+								}
+
+								$product['currency'] = $item['currency'];
+							}
+
+							$product['method'] = Transaction_product::other;
+						}
+
+						if (isset($item['vat'])) {
+							$product['vat'] = ($item['vat'] < 0 or $item['vat'] > 100) ? 0 : $item['vat'];
+						}
+
+						if (isset($item['discount'])) {
+							$product['discount'] = max(0, $item['discount']);
+						}
+
+						if (isset($item['number'])) {
+							$item['number'] = max(1, $item['number']);
+						}
+
+						if (isset($item['price'])) {
+							if ($item['price'] == 0) {
+								throw new InputValidationException('product_price');
+							}
+
+							$product['price'] = $item['price'];
+						}
+
+						if (isset($item['description'])) {
+							$product['description'] = $item['description'] ?: null;
+						}
+
+						if (isset($item['title'])) {
+							$product['title'] = $item['title'];
+						}
+
+						$products[] = $product;
+					}
+
+					return $products;
+				},
+				'optional' => true,
+			],
 		];
-		$this->response->setStatus(false);
-		if(http::is_post()){
-			try{
-				$inputs = $this->checkinputs($inputsRules);
-				if(isset($inputs['expire_at'])){
-					if($inputs['expire_at']){
-						$inputs['expire_at'] = date::strtotime($inputs['expire_at']);
-					}else{
-						unset($inputs['expire_at']);
-					}
-				}
-				if(isset($inputs['create_at'])){
-					if($inputs['create_at']){
-						$inputs['create_at'] = date::strtotime($inputs['create_at']);
-					}else{
-						unset($inputs['create_at']);
-					}
-				}
-				if(isset($inputs['user'])){
-					if(!$inputs['user'] =user::byId($inputs['user'])){
-						throw new inputValidation("user");
-					}
-				}
-				if(isset($inputs['currency'])){
-					if(!$inputs['currency'] = currency::byId($inputs['currency'])){
-						throw new inputValidation('currency');
-					}
-				}else{
-					$inputs['currency'] = $transaction->currency;
-				}
-				if(isset($inputs["expire_at"])){
-					if(isset($inputs["create_at"])) {
-						if($inputs["expire_at"] < $inputs["create_at"]){
-							throw new inputValidation("expire_at");
-						}
-					}else{
-						if($inputs["expire_at"] < $transaction->create_at){
-							throw new inputValidation("expire_at");
-						}
-					}
-				}
-				if(isset($inputs["create_at"])){
-					if(isset($inputs['expire_at'])){
-						if ($inputs["create_at"] > $inputs['expire_at']) {
-							throw new inputValidation("create_at");
-						}
-					}else{
-						if ($inputs["create_at"] > $transaction->expire_at) {
-							throw new inputValidation("create_at");
-						}
-					}
-				}
-				if(isset($inputs['products'])){
-					if(!is_array($inputs['products'])){
-						throw new inputValidation('products');
-					}
-					foreach($inputs['products'] as $product){
-						if(isset($product['id']) and is_numeric($product['id'])){
-							if(!transaction_product::byId($product['id'])){
-								throw new inputValidation("product");
-							}
-						}
-						foreach(['price', 'currency'] as $item){
-							if(!isset($product[$item])){
-								throw new inputValidation("product_{$item}");
-							}
-						}
-						if(isset($product['discount']) and $product['discount'] < 0){
-							throw new inputValidation('discount');
-						}
-						if($product['price'] == 0){
-							throw new inputValidation('product_price');
-						}
-						if(!$product['currency'] = currency::byId($product['currency'])){
-							throw new inputValidation("product_currency");
-						}
-						if($inputs['currency']->id != $product['currency']->id and !$product['currency']->hasRate($inputs['currency']->id)){
-							throw new currency\UnChangableException($product['currency'], $inputs['currency']);
-						}
-					}
-				}
-				$productsData = array();
-				if(isset($inputs['products'])){
-					foreach($inputs['products'] as $row){
-						if(isset($row['id']) and is_numeric($row['id'])){
-							$product = transaction_product::byId($row['id']);
-						}else{
-							$product = new transaction_product;
-							$product->transaction = $transaction->id;
-							$product->method  = transaction_product::other;
-						}
 
-						if (!isset($row['vat']) or $row['vat'] < 0 or $row['vat'] > 100) {
-							$row['vat'] = $product->vat ?? 0;
-						}
+		if (http::is_post()) {
+			$inputs = $this->checkinputs($inputsRules);
 
-						$product->title = $row['title'];
-						$product->description = isset($row['description']) ? $row['description'] : null;
-						$product->number = $row['number'];
-						$product->price = $row['price'];
-						$product->discount = $row['discount'];
-						$product->currency = $row['currency'];
-						$product->vat = $row['vat'];
-						$product->save();
-						$data = $product->toArray();
-						$data["currency_title"] = $row['currency_title'];
-						if (isset($row['id']) and !is_numeric($row['id'])) {
-							$data["pId"] = $data["id"];
-							$data["id"] = $row['id'];
-						}
-						$productsData[] = $data;
-					}
-				}
-				$parameters = ['oldData' => []];
-				if(isset($inputs['title']) and $transaction->title != $inputs['title']){
-					$parameters['oldData']['title'] = $transaction->title;
-					$transaction->title = $inputs['title'];
-				}
-				if (isset($inputs['expire_at']) and $transaction->expire_at != $inputs['expire_at']) {
-					$parameters['oldData']['expire_at'] = $transaction->expire_at;
-					$transaction->expire_at = $inputs['expire_at'];
-					if ($transaction->status == transaction::expired and $inputs['expire_at'] > date::time()) {
-						$transaction->status = transaction::unpaid;
-					}
-				}
-				if (isset($inputs['create_at']) and $transaction->create_at != $inputs['create_at']) {
-					$parameters['oldData']['create_at'] = $transaction->create_at;
-					$transaction->create_at = $inputs['create_at'];
-				}
-				foreach(['currency', 'user'] as $item){
-					if(isset($inputs[$item]) and $inputs[$item]->id != $transaction->$item->id){
-						$parameters['oldData'][$item] = $transaction->$item;
-						$transaction->$item = $inputs[$item]->id;
-					}
-				}
-				if(isset($inputs['description'])){
-					$transaction->setparam('description', $inputs['description']);
-				}
-				if($transaction->status == transaction::unpaid){
-					if(isset($inputs['untriggered'])){
-						$transaction->setParam('trigered_paid', 0);
-					}
-				}
-				$transaction->save();
-				$event = new events\transactions\edit($transaction);
-				$event->trigger();
-				$log = new log();
-				$log->user = authentication::getUser();
-				$log->type = logs\transactions\edit::class;
-				$log->title = t("financial.logs.transaction.edit", ["transaction_id" => $transaction->id]);
-				$log->parameters = $parameters;
-				$log->save();
-				$this->response->setStatus(true);
-				$this->response->setData($productsData, "products");
-			}catch(inputValidation $error){
-				$view->setFormError(FormError::fromException($error));
-			}catch(currency\UnChangableException $e){
-				$error = new error();
-				$error->setCode('financial.transaction.edit.currency.UnChangableException');
-				$error->setMessage(t('error.financial.transaction.edit.currency.UnChangableException', [
-					'currency' => $e->getCurrency()->title,
-					'changeTo' => $e->getChangeTo()->title
-				]));
-				$view->addError($error);
+			if ($inputs['expire_at'] and $inputs['create_at'] and $inputs['expire_at'] < $inputs['create_at']) {
+				throw new inputValidation('expire_at');
 			}
-		}else{
+
+			if (isset($inputs['user'])) {
+				$inputs['user'] = $inputs['user']->id;
+			}
+
+			$transaction = $this->transactionManager->update($transaction->id, $inputs, Authentication::getID());
+
+			$products = array_map(fn (Transaction_product $product) => array_merge($product->toArray(), ['currency_title' => $product->currency->title]), $transaction->products);
+			
+			$this->response->setStatus(true);
+			$this->response->setData($products, "products");
+		} else {
 			$this->response->setStatus(true);
 		}
-		$this->response->setView($view);
+
 		return $this->response;
 	}
 	public function add() {
@@ -1071,12 +1014,60 @@ class Transactions extends Controller
 			'create_at' => array(
 				'type' => 'date',
 				'min' => 0,
+				'unix' => true,
 			),
 			'expire_at' => array(
 				'type' => 'date',
 				'min' => 0,
+				'unix' => true,
 			),
-			'products' => array(),
+			'products' => [
+				'type' => function($data) {
+					if (!is_array($data)) {
+						throw new InputValidationException('products');
+					}
+
+					$products = [];
+					foreach ($data as $key => $input) {
+						if (!isset($input['title'])) {
+							throw new InputValidationException("products[{$key}][title]");
+						}
+
+						if (!isset($input['price']) or $input['price'] == 0) {
+							throw new InputValidationException("products[{$key}][price]");
+						}
+
+						if (isset($input['currency'])) {
+							$query = new Currency();
+							$query->where('id', $input['currency']);
+
+							if (!$query->has()) {
+								throw new InputValidationException("products[{$key}][currency]");
+							}
+						}
+
+						foreach (['discount', 'vat'] as $item) {
+							if (!isset($input[$item]) or $input[$item] < 0) {
+								$input[$item] = 0;
+							}
+						}
+
+						if ($input['vat'] > 100) {
+							throw new InputValidationException('vat');
+						}
+
+						if (!isset($input['number']) or $input['number'] < 1) {
+							$input['number'] = 1;
+						}
+
+						$input['method'] = Transaction_product::other;
+
+						$products[] = $input;
+					}
+
+					return $products;
+				},
+			],
 			'notification' => array(
 				'type' => 'bool',
 				'optional' => true,
@@ -1085,75 +1076,25 @@ class Transactions extends Controller
 
 		);
 		$inputs = $this->checkinputs($inputsRules);
-		$inputs['create_at'] = Date::strtotime($inputs['create_at']);
-		$inputs['expire_at'] = Date::strtotime($inputs['expire_at']);
 		$inputs['currency'] = Currency::getDefault($inputs['user']);
 		
 		if ($inputs['expire_at'] < $inputs['create_at']) {
-			throw new InputValidationException("expire_at");
+			throw new InputValidationException('expire_at');
 		}
-		$products = array();
-		foreach ($inputs['products'] as $x => $product) {
-			if (!isset($product['title'])) {
-				throw new InputValidationException("products[$x][title]");
-			}
-			if (!isset($product['price']) or $product['price'] == 0) {
-				throw new InputValidationException("products[$x][price]");
-			}
-			if (isset($product['currency'])) {
-				if (!$product['currency'] = currency::byId($product['currency'])) {
-					throw new InputValidationException("products[$x][currency]");
-				}
-			} else {
-				$inputs['products'][$x]['currency'] = $inputs['currency'];
-			}
-			if (isset($product['discount'])) {
-				if ($product['discount'] < 0) {
-					throw new InputValidationException("products[$x][discount]");
-				}
-			} else {
-				$product['discount'] = 0;
-			}
-			if (isset($product['number'])) {
-				if ($product['number'] < 0) {
-					throw new InputValidationException("products[$x][number]");
-				}
-			} else {
-				$product['number'] = 1;
-			}
 
-			if (!isset($product["vat"]) or $product["vat"] < 0 or $product["vat"] > 100) {
-				$product["vat"] = 0;
-			}
+		if (isset($inputs['description'])) {
+			$inputs['params'] = [
+				'description' => $inputs['description'],
+			];
 
-			$product['currency'] = $product['currency']->id;
-			$product['method'] = Transaction_product::other;
-			$products[] = $product;
+			unset($inputs['description']);
 		}
-		$transaction = new Transaction;
-		$transaction->user = $inputs['user']->id;
-		$transaction->status = Transaction::unpaid;
-		foreach($products as $product){
-			$transaction->addProduct($product);
-		}
-		foreach(['title', 'currency', 'create_at', 'expire_at'] as $item){
-			$transaction->$item = $inputs[$item];
-		}
-		$transaction->save();
-		if(isset($inputs['description'])){
-			$transaction->setparam('description', $inputs['description']);
-		}
-		if ($inputs['notification']) {
-			$event = new events\transactions\Add($transaction);
-			$event->trigger();
-		}
-		$log = new Log();
-		$log->user = Authentication::getUser();
-		$log->type = logs\transactions\Add::class;
-		$log->title = t("financial.logs.transaction.add", ["transaction_id" => $transaction->id]);
-		$log->save();
+
+		$transaction = $this->transactionManager->store($inputs, Authentication::getID(), $inputs['notification']);
+
 		$this->response->setStatus(true);
 		$this->response->Go(userpanel\url('transactions/view/'.$transaction->id));
+
 		return $this->response;
 	}
 
@@ -1174,6 +1115,7 @@ class Transactions extends Controller
 		}
 		return $product;
 	}
+
 	public function product_delete($data){
 		authorization::haveOrFail('transactions_product_delete');
 		$transaction_product = $this->getProduct($data);
@@ -1254,68 +1196,59 @@ class Transactions extends Controller
 		$this->response->setView($view);
 		return $this->response;
 	}
-	public function addingcredit(){
-		$view = view::byName("\\packages\\financial\\views\\transactions\\addingcredit");
+	public function addingcredit()
+	{
 		authorization::haveOrFail('transactions_addingcredit');
-		$types = authorization::childrenTypes();
-		if($types){
+		$view = view::byName("\\packages\\financial\\views\\transactions\\addingcredit");
+		$this->response->setView($view);
+
+		$types = Authorization::childrenTypes();
+		if ($types) {
 			$view->setClient(authentication::getID());
 		}
-		$inputsRules = array(
-			'price' => array(
-				'type' => 'float',
-			)
-		);
-		if($types){
-			$inputsRules['client'] = array(
-				'type' => 'number'
+
+		if (http::is_post()) {
+			$inputsRules = array(
+				'price' => array(
+					'type' => 'float',
+					'min' => 0,
+				)
 			);
-		}
-		$this->response->setStatus(false);
-		if(http::is_post()){
-			try{
-				$inputs = $this->checkinputs($inputsRules);
-				if(isset($inputs['client'])){
-					if($inputs['client']){
-						if(!$inputs['client'] = user::byId($inputs['client'])){
-							throw new inputValidation('client');
-						}
-					}else{
-						unset($inputs['client']);
-					}
-				}else{
-					$inputs['client'] = authentication::getUser();
-				}
-				if($inputs['price'] <= 0){
-					throw new inputValidation('price');
-				}
-				$transaction = new transaction;
-				$transaction->title = t("transaction.adding_credit");
-				$transaction->user = $inputs['client']->id;
-				$transaction->create_at = time();
-				$transaction->expire_at = time()+86400;
-				$transaction->addProduct(array(
-					'title' => t("transaction.adding_credit", array('price' => $inputs['price'])),
-					'price' => $inputs['price'],
-					'type' => '\packages\financial\products\addingcredit',
-					'discount' => 0,
-					'number' => 1,
-					'method' => transaction_product::addingcredit
-				));
-				$transaction->save();
-				$this->response->setStatus(true);
-				$this->response->Go(userpanel\url("transactions/view/".$transaction->id));
-			}catch(inputValidation $error){
-				$view->setFormError(FormError::fromException($error));
-			}catch(unAcceptedPrice $e){
-				$error = new error();
-				$error->setCode('financial.addingcredit.unAcceptedPrice');
-				$view->addError($error);
+	
+			if ($types) {
+				$inputsRules['client'] = array(
+					'type' => User::class,
+				);
 			}
-			$view->setDataForm($this->inputsvalue($inputsRules));
-		}else{
+			$inputs = $this->checkinputs($inputsRules);
+
+			if (!isset($inputs['client'])) {
+				$inputs['client'] = Authentication::getUser();
+			}
+
+			$isOperator = $inputs['client']->id !== Authentication::getID();
+
+			$transaction = $this->transactionManager->store([
+				'title' => t('transaction.adding_credit'),
+				'user' => $inputs['client']->id,
+				'currency' => Currency::getDefault($inputs['client'])->id,
+				'expire_at' => Date::time() + 86400,
+				'products' => [
+					[
+						'title' => t('transaction.adding_credit', ['price' => $inputs['price']]),
+						'price' => $inputs['price'],
+						'type' => '\packages\financial\products\addingcredit',
+						'method' => transaction_product::addingcredit
+					],
+				],
+			], $isOperator ? Authentication::getID() : null, $isOperator);
+
+			$this->response->setStatus(true);
+			$this->response->Go(userpanel\url("transactions/view/".$transaction->id));
+		} else {
 			$this->response->setStatus(true);
 		}
+
 		$this->response->setView($view);
 		return $this->response;
 	}
@@ -1459,32 +1392,40 @@ class Transactions extends Controller
 			$expire = 432000;
 		}
 
-		$transaction = new Transaction;
-		$transaction->title = t("packages.financial.transactions.title.refund");
-		$transaction->user = $inputs["refund_user"]->id;
-		$transaction->create_at = Date::time();
-		$transaction->expire_at = Date::time() + $expire;
-		$transaction->currency = $currency->id;
-		$transaction->addProduct(array(
-			"title" => t("packages.financial.transactions.product.title.refund"),
-			"price" => -$inputs["refund_price"],
-			"description" => t("packages.financial.transactions.refund.description", array(
-				"account_account" => $inputs["refund_account"]->account ? $inputs["refund_account"]->account : "-",
-				"account_cart" => $inputs["refund_account"]->cart ? $inputs["refund_account"]->cart : "-",
-				"account_shaba" => $inputs["refund_account"]->shaba ? $inputs["refund_account"]->shaba : "-",
-				"account_owner" => $inputs["refund_account"]->owner,
-			)),
-			"discount" => 0,
-			"number" => 1,
-			"method" => transaction_product::refund,
-			"currency" => $currency->id,
-			"params" => array(
-				"bank-account" => $inputs["refund_account"]->toArray(),
-			),
-		));
-		$transaction->save();
+		$isOperator = $inputs['refund_user']->id === Authentication::getID();
+
+		$transaction = $this->transactionManager->store([
+			'title' => t('packages.financial.transactions.title.refund'),
+			'user' => $inputs['refund_user']->id,
+			'currency' => $currency->id,
+			'expire_at' => Date::time() + $expire,
+			'products' => [
+				[
+					'title' => t('packages.financial.transactions.product.title.refund'),
+					'price' => -$inputs['refund_price'],
+					'description' => t('packages.financial.transactions.refund.description', array(
+						'account_account' => $inputs['refund_account']->account ? $inputs['refund_account']->account : '-',
+						'account_cart' => $inputs['refund_account']->cart ? $inputs['refund_account']->cart : '-',
+						'account_shaba' => $inputs['refund_account']->shaba ? $inputs['refund_account']->shaba : '-',
+						'account_owner' => $inputs['refund_account']->owner,
+					)),
+					'discount' => 0,
+					'number' => 1,
+					'method' => transaction_product::refund,
+					'currency' => $currency->id,
+					'params' => array(
+						'current_user_credit' => DB::where('id', $inputs["refund_user"]->id)->getValue('userpanel_users', 'credit'),
+						'bank-account' => $inputs['refund_account']->toArray(),
+					),
+				],
+			],
+		], $isOperator ? Authentication::getID() : null, $isOperator);
 
 		$inputs['refund_user']->option('financial_last_checkout_time', Date::time());
+
+		DB::where('id', $inputs["refund_user"]->id)->update('userpanel_users', [
+			'credit' => DB::dec($inputs["refund_price"]),
+		]);
 
 		$inputs["refund_user"]->credit -= $inputs["refund_price"];
 		$inputs["refund_user"]->save();

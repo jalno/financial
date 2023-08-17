@@ -133,6 +133,20 @@
 		"titles.settings_financial": "Financial",
 		"titles.financial.paid_at": "Paid At",
 		"titles.financial.pays_methods": "Pays Methods",
-		"titles.financial.accepted": "Accepted"
+		"titles.financial.accepted": "Accepted",
+		"financial.logs.transaction.add": "Added inovice #{transaction_id}.",
+		"financial.logs.transaction.edit": "Edited invoice #{transaction_id}.",
+		"financial.logs.transaction.information": "Details",
+		"financial.logs.transaction.products": "Products",
+		"financial.logs.transaction.delete": "Deleted invoice #{transaction_id}.",
+		"financial.logs.transaction.pay": "Paid invoice #{transaction_id}.",
+		"financial.logs.transaction.pay.accept": "Accepted payment #{pay_id} of invoice #{transaction_id}.",
+		"financial.logs.transaction.pay.reject": "Rejected payment #{pay_id} of invoice #{transaction_id}.",
+
+		"financial.logs.transaction.pays.reimburse": "Reimburse transaction #{transaction_id}",
+		"packages.financial.logs.transaction.reimburse.user.panel.title": "Transaction user information",
+		"packages.financial.logs.transaction.reimburse.transaction.user.id": "ID",
+		"packages.financial.logs.transaction.reimburse.transaction.user_full_name": "Full name",
+		"packages.financial.logs.transaction.reimburse.user_credit_after_reimburse": "User's credit after reimburse payements"
 	}
 }
