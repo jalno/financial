@@ -363,16 +363,6 @@ class TransactionManager implements ITransactionManager
             ];
 
             foreach ($data['products'] as $product) {
-                foreach (['discount', 'vat'] as $item) {
-                    if (!isset($product[$item])) {
-                        $product[$item] = 0;
-                    }
-                }
-
-                if (!isset($product['number']) or $product['number'] < 1) {
-                    $product['number'] = 1;
-                }
-
                 if (isset($product['id'])) {
                     $query = new Transaction_product();
                     $query->where('id', $product['id']);
@@ -419,14 +409,24 @@ class TransactionManager implements ITransactionManager
                         }
                     }
                 } else {
-                    $productID = $transaction->addProduct($product);
+                    foreach (['discount', 'vat'] as $item) {
+                        if (!isset($product[$item])) {
+                            $product[$item] = 0;
+                        }
+                    }
 
-                    if (!$productID) {
-                        throw new Exception('Can not store transction product');
+                    if (!isset($product['number']) or $product['number'] < 1) {
+                        $product['number'] = 1;
                     }
 
                     if (!isset($product['currency'])) {
                         $product['currency'] = $data['currency'] ?? $transaction->currency->id;
+                    }
+
+                    $productID = $transaction->addProduct($product);
+
+                    if (!$productID) {
+                        throw new Exception('Can not store transction product');
                     }
 
                     $query = new Transaction_product();
