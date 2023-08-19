@@ -173,7 +173,7 @@ class TransactionManager implements ITransactionManager
 
     public function store(array $data, ?int $operatorID = null, bool $sendNotification = true): Transaction
     {
-        $transactionFields = ['user', 'title', 'products'];
+        $transactionFields = ['title', 'products'];
         foreach ($transactionFields as $field) {
             if (!isset($data[$field])) {
                 throw new \InvalidArgumentException($field);
@@ -181,7 +181,7 @@ class TransactionManager implements ITransactionManager
         }
 
         if (!isset($data['currency'])) {
-            $user = User::byId($data['user']);
+            $user = isset($data['user']) ? User::byId($data['user']) : null;
             $data['currency'] = Currency::getDefault($user);
         }
 
@@ -199,6 +199,7 @@ class TransactionManager implements ITransactionManager
 
             $model = new Transaction();
 
+            $transactionFields[] = 'user';
             $transactionFields[] = 'create_at';
             $transactionFields[] = 'expire_at';
             if (!isset($data['create_at'])) {
