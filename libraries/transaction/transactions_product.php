@@ -124,17 +124,17 @@ class transaction_product extends dbObject{
 		}
 	}
 
-	public function getPrice(Currency $currency = null): float
+	public function getPrice(Currency $currency): float
 	{
 		return $this->currency->changeTo($this->price, $currency);
 	}
 
-	public function getDiscount(Currency $currency = null): float
+	public function getDiscount(Currency $currency): float
 	{
 		return $this->discount ? $this->currency->changeTo($this->discount, $currency) : 0;
 	}
 
-	public function getVat(Currency $currency = null, ?float $price = null): float
+	public function getVat(Currency $currency, ?float $price = null): float
 	{
 		if (!$price) {
 			$price = $this->getPrice($currency);
@@ -143,7 +143,7 @@ class transaction_product extends dbObject{
 		return $currency->round($price * abs($this->vat) / 100);
 	}
 
-	public function totalPrice(Currency $currency = null): float
+	public function totalPrice(Currency $currency): float
 	{
 		$price = ($this->getPrice($currency) * $this->number) - $this->getDiscount($currency);
 

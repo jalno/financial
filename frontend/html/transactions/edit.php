@@ -106,7 +106,7 @@ $this->the_header();
 												<td><?php echo $this->numberFormat($product->price) . " " . $product->currency->title; ?></td>
 												<td><?php echo $this->numberFormat($product->discount ? $product->discount : 0) . " " . $product->currency->title; ?></td>
 												<td><?php echo $product->vat; ?> %</td>
-												<td><?php echo $this->numberFormat($product->totalPrice()) . " " . $product->currency->title; ?></td>
+												<td><?php echo $this->numberFormat($product->totalPrice($product->currency)) . " " . $product->currency->title; ?></td>
 												<?php
 													if($hasButtons){
 														echo("<td class=\"center\">".$this->genButtons(['productEdit', 'productDelete'])."</td>");

@@ -904,29 +904,29 @@ class Transactions extends Controller
 								throw new InputValidationException('product_title');
 							}
 
-							if (isset($item['currency'])) {
-								$query = new Currency();
-								$query->where('id', $item['currency']);
-								$currency = $query->getOne();
+							$product['method'] = Transaction_product::other;
+						}
 
-								if (!$currency) {
-									throw new InputValidationException('product_currency');
-								}
+						if (isset($item['currency'])) {
+							$query = new Currency();
+							$query->where('id', $item['currency']);
+							$currency = $query->getOne();
 
-								if (!$currency->hasRate($transaction->currency->id)) {
-									$e = new Error('financial.transaction.edit.currency.UnChangableException');
-									$e->setMessage(t('error.financial.transaction.edit.currency.UnChangableException', [
-										'currency' => $currency->title,
-										'changeTo' => $transaction->currency->getChangeTo()->title
-									]));
-
-									throw $e;
-								}
-
-								$product['currency'] = $item['currency'];
+							if (!$currency) {
+								throw new InputValidationException('product_currency');
 							}
 
-							$product['method'] = Transaction_product::other;
+							if (!$currency->hasRate($transaction->currency->id)) {
+								$e = new Error('financial.transaction.edit.currency.UnChangableException');
+								$e->setMessage(t('error.financial.transaction.edit.currency.UnChangableException', [
+									'currency' => $currency->title,
+									'changeTo' => $transaction->currency->getChangeTo()->title
+								]));
+
+								throw $e;
+							}
+
+							$product['currency'] = $item['currency'];
 						}
 
 						if (isset($item['vat'])) {
@@ -979,7 +979,17 @@ class Transactions extends Controller
 
 			$transaction = $this->transactionManager->update($transaction->id, $inputs, Authentication::getID());
 
-			$products = array_map(fn (Transaction_product $product) => array_merge($product->toArray(), ['currency_title' => $product->currency->title]), $transaction->products);
+			$products = array_map(fn (Transaction_product $product) => [
+				'id' => $product->id,
+				'transaction' => $product->transaction->id,
+				'title' => $product->title,
+				'description' => $product->description,
+				'price' => $product->price,
+				'discount' => $product->discount,
+				'number' => $product->number,
+				'vat' => $product->vat,
+				'currency_title' => $product->currency->title,
+			], $transaction->products);
 			
 			$this->response->setStatus(true);
 			$this->response->setData($products, "products");

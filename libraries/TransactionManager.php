@@ -373,10 +373,6 @@ class TransactionManager implements ITransactionManager
                     $product['number'] = 1;
                 }
 
-                if (!isset($product['currency'])) {
-                    $product['currency'] = $data['currency'] ?? $transaction->currency->id;
-                }
-
                 if (isset($product['id'])) {
                     $query = new Transaction_product();
                     $query->where('id', $product['id']);
@@ -427,6 +423,10 @@ class TransactionManager implements ITransactionManager
 
                     if (!$productID) {
                         throw new Exception('Can not store transction product');
+                    }
+
+                    if (!isset($product['currency'])) {
+                        $product['currency'] = $data['currency'] ?? $transaction->currency->id;
                     }
 
                     $query = new Transaction_product();
