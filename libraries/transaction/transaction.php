@@ -51,7 +51,7 @@ class transaction extends dbObject{
 
 		$lastCheckoutAt = $user->option('financial_last_checkout_time');
 
-		if ($lastCheckoutAt and (Date::time() - $lastCheckoutAt) > $limits['period']) {
+		if ($lastCheckoutAt and (Date::time() - $lastCheckoutAt) < $limits['period']) {
 			return false;
 		}
 
