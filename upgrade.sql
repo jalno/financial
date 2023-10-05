@@ -54,3 +54,20 @@ ALTER TABLE `financial_transactions_products` CHANGE `description` `description`
 --
 
 ALTER TABLE `financial_transactions_products` ADD `vat` DOUBLE NULL DEFAULT NULL AFTER `number`;
+
+--
+-- Commit: 
+--
+
+ALTER TABLE `financial_transactions_products` ADD `service_id` INT NULL DEFAULT NULL AFTER `type`, ADD INDEX (`service_id`); 
+
+-- RUN WITH BACKUP
+
+-- UPDATE
+--     financial_transactions_products
+-- INNER JOIN financial_transactions_products_params ON financial_transactions_products.id = financial_transactions_products_params.product AND financial_transactions_products_params.name = 'service'
+-- SET
+--     financial_transactions_products.service_id = financial_transactions_products_params.value
+-- WHERE
+--     financial_transactions_products.service_id IS NULL;
+
