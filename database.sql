@@ -179,6 +179,7 @@ CREATE TABLE `financial_transactions_products` (
 	`title` varchar(100) DEFAULT NULL,
 	`description` varchar(255) DEFAULT NULL,
 	`type` varchar(255) DEFAULT NULL,
+	`service_id` int(11) DEFAULT NULL,
 	`method` tinyint(4) NOT NULL,
 	`price` DOUBLE NOT NULL,
 	`discount` float NOT NULL,
@@ -189,6 +190,7 @@ CREATE TABLE `financial_transactions_products` (
 	PRIMARY KEY (`id`),
 	KEY `transaction` (`transaction`),
 	KEY `currency` (`currency`),
+	KEY `type` (`type`,`service_id`),
 	CONSTRAINT `financial_transactions_products_ibfk_1` FOREIGN KEY (`transaction`) REFERENCES `financial_transactions` (`id`) ON DELETE CASCADE,
 	CONSTRAINT `financial_transactions_products_ibfk_2` FOREIGN KEY (`currency`) REFERENCES `financial_currencies` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
