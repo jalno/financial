@@ -59,7 +59,8 @@ ALTER TABLE `financial_transactions_products` ADD `vat` DOUBLE NULL DEFAULT NULL
 -- Commit: 
 --
 
-ALTER TABLE `financial_transactions_products` ADD `service_id` INT NULL DEFAULT NULL AFTER `type`, ADD INDEX (`service_id`); 
+ALTER TABLE `financial_transactions_products` ADD `service_id` INT NULL DEFAULT NULL AFTER `type`;
+ALTER TABLE `financial_transactions_products` ADD INDEX(`type`, `service_id`)
 
 -- RUN WITH BACKUP
 

@@ -190,7 +190,7 @@ CREATE TABLE `financial_transactions_products` (
 	PRIMARY KEY (`id`),
 	KEY `transaction` (`transaction`),
 	KEY `currency` (`currency`),
-	KEY `service_id` (`service_id`),
+	KEY `type` (`type`,`service_id`),
 	CONSTRAINT `financial_transactions_products_ibfk_1` FOREIGN KEY (`transaction`) REFERENCES `financial_transactions` (`id`) ON DELETE CASCADE,
 	CONSTRAINT `financial_transactions_products_ibfk_2` FOREIGN KEY (`currency`) REFERENCES `financial_currencies` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
