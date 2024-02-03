@@ -1,4 +1,5 @@
 <?php
+
 use packages\base\{Date, http, Packages};
 use packages\userpanel;
 use themes\clipone\utility;
@@ -33,18 +34,18 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							</tr>
 						</thead>
 						<tbody>
-						<?php
-						foreach($this->getBankAccounts() as $account){
-						?>
-						<tr>
-							<td><?php echo $account->bank->title; ?></td>
-							<td><?php echo $account->account ? $account->account : "-"; ?></td>
-							<td><?php echo $account->cart ? $account->cart : "-"; ?></td>
-							<td><?php echo $account->owner; ?></td>
-						</tr>
-						<?php
-						}
-						?>
+							<?php
+							foreach ($this->getBankAccounts() as $account) {
+							?>
+								<tr>
+									<td><?php echo $account->bank->title; ?></td>
+									<td><?php echo $account->account ? $account->account : "-"; ?><br><?php echo $account->shaba; ?></td>
+									<td><?php echo $account->cart ? $account->cart : "-"; ?></td>
+									<td><?php echo $account->owner; ?></td>
+								</tr>
+							<?php
+							}
+							?>
 						</tbody>
 					</table>
 				</div>
@@ -71,40 +72,40 @@ $this->the_header(!$isLogin ? "logedout" : "");
 								</tr>
 							</thead>
 							<tbody>
-							<?php
-							foreach($this->getBanktransferPays() as $pay){
-								$statusClass = utility::switchcase($pay->status, array(
-									'label label-danger' => transaction_pay::rejected,
-									'label label-success' => transaction_pay::accepted,
-									'label label-warning' => transaction_pay::pending
-								));
-								$statusTxt = utility::switchcase($pay->status, array(
-									'pay.rejected' => transaction_pay::rejected,
-									'pay.accepted' => transaction_pay::accepted,
-									'pay.pending' => transaction_pay::pending
-								));
-							?>
-							<tr>
-								<td class="center ltr"><?php echo Date\jDate::format("Y/m/d H:i", $pay->date); ?></td>
-								<td><?php echo number_format($pay->price) . " " . $pay->currency->title ?></td>
-								<td><?php echo $pay->getBanktransferBankAccount()->cart; ?></td>
-								<td><?php 
-									echo t("pay.banktransfer.description-followup", ["followup" => $pay->param("followup")]);
-									$description = $pay->param("description");
-									if ($description) {
-										echo "<br>" . $description;
-									}
-									$attachment = $pay->param("attachment");
-									if ($attachment) {
-										$url = Packages::package("financial")->url($attachment);
-										echo "<br><a href=\"{$url}\" target=\"_blank\"><i class=\"fa fa-paperclip\"></i>" . t("pay.banktransfer.attachment") . "</a>";
-									}
-								?></td>
-								<td><span class="<?php echo $statusClass; ?>"><?php echo t($statusTxt); ?></span></td>
-							</tr>
-							<?php
-							}
-							?>
+								<?php
+								foreach ($this->getBanktransferPays() as $pay) {
+									$statusClass = utility::switchcase($pay->status, array(
+										'label label-danger' => transaction_pay::rejected,
+										'label label-success' => transaction_pay::accepted,
+										'label label-warning' => transaction_pay::pending
+									));
+									$statusTxt = utility::switchcase($pay->status, array(
+										'pay.rejected' => transaction_pay::rejected,
+										'pay.accepted' => transaction_pay::accepted,
+										'pay.pending' => transaction_pay::pending
+									));
+								?>
+									<tr>
+										<td class="center ltr"><?php echo Date\jDate::format("Y/m/d H:i", $pay->date); ?></td>
+										<td><?php echo number_format($pay->price) . " " . $pay->currency->title ?></td>
+										<td><?php echo $pay->getBanktransferBankAccount()->cart; ?></td>
+										<td><?php
+											echo t("pay.banktransfer.description-followup", ["followup" => $pay->param("followup")]);
+											$description = $pay->param("description");
+											if ($description) {
+												echo "<br>" . $description;
+											}
+											$attachment = $pay->param("attachment");
+											if ($attachment) {
+												$url = Packages::package("financial")->url($attachment);
+												echo "<br><a href=\"{$url}\" target=\"_blank\"><i class=\"fa fa-paperclip\"></i>" . t("pay.banktransfer.attachment") . "</a>";
+											}
+											?></td>
+										<td><span class="<?php echo $statusClass; ?>"><?php echo t($statusTxt); ?></span></td>
+									</tr>
+								<?php
+								}
+								?>
 							</tbody>
 						</table>
 					</div>
@@ -121,11 +122,11 @@ $this->the_header(!$isLogin ? "logedout" : "");
 				</div>
 			</div>
 			<div class="panel-body">
-				<form action="<?php echo userpanel\url('transactions/pay/banktransfer/'.$this->transaction->id, $parameter); ?>" method="POST" role="form" enctype="multipart/form-data" class="pay_banktransfer_form">
+				<form action="<?php echo userpanel\url('transactions/pay/banktransfer/' . $this->transaction->id, $parameter); ?>" method="POST" role="form" enctype="multipart/form-data" class="pay_banktransfer_form">
 					<div class="row">
 						<div class="col-xs-12">
 							<div class="well label-info">
-							<?php echo t("packages.financial.remain_price"); ?>:
+								<?php echo t("packages.financial.remain_price"); ?>:
 								<span class="pull-left"><?php echo number_format($this->transaction->remainPriceForAddPay()) . " " . $this->transaction->currency->title; ?></span>
 							</div>
 						</div>
