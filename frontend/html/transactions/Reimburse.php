@@ -1,6 +1,6 @@
 <?php
-use packages\base\{Translator, http, Json};
-use packages\financial\{Transaction_Pay};
+use packages\base\{Translator, HTTP, Json};
+use packages\financial\{TransactionPay};
 use packages\userpanel\{Date};
 use function packages\userpanel\url;
 
@@ -62,13 +62,13 @@ $this->the_header();
 								</td>
 								<td><?php
 								switch ($pay->method) {
-									case Transaction_Pay::ONLINEPAY:
+									case TransactionPay::ONLINEPAY:
 										echo t("pay.byPayOnline");
 									break;
-									case Transaction_Pay::CREDIT:
+									case TransactionPay::CREDIT:
 										echo t("pay.method.credit");
 									break;
-									case Transaction_Pay::BANKTRANSFER:
+									case TransactionPay::BANKTRANSFER:
 										echo t("pay.byBankTransfer");
 									break;
 								}

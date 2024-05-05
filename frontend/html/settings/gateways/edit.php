@@ -1,7 +1,7 @@
 <?php
 use packages\base;
-use packages\base\json;
-use packages\base\translator;
+use packages\base\Json;
+use packages\base\Translator;
 use packages\userpanel;
 
 $this->the_header();
@@ -11,7 +11,7 @@ $this->the_header();
         <div class="panel panel-default">
             <div class="panel-heading">
                 <i class="fa fa-edit"></i>
-                <span><?php echo translator::trans("settings.financial.gateways.edit"); ?></span>
+                <span><?php echo Translator::trans("settings.financial.gateways.edit"); ?></span>
 				<div class="panel-tools">
 					<a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
 				</div>
@@ -24,24 +24,24 @@ $this->the_header();
 							<?php
 							$this->createField(array(
 								'name' => 'title',
-								'label' => translator::trans("financial.gateway.title")
+								'label' => Translator::trans("financial.gateway.title")
 							));
 							$this->createField(array(
 								'name' => 'gateway',
 								'type' => 'select',
-								'label' => translator::trans("financial.gateway.type"),
+								'label' => Translator::trans("financial.gateway.type"),
 								'options' => $this->getGatewaysForSelect()
 							));
 							$this->createField(array(
 								"name" => "account",
 								"type" => "select",
-								"label" => translator::trans("financial.gateway.account"),
+								"label" => Translator::trans("financial.gateway.account"),
 								"options" => $this->getAccountsForSelect()
 							));
 							$this->createField(array(
 								'name' => 'status',
 								'type' => 'select',
-								'label' => translator::trans("financial.gateway.status"),
+								'label' => Translator::trans("financial.gateway.status"),
 								'options' => $this->getGatewayStatusForSelect()
 							));
 							if($options = $this->getCurrenciesForSelect()){
@@ -49,7 +49,7 @@ $this->the_header();
 							<div class="panel panel-white">
 								<div class="panel-heading">
 									<i class="fa fa-usd"></i>
-									<span><?php echo translator::trans("settings.financial.currencies"); ?></span>
+									<span><?php echo Translator::trans("settings.financial.currencies"); ?></span>
 									<div class="panel-tools">
 										<a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
 									</div>
@@ -80,8 +80,8 @@ $this->the_header();
 					<div class="row">
 						<div class="col-md-12">
 							<p>
-								<a href="<?php echo userpanel\url('settings/financial/gateways'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-<?php echo ((bool)translator::getLang()->isRTL()) ? "right" : "left"; ?>"></i> <?php echo translator::trans('return'); ?></a>
-								<button type="submit" class="btn btn-teal"><i class="fa fa-edit"></i> <?php echo translator::trans("edit"); ?></button>
+								<a href="<?php echo userpanel\url('settings/financial/gateways'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-<?php echo ((bool)Translator::getLang()->isRTL()) ? "right" : "left"; ?>"></i> <?php echo Translator::trans('return'); ?></a>
+								<button type="submit" class="btn btn-teal"><i class="fa fa-edit"></i> <?php echo Translator::trans("edit"); ?></button>
 							</p>
 						</div>
 					</div>

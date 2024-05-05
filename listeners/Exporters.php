@@ -1,7 +1,7 @@
 <?php
-namespace packages\financial\listeners;
+namespace packages\financial\Listeners;
 
-use packages\financial\{events\Exporters as Event, exporters\CSVExporter};
+use packages\financial\{Events\Exporters as Event, Exporters\CSVExporter};
 
 class Exporters {
 	public function add(Event $e) {

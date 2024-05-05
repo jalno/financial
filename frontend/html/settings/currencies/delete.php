@@ -1,5 +1,5 @@
 <?php
-use packages\base\translator;
+use packages\base\Translator;
 use packages\userpanel;
 $this->the_header();
 $rates = $this->currency->rates;

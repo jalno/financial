@@ -1,11 +1,11 @@
 <?php
-namespace packages\financial\listeners;
+namespace packages\financial\Listeners;
 
 use packages\base\Options;
-use packages\userpanel\events\General\Settings;
-use packages\financial\controllers\Settings as Controller;
+use packages\userpanel\Events\General\Settings;
+use packages\financial\Controllers\Settings as Controller;
 use packages\financial\Currency;
-use packages\financial\validators\CheckoutLimitValidator;
+use packages\financial\Validators\CheckoutLimitValidator;
 
 class SettingsListener
 {

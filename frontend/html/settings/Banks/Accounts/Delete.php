@@ -1,6 +1,6 @@
 <?php
 use packages\userpanel;
-use packages\base\translator;
+use packages\base\Translator;
 $this->the_header();
 $account = $this->getBankaccount();
 ?>
@@ -53,7 +53,7 @@ $account = $this->getBankaccount();
 						<div class="row">
 							<form action="<?php echo userpanel\url("settings/financial/banks/accounts/{$this->account->id}/delete"); ?>" method="POST">
 								<div class="col-sm-6 col-xs-12">
-									<a href="<?php echo userpanel\url("settings/financial/banks/accounts"); ?>" class="btn btn-default btn-block"><i class="fa fa-chevron-circle-<?php echo ((bool)translator::getLang()->isRTL()) ? "right" : "left"; ?>"></i> <?php echo t("packages.financial.return"); ?></a>
+									<a href="<?php echo userpanel\url("settings/financial/banks/accounts"); ?>" class="btn btn-default btn-block"><i class="fa fa-chevron-circle-<?php echo ((bool)Translator::getLang()->isRTL()) ? "right" : "left"; ?>"></i> <?php echo t("packages.financial.return"); ?></a>
 								</div>
 								<div class="col-sm-6 col-xs-12">
 									<button type="submit" class="btn btn-danger btn-block"><i class="fa fa-times-circle"></i> <?php echo t("packages.financial.delete") ?></button>

@@ -1,15 +1,15 @@
 <?php
 
-use packages\base\{Date, http, Packages};
+use packages\base\{Date, HTTP, Packages};
 use packages\userpanel;
-use themes\clipone\utility;
-use packages\financial\{Authentication, transaction_pay};
+use themes\clipone\Utility;
+use packages\financial\{Authentication, TransactionPay};
 
 $parameter = array();
-if ($token = http::getURIData("token")) {
+if ($token = HTTP::getURIData("token")) {
 	$parameter["token"] = $token;
 }
-$isLogin = authentication::check();
+$isLogin = Authentication::check();
 $this->the_header(!$isLogin ? "logedout" : "");
 ?>
 <!-- start: PAGE CONTENT -->
@@ -74,19 +74,19 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							<tbody>
 								<?php
 								foreach ($this->getBanktransferPays() as $pay) {
-									$statusClass = utility::switchcase($pay->status, array(
-										'label label-danger' => transaction_pay::rejected,
-										'label label-success' => transaction_pay::accepted,
-										'label label-warning' => transaction_pay::pending
+									$statusClass = Utility::switchcase($pay->status, array(
+										'label label-danger' => TransactionPay::rejected,
+										'label label-success' => TransactionPay::accepted,
+										'label label-warning' => TransactionPay::pending
 									));
-									$statusTxt = utility::switchcase($pay->status, array(
-										'pay.rejected' => transaction_pay::rejected,
-										'pay.accepted' => transaction_pay::accepted,
-										'pay.pending' => transaction_pay::pending
+									$statusTxt = Utility::switchcase($pay->status, array(
+										'pay.rejected' => TransactionPay::rejected,
+										'pay.accepted' => TransactionPay::accepted,
+										'pay.pending' => TransactionPay::pending
 									));
 								?>
 									<tr>
-										<td class="center ltr"><?php echo Date\jDate::format("Y/m/d H:i", $pay->date); ?></td>
+										<td class="center ltr"><?php echo Date\Jdate::format("Y/m/d H:i", $pay->date); ?></td>
 										<td><?php echo number_format($pay->price) . " " . $pay->currency->title ?></td>
 										<td><?php echo $pay->getBanktransferBankAccount()->cart; ?></td>
 										<td><?php

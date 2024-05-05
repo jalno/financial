@@ -1,6 +1,6 @@
 <?php
-use packages\base\json;
-use packages\base\translator;
+use packages\base\Json;
+use packages\base\Translator;
 use packages\userpanel;
 $this->the_header();
 ?>
@@ -9,7 +9,7 @@ $this->the_header();
         <div class="panel panel-default">
             <div class="panel-heading">
                 <i class="fa fa-edit"></i>
-                <span><?php echo translator::trans("settings.financial.currency.edit"); ?></span>
+                <span><?php echo Translator::trans("settings.financial.currency.edit"); ?></span>
 				<div class="panel-tools">
 					<a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
 				</div>
@@ -70,7 +70,7 @@ $this->the_header();
 									'type' => 'checkbox',
 									'options' => [
 										[
-											'label' => translator::trans("financial.settings.currency.change"),
+											'label' => Translator::trans("financial.settings.currency.change"),
 											'value' => 1,
 											'data' => [
 												'change' => !empty($this->getCurrencies())
@@ -111,9 +111,9 @@ $this->the_header();
 							<div class="panel panel-white<?php echo !$this->hasRate ? ' rate-inputs' : ''; ?>" data-currencies='<?php echo json\encode($this->geCurrenciesForSelect()); ?>'>
 								<div class="panel-heading">
 									<i class="fa fa-handshake-o"></i>
-									<span><?php echo translator::trans("financial.settings.currency.change"); ?></span>
+									<span><?php echo Translator::trans("financial.settings.currency.change"); ?></span>
 									<div class="panel-tools">
-										<a class="btn btn-xs btn-link btn-add tooltips" href="#" title="<?php echo translator::trans('add'); ?>"><i class="fa fa-plus"></i></a>
+										<a class="btn btn-xs btn-link btn-add tooltips" href="#" title="<?php echo Translator::trans('add'); ?>"><i class="fa fa-plus"></i></a>
 										<a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
 									</div>
 								</div>
@@ -127,7 +127,7 @@ $this->the_header();
 										<?php $this->createField([
 											'name' => "rates[{$i}][currency]",
 											'type' => 'select',
-											'label' => translator::trans('financial.settings.currency'),
+											'label' => Translator::trans('financial.settings.currency'),
 											'options' => $this->geCurrenciesForSelect(),
 											'class' => 'form-control rates-currency'
 										]); ?>
@@ -136,7 +136,7 @@ $this->the_header();
 										<?php
 										$this->createField([
 											'name' => "rates[{$i}][price]",
-											'label' => translator::trans('financial.settings.currency.price'),
+											'label' => Translator::trans('financial.settings.currency.price'),
 											'ltr' => true,
 											'type' => 'number',
 											'class' => 'form-control rates-price',
@@ -146,7 +146,7 @@ $this->the_header();
 										?>
 										</div>
 										<div class="col-sm-2 col-xs-3 text-center">
-											<button href="#" class="btn btn-xs btn-bricky tooltips btn-delete" title="<?php echo translator::trans('delete'); ?>" style="margin-top: 30px;">
+											<button href="#" class="btn btn-xs btn-bricky tooltips btn-delete" title="<?php echo Translator::trans('delete'); ?>" style="margin-top: 30px;">
 												<i class="fa fa-times"></i>
 											</button>
 										</div>
@@ -158,8 +158,8 @@ $this->the_header();
 					</div>
 					<div class="col-sm-12">
 						<p>
-							<a href="<?php echo userpanel\url('settings/financial/currencies'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-<?php echo ((bool)translator::getLang()->isRTL()) ? "right" : "left"; ?>"></i> <?php echo translator::trans('return'); ?></a>
-							<button type="submit" class="btn btn-teal"><i class="fa fa-edit"></i> <?php echo translator::trans("edit"); ?></button>
+							<a href="<?php echo userpanel\url('settings/financial/currencies'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-<?php echo ((bool)Translator::getLang()->isRTL()) ? "right" : "left"; ?>"></i> <?php echo Translator::trans('return'); ?></a>
+							<button type="submit" class="btn btn-teal"><i class="fa fa-edit"></i> <?php echo Translator::trans("edit"); ?></button>
 						</p>
 					</div>
 				</form>

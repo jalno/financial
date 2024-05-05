@@ -1,7 +1,7 @@
 <?php
 use packages\userpanel;
-use packages\base\json;
-use themes\clipone\utility;
+use packages\base\Json;
+use themes\clipone\Utility;
 use packages\financial\Bank;
 $this->the_header();
 ?>
@@ -80,11 +80,11 @@ $this->the_header();
 								<td class="center"><?php echo $bank->id; ?></td>
 								<td><?php echo $bank->title; ?></td>
 								<?php
-								$statusClass = utility::switchcase($bank->status, array(
+								$statusClass = Utility::switchcase($bank->status, array(
 									"label label-success" => Bank::Active,
 									"label label-danger" => Bank::Deactive
 								));
-								$statusTxt = utility::switchcase($bank->status, array(
+								$statusTxt = Utility::switchcase($bank->status, array(
 									"packages.financial.bank.status.Active" => Bank::Active,
 									"packages.financial.bank.status.Deactive" => Bank::Deactive
 								));

@@ -1,13 +1,13 @@
 <?php
 
-namespace packages\financial\listeners\userpanel;
+namespace packages\financial\Listeners\UserPanel;
 
 use packages\base\Options;
 use packages\financial\Authorization;
-use packages\financial\controllers\userpanel\Settings as Controller;
+use packages\financial\Controllers\UserPanel\Settings as Controller;
 use packages\financial\Currency;
-use packages\financial\validators\CheckoutLimitValidator;
-use packages\userpanel\events\Settings;
+use packages\financial\Validators\CheckoutLimitValidator;
+use packages\userpanel\Events\Settings;
 use packages\userpanel\User;
 
 class SettingsListener
@@ -25,7 +25,7 @@ class SettingsListener
         $this->user = $settings->getUser();
 
         $tuning = new Settings\Tuning('financial', 'fa fa-money');
-        $tuning->setController(controller::class);
+        $tuning->setController(Controller::class);
 
         $this->addChangeCurrencyFields($tuning);
         $this->addChangeCheckoutLimitFields($tuning);

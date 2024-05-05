@@ -1,5 +1,5 @@
 <?php
-use packages\base\translator;
+use packages\base\Translator;
 use packages\userpanel;
 use packages\financial\Bank\Account;
 $this->the_header();

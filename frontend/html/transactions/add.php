@@ -1,8 +1,8 @@
 <?php
 use \packages\base;
-use \packages\base\translator;
+use \packages\base\Translator;
 use \packages\userpanel;
-use \packages\userpanel\date;
+use \packages\userpanel\Date;
 $this->the_header();
 ?>
 <div class="row">
@@ -11,7 +11,7 @@ $this->the_header();
 			<div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-external-link-square"></i>
-                    <span><?php echo translator::trans("transaction.add"); ?></span>
+                    <span><?php echo Translator::trans("transaction.add"); ?></span>
                 </div>
                 <div class="panel-body">
                     <?php
@@ -19,7 +19,7 @@ $this->the_header();
 					$fields = [
 						[
 							'name' => 'title',
-							'label' => translator::trans("transaction.add.title"),
+							'label' => Translator::trans("transaction.add.title"),
 						],
 						[
 							'name' => 'user',
@@ -27,16 +27,16 @@ $this->the_header();
 						],
 						[
 							'name' => 'user_name',
-							'label' => translator::trans("transaction.user")
+							'label' => Translator::trans("transaction.user")
 						],
 						[
 							'name' => 'create_at',
-							'label' => translator::trans("transaction.add.create_at"),
+							'label' => Translator::trans("transaction.add.create_at"),
 							'ltr' => true
 						],
 						[
 							'name' => 'expire_at',
-							'label' => translator::trans("transaction.add.expire_at"),
+							'label' => Translator::trans("transaction.add.expire_at"),
 							'ltr' => true
 						]
 					];
@@ -51,7 +51,7 @@ $this->the_header();
 			<div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-external-link-square"></i>
-                    <span><?php echo translator::trans("transaction.add.setting"); ?></span>
+                    <span><?php echo Translator::trans("transaction.add.setting"); ?></span>
                 </div>
                 <div class="panel-body form-horizontal">
 					<?php
@@ -61,7 +61,7 @@ $this->the_header();
 						[
 							'name' => 'notification',
 							'type' => 'checkbox',
-							'label' => translator::trans("transaction.add.notification"),
+							'label' => Translator::trans("transaction.add.notification"),
 							'options' => [
 								[
 									'label' => '',
@@ -73,7 +73,7 @@ $this->the_header();
 						[
 							'name' => 'notification_support',
 							'type' => 'checkbox',
-							'label' => translator::trans("transaction.add.notification.support"),
+							'label' => Translator::trans("transaction.add.notification.support"),
 							'options' => [
 								[
 									'label' => '',
@@ -95,9 +95,9 @@ $this->the_header();
 			<div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-external-link-square"></i>
-                    <span><?php echo translator::trans("transaction.add.products"); ?></span>
+                    <span><?php echo Translator::trans("transaction.add.products"); ?></span>
 					<div class="panel-tools">
-						<a class="btn btn-xs btn-link tooltips" title="<?php echo translator::trans('add'); ?>" href="#product-add" data-toggle="modal" data-original-title=""><i class="fa fa-plus"></i></a>
+						<a class="btn btn-xs btn-link tooltips" title="<?php echo Translator::trans('add'); ?>" href="#product-add" data-toggle="modal" data-original-title=""><i class="fa fa-plus"></i></a>
 						<a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
 					</div>
                 </div>
@@ -116,14 +116,14 @@ $this->the_header();
 		<div class="col-md-8">
 		</div>
 		<div class="col-md-4">
-			<button class="btn btn-teal btn-block btn-submit" type="submit"><?php echo t("packages.financial.create"); ?> <i class="fa fa-arrow-circle-<?php echo ((bool)translator::getLang()->isRTL()) ? "left" : "right"; ?>"></i></button>
+			<button class="btn btn-teal btn-block btn-submit" type="submit"><?php echo t("packages.financial.create"); ?> <i class="fa fa-arrow-circle-<?php echo ((bool)Translator::getLang()->isRTL()) ? "left" : "right"; ?>"></i></button>
 		</div>
     </form>
 </div>
 <div class="modal fade" id="product-add" tabindex="-1" data-show="true" role="dialog" data-backdrop="static" data-keyboard="false">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h4 class="modal-title"><?php echo translator::trans('users.search'); ?></h4>
+		<h4 class="modal-title"><?php echo Translator::trans('users.search'); ?></h4>
 	</div>
 	<div class="modal-body">
 		<form id="addproductform" action="" method="post" class="form-horizontal">
@@ -133,26 +133,26 @@ $this->the_header();
 			$feilds = [
 				[
 					'name' => 'product_title',
-					'label' => translator::trans("transaction.add.product")
+					'label' => Translator::trans("transaction.add.product")
 				],
 				[
 					'name' => 'description',
-					'label' => translator::trans("transaction.add.description")
+					'label' => Translator::trans("transaction.add.description")
 				],
 				[
 					'name' => 'number',
 					'type' => 'number',
-					'label' => translator::trans("transaction.add.number"),
+					'label' => Translator::trans("transaction.add.number"),
 					'ltr' => true
 				],
 				[
 					'name' => 'price',
-					'label' => translator::trans("transaction.add.price"),
+					'label' => Translator::trans("transaction.add.price"),
 					'ltr' => true
 				],
 				[
 					'name' => 'discount',
-					'label' => translator::trans("transaction.add.discount"),
+					'label' => Translator::trans("transaction.add.discount"),
 					'ltr' => true
 				],
 				[
@@ -175,7 +175,7 @@ $this->the_header();
 				[
 					'name' => 'currency',
 					'type' => 'select',
-					'label' => translator::trans("financial.settings.currency"),
+					'label' => Translator::trans("financial.settings.currency"),
 					'options' => $this->getCurrenciesForSelect()
 				]
 			];
@@ -186,8 +186,8 @@ $this->the_header();
 		</form>
 	</div>
 	<div class="modal-footer">
-		<button type="submit" form="addproductform" data-backdrop="static" aria-hidden="true" class="btn btn-success product"><?php echo translator::trans('add'); ?></button>
-		<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo translator::trans('cancel'); ?></button>
+		<button type="submit" form="addproductform" data-backdrop="static" aria-hidden="true" class="btn btn-success product"><?php echo Translator::trans('add'); ?></button>
+		<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo Translator::trans('cancel'); ?></button>
 	</div>
 </div>
 <?php

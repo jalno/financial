@@ -1,10 +1,10 @@
 <?php
 namespace themes\clipone\views\financial\Profile;
 
-use themes\clipone\views\Dashboard\Box;
-use packages\base\{json, Date, db, Options};
+use themes\clipone\Views\Dashboard\Box;
+use packages\base\{Json, Date, DB, Options};
 use packages\userpanel\{User, Log, Authentication};
-use packages\financial\{logs, Authorization, Difficulty, Transaction, currency, Transaction_pay as Pay, Stats};
+use packages\financial\{Logs, Authorization, Difficulty, Transaction, Currency, TransactionPay as Pay, Stats};
 
 class StatsBox extends Box {
 

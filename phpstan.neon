@@ -1,14 +1,8 @@
 parameters:
   level: 0
-  paths:
-    - controllers
-    - frontend
-    - libraries
-    - listeners
-    - logs
-    - processes
-    - views
   scanDirectories:
-    - vendor
-  ignoreErrors:
-    - "/(Class|Interface|Trait) .+ referenced with incorrect case/"
+    - ../base
+    - ../userpanel
+    - ../notifications
+    - ../cronjob
+

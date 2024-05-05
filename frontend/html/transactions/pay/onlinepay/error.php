@@ -1,16 +1,16 @@
 <?php
-use packages\base\{translator, http};
+use packages\base\{Translator, HTTP};
 use packages\userpanel;
-use packages\userpanel\authentication;
-use themes\clipone\utility;
+use packages\userpanel\Authentication;
+use themes\clipone\Utility;
 $error = $this->getError();
 
 
 $queries = array();
-if ($token = http::getURIData("token")) {
+if ($token = HTTP::getURIData("token")) {
 	$queries["token"] = $token;
 }
-$isLogin = authentication::check();
+$isLogin = Authentication::check();
 $this->the_header(!$isLogin ? "logedout" : "");
 ?>
 <!-- start: PAGE CONTENT -->
@@ -20,19 +20,19 @@ $this->the_header(!$isLogin ? "logedout" : "");
 			<?php
 			if ($error) {
 				if($error["error"] == "gateway"){ ?><div class="error-number bricky">500</div><?php } ?>
-				<h3><?php echo translator::trans("pay.online.error." . $error["error"]); ?></h3>
-				<p><?php echo translator::trans("pay.online.error." . $error["error"] . ".text"); ?></p>
+				<h3><?php echo Translator::trans("pay.online.error." . $error["error"]); ?></h3>
+				<p><?php echo Translator::trans("pay.online.error." . $error["error"] . ".text"); ?></p>
 				<p>
 					<div class="btn-group">
-						<a class="btn btn-primary" href="<?php echo userpanel\url("transactions/pay/" . $this->transaction->id, $queries); ?>"><i class="fa fa-repeat"></i> <?php echo translator::trans("pay.online.backto.pay"); ?></a>
-						<a class="btn btn-default" href="<?php echo userpanel\url("transactions/view/" . $this->transaction->id, $queries); ?>"><i class="fa fa-chevron-circle-left"></i> <?php echo translator::trans("pay.online.backto.transaction"); ?></a>
+						<a class="btn btn-primary" href="<?php echo userpanel\url("transactions/pay/" . $this->transaction->id, $queries); ?>"><i class="fa fa-repeat"></i> <?php echo Translator::trans("pay.online.backto.pay"); ?></a>
+						<a class="btn btn-default" href="<?php echo userpanel\url("transactions/view/" . $this->transaction->id, $queries); ?>"><i class="fa fa-chevron-circle-left"></i> <?php echo Translator::trans("pay.online.backto.transaction"); ?></a>
 					</div>
 				</p>
 			<?php } else { ?>
-				<h2 class="text-success"><?php echo translator::trans("pay.online.success"); ?></h2>
-				<p><?php echo translator::trans("pay.online.success.text", array("transaction_id" => $this->transaction->id)); ?></p>
+				<h2 class="text-success"><?php echo Translator::trans("pay.online.success"); ?></h2>
+				<p><?php echo Translator::trans("pay.online.success.text", array("transaction_id" => $this->transaction->id)); ?></p>
 				<p>
-					<a class="btn btn-default btn-block" href="<?php echo userpanel\url("transactions/view/" . $this->transaction->id, $queries); ?>"><i class="fa fa-chevron-circle-left"></i> <?php echo translator::trans("pay.online.backto.transaction"); ?></a>
+					<a class="btn btn-default btn-block" href="<?php echo userpanel\url("transactions/view/" . $this->transaction->id, $queries); ?>"><i class="fa fa-chevron-circle-left"></i> <?php echo Translator::trans("pay.online.backto.transaction"); ?></a>
 				</p>
 			<?php } ?>
 		</div>

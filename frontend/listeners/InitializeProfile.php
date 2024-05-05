@@ -2,7 +2,7 @@
 namespace themes\clipone\listeners\financial;
 
 use packages\financial\Authorization;
-use themes\clipone\events\InitializeProfile as Event;
+use themes\clipone\Events\InitializeProfile as Event;
 use themes\clipone\views\financial\Profile\StatsBox;
 
 class InitializeProfile {

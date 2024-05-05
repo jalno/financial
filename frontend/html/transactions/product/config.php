@@ -1,10 +1,10 @@
 <?php
 use \packages\base;
-use \packages\base\json;
-use \packages\base\translator;
+use \packages\base\Json;
+use \packages\base\Translator;
 use \packages\userpanel;
-use \packages\userpanel\date;
-use \themes\clipone\utility;
+use \packages\userpanel\Date;
+use \themes\clipone\Utility;
 
 $this->the_header();
 ?>
@@ -13,7 +13,7 @@ $this->the_header();
         <div class="panel panel-default">
             <div class="panel-heading">
                 <i class="fa fa-check"></i>
-                <span><?php echo translator::trans("financial.configure"); ?></span>
+                <span><?php echo Translator::trans("financial.configure"); ?></span>
 				<div class="panel-tools">
 					<a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
 				</div>
@@ -32,8 +32,8 @@ $this->the_header();
 					<div class="row">
 						<div class="col-xs-12 text-left">
 							<p>
-								<a href="<?php echo userpanel\url('transactions/view/'.$this->product->transaction->id); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-right"></i> <?php echo translator::trans('financial.return'); ?></a>
-								<button type="submit" class="btn btn-success"><i class="fa fa-check-square-o"></i> <?php echo translator::trans("financial.submit"); ?></button>
+								<a href="<?php echo userpanel\url('transactions/view/'.$this->product->transaction->id); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-right"></i> <?php echo Translator::trans('financial.return'); ?></a>
+								<button type="submit" class="btn btn-success"><i class="fa fa-check-square-o"></i> <?php echo Translator::trans("financial.submit"); ?></button>
 							</p>
 						</div>
 					</div>

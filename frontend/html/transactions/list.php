@@ -2,9 +2,9 @@
 use packages\base\Date;
 use packages\base\Utility\Safe;
 use packages\userpanel;
-use themes\clipone\utility;
-use packages\financial\transaction;
-use themes\clipone\views\TransactionUtilities;
+use themes\clipone\Utility;
+use packages\financial\Transaction;
+use themes\clipone\Views\TransactionUtilities;
 
 $this->the_header();
 $transactions = $this->getTransactions();

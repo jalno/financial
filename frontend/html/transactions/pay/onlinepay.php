@@ -1,11 +1,11 @@
 <?php
-use packages\base\Http;
+use packages\base\HTTP;
 use packages\financial\Authentication;
 use packages\userpanel;
 use themes\clipone\Utility;
 
 $parameter = array();
-$token = Http::getURIData("token");
+$token = HTTP::getURIData("token");
 if ($token) {
 	$parameter["token"] = $token;
 }

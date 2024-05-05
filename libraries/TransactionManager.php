@@ -10,8 +10,8 @@ use packages\base\Options;
 use packages\financial\Bank\Account;
 use packages\financial\Contracts\IFinancialService;
 use packages\financial\Contracts\ITransactionManager;
-use packages\financial\events\transactions as Events;
-use packages\financial\logs\transactions as Logs;
+use packages\financial\Events\Transactions as Events;
+use packages\financial\Logs\Transactions as Logs;
 use packages\userpanel\Log;
 use packages\userpanel\User;
 
@@ -64,7 +64,7 @@ class TransactionManager implements ITransactionManager
         DB::join('financial_currencies', 'financial_currencies.id=financial_payports_currencies.currency', 'LEFT');
         DB::join('financial_currencies_rates', 'financial_currencies_rates.currency=financial_currencies.id', 'LEFT');
 
-        $query = new Payport();
+        $query = new PayPort();
 
         $parenthesis = new Parenthesis();
         $parenthesis->where('financial_payports_currencies.currency', $currency->id);
@@ -72,7 +72,7 @@ class TransactionManager implements ITransactionManager
 
         $query->where($parenthesis);
 
-        $query->where('financial_payports.status', Payport::active);
+        $query->where('financial_payports.status', PayPort::active);
 
         if ($payportIDs) {
             $query->where('financial_payports.id', $payportIDs, 'IN');
@@ -364,7 +364,7 @@ class TransactionManager implements ITransactionManager
 
             foreach ($data['products'] as $product) {
                 if (isset($product['id'])) {
-                    $query = new Transaction_product();
+                    $query = new TransactionProduct();
                     $query->where('id', $product['id']);
                     $query->where('transaction', $id);
 
@@ -429,7 +429,7 @@ class TransactionManager implements ITransactionManager
                         throw new Exception('Can not store transction product');
                     }
 
-                    $query = new Transaction_product();
+                    $query = new TransactionProduct();
                     $query->where('id', $productID);
                     $query->ArrayBuilder();
 
@@ -448,9 +448,9 @@ class TransactionManager implements ITransactionManager
         }
 
         if ($changes['newData'] or $changes['oldData']) {
-            $log = new log();
+            $log = new Log();
             $log->user = $operatorID;
-            $log->type = Logs\edit::class;
+            $log->type = Logs\Edit::class;
             $log->title = t('financial.logs.transaction.edit', ['transaction_id' => $transaction->id]);
             $log->parameters = $changes;
             $log->save();

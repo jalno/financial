@@ -1,7 +1,7 @@
 <?php
 $this->the_header();
 use \packages\userpanel;
-use \themes\clipone\utility;
+use \themes\clipone\Utility;
 use \packages\financial\Bank\Account;
 ?>
 <div class="row">
@@ -48,13 +48,13 @@ use \packages\financial\Bank\Account;
 								<td class="ltr"><?php echo $account->cart ? $account->cart : "-"; ?></td>
 								<td class="ltr"><?php echo $account->shaba ? $account->shaba : "-"; ?></td>
 							<?php
-							$statusClass = utility::switchcase($account->status, array(
+							$statusClass = Utility::switchcase($account->status, array(
 								"label label-success" => Account::Active,
 								"label label-warning" => Account::WaitForAccept,
 								"label label-danger" => Account::Rejected,
 								"label label-inverse" => Account::Deactive,
 							));
-							$statusTxt = utility::switchcase($account->status, array(
+							$statusTxt = Utility::switchcase($account->status, array(
 								"packages.financial.banks.account.status.Active" => Account::Active,
 								"packages.financial.banks.account.status.WaitForAccept" => Account::WaitForAccept,
 								"packages.financial.banks.account.status.Rejected" => Account::Rejected,

@@ -1,8 +1,8 @@
 <?php
-use packages\base\translator;
+use packages\base\Translator;
 use packages\userpanel;
 use packages\userpanel\{Date};
-use themes\clipone\utility;
+use themes\clipone\Utility;
 
 $pendingPaysCount = $this->getPendingPaysCount();
 $remainPrice = $this->transaction->remainPriceForAddPay();

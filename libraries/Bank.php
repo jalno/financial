@@ -1,8 +1,8 @@
 <?php
 namespace packages\financial;
-use packages\base\db\dbObject;
+use packages\base\DB\DBObject;
 
-class Bank extends dbObject{
+class Bank extends DBObject{
 	const Active = 1;
 	const Deactive = 2;
 	protected $dbTable = "financial_banks";

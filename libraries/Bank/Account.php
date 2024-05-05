@@ -1,11 +1,11 @@
 <?php
 namespace packages\financial\Bank;
 
-use packages\userpanel\user;
-use packages\base\{db\dbObject, Options};
-use packages\financial\{Bank, authorization};
+use packages\userpanel\User;
+use packages\base\{DB\DBObject, Options};
+use packages\financial\{Bank, Authorization};
 
-class Account extends dbObject {
+class Account extends DBObject {
 	/**
 	 * get available accounts
 	 * use 'packages.financial.pay.tansactions.banka.accounts' Option to get just admin accounts
@@ -45,11 +45,11 @@ class Account extends dbObject {
 	);
 	protected $relations = array(
 		"bank" => array("hasOne", Bank::class, "bank_id"),
-		"user" => array("hasOne", user::class, "user_id"),
+		"user" => array("hasOne", User::class, "user_id"),
 	);
 	protected function preLoad(array $data): array {
 		if (!isset($data["status"])) {
-			$data["status"] = authorization::is_accessed("settings_banks_accounts_accept") ? Self::Active : Self::WaitForAccept;
+			$data["status"] = Authorization::is_accessed("settings_banks_accounts_accept") ? Self::Active : Self::WaitForAccept;
 		}
 		return $data;
 	}

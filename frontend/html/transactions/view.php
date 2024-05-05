@@ -1,11 +1,11 @@
 <?php
 use packages\base;
-use packages\base\{Translator, http, Json};
-use packages\financial\{Authentication, Currency, Transaction, Transaction_pay};
+use packages\base\{Translator, HTTP, Json};
+use packages\financial\{Authentication, Currency, Transaction, TransactionPay};
 use packages\userpanel;
 use packages\userpanel\{Date, User};
 use themes\clipone\Utility;
-use themes\clipone\views\TransactionUtilities;
+use themes\clipone\Views\TransactionUtilities;
 
 $isLogin = Authentication::check();
 $remainPriceForAddPay = $this->transaction->remainPriceForAddPay();
@@ -32,7 +32,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 					<?php } ?>
 				<div class="col-sm-6 <?php echo(!$logoPath ? "col-sm-offset-6" : ""); ?>">
 					<p>
-						#<?php echo $this->transaction->id; ?> / <?php echo date::format("l j F Y", $this->transaction->create_at); ?><span><?php echo $this->transaction->title; ?></span>
+						#<?php echo $this->transaction->id; ?> / <?php echo Date::format("l j F Y", $this->transaction->create_at); ?><span><?php echo $this->transaction->title; ?></span>
 					</p>
 				</div>
 			</div>
@@ -136,7 +136,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							<strong><?php echo t("packages.financial.transaction.title"); ?>:</strong> <?php echo $this->transaction->title; ?>
 						</li>
 						<li>
-							<strong><?php echo t("transaction.createdate"); ?>:</strong> <span dir="ltr"> <?php echo date::format("Y/m/d H:i:s", $this->transaction->create_at); ?><span>
+							<strong><?php echo t("transaction.createdate"); ?>:</strong> <span dir="ltr"> <?php echo Date::format("Y/m/d H:i:s", $this->transaction->create_at); ?><span>
 						</li>
 						<li>
 							<strong><?php echo t("transaction.add.expire_at"); ?>:</strong>
@@ -181,7 +181,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 								<th class="hidden-480"><?php echo t("financial.transaction.product.discount"); ?></th>
 								<th class="hidden-480"><?php echo t("transaction.tax"); ?></th>
 								<th><?php echo t("financial.transaction.product.price.final"); ?></th>‍
-								<?php if($this->transaction->status == transaction::paid and !$this->transaction->isConfigured()){ ?><th></th>‍<?php } ?>
+								<?php if($this->transaction->status == Transaction::paid and !$this->transaction->isConfigured()){ ?><th></th>‍<?php } ?>
 							</tr>
 						</thead>
 						<tbody>
@@ -200,8 +200,8 @@ $this->the_header(!$isLogin ? "logedout" : "");
 								<td class="hidden-480"> <?php echo $this->numberFormat($product->getDiscount($currency)) . " " . $currency->title; ?></td>
 								<td class="hidden-480"> <?php echo $this->numberFormat($product->getVat($currency, $price)) . " " . $currency->title; ?></td>
 								<td><?php echo $this->numberFormat($product->totalPrice($currency)) . " " . $currency->title; ?></td>
-								<?php if($this->transaction->status == transaction::paid and !$product->configure){ ?>
-								<td><a href="<?php echo userpanel\url("transactions/config/".$product->id); ?>" class="btn btn-sm btn-teal"><i class="fa fa-cog"></i> <?php echo translator::trans("financial.configure"); ?></a></td>
+								<?php if($this->transaction->status == Transaction::paid and !$product->configure){ ?>
+								<td><a href="<?php echo userpanel\url("transactions/config/".$product->id); ?>" class="btn btn-sm btn-teal"><i class="fa fa-cog"></i> <?php echo Translator::trans("financial.configure"); ?></a></td>
 								<?php } ?>
 							</tr>
 							<?php } ?>
@@ -215,7 +215,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 				$hastatus = $this->paysHasStatus();
 				$hasButtons = $this->hasButtons();
 			?>
-			<h3><?php echo translator::trans('pays'); ?></h3>
+			<h3><?php echo Translator::trans('pays'); ?></h3>
 			<?php if (!$refundTransaction and $this->transaction->status == Transaction::expired) { ?>
 			<div class="alert alert-info text-center"><?php echo t("packages.financial.refunded-expired-buy-transaction"); ?></div>
 			<?php } ?>
@@ -225,11 +225,11 @@ $this->the_header(!$isLogin ? "logedout" : "");
 						<thead>
 							<tr>
 								<th> # </th>
-								<th> <?php echo translator::trans('date&time'); ?> </th>
-								<th> <?php echo translator::trans('pay.method'); ?> </th>
-								<?php if($hasdesc){ ?><th> <?php echo translator::trans('description'); ?> </th><?php } ?>
-								<th> <?php echo translator::trans('pay.price'); ?> </th>
-								<?php if($hastatus){ ?><th> <?php echo translator::trans('pay.status'); ?> </th><?php } ?>
+								<th> <?php echo Translator::trans('date&time'); ?> </th>
+								<th> <?php echo Translator::trans('pay.method'); ?> </th>
+								<?php if($hasdesc){ ?><th> <?php echo Translator::trans('description'); ?> </th><?php } ?>
+								<th> <?php echo Translator::trans('pay.price'); ?> </th>
+								<?php if($hastatus){ ?><th> <?php echo Translator::trans('pay.status'); ?> </th><?php } ?>
 								<?php if($hasButtons){ ?><th><?php echo t("financial.actions"); ?></th><?php } ?>
 							</tr>
 						</thead>
@@ -240,21 +240,21 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							if($hasButtons){
 								$this->setButtonParam('pay_accept', 'link', userpanel\url("transactions/pay/accept/".$pay->id));
 								$this->setButtonParam('pay_reject', 'link', userpanel\url("transactions/pay/reject/".$pay->id));
-								$this->setButtonActive('pay_accept', $this->canPayAccept and $pay->status == Transaction_pay::pending);
-								$this->setButtonActive('pay_reject', $this->canPayReject and $pay->status == Transaction_pay::pending);
+								$this->setButtonActive('pay_accept', $this->canPayAccept and $pay->status == TransactionPay::pending);
+								$this->setButtonActive('pay_reject', $this->canPayReject and $pay->status == TransactionPay::pending);
 							}
 							if($hastatus){
-								$statusClass = utility::switchcase($pay->status, array(
-									'label label-danger' => transaction_pay::rejected,
-									'label label-success' => transaction_pay::accepted,
-									'label label-warning' => transaction_pay::pending,
-									'label label-info' => transaction_pay::REIMBURSE,
+								$statusClass = Utility::switchcase($pay->status, array(
+									'label label-danger' => TransactionPay::rejected,
+									'label label-success' => TransactionPay::accepted,
+									'label label-warning' => TransactionPay::pending,
+									'label label-info' => TransactionPay::REIMBURSE,
 								));
-								$statusTxt = utility::switchcase($pay->status, array(
-									'pay.rejected' => transaction_pay::rejected,
-									'pay.accepted' => transaction_pay::accepted,
-									'pay.pending' => transaction_pay::pending,
-									'pay.reimburse' => transaction_pay::REIMBURSE
+								$statusTxt = Utility::switchcase($pay->status, array(
+									'pay.rejected' => TransactionPay::rejected,
+									'pay.accepted' => TransactionPay::accepted,
+									'pay.pending' => TransactionPay::pending,
+									'pay.reimburse' => TransactionPay::REIMBURSE
 								));
 							}
 						?>
@@ -264,7 +264,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 								<td><?php echo $pay->method; ?></td>
 								<?php if($hasdesc){ ?><td><?php echo $pay->description; ?></td><?php } ?>
 								<td><?php echo $pay->price; ?></td>
-								<?php if($hastatus){ ?><td><span class="<?php echo $statusClass; ?>"><?php echo translator::trans($statusTxt); ?></td><?php } ?>
+								<?php if($hastatus){ ?><td><span class="<?php echo $statusClass; ?>"><?php echo Translator::trans($statusTxt); ?></td><?php } ?>
 								<?php
 								if($hasButtons){
 									echo("<td class=\"center\">".$this->genButtons()."</td>");
