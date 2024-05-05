@@ -1,556 +1,608 @@
 <?php
+
 namespace packages\financial;
 
+use packages\base\DB;
+use packages\base\DB\DBObject;
+use packages\base\Options;
+use packages\base\Packages;
+use packages\base\Translator;
+use packages\base\Utility\Safe;
 use packages\dakhl\API as Dakhl;
-use packages\userpanel\{User, Date};
-use packages\base\{DB\DBObject, Options, Packages, Utility\Safe, Translator, DB};
+use packages\userpanel\Date;
+use packages\userpanel\User;
 
-class Transaction extends DBObject{
-	/** status */
-	const UNPAID = self::unpaid;
-	const PENDING = self::pending;
-	const PAID = self::paid;
-	const REFUND = self::refund;
-	const EXPIRED = self::expired;
-	const REJECTED = self::rejected;
+class Transaction extends DBObject
+{
+    /** status */
+    public const UNPAID = self::unpaid;
+    public const PENDING = self::pending;
+    public const PAID = self::paid;
+    public const REFUND = self::refund;
+    public const EXPIRED = self::expired;
+    public const REJECTED = self::rejected;
 
-	/** old style const, we dont removed these for backward compatibility */
-	const unpaid = 1;
-	const pending = 6;
-	const paid = 2;
-	const refund = 3;
-	const expired = 4;
-	const rejected = 5;
+    /** old style const, we dont removed these for backward compatibility */
+    public const unpaid = 1;
+    public const pending = 6;
+    public const paid = 2;
+    public const refund = 3;
+    public const expired = 4;
+    public const rejected = 5;
 
-	const ONLINE_PAYMENT_METHOD = 'onlinepay';
-	const BANK_TRANSFER_PAYMENT_METHOD = 'banktransfer';
-	const CREDIT_PAYMENT_METHOD = 'credit';
+    public const ONLINE_PAYMENT_METHOD = 'onlinepay';
+    public const BANK_TRANSFER_PAYMENT_METHOD = 'banktransfer';
+    public const CREDIT_PAYMENT_METHOD = 'credit';
 
-	public static function generateToken(int $length = 15): string {
-		$numberChar = "0123456789";
-		$pw = "";
-		while (strlen($pw) < $length) {
-			$pw .= substr($numberChar, rand(0, 9), 1);
-		}
-		return $pw;
-	}
+    public static function generateToken(int $length = 15): string
+    {
+        $numberChar = '0123456789';
+        $pw = '';
+        while (strlen($pw) < $length) {
+            $pw .= substr($numberChar, rand(0, 9), 1);
+        }
 
-	public static function canCreateCheckoutTransaction(int $userID, ?float $price = null): bool
-	{
-		$limits = self::getCheckoutLimits($userID);
+        return $pw;
+    }
 
-		if (!$limits or !isset($limits['price']) or !isset($limits['currency']) or !isset($limits['period'])) {
-			return true;
-		}
+    public static function canCreateCheckoutTransaction(int $userID, ?float $price = null): bool
+    {
+        $limits = self::getCheckoutLimits($userID);
 
-		$query = new User();
-		$user = $query->byId($userID);
-		if (!$user) {
-			return false;
-		}
+        if (!$limits or !isset($limits['price']) or !isset($limits['currency']) or !isset($limits['period'])) {
+            return true;
+        }
 
-		$lastCheckoutAt = $user->option('financial_last_checkout_time');
+        $query = new User();
+        $user = $query->byId($userID);
+        if (!$user) {
+            return false;
+        }
 
-		if ($lastCheckoutAt and (Date::time() - $lastCheckoutAt) < $limits['period']) {
-			return false;
-		}
+        $lastCheckoutAt = $user->option('financial_last_checkout_time');
 
-		if ($price and Safe::floats_cmp($limits['price'], $price) > 0) {
-			return false;
-		}
+        if ($lastCheckoutAt and (Date::time() - $lastCheckoutAt) < $limits['period']) {
+            return false;
+        }
 
-		return true;
-	}
+        if ($price and Safe::floats_cmp($limits['price'], $price) > 0) {
+            return false;
+        }
 
-	public static function getCheckoutLimits(?int $userID = null): array
-	{
-		$limits = [];
-		$user = null;
-		if ($userID) {
-			$query = new User();
-			$user = $query->byId($userID);
+        return true;
+    }
 
-			if ($user) {
-				$limits = $user->option('financial_checkout_limits');
-			}
-		}
+    public static function getCheckoutLimits(?int $userID = null): array
+    {
+        $limits = [];
+        $user = null;
+        if ($userID) {
+            $query = new User();
+            $user = $query->byId($userID);
 
-		if (!$limits) {
-			$limits = Options::get('packages.financial.checkout_limits') ?: [];
-		}
+            if ($user) {
+                $limits = $user->option('financial_checkout_limits');
+            }
+        }
 
-		if (isset($limits['currency'])) {
-			$query = new Currency();
-			$limits['currency'] = $query->byId($limits['currency']);
+        if (!$limits) {
+            $limits = Options::get('packages.financial.checkout_limits') ?: [];
+        }
 
-			if (!$limits['currency']) {
-				unset($limits['currency']);
-			}
-		}
+        if (isset($limits['currency'])) {
+            $query = new Currency();
+            $limits['currency'] = $query->byId($limits['currency']);
 
-		if ($user and isset($limits['currency'], $limits['price'])) {
-			$currency = Currency::getDefault($user);
-			$limits['price'] = $limits['currency']->changeTo($limits['price'], $currency);
-		}
+            if (!$limits['currency']) {
+                unset($limits['currency']);
+            }
+        }
 
-		return $limits;
-	}
-	private static function getVatConfig(): array {
+        if ($user and isset($limits['currency'], $limits['price'])) {
+            $currency = Currency::getDefault($user);
+            $limits['price'] = $limits['currency']->changeTo($limits['price'], $currency);
+        }
 
-		$options = Options::get("packages.financial.vat_config");
+        return $limits;
+    }
 
-		if (!$options) {
-			return [];
-		}
+    private static function getVatConfig(): array
+    {
+        $options = Options::get('packages.financial.vat_config');
 
-		if (!isset($options["exclude-products"]) or !$options["exclude-products"]) {
-			$options["exclude-products"] = [];
-		}
+        if (!$options) {
+            return [];
+        }
 
-		if (!is_array($options["exclude-products"])) {
-			$options["exclude-products"] = [$options["exclude-products"]];
-		}
+        if (!isset($options['exclude-products']) or !$options['exclude-products']) {
+            $options['exclude-products'] = [];
+        }
 
-		if (!isset($options["products"]) or !$options["products"]) {
-			$options["products"] = [];
-		}
+        if (!is_array($options['exclude-products'])) {
+            $options['exclude-products'] = [$options['exclude-products']];
+        }
 
-		if (!is_array($options["products"])) {
-			$options["products"] = [$options["products"]];
-		}
+        if (!isset($options['products']) or !$options['products']) {
+            $options['products'] = [];
+        }
 
-		$options["exclude-products"] = array_merge($options["exclude-products"], [Products\AddingCredit::class, "\\" . Products\AddingCredit::class]);
+        if (!is_array($options['products'])) {
+            $options['products'] = [$options['products']];
+        }
 
-		$options["exclude-products"] = array_map("strtolower", $options["exclude-products"]);
+        $options['exclude-products'] = array_merge($options['exclude-products'], [Products\AddingCredit::class, '\\'.Products\AddingCredit::class]);
 
-		$options["default_vat"] = $options["default_vat"] ?? 9;
+        $options['exclude-products'] = array_map('strtolower', $options['exclude-products']);
 
-		if (!isset($options["users"]) or !$options["users"]) {
-			$options["users"] = [];
-		}
+        $options['default_vat'] = $options['default_vat'] ?? 9;
 
-		if (!is_array($options["users"])) {
-			$options["users"] = [$options["users"]];
-		}
+        if (!isset($options['users']) or !$options['users']) {
+            $options['users'] = [];
+        }
 
-		$products = [];
+        if (!is_array($options['users'])) {
+            $options['users'] = [$options['users']];
+        }
 
-		foreach ($options["products"] as $key => $value) {
-			if (is_string($key)) {
-				$products[strtolower($key)] = $value;
-			} elseif (is_string($value)) {
-				$products[strtolower($value)] = $options["default_vat"];
-			}
-		}
+        $products = [];
 
-		$options["products"] = $products;
+        foreach ($options['products'] as $key => $value) {
+            if (is_string($key)) {
+                $products[strtolower($key)] = $value;
+            } elseif (is_string($value)) {
+                $products[strtolower($value)] = $options['default_vat'];
+            }
+        }
 
-		return $options;
-	}
+        $options['products'] = $products;
 
-	protected $dbTable = "financial_transactions";
-	protected $primaryKey = "id";
-	protected $dbFields = array(
-		'id' => array('type' => 'int'),
-        'token' => array('type' => "text", "required" => true, "unique" => true),
-        'user' => array('type' => 'int'),
-        'title' => array('type' => 'text', 'required' => true),
-        'price' => array('type' => 'double', 'required' => true),
-		'create_at' => array('type' => 'int', 'required' => true),
-		'expire_at' => array('type' => 'int'),
-		'paid_at' => array('type' => 'int'),
-		'currency' => array('type' => 'int', 'required' => true),
-		'status' => array('type' => 'int', 'required' => true)
-    );
-	protected $relations = array(
-		'user' => array('hasOne', 'packages\\userpanel\\user', 'user'),
-		'currency' => array('hasOne', 'packages\\financial\\currency', 'currency'),
-		'params' => array('hasMany', 'packages\\financial\\transaction_param', 'transaction'),
-		'products' => array('hasMany', 'packages\\financial\\transaction_product', 'transaction'),
-		'pays' => array('hasMany', 'packages\\financial\\transaction_pay', 'transaction'),
-	);
-	protected $tmproduct = array();
-	protected $tmpays = array();
+        return $options;
+    }
 
-	public function expire() {
-		$this->byId($this->id);
-		if ($this->status != self::UNPAID) {
-			return;
-		}
-		$payablePrice = $this->payablePrice();
-		if ($payablePrice < 0) {
-			$payablePrice = abs($payablePrice);
+    protected $dbTable = 'financial_transactions';
+    protected $primaryKey = 'id';
+    protected $dbFields = [
+        'id' => ['type' => 'int'],
+        'token' => ['type' => 'text', 'required' => true, 'unique' => true],
+        'user' => ['type' => 'int'],
+        'title' => ['type' => 'text', 'required' => true],
+        'price' => ['type' => 'double', 'required' => true],
+        'create_at' => ['type' => 'int', 'required' => true],
+        'expire_at' => ['type' => 'int'],
+        'paid_at' => ['type' => 'int'],
+        'currency' => ['type' => 'int', 'required' => true],
+        'status' => ['type' => 'int', 'required' => true],
+    ];
+    protected $relations = [
+        'user' => ['hasOne', 'packages\\userpanel\\user', 'user'],
+        'currency' => ['hasOne', 'packages\\financial\\currency', 'currency'],
+        'params' => ['hasMany', 'packages\\financial\\transaction_param', 'transaction'],
+        'products' => ['hasMany', 'packages\\financial\\transaction_product', 'transaction'],
+        'pays' => ['hasMany', 'packages\\financial\\transaction_pay', 'transaction'],
+    ];
+    protected $tmproduct = [];
+    protected $tmpays = [];
 
-			$userCurrency = Currency::getDefault($this->user);
-			$price = $this->currency->changeTo($payablePrice, $userCurrency);
+    public function expire()
+    {
+        $this->byId($this->id);
+        if (self::UNPAID != $this->status) {
+            return;
+        }
+        $payablePrice = $this->payablePrice();
+        if ($payablePrice < 0) {
+            $payablePrice = abs($payablePrice);
 
-			db::where("id", $this->user->id)
-				->update("userpanel_users", array(
-					"credit" => db::inc($price),
-				));
-		} else {
-			$this->returnPaymentsToCredit([TransactionPay::credit, TransactionPay::onlinepay, TransactionPay::banktransfer]);
-		}
+            $userCurrency = Currency::getDefault($this->user);
+            $price = $this->currency->changeTo($payablePrice, $userCurrency);
 
-		$this->status = self::expired;
-		$this->save();
+            DB::where('id', $this->user->id)
+                ->update('userpanel_users', [
+                    'credit' => DB::inc($price),
+                ]);
+        } else {
+            $this->returnPaymentsToCredit([TransactionPay::credit, TransactionPay::onlinepay, TransactionPay::banktransfer]);
+        }
 
-		$event = new Events\Transactions\Expire($this);
-		$event->trigger();
-	}
-	/**
-	 * get total price of products based on transaction currency
-	 *
-	 * @return float
-	 */
-	public function totalPrice(): float {
-		return $this->getTotalPrice();
-	}
+        $this->status = self::expired;
+        $this->save();
 
-	/**
-	 * @throws Currency\UnChangableException
-	 * @return void
-	 */
-	public function returnPaymentsToCredit(array $methods = [TransactionPay::credit]): void {
-		$userCurrency = Currency::getDefault($this->user);
-		$total = 0;
-		foreach ($this->pays as $pay) {
-			if ($pay->status == TransactionPay::accepted and in_array($pay->method, $methods)) {
-				$total += $pay->currency->changeTo($pay->price, $userCurrency);
-			}
-		}
-		DB::where("id", $this->user->id)
-			->update("userpanel_users", array(
-				"credit" => DB::inc($total),
-			));
-	}
-	public function canAddPay(): bool {
-		if (!in_array($this->status, [self::UNPAID, self::PENDING])) {
-			return false;
-		}
-		return $this->remainPriceForAddPay() != 0;
-	}
-	public function remainPriceForAddPay(): float {
-		$remainPrice = $this->totalPrice();
-		unset($this->data["pays"]);
-		foreach ($this->pays as $pay) {
-			if (in_array($pay->status, [TransactionPay::ACCEPTED, TransactionPay::PENDING])) {
-				$remainPrice -= $pay->convertPrice();
-			}
-		}
-		return $remainPrice;
-	}
-	public function canPayByCredit(): bool {
-		return !((new TransactionProduct())
-		->where("transaction", $this->id)
-		->where("type", [Products\AddingCredit::class, "\\" . Products\AddingCredit::class], "IN")
-		->has());
-	}
-	protected function addProduct($productdata){
-		$product = new TransactionProduct($productdata);
-		if ($this->isNew){
-			$this->tmproduct[] = $product;
-			return true;
-		}else{
-			$product->transaction = $this->id;
-			return $product->save();
-		}
-	}
-	protected function addPay($paydata){
-		$pay = new TransactionPay($paydata);
-		if ($this->isNew){
-			$this->tmpays[] = $pay;
-			return true;
-		}else{
-			$pay->transaction = $this->id;
-			$pay->save();
-			return $pay->id;
-		}
-	}
-	protected function payablePrice(): float {
-		$payable = $this->totalPrice();
-		$paid = 0;
-		if (!$this->isNew) {
-			unset($this->data['pays']);
-			foreach ($this->pays as $pay) {
-				if ($pay->status == TransactionPay::accepted) {
-					$paid += $pay->convertPrice();
-				}
-			}
-		}
-		return (Safe::floats_cmp($payable, $paid) == 0 ? 0 : floatval($payable - $paid));
-	}
-	protected function trigger_paid(){
-		if(!$this->param("trigered_paid")){
-			$this->setParam("trigered_paid", true);
-			foreach($this->products as $product){
-				if($product->type and class_exists($product->type)){
-					$obj = new $product->type($product->data);
-					if(method_exists($obj, 'trigger_paid')){
-						$obj->trigger_paid();
-					}
-					unset($obj);
-				}
-			}
-		}
-	}
-	public function isConfigured(){
-		foreach($this->products as $product){
-			if(!$product->configure){
-				return false;
-			}
-		}
-		return true;
-	}
-	protected function preLoad(array $data): array {
-		if(!isset($data['status'])){
-			$data['status'] = self::unpaid;
-		}
-		if(!isset($data['create_at']) or !$data['create_at']){
-			$data['create_at'] = time();
-		}
-		$userModel = null;
-		if (isset($data['user'])) {
-			$userModel = (($data['user'] instanceof DBObject) ? $data['user'] : (new User())->byID($data['user']));
-		}
+        $event = new Events\Transactions\Expire($this);
+        $event->trigger();
+    }
 
-		if (!isset($data['currency'])) {
-			$this->currency = $data['currency'] = Currency::getDefault($userModel);
-		}
+    /**
+     * get total price of products based on transaction currency.
+     */
+    public function totalPrice(): float
+    {
+        return $this->getTotalPrice();
+    }
 
-		$products = array();
+    /**
+     * @throws Currency\UnChangableException
+     */
+    public function returnPaymentsToCredit(array $methods = [TransactionPay::credit]): void
+    {
+        $userCurrency = Currency::getDefault($this->user);
+        $total = 0;
+        foreach ($this->pays as $pay) {
+            if (TransactionPay::accepted == $pay->status and in_array($pay->method, $methods)) {
+                $total += $pay->currency->changeTo($pay->price, $userCurrency);
+            }
+        }
+        DB::where('id', $this->user->id)
+            ->update('userpanel_users', [
+                'credit' => DB::inc($total),
+            ]);
+    }
 
-		if ($this->isNew) {
-			$products = &$this->tmproduct;
-		} else {
-			$products = $this->products;
-		}
+    public function canAddPay(): bool
+    {
+        if (!in_array($this->status, [self::UNPAID, self::PENDING])) {
+            return false;
+        }
 
-		foreach ($products as $product) {
-			if (!$product->currency) {
-				$product->currency = $data['currency'];
-			}
-		}
+        return 0 != $this->remainPriceForAddPay();
+    }
 
-		if ($userModel) {
-			$options = self::getVatConfig();
+    public function remainPriceForAddPay(): float
+    {
+        $remainPrice = $this->totalPrice();
+        unset($this->data['pays']);
+        foreach ($this->pays as $pay) {
+            if (in_array($pay->status, [TransactionPay::ACCEPTED, TransactionPay::PENDING])) {
+                $remainPrice -= $pay->convertPrice();
+            }
+        }
 
-			if ($options) {
+        return $remainPrice;
+    }
 
-				if (!isset($options["users"][$userModel->id]) and in_array($userModel->id, $options["users"])) {
-					$options["users"][$userModel->id] = $options["default_vat"];
-				}
+    public function canPayByCredit(): bool
+    {
+        return !(new TransactionProduct())
+        ->where('transaction', $this->id)
+        ->where('type', [Products\AddingCredit::class, '\\'.Products\AddingCredit::class], 'IN')
+        ->has();
+    }
 
-				if (isset($options["users"][$userModel->id])) {
-					foreach ($products as $product) {
-						if (in_array(strtolower($product->type), $options["exclude-products"]) or $product->vat) {
-							continue;
-						}
-						$product->vat = $options["users"][$userModel->id];
-					}
-				} elseif ($options["products"]) {
+    protected function addProduct($productdata)
+    {
+        $product = new TransactionProduct($productdata);
+        if ($this->isNew) {
+            $this->tmproduct[] = $product;
 
-					foreach ($products as $product) {
+            return true;
+        } else {
+            $product->transaction = $this->id;
 
-						$type = strtolower($product->type);
+            return $product->save();
+        }
+    }
 
-						if (in_array($type, $options["exclude-products"]) or !isset($options["products"][$type]) or $product->vat) {
-							continue;
-						}
+    protected function addPay($paydata)
+    {
+        $pay = new TransactionPay($paydata);
+        if ($this->isNew) {
+            $this->tmpays[] = $pay;
 
-						$product->vat = $options["products"][$type];
-					}
-				}
-			}
-		}
+            return true;
+        } else {
+            $pay->transaction = $this->id;
+            $pay->save();
 
-		$data['price'] = $this->getTotalPrice();
+            return $pay->id;
+        }
+    }
 
-		if (!isset($data["token"])) {
-			$data["token"] = Transaction::generateToken();
-		}
+    protected function payablePrice(): float
+    {
+        $payable = $this->totalPrice();
+        $paid = 0;
+        if (!$this->isNew) {
+            unset($this->data['pays']);
+            foreach ($this->pays as $pay) {
+                if (TransactionPay::accepted == $pay->status) {
+                    $paid += $pay->convertPrice();
+                }
+            }
+        }
 
-		if ($data['currency'] instanceof DBObject) {
-			$data['currency'] = $data['currency']->id;
-		}
+        return 0 == Safe::floats_cmp($payable, $paid) ? 0 : floatval($payable - $paid);
+    }
 
-		return $data;
-	}
-	protected $tmparams = array();
-	public function setParam($name, $value){
-		$param = false;
-		foreach($this->params as $p){
-			if($p->name == $name){
-				$param = $p;
-				break;
-			}
-		}
-		if(!$param){
-			$param = new TransactionParam(array(
-				'name' => $name,
-				'value' => $value
-			));
-		}else{
-			$param->value = $value;
-		}
+    protected function trigger_paid()
+    {
+        if (!$this->param('trigered_paid')) {
+            $this->setParam('trigered_paid', true);
+            foreach ($this->products as $product) {
+                if ($product->type and class_exists($product->type)) {
+                    $obj = new $product->type($product->data);
+                    if (method_exists($obj, 'trigger_paid')) {
+                        $obj->trigger_paid();
+                    }
+                    unset($obj);
+                }
+            }
+        }
+    }
 
-		if(!$this->id){
-			$this->tmparams[$name] = $param;
-		}else{
-			$param->transaction = $this->id;
-			return $param->save();
-		}
-	}
-	public function param($name){
-		if(!$this->id){
-			return(isset($this->tmparams[$name]) ? $this->tmparams[$name]->value : null);
-		}else{
-			foreach($this->params as $param){
-				if($param->name == $name){
-					return $param->value;
-				}
-			}
-			return false;
-		}
-	}
-	public function save($data = null){
-		if(($return = parent::save($data))){
-			foreach($this->tmproduct as $product){
-				$product->transaction = $this->id;
-				$product->save();
-			}
-			$this->tmproduct = array();
-			foreach($this->tmparams as $param){
-				$param->transaction = $this->id;
-				$param->save();
-			}
-			$this->tmparams = array();
-			foreach($this->tmpays as $pay){
-				$pay->transaction = $this->id;
-				$pay->save();
-			}
-			$this->tmpays = array();
-		}
-		return $return;
-	}
-	public function deleteParam(string $name):bool{
-		if(!$this->id){
-			if(isset($this->tmparams[$name])){
-				unset($this->tmparams[$name]);
-			}
-		}else{
-			$param = new TransactionParam();
-			$param->where('transaction', $this->id);
-			$param->where('name', $name);
-			if($param = $param->getOne()){
-				return $param->delete();
-			}
-		}
-		return true;
-	}
-	public function afterPay(){
-		$dakhlPackage = Packages::package("dakhl");
-		$dakhl = false;
-		$invoice = false;
-		$dcurrency = false;
-		$pays = array();
-		if ($dakhlPackage and class_exists(dakhl::class)) {
-			$pay = new TransactionPay();
-			$pay->where("transaction", $this->id);
-			$pay->where("status", TransactionPay::accepted);
-			$pay->where("method", array(TransactionPay::onlinepay, TransactionPay::banktransfer), "in");
-			$pays = $pay->get();
-			if ($pays) {
-				$ocurrency = Options::get("packages.dakhl.currency");
-				if (!$dcurrency = Currency::where("id", $ocurrency)->getOne()) {
-					throw new \Exception("notfound dakhl currency");
-				}
-				$dakhl = new Dakhl();
-				$price = $this->price;
-				if ($this->currency->id != $dcurrency->id) {
-					$price = $this->currency->changeTo($this->price, $dcurrency);
-				}
-				$invoice = $dakhl->addIncomeInvoice($this->title, $this->user, $price);
-			}
-		}
-		$currency = $this->currency;
-		foreach ($this->products as $product) {
-			$pcurrency = $product->currency;
-			try {
-				$product->price = $pcurrency->changeTo($product->price, $currency);
-				$product->discount = $pcurrency->changeTo($product->discount, $currency);
-				$product->currency = $currency->id;
-				$product->save();
-			} catch (Currency\UnChangableException $e) {}
-			if ($invoice) {
-				if (!$product->description) {
-					$product->description = "";
-				}
-				$price = $product->price;
-				$discount = $product->discount;
-				if ($product->currency->id != $dcurrency->id) {
-					$price = $product->currency->changeTo($product->price, $dcurrency);
-					$discount = $product->currency->changeTo($product->discount, $dcurrency);
-				}
-				$dakhl->addInvoiceProduct($invoice, $product->title, $product->number, $price, $discount, $product->description);
-			}
-		}
-		if ($invoice) {
-			foreach ($pays as $pay) {
-				$account = null;
-				$description = "";
-				if ($pay->method == TransactionPay::onlinepay) {
-					$payparam = $pay->param("payport_pay");
-					if ($payparam) {
-						$payportpay = PayPortPay::where("id", $payparam)->getOne();
-						if ($payportpay) {
-							$payport = $payportpay->payport;
-							$account = $payport->account;
-							$description = Translator::trans("financial.pay.online", array("payport" => $payport->title));
-						}
-					}
-				} else if ($pay->method == TransactionPay::banktransfer) {
-					$payparam = $pay->param("bankaccount");
-					if ($payparam) {
-						$account = (new Bank\Account)->byID($payparam);
-						$description = t("financial.pay.bankTransfer");
-						$followup = $pay->param("followup");
-						if ($followup) {
-							$description .= " - " . translator::trans("financial.pay.bankTransfer.followup", array("followup" => $pay->param("followup")));
-						}
-					}
-				}
-				if (!$account) {
-					continue;
-				}
-				$dakhlaccount = $dakhl->getBankAccount($account->bank->title, $account->shaba);
-				$price = $pay->price;
-				if ($pay->currency->id != $dcurrency->id) {
-					$price = $pay->currency->changeTo($pay->price, $dcurrency);
-				}
-				$dakhl->addInvoicePay($invoice, $dakhlaccount, $price, $pay->date, $description);
-			}
-		}
-	}
+    public function isConfigured()
+    {
+        foreach ($this->products as $product) {
+            if (!$product->configure) {
+                return false;
+            }
+        }
 
-	public function getVat(): float
-	{
-		return array_sum(array_map(fn (TransactionProduct $product) => $product->getVat($this->currency), $this->products));
-	}
+        return true;
+    }
 
-	public function getPrice(): float
-	{
-		return array_sum(array_map(fn (TransactionProduct $product) => $product->getPrice($this->currency), $this->products));
-	}
+    protected function preLoad(array $data): array
+    {
+        if (!isset($data['status'])) {
+            $data['status'] = self::unpaid;
+        }
+        if (!isset($data['create_at']) or !$data['create_at']) {
+            $data['create_at'] = time();
+        }
+        $userModel = null;
+        if (isset($data['user'])) {
+            $userModel = (($data['user'] instanceof DBObject) ? $data['user'] : (new User())->byID($data['user']));
+        }
 
-	public function getDiscount(): float
-	{
-		return array_sum(array_map(fn (TransactionProduct $product) => $product->getDiscount($this->currency), $this->products));
-	}
+        if (!isset($data['currency'])) {
+            $this->currency = $data['currency'] = Currency::getDefault($userModel);
+        }
 
-	public function getTotalPrice(): float
-	{
-		return array_sum(array_map(fn (TransactionProduct $product) => $product->totalPrice($this->currency), $this->isNew ? $this->tmproduct : $this->products));
-	}
+        $products = [];
+
+        if ($this->isNew) {
+            $products = &$this->tmproduct;
+        } else {
+            $products = $this->products;
+        }
+
+        foreach ($products as $product) {
+            if (!$product->currency) {
+                $product->currency = $data['currency'];
+            }
+        }
+
+        if ($userModel) {
+            $options = self::getVatConfig();
+
+            if ($options) {
+                if (!isset($options['users'][$userModel->id]) and in_array($userModel->id, $options['users'])) {
+                    $options['users'][$userModel->id] = $options['default_vat'];
+                }
+
+                if (isset($options['users'][$userModel->id])) {
+                    foreach ($products as $product) {
+                        if (in_array(strtolower($product->type), $options['exclude-products']) or $product->vat) {
+                            continue;
+                        }
+                        $product->vat = $options['users'][$userModel->id];
+                    }
+                } elseif ($options['products']) {
+                    foreach ($products as $product) {
+                        $type = strtolower($product->type);
+
+                        if (in_array($type, $options['exclude-products']) or !isset($options['products'][$type]) or $product->vat) {
+                            continue;
+                        }
+
+                        $product->vat = $options['products'][$type];
+                    }
+                }
+            }
+        }
+
+        $data['price'] = $this->getTotalPrice();
+
+        if (!isset($data['token'])) {
+            $data['token'] = Transaction::generateToken();
+        }
+
+        if ($data['currency'] instanceof DBObject) {
+            $data['currency'] = $data['currency']->id;
+        }
+
+        return $data;
+    }
+    protected $tmparams = [];
+
+    public function setParam($name, $value)
+    {
+        $param = false;
+        foreach ($this->params as $p) {
+            if ($p->name == $name) {
+                $param = $p;
+                break;
+            }
+        }
+        if (!$param) {
+            $param = new TransactionParam([
+                'name' => $name,
+                'value' => $value,
+            ]);
+        } else {
+            $param->value = $value;
+        }
+
+        if (!$this->id) {
+            $this->tmparams[$name] = $param;
+        } else {
+            $param->transaction = $this->id;
+
+            return $param->save();
+        }
+    }
+
+    public function param($name)
+    {
+        if (!$this->id) {
+            return isset($this->tmparams[$name]) ? $this->tmparams[$name]->value : null;
+        } else {
+            foreach ($this->params as $param) {
+                if ($param->name == $name) {
+                    return $param->value;
+                }
+            }
+
+            return false;
+        }
+    }
+
+    public function save($data = null)
+    {
+        if ($return = parent::save($data)) {
+            foreach ($this->tmproduct as $product) {
+                $product->transaction = $this->id;
+                $product->save();
+            }
+            $this->tmproduct = [];
+            foreach ($this->tmparams as $param) {
+                $param->transaction = $this->id;
+                $param->save();
+            }
+            $this->tmparams = [];
+            foreach ($this->tmpays as $pay) {
+                $pay->transaction = $this->id;
+                $pay->save();
+            }
+            $this->tmpays = [];
+        }
+
+        return $return;
+    }
+
+    public function deleteParam(string $name): bool
+    {
+        if (!$this->id) {
+            if (isset($this->tmparams[$name])) {
+                unset($this->tmparams[$name]);
+            }
+        } else {
+            $param = new TransactionParam();
+            $param->where('transaction', $this->id);
+            $param->where('name', $name);
+            if ($param = $param->getOne()) {
+                return $param->delete();
+            }
+        }
+
+        return true;
+    }
+
+    public function afterPay()
+    {
+        $dakhlPackage = Packages::package('dakhl');
+        $dakhl = false;
+        $invoice = false;
+        $dcurrency = false;
+        $pays = [];
+        if ($dakhlPackage and class_exists(Dakhl::class)) {
+            $pay = new TransactionPay();
+            $pay->where('transaction', $this->id);
+            $pay->where('status', TransactionPay::accepted);
+            $pay->where('method', [TransactionPay::onlinepay, TransactionPay::banktransfer], 'in');
+            $pays = $pay->get();
+            if ($pays) {
+                $ocurrency = Options::get('packages.dakhl.currency');
+                if (!$dcurrency = Currency::where('id', $ocurrency)->getOne()) {
+                    throw new \Exception('notfound dakhl currency');
+                }
+                $dakhl = new Dakhl();
+                $price = $this->price;
+                if ($this->currency->id != $dcurrency->id) {
+                    $price = $this->currency->changeTo($this->price, $dcurrency);
+                }
+                $invoice = $dakhl->addIncomeInvoice($this->title, $this->user, $price);
+            }
+        }
+        $currency = $this->currency;
+        foreach ($this->products as $product) {
+            $pcurrency = $product->currency;
+            try {
+                $product->price = $pcurrency->changeTo($product->price, $currency);
+                $product->discount = $pcurrency->changeTo($product->discount, $currency);
+                $product->currency = $currency->id;
+                $product->save();
+            } catch (Currency\UnChangableException $e) {
+            }
+            if ($invoice) {
+                if (!$product->description) {
+                    $product->description = '';
+                }
+                $price = $product->price;
+                $discount = $product->discount;
+                if ($product->currency->id != $dcurrency->id) {
+                    $price = $product->currency->changeTo($product->price, $dcurrency);
+                    $discount = $product->currency->changeTo($product->discount, $dcurrency);
+                }
+                $dakhl->addInvoiceProduct($invoice, $product->title, $product->number, $price, $discount, $product->description);
+            }
+        }
+        if ($invoice) {
+            foreach ($pays as $pay) {
+                $account = null;
+                $description = '';
+                if (TransactionPay::onlinepay == $pay->method) {
+                    $payparam = $pay->param('payport_pay');
+                    if ($payparam) {
+                        $payportpay = PayPortPay::where('id', $payparam)->getOne();
+                        if ($payportpay) {
+                            $payport = $payportpay->payport;
+                            $account = $payport->account;
+                            $description = Translator::trans('financial.pay.online', ['payport' => $payport->title]);
+                        }
+                    }
+                } elseif (TransactionPay::banktransfer == $pay->method) {
+                    $payparam = $pay->param('bankaccount');
+                    if ($payparam) {
+                        $account = (new Bank\Account())->byID($payparam);
+                        $description = t('financial.pay.bankTransfer');
+                        $followup = $pay->param('followup');
+                        if ($followup) {
+                            $description .= ' - '.Translator::trans('financial.pay.bankTransfer.followup', ['followup' => $pay->param('followup')]);
+                        }
+                    }
+                }
+                if (!$account) {
+                    continue;
+                }
+                $dakhlaccount = $dakhl->getBankAccount($account->bank->title, $account->shaba);
+                $price = $pay->price;
+                if ($pay->currency->id != $dcurrency->id) {
+                    $price = $pay->currency->changeTo($pay->price, $dcurrency);
+                }
+                $dakhl->addInvoicePay($invoice, $dakhlaccount, $price, $pay->date, $description);
+            }
+        }
+    }
+
+    public function getVat(): float
+    {
+        return array_sum(array_map(fn (TransactionProduct $product) => $product->getVat($this->currency), $this->products));
+    }
+
+    public function getPrice(): float
+    {
+        return array_sum(array_map(fn (TransactionProduct $product) => $product->getPrice($this->currency), $this->products));
+    }
+
+    public function getDiscount(): float
+    {
+        return array_sum(array_map(fn (TransactionProduct $product) => $product->getDiscount($this->currency), $this->products));
+    }
+
+    public function getTotalPrice(): float
+    {
+        return array_sum(array_map(fn (TransactionProduct $product) => $product->totalPrice($this->currency), $this->isNew ? $this->tmproduct : $this->products));
+    }
 }
-class unDefinedCurrencyException extends \Exception{}
+class unDefinedCurrencyException extends \Exception
+{
+}

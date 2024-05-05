@@ -1,3 +1,7 @@
 <?php
+
 namespace packages\financial\PayPort;
-class GateWayException extends \Exception{}
+
+class GateWayException extends \Exception
+{
+}

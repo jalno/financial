@@ -21,11 +21,9 @@ class CheckoutLimitValidator implements IValidator
     /**
      * Validate data to be a ipv4.
      *
-     * @throws InputValidationException
-     *
-     * @param mixed $data
-     *
      * @return mixed|null new value, if needed
+     *
+     * @throws InputValidationException
      */
     public function validate(string $input, array $rule, $data)
     {

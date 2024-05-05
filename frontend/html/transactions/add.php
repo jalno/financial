@@ -1,49 +1,48 @@
 <?php
-use \packages\base;
-use \packages\base\Translator;
-use \packages\userpanel;
-use \packages\userpanel\Date;
+use packages\base\Translator;
+use packages\userpanel;
+
 $this->the_header();
 ?>
 <div class="row">
-    <form class="create_form form-horizontal" action="<?php echo userpanel\url('transactions/new') ?>" method="post">
+    <form class="create_form form-horizontal" action="<?php echo userpanel\url('transactions/new'); ?>" method="post">
         <div class="col-md-7">
 			<div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-external-link-square"></i>
-                    <span><?php echo Translator::trans("transaction.add"); ?></span>
+                    <span><?php echo Translator::trans('transaction.add'); ?></span>
                 </div>
                 <div class="panel-body">
                     <?php
-					$this->setHorizontalForm('sm-4','sm-8');
-					$fields = [
-						[
-							'name' => 'title',
-							'label' => Translator::trans("transaction.add.title"),
-						],
-						[
-							'name' => 'user',
-							'type' => 'hidden'
-						],
-						[
-							'name' => 'user_name',
-							'label' => Translator::trans("transaction.user")
-						],
-						[
-							'name' => 'create_at',
-							'label' => Translator::trans("transaction.add.create_at"),
-							'ltr' => true
-						],
-						[
-							'name' => 'expire_at',
-							'label' => Translator::trans("transaction.add.expire_at"),
-							'ltr' => true
-						]
-					];
-					foreach($fields as $field){
-						$this->createField($field);
-					}
-					?>
+                    $this->setHorizontalForm('sm-4', 'sm-8');
+$fields = [
+    [
+        'name' => 'title',
+        'label' => Translator::trans('transaction.add.title'),
+    ],
+    [
+        'name' => 'user',
+        'type' => 'hidden',
+    ],
+    [
+        'name' => 'user_name',
+        'label' => Translator::trans('transaction.user'),
+    ],
+    [
+        'name' => 'create_at',
+        'label' => Translator::trans('transaction.add.create_at'),
+        'ltr' => true,
+    ],
+    [
+        'name' => 'expire_at',
+        'label' => Translator::trans('transaction.add.expire_at'),
+        'ltr' => true,
+    ],
+];
+foreach ($fields as $field) {
+    $this->createField($field);
+}
+?>
                 </div>
             </div>
         </div>
@@ -51,42 +50,42 @@ $this->the_header();
 			<div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-external-link-square"></i>
-                    <span><?php echo Translator::trans("transaction.add.setting"); ?></span>
+                    <span><?php echo Translator::trans('transaction.add.setting'); ?></span>
                 </div>
                 <div class="panel-body form-horizontal">
 					<?php
-					$this->removeHorizontalForm();
-					$this->setHorizontalForm('sm-9','sm-3');
-					$feilds = [
-						[
-							'name' => 'notification',
-							'type' => 'checkbox',
-							'label' => Translator::trans("transaction.add.notification"),
-							'options' => [
-								[
-									'label' => '',
-									'value' => 1
-								]
-							],
-							'value' => 1
-						],
-						[
-							'name' => 'notification_support',
-							'type' => 'checkbox',
-							'label' => Translator::trans("transaction.add.notification.support"),
-							'options' => [
-								[
-									'label' => '',
-									'value' => 1
-								]
-							],
-							'value' => 1
-						]
-					];
-					foreach($feilds as $input){
-						$this->createField($input);
-					}
-					?>
+$this->removeHorizontalForm();
+$this->setHorizontalForm('sm-9', 'sm-3');
+$feilds = [
+    [
+        'name' => 'notification',
+        'type' => 'checkbox',
+        'label' => Translator::trans('transaction.add.notification'),
+        'options' => [
+            [
+                'label' => '',
+                'value' => 1,
+            ],
+        ],
+        'value' => 1,
+    ],
+    [
+        'name' => 'notification_support',
+        'type' => 'checkbox',
+        'label' => Translator::trans('transaction.add.notification.support'),
+        'options' => [
+            [
+                'label' => '',
+                'value' => 1,
+            ],
+        ],
+        'value' => 1,
+    ],
+];
+foreach ($feilds as $input) {
+    $this->createField($input);
+}
+?>
 
                 </div>
             </div>
@@ -95,7 +94,7 @@ $this->the_header();
 			<div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-external-link-square"></i>
-                    <span><?php echo Translator::trans("transaction.add.products"); ?></span>
+                    <span><?php echo Translator::trans('transaction.add.products'); ?></span>
 					<div class="panel-tools">
 						<a class="btn btn-xs btn-link tooltips" title="<?php echo Translator::trans('add'); ?>" href="#product-add" data-toggle="modal" data-original-title=""><i class="fa fa-plus"></i></a>
 						<a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
@@ -103,10 +102,10 @@ $this->the_header();
                 </div>
                 <div class="panel-body products">
 					<div class="alert alert-block alert-info fade in no-product">
-					    <h4 class="alert-heading"><i class="fa fa-exclamation-triangle"></i> <?php echo t("packages.financial.addnew_product"); ?></h4>
-					    <p><?php echo t("packages.financial.not.entered.products.yet"); ?>!</p>
+					    <h4 class="alert-heading"><i class="fa fa-exclamation-triangle"></i> <?php echo t('packages.financial.addnew_product'); ?></h4>
+					    <p><?php echo t('packages.financial.not.entered.products.yet'); ?>!</p>
 					    <p>
-							<a class="btn btn-success btn-addproduct" href="#product-add" data-toggle="modal" title=""><?php echo t("packages.financial.new_product"); ?></a>
+							<a class="btn btn-success btn-addproduct" href="#product-add" data-toggle="modal" title=""><?php echo t('packages.financial.new_product'); ?></a>
 						</p>
 					</div>
                 </div>
@@ -116,7 +115,7 @@ $this->the_header();
 		<div class="col-md-8">
 		</div>
 		<div class="col-md-4">
-			<button class="btn btn-teal btn-block btn-submit" type="submit"><?php echo t("packages.financial.create"); ?> <i class="fa fa-arrow-circle-<?php echo ((bool)Translator::getLang()->isRTL()) ? "left" : "right"; ?>"></i></button>
+			<button class="btn btn-teal btn-block btn-submit" type="submit"><?php echo t('packages.financial.create'); ?> <i class="fa fa-arrow-circle-<?php echo ((bool) Translator::getLang()->isRTL()) ? 'left' : 'right'; ?>"></i></button>
 		</div>
     </form>
 </div>
@@ -128,61 +127,61 @@ $this->the_header();
 	<div class="modal-body">
 		<form id="addproductform" action="" method="post" class="form-horizontal">
 			<?php
-			$this->removeHorizontalForm();
-			$this->setHorizontalForm('sm-3','sm-9');
-			$feilds = [
-				[
-					'name' => 'product_title',
-					'label' => Translator::trans("transaction.add.product")
-				],
-				[
-					'name' => 'description',
-					'label' => Translator::trans("transaction.add.description")
-				],
-				[
-					'name' => 'number',
-					'type' => 'number',
-					'label' => Translator::trans("transaction.add.number"),
-					'ltr' => true
-				],
-				[
-					'name' => 'price',
-					'label' => Translator::trans("transaction.add.price"),
-					'ltr' => true
-				],
-				[
-					'name' => 'discount',
-					'label' => Translator::trans("transaction.add.discount"),
-					'ltr' => true
-				],
-				[
-					'name' => 'vat',
-					'type' => 'number',
-					'label' => t("transaction.tax"),
-					'ltr' => true,
-					'input-group' => array(
-						'first' => array(
-							array(
-								'type' => 'addon',
-								'text' => '%',
-							),
-						),
-					),
-					'step' => 0.001,
-					'min' => 0,
-					'max' => 100,
-				],
-				[
-					'name' => 'currency',
-					'type' => 'select',
-					'label' => Translator::trans("financial.settings.currency"),
-					'options' => $this->getCurrenciesForSelect()
-				]
-			];
-			foreach($feilds as $input){
-				$this->createField($input);
-			}
-			?>
+            $this->removeHorizontalForm();
+$this->setHorizontalForm('sm-3', 'sm-9');
+$feilds = [
+    [
+        'name' => 'product_title',
+        'label' => Translator::trans('transaction.add.product'),
+    ],
+    [
+        'name' => 'description',
+        'label' => Translator::trans('transaction.add.description'),
+    ],
+    [
+        'name' => 'number',
+        'type' => 'number',
+        'label' => Translator::trans('transaction.add.number'),
+        'ltr' => true,
+    ],
+    [
+        'name' => 'price',
+        'label' => Translator::trans('transaction.add.price'),
+        'ltr' => true,
+    ],
+    [
+        'name' => 'discount',
+        'label' => Translator::trans('transaction.add.discount'),
+        'ltr' => true,
+    ],
+    [
+        'name' => 'vat',
+        'type' => 'number',
+        'label' => t('transaction.tax'),
+        'ltr' => true,
+        'input-group' => [
+            'first' => [
+                [
+                    'type' => 'addon',
+                    'text' => '%',
+                ],
+            ],
+        ],
+        'step' => 0.001,
+        'min' => 0,
+        'max' => 100,
+    ],
+    [
+        'name' => 'currency',
+        'type' => 'select',
+        'label' => Translator::trans('financial.settings.currency'),
+        'options' => $this->getCurrenciesForSelect(),
+    ],
+];
+foreach ($feilds as $input) {
+    $this->createField($input);
+}
+?>
 		</form>
 	</div>
 	<div class="modal-footer">

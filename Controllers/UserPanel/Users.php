@@ -1,75 +1,82 @@
 <?php
+
 namespace packages\financial\Controllers\UserPanel;
 
-use packages\userpanel\{Controllers\Users as UserPanelUsers, User\Option, Authentication};
-use packages\financial\{Controller, Currency, Transaction};
 use packages\base\NotFound;
 use packages\base\Response;
+use packages\financial\Controller;
+use packages\financial\Currency;
+use packages\financial\Transaction;
+use packages\userpanel\Authentication;
+use packages\userpanel\Controllers\Users as UserPanelUsers;
+use packages\userpanel\User\Option;
 
 class Users extends Controller
 {
-	protected bool $authentication = true;
+    protected bool $authentication = true;
 
-	public function search($data): Response {
-		$response = (new UserPanelUsers())->search($data);
-		$dataList = $response->getView()->getDataList();
-		$userIds = array();
-		foreach ($dataList as $key => $user) {
-			$userIds[$key] = $user->id;
-		}
-		if (!$userIds) {
-			return $response;
-		}
-		$defaultCurrency = Currency::getDefault();
-		$currencies = array();
-		$currencies[$defaultCurrency->id] = $defaultCurrency;
-		$option = new Option();
-		$option->where("user", $userIds, "IN");
-		$option->where("name", "financial_transaction_currency");
-		foreach ($option->get(null, "userpanel_users_options.*") as $option) {
-			$key = array_search($option->data["user"], $userIds);
-			if ($key !== false) {
-				if (!isset($currencies[$option->value])) {
-					$currencies[$option->value] = Currency::byId($option->value);
-				}
-				$dataList[$key]->currency = $currencies[$option->value]->title;
-				unset($userIds[$key]);
-			}
-		}
-		foreach ($userIds as $key => $user) {
-			$dataList[$key]->currency = $defaultCurrency->title;
-		}
-		$response->getView()->setDataList($dataList);
-		return $response;
-	}
+    public function search($data): Response
+    {
+        $response = (new UserPanelUsers())->search($data);
+        $dataList = $response->getView()->getDataList();
+        $userIds = [];
+        foreach ($dataList as $key => $user) {
+            $userIds[$key] = $user->id;
+        }
+        if (!$userIds) {
+            return $response;
+        }
+        $defaultCurrency = Currency::getDefault();
+        $currencies = [];
+        $currencies[$defaultCurrency->id] = $defaultCurrency;
+        $option = new Option();
+        $option->where('user', $userIds, 'IN');
+        $option->where('name', 'financial_transaction_currency');
+        foreach ($option->get(null, 'userpanel_users_options.*') as $option) {
+            $key = array_search($option->data['user'], $userIds);
+            if (false !== $key) {
+                if (!isset($currencies[$option->value])) {
+                    $currencies[$option->value] = Currency::byId($option->value);
+                }
+                $dataList[$key]->currency = $currencies[$option->value]->title;
+                unset($userIds[$key]);
+            }
+        }
+        foreach ($userIds as $key => $user) {
+            $dataList[$key]->currency = $defaultCurrency->title;
+        }
+        $response->getView()->setDataList($dataList);
 
-	public function getCheckoutLimits(array $data): Response
-	{
-		$query = UserPanelUsers::checkUserAccessibility();
-		$query->where('id', $data['user']);
+        return $response;
+    }
 
-		$user = $query->getOne();
+    public function getCheckoutLimits(array $data): Response
+    {
+        $query = UserPanelUsers::checkUserAccessibility();
+        $query->where('id', $data['user']);
 
-		if (!$user) {
-			throw new NotFound();
-		}
+        $user = $query->getOne();
 
-		$limits = Transaction::getCheckoutLimits($user->id);
+        if (!$user) {
+            throw new NotFound();
+        }
 
-		$this->response->setStatus(true);
-		$this->response->setData([
-			'price' => $limits['price'] ?? 0,
-			'period' => $limits['period'] ?? 0,
-			'last_time' => (int) $user->option('financial_last_checkout_time'),
-		]);
+        $limits = Transaction::getCheckoutLimits($user->id);
 
-		return $this->response;
-	}
+        $this->response->setStatus(true);
+        $this->response->setData([
+            'price' => $limits['price'] ?? 0,
+            'period' => $limits['period'] ?? 0,
+            'last_time' => (int) $user->option('financial_last_checkout_time'),
+        ]);
 
-	public function getCheckoutLimitsForUser(): Response
-	{
-		return $this->getCheckoutLimits([
-			'user' => Authentication::getID(),
-		]);
-	}
+        return $this->response;
+    }
+
+    public function getCheckoutLimitsForUser(): Response
+    {
+        return $this->getCheckoutLimits([
+            'user' => Authentication::getID(),
+        ]);
+    }
 }

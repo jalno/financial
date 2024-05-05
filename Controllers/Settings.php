@@ -22,12 +22,12 @@ class Settings implements Controller
         $newOption = [];
 
         if (
-            isset($option['price']) and
-            isset($option['curreny']) and
-            isset($option['period']) and
-            $inputs['financial_checkout_limits']['curreny'] == $option['curreny'] and
-            $inputs['financial_checkout_limits']['price'] == $option['price'] and
-            $inputs['financial_checkout_limits']['price'] == $option['period']
+            isset($option['price'])
+            and isset($option['curreny'])
+            and isset($option['period'])
+            and $inputs['financial_checkout_limits']['curreny'] == $option['curreny']
+            and $inputs['financial_checkout_limits']['price'] == $option['price']
+            and $inputs['financial_checkout_limits']['price'] == $option['period']
         ) {
             return $logs;
         }
@@ -52,8 +52,8 @@ class Settings implements Controller
         if (!isset($option['currency']) or $option['currency'] != $inputs['financial_checkout_limits']['currency']) {
             $logs[] = new Log(
                 'financial_checkout_limits_currency',
-                ('#'.$oldCurrency->id.', '.$oldCurrency->title),
-                ('#'.$newCurrency->id.', '.$newCurrency->title),
+                '#'.$oldCurrency->id.', '.$oldCurrency->title,
+                '#'.$newCurrency->id.', '.$newCurrency->title,
                 t('titles.checkout_limits.currency')
             );
         }

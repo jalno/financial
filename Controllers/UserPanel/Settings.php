@@ -37,8 +37,8 @@ class Settings implements Controller
 
         $canChangeCurrency = Authorization::is_accessed('profile_change_currency');
         if (
-            !$canChangeCurrency or
-            !isset($inputs['financial_transaction_currency'])
+            !$canChangeCurrency
+            or !isset($inputs['financial_transaction_currency'])
         ) {
             return $logs;
         }
@@ -134,8 +134,8 @@ class Settings implements Controller
         $logs = [];
 
         if (
-            !Authorization::is_accessed('profile_checkout_limits') or
-            !isset($inputs['financial_checkout_limits'])
+            !Authorization::is_accessed('profile_checkout_limits')
+            or !isset($inputs['financial_checkout_limits'])
         ) {
             return $logs;
         }
@@ -146,10 +146,10 @@ class Settings implements Controller
         $newOption = [];
 
         if (
-            isset($option['price'], $option['currency'], $option['period']) and
-            $inputs['financial_checkout_limits']['currency'] == $option['currency'] and
-            $inputs['financial_checkout_limits']['price'] == $option['price'] and
-            $inputs['financial_checkout_limits']['period'] == $option['period']
+            isset($option['price'], $option['currency'], $option['period'])
+            and $inputs['financial_checkout_limits']['currency'] == $option['currency']
+            and $inputs['financial_checkout_limits']['price'] == $option['price']
+            and $inputs['financial_checkout_limits']['period'] == $option['period']
         ) {
             $query = new User\Option();
             $query->where('user', $user->id);
@@ -161,10 +161,10 @@ class Settings implements Controller
         }
 
         if (
-            isset($userOption['price'], $userOption['currency'], $userOption['period']) and
-            $inputs['financial_checkout_limits']['currency'] == $userOption['currency'] and
-            $inputs['financial_checkout_limits']['price'] == $userOption['price'] and
-            $inputs['financial_checkout_limits']['period'] == $userOption['period']
+            isset($userOption['price'], $userOption['currency'], $userOption['period'])
+            and $inputs['financial_checkout_limits']['currency'] == $userOption['currency']
+            and $inputs['financial_checkout_limits']['price'] == $userOption['price']
+            and $inputs['financial_checkout_limits']['period'] == $userOption['period']
         ) {
             return $logs;
         }
@@ -194,8 +194,8 @@ class Settings implements Controller
         if (!isset($oldOption['currency']) or $oldOption['currency'] != $inputs['financial_checkout_limits']['currency']) {
             $logs[] = new Log(
                 'financial_checkout_limits_currency',
-                ('#'.$oldCurrency->id.', '.$oldCurrency->title),
-                ('#'.$newCurrency->id.', '.$newCurrency->title),
+                '#'.$oldCurrency->id.', '.$oldCurrency->title,
+                '#'.$newCurrency->id.', '.$newCurrency->title,
                 t('titles.checkout_limits.currency')
             );
         }

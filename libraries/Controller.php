@@ -1,6 +1,9 @@
 <?php
-namespace packages\financial;
-use \packages\userpanel\Controller as UserPanelController;
-class Controller extends UserPanelController{
 
+namespace packages\financial;
+
+use packages\userpanel\Controller as UserPanelController;
+
+class Controller extends UserPanelController
+{
 }

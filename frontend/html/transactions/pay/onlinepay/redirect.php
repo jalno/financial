@@ -3,7 +3,7 @@ use packages\base\Translator;
 use packages\userpanel\Authentication;
 
 $isLogin = Authentication::check();
-$this->the_header(!$isLogin ? "logedout" : "");
+$this->the_header(!$isLogin ? 'logedout' : '');
 $redirect = $this->getRedirect();
 ?>
 <div class="row">
@@ -15,11 +15,11 @@ $redirect = $this->getRedirect();
 			<form id="onlinepay_redirect_form" action="<?php echo $redirect->getURL(); ?>" method="<?php echo $redirect->method; ?>">
 				<?php $this->createFormData(); ?>
 				<p><?php echo Translator::trans('pay.redirect.manual', [
-					'submit' => '<button type="submit" class="btn btn-primary">'.Translator::trans('here').'</button>'
+				    'submit' => '<button type="submit" class="btn btn-primary">'.Translator::trans('here').'</button>',
 				]); ?></p>
 			</form>
 		</div>
 	</div>
 </div>
 <?php
-$this->the_footer(!$isLogin ? "logedout" : "");
+$this->the_footer(!$isLogin ? 'logedout' : '');

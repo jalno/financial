@@ -1,8 +1,7 @@
 <?php
-use packages\base\Translator;
+use packages\financial\Authentication;
+use packages\financial\Authorization;
 use packages\userpanel;
-use themes\clipone\Utility;
-use packages\financial\{Authentication, Authorization};
 
 $user = $this->transaction->user;
 $self = Authentication::getUser();
@@ -24,59 +23,59 @@ $this->the_header();
 					<div class="alert alert-block alert-info fade in">
 						<button data-dismiss="alert" class="close" type="button">&times;</button>
 						<h4 class="alert-heading"><i class="fa fa-info-circle"></i> <?php echo t('attention'); ?>!</h4>
-						<p><?php echo t('pay.credit.attention.notpaidcomplatly', array('remain' => t("currency.rial", array('number' =>  $this->transaction->payablePrice() - $this->getCredit())))); ?></p>
+						<p><?php echo t('pay.credit.attention.notpaidcomplatly', ['remain' => t('currency.rial', ['number' => $this->transaction->payablePrice() - $this->getCredit()])]); ?></p>
 					</div>
 				<?php } ?>
 				<form class="pay_credit_form" action="<?php echo userpanel\url("transactions/pay/credit/{$this->transaction->id}"); ?>" method="POST" role="form" data-price="<?php echo $this->transaction->payablePrice(); ?>">
 					<?php
-					if ($types and $self->id != $user->id) {
-						$this->createField([
-							'name' => 'user',
-							'type' => 'radio',
-							'label' => t('financial.transaction.pay.byCredit.user'),
-							'inline' => true,
-							'options' => [
-								[
-									'label' => t('financial.transaction.pay.byCredit.user.my'),
-									'value' => $self->id,
-									'data' => [
-										'credit' => $self->credit
-									],
-								],
-								[
-									'label' => t('financial.transaction.pay.byCredit.user.owner'),
-									'value' => $user->id,
-									'data' => [
-										'credit' => $user->credit
-									],
-								]
-							]
-						]);
-					}
-					$fields = array(
-						array(
-							'name' => 'currentcredit',
-							'label' => t('currentcredit'),
-							'value' => number_format($this->getCredit()),
-							'disabled' => true,
-							'ltr' => true,
-							'input-group' => array(
-								'right' => $this->getCurrency()->title,
-							),
-						),
-						array(
-							'name' => 'credit',
-							'label' => t("pay.price"),
-							'ltr' => true,
-							'input-group' => array(
-								'right' => $this->getCurrency()->title,
-							),
-						),
-					);
-					foreach ($fields as $field) {
-						$this->createField($field);
-					}
-					?>
+                    if ($types and $self->id != $user->id) {
+                        $this->createField([
+                            'name' => 'user',
+                            'type' => 'radio',
+                            'label' => t('financial.transaction.pay.byCredit.user'),
+                            'inline' => true,
+                            'options' => [
+                                [
+                                    'label' => t('financial.transaction.pay.byCredit.user.my'),
+                                    'value' => $self->id,
+                                    'data' => [
+                                        'credit' => $self->credit,
+                                    ],
+                                ],
+                                [
+                                    'label' => t('financial.transaction.pay.byCredit.user.owner'),
+                                    'value' => $user->id,
+                                    'data' => [
+                                        'credit' => $user->credit,
+                                    ],
+                                ],
+                            ],
+                        ]);
+                    }
+$fields = [
+    [
+        'name' => 'currentcredit',
+        'label' => t('currentcredit'),
+        'value' => number_format($this->getCredit()),
+        'disabled' => true,
+        'ltr' => true,
+        'input-group' => [
+            'right' => $this->getCurrency()->title,
+        ],
+    ],
+    [
+        'name' => 'credit',
+        'label' => t('pay.price'),
+        'ltr' => true,
+        'input-group' => [
+            'right' => $this->getCurrency()->title,
+        ],
+    ],
+];
+foreach ($fields as $field) {
+    $this->createField($field);
+}
+?>
 					<div class="row">
 						<div class="col-sm-offset-4 col-sm-4">
 							<button class="btn btn-teal btn-block" type="submit"><i class="fa fa-arrow-circle-left"></i> <?php echo t('pay'); ?></button>

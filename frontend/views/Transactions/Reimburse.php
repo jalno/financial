@@ -1,51 +1,65 @@
 <?php
+
 namespace themes\clipone\Views\Transactions;
 
-use packages\base\{Options, Packages};
-use packages\financial\{Currency, Transaction, TransactionPay, Views\Transactions\Reimburse as TransactionReimburse};
-use themes\clipone\{ViewTrait, Views\ListTrait, Views\FormTrait, Breadcrumb, Navigation, Views\TransactionTrait};
+use packages\financial\Currency;
+use packages\financial\Transaction;
+use packages\financial\TransactionPay;
+use packages\financial\Views\Transactions\Reimburse as TransactionReimburse;
+use themes\clipone\Navigation;
+use themes\clipone\Views\FormTrait;
+use themes\clipone\Views\ListTrait;
+use themes\clipone\Views\TransactionTrait;
+use themes\clipone\ViewTrait;
 
-class Reimburse extends TransactionReimburse {
-	use ViewTrait, ListTrait, FormTrait, TransactionTrait;
-	
-	/** @var Transaction|null */
-	protected $transaction;
+class Reimburse extends TransactionReimburse
+{
+    use ViewTrait;
+    use ListTrait;
+    use FormTrait;
+    use TransactionTrait;
 
-	/** @var TransactionPay[] */
-	protected $pays = [];
+    /** @var Transaction|null */
+    protected $transaction;
 
-	/** @var Curreny|null */
-	protected $userDefaultCurrency;
+    /** @var TransactionPay[] */
+    protected $pays = [];
 
-	/** @var int[] */
-	protected $notRefundablePays = [];
+    /** @var Curreny|null */
+    protected $userDefaultCurrency;
 
-	public function __beforeLoad(): void {
-		$this->transaction = $this->getTransaction();
-		$this->pays = $this->getPays();
-		$this->userDefaultCurrency = Currency::getDefault($this->transaction->user);
-		Navigation::active("transactions/list");
+    /** @var int[] */
+    protected $notRefundablePays = [];
 
-		$this->setTitle(t("packages.financial.reimburse.title"));
-		$this->setShortDescription(t("transaction.number", array(
-			"number" =>  $this->transaction->id)
-		));
+    public function __beforeLoad(): void
+    {
+        $this->transaction = $this->getTransaction();
+        $this->pays = $this->getPays();
+        $this->userDefaultCurrency = Currency::getDefault($this->transaction->user);
+        Navigation::active('transactions/list');
 
-		$this->addBodyClass("transactions");
-		$this->addBodyClass("transaction-reimburse");
-	}
+        $this->setTitle(t('packages.financial.reimburse.title'));
+        $this->setShortDescription(t('transaction.number', [
+            'number' => $this->transaction->id]
+        ));
 
-	protected function getPaysTotalAmountByCurrency(): int {
-		$currency = $this->userDefaultCurrency;
-		return array_reduce($this->getPays(), function($carry, TransactionPay $pay) use (&$currency) {
-			$price = 0;
-			try {
-				$price = $pay->currency->changeTo($pay->price, $currency);
-			} catch (Currency\UnChangableException $e) {
-				$this->notRefundablePays[] = $pay->id;
-			}
-			return $carry + $price;
-		}, 0);
-	}
+        $this->addBodyClass('transactions');
+        $this->addBodyClass('transaction-reimburse');
+    }
 
+    protected function getPaysTotalAmountByCurrency(): int
+    {
+        $currency = $this->userDefaultCurrency;
+
+        return array_reduce($this->getPays(), function ($carry, TransactionPay $pay) use (&$currency) {
+            $price = 0;
+            try {
+                $price = $pay->currency->changeTo($pay->price, $currency);
+            } catch (Currency\UnChangableException $e) {
+                $this->notRefundablePays[] = $pay->id;
+            }
+
+            return $carry + $price;
+        }, 0);
+    }
 }

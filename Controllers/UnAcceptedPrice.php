@@ -2,4 +2,6 @@
 
 namespace packages\financial\Controllers;
 
-class UnAcceptedPrice extends \Exception{}
+class UnAcceptedPrice extends \Exception
+{
+}

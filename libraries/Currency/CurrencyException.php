@@ -1,3 +1,7 @@
 <?php
+
 namespace packages\financial\Currency;
-class CurrencyException extends \Exception{}
+
+class CurrencyException extends \Exception
+{
+}

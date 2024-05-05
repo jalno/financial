@@ -1,23 +1,26 @@
 <?php
+
 namespace packages\financial\Listeners;
 
 use packages\base\Options;
-use packages\userpanel\Events\General\Settings;
 use packages\financial\Controllers\Settings as Controller;
 use packages\financial\Currency;
 use packages\financial\Validators\CheckoutLimitValidator;
+use packages\userpanel\Events\General\Settings;
 
 class SettingsListener
 {
-	public function init(Settings $settings): void {
-		$setting = new Settings\Setting("financial");
-		$setting->setController(Controller::class);
-		$this->addCheckoutLimitsFields($setting);
-		$settings->addSetting($setting);
-	}
+    public function init(Settings $settings): void
+    {
+        $setting = new Settings\Setting('financial');
+        $setting->setController(Controller::class);
+        $this->addCheckoutLimitsFields($setting);
+        $settings->addSetting($setting);
+    }
 
-	private function addCheckoutLimitsFields(Settings\Setting $setting): void {
-		$defaultCurrency = Currency::getDefault();
+    private function addCheckoutLimitsFields(Settings\Setting $setting): void
+    {
+        $defaultCurrency = Currency::getDefault();
 
         $setting->addInput([
             'name' => 'financial_checkout_limits',
@@ -26,7 +29,7 @@ class SettingsListener
         ]);
 
         $setting->addField([
-            'name' => "financial_checkout_limits[price]",
+            'name' => 'financial_checkout_limits[price]',
             'ltr' => true,
             'label' => t('titles.checkout_limits.price'),
             'input-group' => [
@@ -40,12 +43,12 @@ class SettingsListener
         ]);
 
         $setting->addField([
-            'name' => "financial_checkout_limits[currency]",
+            'name' => 'financial_checkout_limits[currency]',
             'type' => 'hidden',
         ]);
 
         $setting->addField([
-            'name' => "financial_checkout_limits[period]",
+            'name' => 'financial_checkout_limits[period]',
             'ltr' => true,
             'label' => t('titles.checkout_limits.period'),
             'input-group' => [
@@ -58,7 +61,7 @@ class SettingsListener
             ],
         ]);
 
-		$option = Options::get('packages.financial.checkout_limits');
+        $option = Options::get('packages.financial.checkout_limits');
 
         if ($option) {
             $setting->setDataForm('financial_checkout_limits', [
@@ -71,5 +74,5 @@ class SettingsListener
                 'currency' => $defaultCurrency->id,
             ]);
         }
-	}
+    }
 }

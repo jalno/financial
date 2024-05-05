@@ -1,19 +1,15 @@
 <?php
 
 $finder = PhpCsFixer\Finder::create()
-    ->in([__DIR__])
-    ->path("listeners/userpanel/SettingsListener.php")
-    ->path("controllers/userpanel/Settings.php")
-    ->path("controllers/Settings.php")
-    ->path("libraries/validators/CheckoutLimitValidator.php")
-    ->path("libraries/Contracts")
-    ->path("libraries/FinancialService.php")
-    ->path("libraries/TransactionManager.php")
-    ;
+    ->in([
+        __DIR__,
+    ]);
 
 $config = new PhpCsFixer\Config();
-return $config->setRules([
+
+return $config
+    ->setRules([
         '@Symfony' => true,
+        'phpdoc_to_comment' => false,
     ])
-    ->setFinder($finder)
-;
+    ->setFinder($finder);

@@ -1,3 +1,7 @@
 <?php
+
 namespace packages\financial\PayPort;
-class VerificationException extends \Exception{}
+
+class VerificationException extends \Exception
+{
+}

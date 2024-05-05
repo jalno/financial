@@ -1,9 +1,9 @@
 <?php
-use \packages\base\{Json, Translator};
-use \themes\clipone\Utility;
-use \packages\userpanel;
-use \packages\userpanel\Date;
-use \packages\financial\{Transaction, Currency, TransactionPay, Authorization, Authentication};
+use packages\base\Translator;
+use packages\financial\Authentication;
+use packages\financial\Authorization;
+use packages\financial\Currency;
+use packages\userpanel;
 
 $this->the_header();
 ?>
@@ -12,51 +12,51 @@ $this->the_header();
         <div class="panel panel-default">
             <div class="panel-heading">
                 <i class="fa fa-plus"></i>
-                <span><?php echo Translator::trans("transaction.adding_credit"); ?></span>
+                <span><?php echo Translator::trans('transaction.adding_credit'); ?></span>
 				<div class="panel-tools">
 				</div>
             </div>
             <div class="panel-body">
                 <div class="table-responsive">
                     <form class="addingcredit_form" action="<?php echo userpanel\url('transactions/addingcredit'); ?>" method="post">
-					<?php if($multyUser = Authorization::childrenTypes()){ ?> 
+					<?php if ($multyUser = Authorization::childrenTypes()) { ?> 
                         <div class="col-sm-6">
 							<?php
-							$this->createField([
-								'name' => 'client',
-								'type' => 'hidden'
-							]);
-							$this->createField([
-								'name' => 'client_name',
-								'label' => Translator::trans("newticket.client"),
-								'error' => [
-									'data_validation' => 'transactions.client.data_validation'
-								]
-							]);
-							?>
+                            $this->createField([
+                                'name' => 'client',
+                                'type' => 'hidden',
+                            ]);
+					    $this->createField([
+					        'name' => 'client_name',
+					        'label' => Translator::trans('newticket.client'),
+					        'error' => [
+					            'data_validation' => 'transactions.client.data_validation',
+					        ],
+					    ]);
+					    ?>
                         </div>
 					<?php } ?>
-						<div class="<?php echo ($multyUser ? 'col-sm-6': 'col-sm-6 col-sm-offset-3'); ?>">
+						<div class="<?php echo $multyUser ? 'col-sm-6' : 'col-sm-6 col-sm-offset-3'; ?>">
 							<?php $this->createField([
-								'name' => 'price',
-								'label' => Translator::trans("transaction.addingcredit.price"),
-								'ltr' => true,
-								'placeholder' => 10000,
-								"input-group" => [
-									"right" => [
-										[
-											"type" => "addon",
-											"text" => Currency::getDefault(Authentication::getUser())->title,
-										]
-									]
-								]
+							    'name' => 'price',
+							    'label' => Translator::trans('transaction.addingcredit.price'),
+							    'ltr' => true,
+							    'placeholder' => 10000,
+							    'input-group' => [
+							        'right' => [
+							            [
+							                'type' => 'addon',
+							                'text' => Currency::getDefault(Authentication::getUser())->title,
+							            ],
+							        ],
+							    ],
 							]); ?>
 						</div>
 						<div class="col-sm-12">
 			                <hr>
 			                <p>
 			                    <a href="<?php echo userpanel\url('transactions'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-right"></i> <?php echo Translator::trans('packages.financial.return'); ?></a>
-			                    <button type="submit" class="btn btn-yellow"><i class="fa fa-check-square-o"></i> <?php echo Translator::trans("packages.financial.submit"); ?></button>
+			                    <button type="submit" class="btn btn-yellow"><i class="fa fa-check-square-o"></i> <?php echo Translator::trans('packages.financial.submit'); ?></button>
 			                </p>
 						</div>
 	                </form>
@@ -66,4 +66,4 @@ $this->the_header();
     </div>
 </div>
 <?php
-	$this->the_footer();
+    $this->the_footer();

@@ -1,6 +1,8 @@
 <?php
+
 namespace packages\financial\PayPort;
 
-class AlreadyVerified extends VerificationException{
-	protected $message = 'alreadyverified';
+class AlreadyVerified extends VerificationException
+{
+    protected $message = 'alreadyverified';
 }

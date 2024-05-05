@@ -37,8 +37,8 @@ class TransactionManager implements ITransactionManager
 
     public function canOnlinePay(int $id): bool
     {
-        return in_array(Transaction::ONLINE_PAYMENT_METHOD, $this->getPaymentMethods($id)) and
-            !empty($this->getOnlinePayports($id));
+        return in_array(Transaction::ONLINE_PAYMENT_METHOD, $this->getPaymentMethods($id))
+            and !empty($this->getOnlinePayports($id));
     }
 
     /**
@@ -86,8 +86,8 @@ class TransactionManager implements ITransactionManager
 
     public function canPayByTransferBank(int $id): bool
     {
-        return in_array(Transaction::BANK_TRANSFER_PAYMENT_METHOD, $this->getPaymentMethods($id)) and
-            !empty($this->getBankAccountsForTransferPay($id));
+        return in_array(Transaction::BANK_TRANSFER_PAYMENT_METHOD, $this->getPaymentMethods($id))
+            and !empty($this->getBankAccountsForTransferPay($id));
     }
 
     public function getBankAccountsForTransferPay(int $id): array
