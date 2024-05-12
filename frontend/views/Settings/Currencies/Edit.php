@@ -1,6 +1,6 @@
 <?php
 
-namespace themes\clipone\views\financial\Settings\Currencies;
+namespace themes\clipone\Views\Financial\Settings\Currencies;
 
 use packages\financial\Views\Settings\Currencies\Edit as CurrenciesEdit;
 use packages\financial\{Currency};

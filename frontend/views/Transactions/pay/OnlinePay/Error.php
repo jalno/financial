@@ -1,6 +1,6 @@
 <?php
 
-namespace themes\clipone\views\Transactions\Pay\OnlinePay;
+namespace themes\clipone\Views\Transactions\Pay\OnlinePay;
 
 use packages\base\Translator;
 use packages\financial\Views\Transactions\Pay\OnlinePay\Error as ErrorView;

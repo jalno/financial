@@ -1,6 +1,6 @@
 <?php
 
-namespace themes\clipone\views\Transactions\Pay;
+namespace themes\clipone\Views\Transactions\Pay;
 
 use packages\base\Translator;
 use packages\financial\Transaction;

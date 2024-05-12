@@ -1,6 +1,6 @@
 <?php
 
-namespace themes\clipone\views\financial\Settings\GateWays;
+namespace themes\clipone\Views\Financial\Settings\GateWays;
 
 use packages\base\Frontend\Theme;
 use packages\financial\PayPort as GateWay;

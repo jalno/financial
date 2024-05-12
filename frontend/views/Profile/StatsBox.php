@@ -1,6 +1,6 @@
 <?php
 
-namespace themes\clipone\views\financial\Profile;
+namespace themes\clipone\Views\Financial\Profile;
 
 use packages\base\Date;
 use packages\base\Options;

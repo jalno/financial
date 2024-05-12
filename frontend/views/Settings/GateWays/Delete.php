@@ -1,6 +1,6 @@
 <?php
 
-namespace themes\clipone\views\financial\Settings\GateWays;
+namespace themes\clipone\Views\Financial\Settings\GateWays;
 
 use packages\financial\Views\Settings\GateWays\Delete as DeleteView;
 use themes\clipone\Navigation;

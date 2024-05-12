@@ -1,10 +1,10 @@
 <?php
 
-namespace themes\clipone\listeners\financial;
+namespace themes\clipone\Listeners\Financial;
 
 use packages\financial\Authorization;
 use themes\clipone\Events\InitializeProfile as Event;
-use themes\clipone\views\financial\Profile\StatsBox;
+use themes\clipone\Views\Financial\Profile\StatsBox;
 
 class InitializeProfile
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace themes\clipone\views\financial\Settings\Banks;
+namespace themes\clipone\Views\Financial\Settings\Banks;
 
 use packages\base\Views\Traits\Form as BaseFormTrait;
 use packages\financial\Authorization;

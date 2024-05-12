@@ -367,7 +367,7 @@ class Accounts extends Controller
             $payport->where('account', $account->id);
             $payport->where('status', PayPort::active);
             if ($payport->has()) {
-                throw new payportDependencies();
+                throw new PayPortDependencies();
             }
             $account->delete();
             $this->response->setStatus(true);

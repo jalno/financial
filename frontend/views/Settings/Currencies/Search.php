@@ -1,6 +1,6 @@
 <?php
 
-namespace themes\clipone\views\financial\Settings\Currencies;
+namespace themes\clipone\Views\Financial\Settings\Currencies;
 
 use packages\base\Translator;
 use packages\base\View\Error;

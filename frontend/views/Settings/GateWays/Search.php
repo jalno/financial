@@ -1,6 +1,6 @@
 <?php
 
-namespace themes\clipone\views\financial\Settings\GateWays;
+namespace themes\clipone\Views\Financial\Settings\GateWays;
 
 use packages\base\Translator;
 use packages\base\View\Error;

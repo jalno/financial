@@ -1,6 +1,6 @@
 <?php
 
-namespace themes\clipone\views\financial\Settings\Banks\Accounts;
+namespace themes\clipone\Views\Financial\Settings\Banks\Accounts;
 
 use packages\financial\Authentication;
 use packages\financial\Authorization;

@@ -8,7 +8,7 @@ use packages\financial\Authorization;
 use packages\financial\Bank;
 use packages\financial\Controller;
 use packages\financial\View;
-use themes\clipone\views\financial as Views;
+use themes\clipone\Views\Financial as Views;
 
 class Banks extends Controller
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace themes\clipone\Listeners\financial;
+namespace themes\clipone\Listeners\Financial;
 
 use packages\base\DB;
 use packages\base\Translator;
