@@ -1,0 +1,20 @@
+{
+    "name": "jalno/financial",
+    "type": "library",
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "jalno/base": "@dev",
+        "jalno/userpanel": "@dev",
+        "jalno/notifications": "@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "packages\\financial\\": ["libraries/"],
+            "themes\\clipone\\Views\\" : ["frontend/library/Views"],
+            "themes\\clipone\\Listeners\\Financial\\" : ["frontend/Listeners"],
+            "themes\\clipone\\Views\\Financial\\" : ["frontend/Views"]
+        }
+    }
+}
