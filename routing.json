@@ -1,290 +1,290 @@
 [
 	{
-		"path": ["userpanel","transactions"],
-		"controller": "controllers\\transactions@listtransactions",
+		"path": "userpanel/transactions",
+		"controller": "packages/financial/Controllers/Transactions@listtransactions",
 		"method":"get"
 	},
 	{
 		"path": ["userpanel","transactions","view", {"type":"dynamic", "name":"id", "regex":"/^(\\d+)$/"}],
-		"controller": "controllers\\transactions@transaction_view",
+		"controller": "packages/financial/Controllers/Transactions@transaction_view",
 		"method":"get"
 	},
 	{
 		"path": ["userpanel","transactions","pay", {"type":"dynamic", "name":"transaction", "regex":"/^(\\d+)$/"}],
-		"controller": "controllers\\transactions@pay",
+		"controller": "packages/financial/Controllers/Transactions@pay",
 		"method":"get"
 	},
 	{
 		"path": "userpanel/transactions/pay/credit/:transaction",
-		"controller": "controllers/transactions@payByCreditView",
+		"controller": "packages/financial/Controllers/Transactions@payByCreditView",
 		"method": "get"
 	},
 	{
 		"path": "userpanel/transactions/pay/credit/:transaction",
-		"controller": "controllers/transactions@payByCredit",
+		"controller": "packages/financial/Controllers/Transactions@payByCredit",
 		"method": "post"
 	},
 	{
 		"path": ["userpanel","transactions","pay", "banktransfer", {"type":"dynamic", "name":"transaction", "regex":"/^(\\d+)$/"}],
-		"controller": "controllers/transactions@payByBankTransferView",
+		"controller": "packages/financial/Controllers/Transactions@payByBankTransferView",
 		"method":"get"
 	},
 	{
 		"path": ["userpanel","transactions","pay", "banktransfer", {"type":"dynamic", "name":"transaction", "regex":"/^(\\d+)$/"}],
-		"controller": "controllers/transactions@payByBankTransfer",
+		"controller": "packages/financial/Controllers/Transactions@payByBankTransfer",
 		"method" :"post"
 	},
 	{
 		"path": ["userpanel","transactions","pay", "accept", {"type":"dynamic", "name":"pay", "regex":"/^(\\d+)$/"}],
-		"controller": "controllers\\transactions@acceptPay"
+		"controller": "packages/financial/Controllers/Transactions@acceptPay"
 	},
 	{
 		"path": ["userpanel","transactions","pay", "reject", {"type":"dynamic", "name":"pay", "regex":"/^(\\d+)$/"}],
-		"controller": "controllers\\transactions@rejectPay"
+		"controller": "packages/financial/Controllers/Transactions@rejectPay"
 	},
 	{
 		"path": "userpanel/transactions/pay/onlinepay/:transaction",
-		"controller": "controllers/transactions@onlinePayView",
+		"controller": "packages/financial/Controllers/Transactions@onlinePayView",
 		"method": "get"
 	},
 	{
 		"path": "userpanel/transactions/pay/onlinepay/:transaction",
-		"controller": "controllers/transactions@onlinePay",
+		"controller": "packages/financial/Controllers/Transactions@onlinePay",
 		"method": "post"
 	},
 	{
 		"path": ["transactions","pay", "onlinepay", "callback", {"type":"dynamic", "name":"pay", "regex":"/^\\d+$/"}],
-		"controller": "controllers\\transaction\\OnlinePay@callBack"
+		"controller": "packages/financial/Controllers/Transaction/OnlinePay@callBack"
 	},
 	{
 		"path": ["userpanel","transactions","delete", {"type":"dynamic", "name":"id", "regex":"/^\\d+$/"}],
-		"controller": "controllers/transactions@delete",
+		"controller": "packages/financial/Controllers/Transactions@delete",
 		"method": "get"
 	},
 	{
 		"path": ["userpanel","transactions","delete", {"type":"dynamic", "name":"id", "regex":"/^\\d+$/"}],
-		"controller": "controllers/transactions@destroy",
+		"controller": "packages/financial/Controllers/Transactions@destroy",
 		"method": "post"
 	},
 	{
-		"path": ["userpanel","transactions","delete"],
-		"controller": "controllers/transactions@destroy",
+		"path": "userpanel/transactions/delete",
+		"controller": "packages/financial/Controllers/Transactions@destroy",
 		"method": "post"
 	},
 	{
 		"path": ["userpanel","transactions","edit", {"type":"dynamic", "name":"id", "regex":"/^\\d+$/"}],
-		"controller": "controllers\\transactions@edit"
+		"controller": "packages/financial/Controllers/Transactions@edit"
 	},
 	{
-		"path": ["userpanel","transactions","new"],
-		"controller": "controllers/transactions@add",
+		"path": "userpanel/transactions/new",
+		"controller": "packages/financial/Controllers/Transactions@add",
 		"method": "get"
 	},
 	{
-		"path": ["userpanel","transactions","new"],
-		"controller": "controllers/transactions@store",
+		"path": "userpanel/transactions/new",
+		"controller": "packages/financial/Controllers/Transactions@store",
 		"method": "post"
 	},
 	{
 		"path": ["userpanel","transactions","pay", "delete", {"type":"dynamic", "name":"id", "regex":"/^\\d+$/"}],
-		"controller": "controllers\\transactions@pay_delete"
+		"controller": "packages/financial/Controllers/Transactions@pay_delete"
 	},
 	{
 		"path": ["userpanel","transactions","product", "delete", {"type":"dynamic", "name":"id", "regex":"/^\\d+$/"}],
-		"controller": "controllers\\transactions@product_delete"
+		"controller": "packages/financial/Controllers/Transactions@product_delete"
 	},
 	{
-		"path": ["userpanel","transactions","addingcredit"],
-		"controller": "controllers\\transactions@addingcredit"
+		"path": "userpanel/transactions/addingcredit",
+		"controller": "packages/financial/Controllers/Transactions@addingcredit"
 	},
 	{
 		"path": "userpanel/transactions/accept/:id",
-		"controller": "controllers/transactions@acceptedView",
+		"controller": "packages/financial/Controllers/Transactions@acceptedView",
 		"method": "get"
 	},
 	{
 		"path": "userpanel/transactions/accept/:id",
-		"controller": "controllers/transactions@accepted",
+		"controller": "packages/financial/Controllers/Transactions@accepted",
 		"method": "post"
 	},
 	{
-		"path":["userpanel","settings", "financial","gateways"],
-		"controller": "controllers\\settings\\gateways@listgateways",
+		"path":"userpanel/settings/financial/gateways",
+		"controller": "packages/financial/Controllers/Settings/GateWays@listgateways",
 		"method":"get"
 	},
 	{
-		"path":["userpanel","settings", "financial","gateways","add"],
-		"controller": "controllers\\settings\\gateways@add",
+		"path":"userpanel/settings/financial/gateways/add",
+		"controller": "packages/financial/Controllers/Settings/GateWays@add",
 		"method":["get","post"]
 	},
 	{
 		"path":["userpanel","settings", "financial","gateways","delete",{"type":"dynamic","name":"gateway", "regex":"/^\\d+$/"}],
-		"controller": "controllers\\settings\\gateways@delete",
+		"controller": "packages/financial/Controllers/Settings/GateWays@delete",
 		"method":["get","post"]
 	},
 	{
 		"path":["userpanel","settings", "financial","gateways","edit",{"type":"dynamic","name":"gateway", "regex":"/^\\d+$/"}],
-		"controller": "controllers\\settings\\gateways@edit",
+		"controller": "packages/financial/Controllers/Settings/GateWays@edit",
 		"method":["get","post"]
 	},
 	{
 		"path": ["userpanel","transactions","config", {"type":"dynamic", "name":"id", "regex":"/^\\d+$/"}],
-		"controller": "controllers\\transactions@config",
+		"controller": "packages/financial/Controllers/Transactions@config",
 		"method":["get","post"]
 	},
 	{
-		"path": ["userpanel","settings", "financial", "currencies"],
-		"controller": "controllers\\settings\\currencies@search",
+		"path": "userpanel/settings/financial/currencies",
+		"controller": "packages/financial/Controllers/Settings/Currencies@search",
 		"method": "get"
 	},
 	{
 		"path": ["userpanel","settings", "financial", "currencies", "add"],
-		"controller": "controllers\\settings\\currencies@add",
+		"controller": "packages/financial/Controllers/Settings/Currencies@add",
 		"method": "get"
 	},
 	{
-		"path": ["userpanel","settings", "financial", "currencies", "add"],
-		"controller": "controllers\\settings\\currencies@store",
+		"path": "userpanel/settings/financial/currencies/add",
+		"controller": "packages/financial/Controllers/Settings/Currencies@store",
 		"method": "post"
 	},
 	{
 		"path": ["userpanel","settings", "financial", "currencies", "edit", {"type":"dynamic","name":"currency", "regex":"/^\\d+$/"}],
-		"controller": "controllers\\settings\\currencies@edit",
+		"controller": "packages/financial/Controllers/Settings/Currencies@edit",
 		"method": "get"
 	},
 	{
 		"path": ["userpanel","settings", "financial", "currencies", "edit", {"type":"dynamic","name":"currency", "regex":"/^\\d+$/"}],
-		"controller": "controllers\\settings\\currencies@update",
+		"controller": "packages/financial/Controllers/Settings/Currencies@update",
 		"method": "post"
 	},
 	{
 		"path": ["userpanel","settings", "financial", "currencies", "delete", {"type":"dynamic","name":"currency", "regex":"/^\\d+$/"}],
-		"controller": "controllers\\settings\\currencies@delete",
+		"controller": "packages/financial/Controllers/Settings/Currencies@delete",
 		"method": "get"
 	},
 	{
 		"path": ["userpanel","settings", "financial", "currencies", "delete", {"type":"dynamic","name":"currency", "regex":"/^\\d+$/"}],
-		"controller": "controllers\\settings\\currencies@terminate",
+		"controller": "packages/financial/Controllers/Settings/Currencies@terminate",
 		"method": "post"
 	},
 	{
-		"path": ["userpanel", "financial", "users"],
-		"controller": "controllers\\userpanel\\Users@search",
+		"path": "userpanel/financial/users",
+		"controller": "packages/financial/Controllers/UserPanel/Users@search",
 		"method": "get"
 	},
 	{
 		"path": "userpanel/settings/financial/banks",
-		"controller": "controllers/settings/Banks@search",
+		"controller": "packages/financial/Controllers/Settings/Banks@search",
 		"method": "get"
 	},
 	{
 		"path": "userpanel/settings/financial/banks/add",
-		"controller": "controllers/settings/Banks@store",
+		"controller": "packages/financial/Controllers/Settings/Banks@store",
 		"method": "post"
 	},
 	{
 		"path": "userpanel/settings/financial/banks/:bank/edit",
-		"controller": "controllers/settings/Banks@update",
+		"controller": "packages/financial/Controllers/Settings/Banks@update",
 		"method": "post"
 	},
 	{
 		"path": "userpanel/settings/financial/banks/:bank/delete",
-		"controller": "controllers/settings/Banks@terminate",
+		"controller": "packages/financial/Controllers/Settings/Banks@terminate",
 		"method": "post"
 	},
 	{
 		"path": "userpanel/settings/financial/banks/accounts",
-		"controller": "controllers\\settings\\banks\\Accounts@search",
+		"controller": "packages/financial/Controllers/Settings/Banks/Accounts@search",
 		"method": "get"
 	},
 	{
 		"path": "userpanel/settings/financial/banks/accounts/add",
-		"controller": "controllers\\settings\\banks\\Accounts@add",
+		"controller": "packages/financial/Controllers/Settings/Banks/Accounts@add",
 		"method": "get"
 	},
 	{
 		"path": "userpanel/settings/financial/banks/accounts/add",
-		"controller": "controllers\\settings\\banks\\Accounts@store",
+		"controller": "packages/financial/Controllers/Settings/Banks/Accounts@store",
 		"method": "post"
 	},
 	{
 		"path": "userpanel/settings/financial/banks/accounts/edit/:account",
-		"controller": "controllers\\settings\\banks\\Accounts@edit",
+		"controller": "packages/financial/Controllers/Settings/Banks/Accounts@edit",
 		"method": "get"
 	},
 	{
 		"path": "userpanel/settings/financial/banks/accounts/:account/edit",
-		"controller": "controllers\\settings\\banks\\Accounts@update",
+		"controller": "packages/financial/Controllers/Settings/Banks/Accounts@update",
 		"method": "post"
 	},
 	{
 		"path": "userpanel/settings/financial/banks/accounts/delete/:account",
-		"controller": "controllers\\settings\\banks\\Accounts@delete",
+		"controller": "packages/financial/Controllers/Settings/Banks/Accounts@delete",
 		"method": "get"
 	},
 	{
 		"path": "userpanel/settings/financial/banks/accounts/:account/delete",
-		"controller": "controllers\\settings\\banks\\Accounts@terminate",
+		"controller": "packages/financial/Controllers/Settings/Banks/Accounts@terminate",
 		"method": "post"
 	},
 	{
 		"path": "userpanel/settings/financial/banks/accounts/:account/accept",
-		"controller": "controllers\\settings\\banks\\Accounts@accept",
+		"controller": "packages/financial/Controllers/Settings/Banks/Accounts@accept",
 		"method": "post"
 	},
 	{
 		"path": "userpanel/settings/financial/banks/accounts/:account/reject",
-		"controller": "controllers\\settings\\banks\\Accounts@reject",
+		"controller": "packages/financial/Controllers/Settings/Banks/Accounts@reject",
 		"method": "post"
 	},
 	{
 		"path": "userpanel/transactions/refund/add",
-		"controller": "controllers/transactions@refund",
+		"controller": "packages/financial/Controllers/Transactions@refund",
 		"method": "post"
 	},
 	{
 		"path": "userpanel/transactions/:transaction/refund/accept",
-		"controller": "controllers/transactions@refundAccept",
+		"controller": "packages/financial/Controllers/Transactions@refundAccept",
 		"method": "post"
 	},
 	{
 		"path": "userpanel/transactions/:transaction/refund/reject",
-		"controller": "controllers/transactions@refundReject",
+		"controller": "packages/financial/Controllers/Transactions@refundReject",
 		"method": "post"
 	},
 	{
 		"path": "userpanel/transactions/pay/:pay/edit",
-		"controller": "controllers/transactions@updatePay",
+		"controller": "packages/financial/Controllers/Transactions@updatePay",
 		"method": "post"
 	},
 	{
 		"path": "userpanel/transactions/:transaction_id/reimburse",
-		"controller": "controllers/transactions@reimburseTransactionView",
+		"controller": "packages/financial/Controllers/Transactions@reimburseTransactionView",
 		"method": "get"
 	},
 	{
 		"path": "userpanel/transactions/:transaction_id/reimburse",
-		"controller": "controllers/transactions@reimburseTransaction",
+		"controller": "packages/financial/Controllers/Transactions@reimburseTransaction",
 		"method": "post"
 	},
 	{
 		"path": "userpanel/transactions/merge",
-		"controller": "controllers/transactions@merge",
+		"controller": "packages/financial/Controllers/Transactions@merge",
 		"method": "post"
 	},
 	{
 		"path": "userpanel/transactions/user-stats",
-		"controller": "controllers/transactions@userStats",
+		"controller": "packages/financial/Controllers/Transactions@userStats",
 		"method": "get"
 	},
 	{
 		"path": "userpanel/financial/users/:user/checkout-limits",
-		"controller": "controllers/userpanel/Users@getCheckoutLimits",
+		"controller": "packages/financial/Controllers/UserPanel/Users@getCheckoutLimits",
 		"method": "get"
 	},
 	{
 		"path": "userpanel/financial/checkout-limits",
-		"controller": "controllers/userpanel/Users@getCheckoutLimits",
+		"controller": "packages/financial/Controllers/UserPanel/Users@getCheckoutLimits",
 		"method": "get"
 	},
 	{
@@ -294,6 +294,6 @@
 		"exceptions":[
 			"packages/base/NotFound"
 		],
-		"handler": "packages/userpanel/controllers/dashboard@notfound"
+		"handler": "packages/userpanel/Controllers/Dashboard@notfound"
 	}
 ]

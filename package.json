@@ -5,43 +5,42 @@
 	"autoload": {
 		"directories": ["controllers", "libraries", "listeners", "logs", "processes", "views"]
 	},
-	"dependencies": ["base", "userpanel", "notifications"],
 	"languages":{
 		"fa_IR": "langs/fa_IR.json",
 		"en_US": "langs/en_US.json"
 	},
 	"events": [
 		{
-			"name":"packages/userpanel/events/usertype_permissions_list",
-			"listener": "listeners/settings/usertype@permissions_list"
+			"name":"packages/userpanel/Events/UserTypePermissionsList",
+			"listener": "packages/financial/Settings/UserType@permissions_list"
 		},
 		{
-			"name":"packages/userpanel/events/search",
-			"listener": "listeners/search@find"
+			"name":"packages/userpanel/Events/Search",
+			"listener": "packages/financial/Listeners/Search@find"
 		},
 		{
-			"name":"packages/notifications/events",
-			"listener": "listeners/notifications@events"
+			"name":"packages/notifications/Events",
+			"listener": "packages/financial/Listeners/Notifications@events"
 		},
 		{
-			"name":"packages/userpanel/events/settings",
-			"listener": "listeners/userpanel/SettingsListener@settings_list"
+			"name":"packages/userpanel/Events/Settings",
+			"listener": "packages/financial/Listeners/UserPanel/SettingsListener@settings_list"
 		},
 		{
-			"name":"packages/userpanel/events/Users/BeforeDelete",
-			"listener": "listeners/userpanel/users/BeforeDelete@check"
+			"name":"packages/userpanel/Events/Users/BeforeDelete",
+			"listener": "packages/financial/Listeners/UserPanel/Users/BeforeDelete@check"
 		},
 		{
-			"name":"packages/cronjob/events/tasks",
-			"listener": "listeners/cronjob@tasks"
+			"name":"packages/cronjob/Events/Tasks",
+			"listener": "packages/financial/Listeners/CronJob@tasks"
 		},
 		{
 			"name":"events/Exporters",
-			"listener": "listeners/Exporters@add"
+			"listener": "packages/financial/Listeners/Exporters@add"
 		},
 		{
-			"name":"packages/userpanel/events/General/Settings",
-			"listener": "listeners/SettingsListener@init"
+			"name":"packages/userpanel/Events/General/Settings",
+			"listener": "packages/financial/Listeners/SettingsListener@init"
 		}
 	]
 }

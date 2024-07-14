@@ -11,10 +11,23 @@
     },
     "autoload": {
         "psr-4": {
-            "packages\\financial\\": ["libraries/"],
-            "themes\\clipone\\Views\\" : ["frontend/library/Views"],
-            "themes\\clipone\\Listeners\\Financial\\" : ["frontend/Listeners"],
-            "themes\\clipone\\Views\\Financial\\" : ["frontend/Views"]
+            "packages\\financial\\": [
+                "libraries/"
+            ],
+            "themes\\clipone\\Views\\": [
+                "frontend/library/Views/"
+            ],
+            "themes\\clipone\\Listeners\\Financial\\": [
+                "frontend/Listeners/"
+            ],
+            "themes\\clipone\\Views\\Financial\\": [
+                "frontend/Views/"
+            ]
+        }
+    },
+    "extra": {
+        "jalno": {
+            "manifest": "package.json"
         }
     }
 }
