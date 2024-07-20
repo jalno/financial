@@ -1,6 +1,6 @@
 <?php
 use packages\base;
-use packages\base\HTTP;
+use packages\base\Http;
 use packages\base\Json;
 use packages\base\Translator;
 use packages\financial\Authentication;

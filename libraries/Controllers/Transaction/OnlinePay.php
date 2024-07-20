@@ -3,7 +3,7 @@
 namespace packages\financial\Controllers\Transaction;
 
 use packages\base\Date;
-use packages\base\HTTP;
+use packages\base\Http;
 use packages\base\NotFound;
 use packages\base\Response;
 use packages\base\Translator;

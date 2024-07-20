@@ -5,7 +5,7 @@ namespace packages\financial\Controllers\Settings;
 use packages\base\DB\DuplicateRecord;
 use packages\base\DB\Parenthesis;
 use packages\base\Events;
-use packages\base\HTTP;
+use packages\base\Http;
 use packages\base\InputValidation;
 use packages\base\NotFound;
 use packages\base\Views\FormError;
