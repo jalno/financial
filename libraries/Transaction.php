@@ -174,11 +174,11 @@ class Transaction extends DBObject
         'status' => ['type' => 'int', 'required' => true],
     ];
     protected $relations = [
-        'user' => ['hasOne', 'packages\\userpanel\\user', 'user'],
-        'currency' => ['hasOne', 'packages\\financial\\currency', 'currency'],
-        'params' => ['hasMany', 'packages\\financial\\transaction_param', 'transaction'],
-        'products' => ['hasMany', 'packages\\financial\\transaction_product', 'transaction'],
-        'pays' => ['hasMany', 'packages\\financial\\transaction_pay', 'transaction'],
+        'user' => ['hasOne', User::class, 'user'],
+        'currency' => ['hasOne', Currency::class, 'currency'],
+        'params' => ['hasMany', TransactionParam::class, 'transaction'],
+        'products' => ['hasMany', TransactionProduct::class, 'transaction'],
+        'pays' => ['hasMany', TransactionPay::class, 'transaction'],
     ];
     protected $tmproduct = [];
     protected $tmpays = [];

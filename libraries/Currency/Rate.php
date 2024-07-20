@@ -3,6 +3,7 @@
 namespace packages\financial\Currency;
 
 use packages\base\DB\DBObject;
+use packages\financial\Currency;
 
 class Rate extends DBObject
 {
@@ -15,7 +16,7 @@ class Rate extends DBObject
         'price' => ['type' => 'double', 'required' => true],
     ];
     protected $relations = [
-        'currency' => ['hasOne', 'packages\\financial\\currency', 'currency'],
-        'changeTo' => ['hasOne', 'packages\\financial\\currency', 'changeTo'],
+        'currency' => ['hasOne', Currency::class, 'currency'],
+        'changeTo' => ['hasOne', Currency::class, 'changeTo'],
     ];
 }
