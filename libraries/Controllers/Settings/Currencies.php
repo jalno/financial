@@ -15,7 +15,7 @@ use packages\financial\Controller;
 use packages\financial\Currency;
 use packages\financial\Transaction;
 use packages\financial\Validators;
-use packages\financial\Views\Settings\Currencies as Views;
+use themes\clipone\Views\Email as Views;
 use packages\userpanel\{User\Option};
 
 use function packages\userpanel\url;
@@ -37,7 +37,7 @@ class Currencies extends Controller
     public function search()
     {
         Authorization::haveOrFail('settings_currencies_search');
-        $view = View::byName(Views\Search::class);
+        $view = View::byName(Views\Settings\Currencies\Search::class);
         $this->response->setView($view);
 
         $inputs = $this->checkinputs([
@@ -96,7 +96,7 @@ class Currencies extends Controller
     public function add()
     {
         Authorization::haveOrFail('settings_currencies_add');
-        $view = View::byName(Views\Add::class);
+        $view = View::byName(Views\Settings\Currencies\Add::class);
         $view->setCurrencies((new Currency())->get());
         $this->response->setStatus(true);
         $this->response->setView($view);
@@ -107,7 +107,7 @@ class Currencies extends Controller
     public function store(): Response
     {
         Authorization::haveOrFail('settings_currencies_add');
-        $view = View::byName(Views\Add::class);
+        $view = View::byName(Views\Settings\Currencies\Add::class);
         $this->response->setView($view);
         $view->setCurrencies(Currency::get());
 
@@ -196,7 +196,7 @@ class Currencies extends Controller
     {
         Authorization::haveOrFail('settings_currencies_edit');
         $currency = self::getCurrency($data);
-        $view = View::byName(Views\Edit::class);
+        $view = View::byName(Views\Settings\Currencies\Edit::class);
         $view->setCurrency($currency);
         $view->setCurrencies((new Currency())->where('id', $currency->id, '!=')->get());
         $this->response->setView($view);
@@ -209,7 +209,7 @@ class Currencies extends Controller
     {
         Authorization::haveOrFail('settings_currencies_edit');
         $currency = self::getCurrency($data);
-        $view = View::byName(Views\Edit::class);
+        $view = View::byName(Views\Settings\Currencies\Edit::class);
         $view->setCurrency($currency);
         $view->setCurrencies((new Currency())->where('id', $currency->id, '!=')->get());
         $this->response->setView($view);
@@ -335,7 +335,7 @@ class Currencies extends Controller
     {
         Authorization::haveOrFail('settings_currencies_delete');
         $currency = self::getCurrency($data);
-        $view = View::byName(Views\Delete::class);
+        $view = View::byName(Views\Settings\Currencies\Delete::class);
         $view->setCurrency($currency);
         $this->response->setView($view);
         $this->response->setStatus(true);
@@ -347,7 +347,7 @@ class Currencies extends Controller
     {
         Authorization::haveOrFail('settings_currencies_delete');
         $currency = self::getCurrency($data);
-        $view = View::byName(Views\Delete::class);
+        $view = View::byName(Views\Settings\Currencies\Delete::class);
         $view->setCurrency($currency);
         $this->response->setView($view);
 

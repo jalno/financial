@@ -15,7 +15,7 @@ use packages\financial\Controller;
 use packages\financial\PayPort;
 use packages\financial\Validators;
 use packages\financial\View;
-use packages\financial\Views;
+use themes\clipone\Views\Email as Views;
 use packages\userpanel;
 
 class Accounts extends Controller
