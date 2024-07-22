@@ -27,7 +27,7 @@
     },
     "extra": {
         "jalno": {
-            "manifest": "package.json"
+            "manifest": "jalno.json"
         }
     }
 }

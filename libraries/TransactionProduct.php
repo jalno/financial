@@ -36,9 +36,9 @@ class TransactionProduct extends DBObject
         'configure' => ['type' => 'bool', 'required' => true],
     ];
     protected $relations = [
-        'transaction' => ['hasOne', 'packages\\financial\\transaction', 'transaction'],
-        'currency' => ['hasOne', 'packages\\financial\\currency', 'currency'],
-        'params' => ['hasMany', 'packages\\financial\\transactions_products_param', 'product'],
+        'transaction' => ['hasOne', Transaction::class, 'transaction'],
+        'currency' => ['hasOne', Currency::class, 'currency'],
+        'params' => ['hasMany', TransactionsProductsParam::class, 'product'],
     ];
 
     public function __construct($data = null, $connection = 'default')

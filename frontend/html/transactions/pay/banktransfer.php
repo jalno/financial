@@ -1,7 +1,7 @@
 <?php
 
 use packages\base\Date;
-use packages\base\HTTP;
+use packages\base\Http;
 use packages\base\Packages;
 use packages\financial\Authentication;
 use packages\financial\TransactionPay;

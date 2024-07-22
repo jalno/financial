@@ -1,5 +1,5 @@
 <?php
-use packages\base\HTTP;
+use packages\base\Http;
 use packages\financial\Authentication;
 use packages\userpanel;
 
