@@ -25,12 +25,12 @@
 	],
 	"events":[
 		{
-			"name":"\\themes\\clipone\\events\\initializeDashboard",
-			"listener": "listeners\\financial\\dashboard@initialize"
+			"name":"themes/clipone/Events/InitializeDashboard",
+			"listener": "themes/clipone/Listeners/Financial/Dashboard@initialize"
 		},
 		{
-            "name": "themes/clipone/events/InitializeProfile",
-            "listener": "listeners/financial/InitializeProfile@handle"
+            "name": "themes/clipone/Events/InitializeProfile",
+            "listener": "themes/clipone/Listeners/Financial/InitializeProfile@handle"
         }
 	]
 }
