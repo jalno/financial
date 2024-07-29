@@ -15,7 +15,7 @@ use packages\financial\Controller;
 use packages\financial\Currency;
 use packages\financial\Transaction;
 use packages\financial\Validators;
-use themes\clipone\Views\Email as Views;
+use themes\clipone\Views\Financial as Views;
 use packages\userpanel\{User\Option};
 
 use function packages\userpanel\url;

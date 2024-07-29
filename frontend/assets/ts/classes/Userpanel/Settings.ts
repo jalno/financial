@@ -1,4 +1,3 @@
-import * as $ from 'jquery';
 import Transaction from '../Transaction';
 
 export default class Settings

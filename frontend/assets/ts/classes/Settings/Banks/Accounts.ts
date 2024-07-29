@@ -1,4 +1,3 @@
-import * as $ from "jquery";
 import "../../jquery.financialUserAutoComplete";
 import Add from "./Accounts/Add";
 import Edit from "./Accounts/Edit";

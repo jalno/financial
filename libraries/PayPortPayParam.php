@@ -4,7 +4,7 @@ namespace packages\financial;
 
 use packages\base\DB\DBObject;
 
-class PayportPayParam extends DBObject
+class PayPortPayParam extends DBObject
 {
     protected $dbTable = 'financial_payports_pays_params';
     protected $primaryKey = 'id';

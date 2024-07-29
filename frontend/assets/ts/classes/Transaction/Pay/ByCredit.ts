@@ -1,6 +1,5 @@
 import "@jalno/translator";
 import "bootstrap/js/tooltip";
-import * as $ from "jquery";
 import "webuilder/formAjax";
 import Transaction from "../../Transaction";
 

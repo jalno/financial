@@ -4,6 +4,9 @@ namespace packages\financial;
 
 use packages\base\DB\DBObject;
 use packages\userpanel\Date;
+use packages\financial\PayPort;
+use packages\financial\PayPortPayParam;
+use packages\financial\Transaction;
 
 class PayPortPay extends DBObject
 {
@@ -22,9 +25,9 @@ class PayPortPay extends DBObject
         'status' => ['type' => 'int', 'required' => true],
     ];
     protected $relations = [
-        'payport' => ['hasOne', 'packages\\financial\\payport', 'payport'],
-        'transaction' => ['hasOne', 'packages\\financial\\transaction', 'transaction'],
-        'params' => ['hasMany', 'packages\\financial\\payport_pay_param', 'pay'],
+        'payport' => ['hasOne', PayPort::class, 'payport'],
+        'transaction' => ['hasOne', Transaction::class, 'transaction'],
+        'params' => ['hasMany', PayPortPayParam::class, 'pay'],
         'currency' => ['hasOne', Currency::class, 'currency'],
     ];
 

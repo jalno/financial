@@ -1,5 +1,3 @@
-
-import * as Clipboard from "clipboard";
 import PayByCredit from "./Pay/ByCredit";
 import EditPay from "./Pay/Edit";
 import OnlinePay from "./Pay/OnlinePay";
