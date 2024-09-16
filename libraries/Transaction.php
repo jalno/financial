@@ -556,7 +556,7 @@ class Transaction extends DBObject
                         if ($payportpay) {
                             $payport = $payportpay->payport;
                             $account = $payport->account;
-                            $description = Translator::trans('financial.pay.online', ['payport' => $payport->title]);
+                            $description = t('financial.pay.online', ['payport' => $payport->title]);
                         }
                     }
                 } elseif (TransactionPay::banktransfer == $pay->method) {
@@ -566,7 +566,7 @@ class Transaction extends DBObject
                         $description = t('financial.pay.bankTransfer');
                         $followup = $pay->param('followup');
                         if ($followup) {
-                            $description .= ' - '.Translator::trans('financial.pay.bankTransfer.followup', ['followup' => $pay->param('followup')]);
+                            $description .= ' - '.t('financial.pay.bankTransfer.followup', ['followup' => $pay->param('followup')]);
                         }
                     }
                 }

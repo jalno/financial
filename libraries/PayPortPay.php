@@ -22,9 +22,9 @@ class PayPortPay extends DBObject
         'status' => ['type' => 'int', 'required' => true],
     ];
     protected $relations = [
-        'payport' => ['hasOne', 'packages\\financial\\payport', 'payport'],
-        'transaction' => ['hasOne', 'packages\\financial\\transaction', 'transaction'],
-        'params' => ['hasMany', 'packages\\financial\\payport_pay_param', 'pay'],
+        'payport' => ['hasOne', PayPort::class, 'payport'],
+        'transaction' => ['hasOne', Transaction::class, 'transaction'],
+        'params' => ['hasMany', PayportPayParam::class, 'pay'],
         'currency' => ['hasOne', Currency::class, 'currency'],
     ];
 

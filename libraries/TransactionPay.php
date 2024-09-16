@@ -41,8 +41,8 @@ class TransactionPay extends DBObject
         'status' => ['type' => 'int', 'required' => true],
     ];
     protected $relations = [
-        'transaction' => ['hasOne', 'packages\\financial\\transaction', 'transaction'],
-        'params' => ['hasMany', 'packages\\financial\\transaction_pay_param', 'pay'],
+        'transaction' => ['hasOne', Transaction::class, 'transaction'],
+        'params' => ['hasMany', TransactionPayParam::class, 'pay'],
         'currency' => ['hasOne', Currency::class, 'currency'],
     ];
 
