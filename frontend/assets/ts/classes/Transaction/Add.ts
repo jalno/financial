@@ -1,6 +1,6 @@
 import "@jalno/translator";
 import "bootstrap-inputmsg";
-import * as $ from "jquery";
+import $ from "jquery";
 import "jquery.growl";
 import { webuilder } from "webuilder";
 import "../jquery.financialUserAutoComplete";

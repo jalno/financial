@@ -1,4 +1,4 @@
-import * as $ from "jquery";
+import $ from "jquery";
 export default class Gateway {
 	public static init() {
 		Gateway.showGatewayFields();

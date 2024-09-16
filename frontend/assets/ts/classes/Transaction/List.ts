@@ -2,7 +2,7 @@ import "@jalno/translator";
 import "bootstrap-inputmsg";
 import "jalali-daterangepicker";
 import * as moment from "jalali-moment";
-import * as $ from "jquery";
+import $ from "jquery";
 import "jquery.growl";
 import "webuilder";
 import { AjaxRequest, Router } from "webuilder";

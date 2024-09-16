@@ -1,4 +1,4 @@
-import * as $ from "jquery";
+import $ from "jquery";
 import Settings from "./classes/Settings";
 import Transaction from "./classes/Transaction";
 import UserpanelSettings from "./classes/Userpanel/Settings";

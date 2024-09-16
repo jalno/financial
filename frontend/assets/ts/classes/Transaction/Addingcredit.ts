@@ -1,4 +1,4 @@
-import * as $ from "jquery";
+import $ from "jquery";
 import "webuilder/formAjax";
 import "../jquery.financialUserAutoComplete";
 import { IUser } from "../jquery.financialUserAutoComplete";
