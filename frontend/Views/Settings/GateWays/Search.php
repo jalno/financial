@@ -2,12 +2,10 @@
 
 namespace themes\clipone\Views\Financial\Settings\GateWays;
 
-use packages\base\Translator;
 use packages\base\View\Error;
 use packages\financial\Views\Settings\GateWays\Search as GateWaysListView;
 use packages\userpanel;
 use themes\clipone\Navigation;
-use themes\clipone\Navigation\MenuItem;
 use themes\clipone\Views\FormTrait;
 use themes\clipone\Views\ListTrait;
 use themes\clipone\ViewTrait;
@@ -62,27 +60,6 @@ class Search extends GateWaysListView
                 'value' => 'startswith',
             ],
         ];
-    }
-
-    public static function onSourceLoad()
-    {
-        parent::onSourceLoad();
-        if (parent::$navigation) {
-            $settings = Navigation::getByName('settings');
-            if (!$financial = Navigation::getByName('settings/financial')) {
-                $financial = new MenuItem('financial');
-                $financial->setTitle(t('settings.financial'));
-                $financial->setIcon('fa fa-money');
-                if ($settings) {
-                    $settings->addItem($financial);
-                }
-            }
-            $gateways = new MenuItem('gateways');
-            $gateways->setTitle(t('settings.financial.gateways'));
-            $gateways->setURL(userpanel\url('settings/financial/gateways'));
-            $gateways->setIcon('fa fa-rss');
-            $financial->addItem($gateways);
-        }
     }
 
     public function setButtons()

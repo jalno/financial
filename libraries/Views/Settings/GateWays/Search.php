@@ -13,7 +13,6 @@ class Search extends ListView
     protected $canAdd;
     protected $canEdit;
     protected $canDel;
-    protected static $navigation;
 
     public function __construct()
     {
@@ -30,10 +29,5 @@ class Search extends ListView
     public function setGateways(GateWays $gateways)
     {
         $this->setData($gateways, 'gateways');
-    }
-
-    public static function onSourceLoad()
-    {
-        self::$navigation = Authorization::is_accessed('settings_gateways_search');
     }
 }

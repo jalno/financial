@@ -5,9 +5,7 @@ namespace themes\clipone\Views\Financial\Settings\Banks\Accounts;
 use packages\financial\Authorization;
 use packages\financial\Bank\Account;
 use packages\financial\Views\Settings\Banks\Accounts\Search as AccountsList;
-use packages\userpanel;
 use themes\clipone\Navigation;
-use themes\clipone\Navigation\MenuItem;
 use themes\clipone\Views\FormTrait;
 use themes\clipone\Views\ListTrait;
 use themes\clipone\ViewTrait;
@@ -18,26 +16,6 @@ class Search extends AccountsList
     use ListTrait;
     use FormTrait;
 
-    public static function onSourceLoad()
-    {
-        parent::onSourceLoad();
-        if (parent::$navigation) {
-            $settings = Navigation::getByName('settings');
-            if (!$financial = Navigation::getByName('settings/financial')) {
-                $financial = new MenuItem('financial');
-                $financial->setTitle(t('settings.financial'));
-                $financial->setIcon('fa fa-money');
-                if ($settings) {
-                    $settings->addItem($financial);
-                }
-            }
-            $bankaccount = new MenuItem('bankaccounts');
-            $bankaccount->setTitle(t('packages.financial.banks.accounts'));
-            $bankaccount->setURL(userpanel\url('settings/financial/banks/accounts'));
-            $bankaccount->setIcon('fa fa-credit-card');
-            $financial->addItem($bankaccount);
-        }
-    }
     protected $multiUser = false;
     protected $canAccept = false;
 

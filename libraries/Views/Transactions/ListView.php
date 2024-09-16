@@ -14,15 +14,8 @@ use packages\userpanel\{Authentication};
 class ListView extends ParentListView
 {
     use FormTrait;
+    
     protected $canView;
-
-    protected static $navigation;
-
-    public static function onSourceLoad()
-    {
-        self::$navigation = Authorization::is_accessed('transactions_list');
-    }
-
     protected $canAdd;
     protected $canEdit;
     protected $canDel;
