@@ -1213,7 +1213,7 @@ class Transactions extends Controller
     {
         Authorization::haveOrFail('transactions_product_delete');
         $transaction_product = $this->getProduct($data);
-        $view = View::byName('\\packages\\financial\\views\\transactions\\product_delete');
+        $view = View::byName(FinancialViews\ProductDelete::class);
         $view->setProduct($transaction_product);
         if (HTTP::is_post()) {
             $this->response->setStatus(false);
@@ -1261,7 +1261,7 @@ class Transactions extends Controller
         if (!$transaction_pay) {
             throw new NotFound();
         }
-        $view = View::byName('\\packages\\financial\\views\\transactions\\pay\\delete');
+        $view = View::byName(PayView\Delete::class);
         $view->setPayData($transaction_pay);
         if (HTTP::is_post()) {
             $this->response->setStatus(false);
@@ -1298,7 +1298,7 @@ class Transactions extends Controller
     public function addingcredit()
     {
         Authorization::haveOrFail('transactions_addingcredit');
-        $view = View::byName('\\packages\\financial\\views\\transactions\\addingcredit');
+        $view = View::byName(FinancialViews\AddingCredit::class);
         $this->response->setView($view);
 
         $types = Authorization::childrenTypes();
@@ -1421,7 +1421,7 @@ class Transactions extends Controller
     {
         Authorization::haveOrFail('transactions_product_config');
         $product = $this->getProduct($data);
-        $view = View::byName('\\packages\\financial\\views\\transactions\\product\\config');
+        $view = View::byName(FinancialViews\Product\Config::class);
         if ($product->configure) {
             throw new NotFound();
         }

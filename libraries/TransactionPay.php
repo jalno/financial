@@ -5,6 +5,8 @@ namespace packages\financial;
 use packages\base\DB;
 use packages\base\DB\DBObject;
 use packages\financial\Bank\Account;
+use packages\financial\Transaction;
+use packages\financial\TransactionPayParam;
 
 class TransactionPay extends DBObject
 {

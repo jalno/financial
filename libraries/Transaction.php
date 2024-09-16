@@ -603,6 +603,4 @@ class Transaction extends DBObject
         return array_sum(array_map(fn (TransactionProduct $product) => $product->totalPrice($this->currency), $this->isNew ? $this->tmproduct : $this->products));
     }
 }
-class unDefinedCurrencyException extends \Exception
-{
-}
+

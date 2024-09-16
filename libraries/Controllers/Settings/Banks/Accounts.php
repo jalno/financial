@@ -15,7 +15,7 @@ use packages\financial\Controller;
 use packages\financial\PayPort;
 use packages\financial\Validators;
 use packages\financial\View;
-use packages\financial\Views;
+use themes\clipone\Views\Financial as Views;
 use packages\userpanel;
 
 class Accounts extends Controller
@@ -25,6 +25,7 @@ class Accounts extends Controller
     public function search(): Response
     {
         Authorization::haveOrFail('settings_banks_accounts_search');
+        //themes\clipone\Views\Financial\Settings\Banks\Accounts;
         $view = View::byName(Views\Settings\Banks\Accounts\Search::class);
         $types = Authorization::childrenTypes();
         $account = new Account();
@@ -440,8 +441,4 @@ class Accounts extends Controller
 
         return $this->response;
     }
-}
-
-class payportDependencies extends \Exception
-{
 }

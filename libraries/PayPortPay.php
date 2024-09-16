@@ -4,6 +4,9 @@ namespace packages\financial;
 
 use packages\base\DB\DBObject;
 use packages\userpanel\Date;
+use packages\financial\PayPort;
+use packages\financial\PayPortPayParam;
+use packages\financial\Transaction;
 
 class PayPortPay extends DBObject
 {
