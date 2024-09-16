@@ -20,7 +20,7 @@ class Search extends CurrenciesListView
 
     public function __beforeLoad()
     {
-        $this->setTitle(Translator::trans('settings.financial.currencies'));
+        $this->setTitle(t('settings.financial.currencies'));
         $this->addBodyClass('financial-settings');
         $this->addBodyClass('settings-currencies');
         Navigation::active('settings/financial/currencies');
@@ -39,7 +39,7 @@ class Search extends CurrenciesListView
             $error->setData([
                 [
                     'type' => 'btn-success',
-                    'txt' => Translator::trans('settings.financial.currency.add'),
+                    'txt' => t('settings.financial.currency.add'),
                     'link' => userpanel\url('settings/financial/currencies/add'),
                 ],
             ], 'btns');
@@ -51,15 +51,15 @@ class Search extends CurrenciesListView
     {
         return [
             [
-                'title' => Translator::trans('search.comparison.contains'),
+                'title' => t('search.comparison.contains'),
                 'value' => 'contains',
             ],
             [
-                'title' => Translator::trans('search.comparison.equals'),
+                'title' => t('search.comparison.equals'),
                 'value' => 'equals',
             ],
             [
-                'title' => Translator::trans('search.comparison.startswith'),
+                'title' => t('search.comparison.startswith'),
                 'value' => 'startswith',
             ],
         ];
@@ -72,14 +72,14 @@ class Search extends CurrenciesListView
             $settings = Navigation::getByName('settings');
             if (!$financial = Navigation::getByName('settings/financial')) {
                 $financial = new MenuItem('financial');
-                $financial->setTitle(Translator::trans('settings.financial'));
+                $financial->setTitle(t('settings.financial'));
                 $financial->setIcon('fa fa-money');
                 if ($settings) {
                     $settings->addItem($financial);
                 }
             }
             $currencies = new MenuItem('currencies');
-            $currencies->setTitle(Translator::trans('settings.financial.currencies'));
+            $currencies->setTitle(t('settings.financial.currencies'));
             $currencies->setURL(userpanel\url('settings/financial/currencies'));
             $currencies->setIcon('fa fa-usd');
             $financial->addItem($currencies);
@@ -89,12 +89,12 @@ class Search extends CurrenciesListView
     public function setButtons()
     {
         $this->setButton('edit', $this->canEdit, [
-            'title' => Translator::trans('edit'),
+            'title' => t('edit'),
             'icon' => 'fa fa-edit',
             'classes' => ['btn', 'btn-xs', 'btn-teal'],
         ]);
         $this->setButton('delete', $this->canDel, [
-            'title' => Translator::trans('delete'),
+            'title' => t('delete'),
             'icon' => 'fa fa-times',
             'classes' => ['btn', 'btn-xs', 'btn-bricky'],
         ]);

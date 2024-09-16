@@ -32,25 +32,25 @@ class Credit extends CreditView
     private function setNavigation()
     {
         $item = new MenuItem('transactions');
-        $item->setTitle(Translator::trans('transactions'));
+        $item->setTitle(t('transactions'));
         $item->setURL(userpanel\url('transactions'));
         $item->setIcon('clip-users');
         Breadcrumb::addItem($item);
 
         $item = new MenuItem('transaction');
-        $item->setTitle(Translator::trans('tranaction', ['id' => $this->transaction->id]));
+        $item->setTitle(t('tranaction', ['id' => $this->transaction->id]));
         $item->setURL(userpanel\url('transactions/view/'.$this->transaction->id));
         $item->setIcon('clip-user');
         Breadcrumb::addItem($item);
 
         $item = new MenuItem('pay');
-        $item->setTitle(Translator::trans('pay'));
+        $item->setTitle(t('pay'));
         $item->setURL(userpanel\url('transactions/pay/'.$this->transaction->id));
         $item->setIcon('fa fa-money');
         Breadcrumb::addItem($item);
 
         $item = new MenuItem('credit');
-        $item->setTitle(Translator::trans('pay.byCredit'));
+        $item->setTitle(t('pay.byCredit'));
         $item->setURL(userpanel\url('transactions/pay/credit/'.$this->transaction->id));
         $item->setIcon('clip-phone-3');
         Breadcrumb::addItem($item);

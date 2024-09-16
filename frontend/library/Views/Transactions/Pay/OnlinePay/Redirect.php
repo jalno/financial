@@ -20,8 +20,8 @@ class Redirect extends RedirectView
     public function __beforeLoad()
     {
         $this->transaction = $this->getTransaction();
-        $this->setTitle(Translator::trans('pay.redirect'));
-        $this->setShortDescription(Translator::trans('transaction.number', ['number' => $this->transaction->id]));
+        $this->setTitle(t('pay.redirect'));
+        $this->setShortDescription(t('transaction.number', ['number' => $this->transaction->id]));
         $this->setNavigation();
         $this->addBodyClass('transaction-pay-online');
         $this->addBodyClass('transaction-pay-redirect');
@@ -41,25 +41,25 @@ class Redirect extends RedirectView
     private function setNavigation()
     {
         $item = new MenuItem('transactions');
-        $item->setTitle(Translator::trans('transactions'));
+        $item->setTitle(t('transactions'));
         $item->setURL(userpanel\url('transactions'));
         $item->setIcon('clip-users');
         Breadcrumb::addItem($item);
 
         $item = new MenuItem('transaction');
-        $item->setTitle(Translator::trans('tranaction', ['id' => $this->transaction->id]));
+        $item->setTitle(t('tranaction', ['id' => $this->transaction->id]));
         $item->setURL(userpanel\url('transactions/view/'.$this->transaction->id));
         $item->setIcon('clip-user');
         Breadcrumb::addItem($item);
 
         $item = new MenuItem('pay');
-        $item->setTitle(Translator::trans('pay'));
+        $item->setTitle(t('pay'));
         $item->setURL(userpanel\url('transactions/pay/'.$this->transaction->id));
         $item->setIcon('fa fa-money');
         Breadcrumb::addItem($item);
 
         $item = new MenuItem('onlinepay');
-        $item->setTitle(Translator::trans('pay.method.onlinepay'));
+        $item->setTitle(t('pay.method.onlinepay'));
         $item->setURL(userpanel\url('transactions/pay/onlinepay/'.$this->transaction->id));
         $item->setIcon('fa fa-money');
         Breadcrumb::addItem($item);

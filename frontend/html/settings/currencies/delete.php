@@ -57,7 +57,7 @@ $rates = $this->currency->rates;
 				<?php } ?>
 					<div class="row">
 						<div class="col-sm-12 text-left">
-							<a href="<?php echo userpanel\url('settings/financial/currencies'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-<?php echo ((bool) Translator::getLang()->isRTL()) ? 'right' : 'left'; ?>"></i> <?php echo t('return'); ?></a>
+							<a href="<?php echo userpanel\url('settings/financial/currencies'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-<?php echo Translator::isRTL() ? 'right' : 'left'; ?>"></i> <?php echo t('return'); ?></a>
 							<button type="submit" class="btn btn-danger"><i class="fa fa-trash-o"></i> <?php echo t('delete'); ?></button>
 						</div>
 					</div>

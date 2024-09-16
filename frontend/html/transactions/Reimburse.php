@@ -6,7 +6,7 @@ use packages\userpanel\{Date};
 
 use function packages\userpanel\url;
 
-$isRTL = Translator::getLang()->isRTL();
+$isRTL = Translator::isRTL();
 
 $this->the_header();
 ?>

@@ -17,8 +17,8 @@ class AddingCredit extends TransactionsAddingCredit
     public function __beforeLoad()
     {
         $this->setTitle([
-            Translator::trans('tranactions'),
-            Translator::trans('transaction.adding_credit'),
+            t('tranactions'),
+            t('transaction.adding_credit'),
         ]);
         Navigation::active('transactions/list');
         $this->setUserInput();

@@ -106,7 +106,7 @@ if (!$this->transaction->user) {
 							<?php
 			    }
 			    if ($this->transaction->user->country) {
-			        if (105 == $this->transaction->user->country->id and 'fa' == Translator::getShortCodeLang()) {
+			        if (105 == $this->transaction->user->country->id and 'fa' == app()->getLocale()) {
 			            echo 'ایران';
 			        } else {
 			            echo $this->transaction->user->country->name;
@@ -206,7 +206,7 @@ foreach ($this->transaction->products as $product) {
 								<td class="hidden-480"> <?php echo $this->numberFormat($product->getVat($currency, $price)).' '.$currency->title; ?></td>
 								<td><?php echo $this->numberFormat($product->totalPrice($currency)).' '.$currency->title; ?></td>
 								<?php if (Transaction::paid == $this->transaction->status and !$product->configure) { ?>
-								<td><a href="<?php echo userpanel\url('transactions/config/'.$product->id); ?>" class="btn btn-sm btn-teal"><i class="fa fa-cog"></i> <?php echo Translator::trans('financial.configure'); ?></a></td>
+								<td><a href="<?php echo userpanel\url('transactions/config/'.$product->id); ?>" class="btn btn-sm btn-teal"><i class="fa fa-cog"></i> <?php echo t('financial.configure'); ?></a></td>
 								<?php } ?>
 							</tr>
 							<?php } ?>
@@ -220,7 +220,7 @@ foreach ($this->transaction->products as $product) {
                 $hastatus = $this->paysHasStatus();
                 $hasButtons = $this->hasButtons();
                 ?>
-			<h3><?php echo Translator::trans('pays'); ?></h3>
+			<h3><?php echo t('pays'); ?></h3>
 			<?php if (!$refundTransaction and Transaction::expired == $this->transaction->status) { ?>
 			<div class="alert alert-info text-center"><?php echo t('packages.financial.refunded-expired-buy-transaction'); ?></div>
 			<?php } ?>
@@ -230,11 +230,11 @@ foreach ($this->transaction->products as $product) {
 						<thead>
 							<tr>
 								<th> # </th>
-								<th> <?php echo Translator::trans('date&time'); ?> </th>
-								<th> <?php echo Translator::trans('pay.method'); ?> </th>
-								<?php if ($hasdesc) { ?><th> <?php echo Translator::trans('description'); ?> </th><?php } ?>
-								<th> <?php echo Translator::trans('pay.price'); ?> </th>
-								<?php if ($hastatus) { ?><th> <?php echo Translator::trans('pay.status'); ?> </th><?php } ?>
+								<th> <?php echo t('date&time'); ?> </th>
+								<th> <?php echo t('pay.method'); ?> </th>
+								<?php if ($hasdesc) { ?><th> <?php echo t('description'); ?> </th><?php } ?>
+								<th> <?php echo t('pay.price'); ?> </th>
+								<?php if ($hastatus) { ?><th> <?php echo t('pay.status'); ?> </th><?php } ?>
 								<?php if ($hasButtons) { ?><th><?php echo t('financial.actions'); ?></th><?php } ?>
 							</tr>
 						</thead>
@@ -269,7 +269,7 @@ foreach ($this->transaction->products as $product) {
 								<td><?php echo $pay->method; ?></td>
 								<?php if ($hasdesc) { ?><td><?php echo $pay->description; ?></td><?php } ?>
 								<td><?php echo $pay->price; ?></td>
-								<?php if ($hastatus) { ?><td><span class="<?php echo $statusClass; ?>"><?php echo Translator::trans($statusTxt); ?></td><?php } ?>
+								<?php if ($hastatus) { ?><td><span class="<?php echo $statusClass; ?>"><?php echo t($statusTxt); ?></td><?php } ?>
 								<?php
                             if ($hasButtons) {
                                 echo '<td class="center">'.$this->genButtons().'</td>';

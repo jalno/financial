@@ -13,7 +13,7 @@ $this->the_header(!$isLogin ? 'logedout' : '');
 	<div class="<?php echo !$isLogin ? 'col-sm-6 col-sm-offset-3 col-xs-12' : 'col-xs-12'; ?>">
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<i class="fa fa-money"></i> <?php echo Translator::trans('pay.methods'); ?>
+				<i class="fa fa-money"></i> <?php echo t('pay.methods'); ?>
 				<div class="panel-tools">
 					<a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
 				</div>
@@ -57,7 +57,7 @@ foreach ($this->methods as $method) {
     if ($first) {
         echo ' col-sm-offset-'.($this->canViewGuestLink ? 0 : 3);
     } ?>">
-								<a href="<?php echo userpanel\url('transactions/pay/'.$method.'/'.$this->transaction->id, $parameter); ?>" class="btn btn-icon btn-block"><i class="<?php echo $icon; ?>"></i> <?php echo Translator::trans('pay.method.'.$method); ?></a>
+								<a href="<?php echo userpanel\url('transactions/pay/'.$method.'/'.$this->transaction->id, $parameter); ?>" class="btn btn-icon btn-block"><i class="<?php echo $icon; ?>"></i> <?php echo t('pay.method.'.$method); ?></a>
 							</div>
 							<?php
                                 if ($first) {
@@ -73,7 +73,7 @@ foreach ($this->methods as $method) {
 			<div class="panel-footer">
 				<div class="row">
 					<div class="col-md-2 col-md-offset-10 col-sm-3 col-sm-offset-9">
-						<a href="<?php echo userpanel\url('transactions/accept/'.$this->transaction->id); ?>" class="btn btn-success btn-block"><i class="fa fa-check-square-o"></i> <?php echo Translator::trans('paided'); ?></a>
+						<a href="<?php echo userpanel\url('transactions/accept/'.$this->transaction->id); ?>" class="btn btn-success btn-block"><i class="fa fa-check-square-o"></i> <?php echo t('paided'); ?></a>
 					</div>
 				</div>
 			</div>

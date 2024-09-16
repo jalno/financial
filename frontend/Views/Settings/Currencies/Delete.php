@@ -18,8 +18,8 @@ class Delete extends CurrenciesDelete
     {
         $this->currency = $this->getCurrency();
         $this->setTitle([
-            Translator::trans('settings.financial.currencies'),
-            Translator::trans('settings.financial.currency.delete'),
+            t('settings.financial.currencies'),
+            t('settings.financial.currency.delete'),
         ]);
         Navigation::active('settings/financial/currencies');
         $this->addBodyClass('financial-settings');

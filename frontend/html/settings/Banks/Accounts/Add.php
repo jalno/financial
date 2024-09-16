@@ -87,8 +87,8 @@ $this->createField([
 							<p><?php echo t('packages.financial.require.items.marker'); ?></p>
 						</div>
 						<div class="col-md-5 col-sm-6 col-xs-12">
-							<div class="text-<?php echo ((bool) Translator::getLang()->isRTL()) ? 'left' : 'right'; ?>">
-								<a href="<?php echo userpanel\url('settings/financial/banks/accounts'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-<?php echo ((bool) Translator::getLang()->isRTL()) ? 'right' : 'left'; ?>"></i> <?php echo t('packages.financial.return'); ?></a>
+							<div class="text-<?php echo Translator::isRTL() ? 'left' : 'right'; ?>">
+								<a href="<?php echo userpanel\url('settings/financial/banks/accounts'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-<?php echo Translator::isRTL() ? 'right' : 'left'; ?>"></i> <?php echo t('packages.financial.return'); ?></a>
 								<button type="submit" class="btn btn-success"><i class="fa fa-check-square-o"></i> <?php echo t('packages.financial.add'); ?></button>
 							</div>
 						</div>

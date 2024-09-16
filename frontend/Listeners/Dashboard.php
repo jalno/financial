@@ -37,12 +37,12 @@ class Dashboard
             $shortcut->icon = 'fa fa-money';
             if ($transactions) {
                 $shortcut->title = $transactions;
-                $shortcut->text = Translator::trans('shortcut.transactions.unpaid.transaction');
-                $shortcut->setLink(Translator::trans('shortcut.transactions.link'), userpanel\url('transactions'));
+                $shortcut->text = t('shortcut.transactions.unpaid.transaction');
+                $shortcut->setLink(t('shortcut.transactions.link'), userpanel\url('transactions'));
             } else {
-                $shortcut->text = Translator::trans('shortcut.transactions.unpaid.transaction.iszere');
+                $shortcut->text = t('shortcut.transactions.unpaid.transaction.iszere');
                 if (Authorization::is_accessed('transactions_addingcredit')) {
-                    $shortcut->setLink(Translator::trans('transaction.adding_credit'), userpanel\url('transactions/addingcredit'));
+                    $shortcut->setLink(t('transaction.adding_credit'), userpanel\url('transactions/addingcredit'));
                 }
             }
             View::addShortcut($shortcut);
@@ -51,12 +51,12 @@ class Dashboard
         $shortcut->icon = 'fa fa-credit-card-alt';
         if ($user->credit > 0) {
             $shortcut->title = number_format($user->credit);
-            $shortcut->text = Currency::getDefault($user)->title.' '.Translator::trans('shortcut.transactions.user.credit');
+            $shortcut->text = Currency::getDefault($user)->title.' '.t('shortcut.transactions.user.credit');
         } else {
-            $shortcut->text = Translator::trans('shortcut.transactions.user.credit.iszero');
+            $shortcut->text = t('shortcut.transactions.user.credit.iszero');
         }
         if (Authorization::is_accessed('transactions_addingcredit')) {
-            $shortcut->setLink(Translator::trans('transaction.adding_credit'), userpanel\url('transactions/addingcredit'));
+            $shortcut->setLink(t('transaction.adding_credit'), userpanel\url('transactions/addingcredit'));
         }
         View::addShortcut($shortcut);
     }

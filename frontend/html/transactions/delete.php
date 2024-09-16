@@ -9,13 +9,13 @@ $this->the_header();
 		<!-- start: BASIC LOCK TICKET -->
 		<form action="<?php echo userpanel\url('transactions/delete/'.$this->getTransactionData()->id); ?>" method="POST" role="form" class="form-horizontal">
 			<div class="alert alert-block alert-warning fade in">
-				<h4 class="alert-heading"><i class="fa fa-exclamation-triangle"></i> <?php echo Translator::trans('transaction.delete'); ?>!</h4>
+				<h4 class="alert-heading"><i class="fa fa-exclamation-triangle"></i> <?php echo t('transaction.delete'); ?>!</h4>
 				<p>
-					<?php echo Translator::trans('transaction.delete.warning', ['transaction.id' => $this->getTransactionData()->id]); ?>
+					<?php echo t('transaction.delete.warning', ['transaction.id' => $this->getTransactionData()->id]); ?>
 				</p>
 				<p>
-					<a href="<?php echo userpanel\url('transactions'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-right"></i> <?php echo Translator::trans('return'); ?></a>
-					<button type="submit" class="btn btn-yellow"><i class="fa fa-trash-o tip"></i> <?php echo Translator::trans('packages.financial.delete'); ?></button>
+					<a href="<?php echo userpanel\url('transactions'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-right"></i> <?php echo t('return'); ?></a>
+					<button type="submit" class="btn btn-yellow"><i class="fa fa-trash-o tip"></i> <?php echo t('packages.financial.delete'); ?></button>
 				</p>
 			</div>
 		</form>

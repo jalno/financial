@@ -22,23 +22,23 @@ class Delete extends TransactionsDelete
     public function __beforeLoad()
     {
         $this->setTitle([
-            Translator::trans('delete'),
+            t('delete'),
             $this->getTransactionData()->id,
         ]);
-        $this->setShortDescription(Translator::trans('transaction.delete'));
+        $this->setShortDescription(t('transaction.delete'));
         $this->setNavigation();
     }
 
     private function setNavigation()
     {
         $item = new MenuItem('transactions');
-        $item->setTitle(Translator::trans('transactions'));
+        $item->setTitle(t('transactions'));
         $item->setURL(userpanel\url('transactions'));
         $item->setIcon('clip-users');
         Breadcrumb::addItem($item);
 
         $item = new MenuItem('transaction');
-        $item->setTitle(Translator::trans('transaction.delete'));
+        $item->setTitle(t('transaction.delete'));
         $item->setURL(userpanel\url('transactions/delete/'.$this->getTransactionData()->id));
         $item->setIcon('fa fa-trash');
         Breadcrumb::addItem($item);

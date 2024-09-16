@@ -125,7 +125,7 @@ $this->createField([
 						</div>
 					</div>
 					<div>
-						<a href="<?php echo userpanel\url('settings/financial/currencies'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-<?php echo ((bool) Translator::getLang()->isRTL()) ? 'right' : 'left'; ?>"></i> <?php echo t('return'); ?></a>
+						<a href="<?php echo userpanel\url('settings/financial/currencies'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-<?php echo Translator::isRTL() ? 'right' : 'left'; ?>"></i> <?php echo t('return'); ?></a>
 						<button type="submit" class="btn btn-success"><i class="fa fa-check-square-o"></i> <?php echo t('add'); ?></button>
 					</div>
 				</form>

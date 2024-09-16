@@ -33,7 +33,7 @@ class Edit extends Logs
             $panel = new Panel('financial.logs.transaction.edit');
             $panel->icon = 'fa fa-external-link-square';
             $panel->size = 6;
-            $panel->title = Translator::trans('financial.logs.transaction.information');
+            $panel->title = t('financial.logs.transaction.information');
             $html = '';
             if (isset($oldData['user'])) {
                 $user = $oldData['user'];
@@ -42,7 +42,7 @@ class Edit extends Logs
                 }
 
                 $html .= '<div class="form-group">';
-                $html .= '<label class="col-xs-4 control-label">'.Translator::trans('transaction.user').': </label>';
+                $html .= '<label class="col-xs-4 control-label">'.t('transaction.user').': </label>';
                 $html .= '<div class="col-xs-8">'.($user ? $user->getFullName() : "#{$oldData['user']}").'</div>';
                 $html .= '</div>';
 
@@ -55,28 +55,28 @@ class Edit extends Logs
                 }
 
                 $html .= '<div class="form-group">';
-                $html .= '<label class="col-xs-4 control-label">'.Translator::trans('transaction.currency').': </label>';
+                $html .= '<label class="col-xs-4 control-label">'.t('transaction.currency').': </label>';
                 $html .= '<div class="col-xs-8">'.($currency ? $currency->title : "#{$oldData['currency']}").'</div>';
                 $html .= '</div>';
                 unset($oldData['currency']);
             }
             if (isset($oldData['expire_at'])) {
                 $html .= '<div class="form-group">';
-                $html .= '<label class="col-xs-4 control-label">'.Translator::trans('transaction.expire_at').': </label>';
+                $html .= '<label class="col-xs-4 control-label">'.t('transaction.expire_at').': </label>';
                 $html .= '<div class="col-xs-8 ltr">'.Date::format('Y/m/d H:i:s', $oldData['expire_at']).'</div>';
                 $html .= '</div>';
                 unset($oldData['expire_at']);
             }
             if (isset($oldData['create_at'])) {
                 $html .= '<div class="form-group">';
-                $html .= '<label class="col-xs-4 control-label">'.Translator::trans('transaction.add.create_at').': </label>';
+                $html .= '<label class="col-xs-4 control-label">'.t('transaction.add.create_at').': </label>';
                 $html .= '<div class="col-xs-8 ltr">'.Date::format('Y/m/d H:i:s', $oldData['create_at']).'</div>';
                 $html .= '</div>';
                 unset($oldData['create_at']);
             }
             foreach ($oldData as $field => $val) {
                 $html .= '<div class="form-group">';
-                $html .= '<label class="col-xs-4 control-label">'.Translator::trans("transaction.{$field}").': </label>';
+                $html .= '<label class="col-xs-4 control-label">'.t("transaction.{$field}").': </label>';
                 $html .= '<div class="col-xs-8">'.$val.'</div>';
                 $html .= '</div>';
             }
@@ -88,7 +88,7 @@ class Edit extends Logs
             $panel = new Panel('financial.logs.transaction.edit.products');
             $panel->icon = 'fa fa-external-link-square';
             $panel->size = 6;
-            $panel->title = Translator::trans('financial.logs.transaction.products');
+            $panel->title = t('financial.logs.transaction.products');
             $html = '';
             $html = '<div class="table-responsive">';
             $html .= '<table class="table table-striped">';

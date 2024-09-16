@@ -176,7 +176,7 @@ $this->createField([
 						</div>
 						<div class="col-lg-5 col-md-12 col-sm-6 col-xs-12">
 							<div class="text-left">
-								<a href="<?php echo userpanel\url('settings/financial/banks/accounts'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-<?php echo ((bool) Translator::getLang()->isRTL()) ? 'right' : 'left'; ?>"></i> <?php echo t('packages.financial.return'); ?></a>
+								<a href="<?php echo userpanel\url('settings/financial/banks/accounts'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-<?php echo Translator::isRTL() ? 'right' : 'left'; ?>"></i> <?php echo t('packages.financial.return'); ?></a>
 								<button type="submit" class="btn btn-teal"><i class="fa fa-check-square-o"></i> <?php echo t('packages.financial.edit'); ?></button>
 							</div>
 						</div>

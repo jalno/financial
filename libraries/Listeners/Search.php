@@ -40,10 +40,10 @@ class Search
         foreach ($transaction->get(null, 'financial_transactions.*') as $transaction) {
             $result = new Link();
             $result->setLink(userpanel\url("transactions/view/{$transaction->id}"));
-            $result->setTitle(Translator::trans('financial.transactions', [
+            $result->setTitle(t('financial.transactions', [
                 'title' => $transaction->title,
             ]));
-            $result->setDescription(Translator::trans('financial.transactions.description', [
+            $result->setDescription(t('financial.transactions.description', [
                 'id' => $transaction->id,
                 'create_at' => Date::format('Y/m/d H:i:s', $transaction->create_at),
                 'user' => $transaction->user ? $transaction->user->getFullName() : null,
