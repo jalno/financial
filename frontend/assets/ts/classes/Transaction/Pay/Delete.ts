@@ -1,4 +1,5 @@
 import "bootstrap";
+import $ from "jquery";
 import "jquery.growl";
 import "webuilder/formAjax";
 import { IPay } from "./Edit";

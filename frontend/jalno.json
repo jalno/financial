@@ -31,6 +31,10 @@
 		{
             "name": "themes/clipone/Events/InitializeProfile",
             "listener": "themes/clipone/Listeners/Financial/InitializeProfile@handle"
-        }
+        },
+		{
+			"name": "themes/clipone/Events/Navigation/Initial",
+			"listener": "themes/clipone/Listeners/Financial/NavigationListener@initial"
+		}
 	]
 }

@@ -14,7 +14,7 @@ $this->the_header();
         <div class="panel panel-default">
             <div class="panel-heading">
                 <i class="fa fa-edit"></i>
-                <span><?php echo Translator::trans('tranaction').' #'.$this->transaction->id; ?></span>
+                <span><?php echo t('tranaction').' #'.$this->transaction->id; ?></span>
 				<div class="panel-tools"></div>
             </div>
             <div class="panel-body">
@@ -23,11 +23,11 @@ $this->the_header();
 						<div class="col-sm-6 col-xs-12">
 							<?php $this->createField([
 							    'name' => 'title',
-							    'label' => Translator::trans('transaction.title'),
+							    'label' => t('transaction.title'),
 							]);
 $this->createField([
     'name' => 'create_at',
-    'label' => Translator::trans('transaction.add.create_at'),
+    'label' => t('transaction.add.create_at'),
     'placeholder' => Date::format('Y/m/d H:i:s', $this->transaction->create_at),
     'ltr' => true,
 ]);
@@ -43,12 +43,12 @@ $this->createField([
 							<?php
 $this->createField([
     'name' => 'user_name',
-    'label' => Translator::trans('transaction.user'),
+    'label' => t('transaction.user'),
 ]);
 if (Transaction::paid != $this->transaction->status) {
     $this->createField([
         'name' => 'expire_at',
-        'label' => Translator::trans('transaction.expire_at'),
+        'label' => t('transaction.expire_at'),
         'placeholder' => Date::format('Y/m/d H:i:s', $this->transaction->expire_at),
         'ltr' => true,
     ]);
@@ -58,7 +58,7 @@ if (Transaction::paid != $this->transaction->status) {
 					</div>
 					<div class="row">
 						<div class="col-sm-12">
-							<h3 class="text-muted"><?php echo Translator::trans('financial.transaction.products'); ?></h3>
+							<h3 class="text-muted"><?php echo t('financial.transaction.products'); ?></h3>
 							<div class="table-responsive">
 								<table class="table table-striped table-hover product-table">
 									<?php
@@ -67,16 +67,16 @@ if (Transaction::paid != $this->transaction->status) {
 									<thead>
 										<tr>
 											<th> # </th>
-											<th><?php echo Translator::trans('financial.transaction.product'); ?></th>
-											<th class="hidden-xs"><?php echo Translator::trans('financial.transaction.product.decription'); ?></th>
-											<th><?php echo Translator::trans('financial.transaction.product.number'); ?></th>
-											<th><?php echo Translator::trans('financial.transaction.product.price_unit'); ?></th>
-											<th><?php echo Translator::trans('financial.transaction.product.discount'); ?></th>
-											<th><?php echo Translator::trans('transaction.tax'); ?></th>
-											<th><?php echo Translator::trans('financial.transaction.product.price.final'); ?></th>
+											<th><?php echo t('financial.transaction.product'); ?></th>
+											<th class="hidden-xs"><?php echo t('financial.transaction.product.decription'); ?></th>
+											<th><?php echo t('financial.transaction.product.number'); ?></th>
+											<th><?php echo t('financial.transaction.product.price_unit'); ?></th>
+											<th><?php echo t('financial.transaction.product.discount'); ?></th>
+											<th><?php echo t('transaction.tax'); ?></th>
+											<th><?php echo t('financial.transaction.product.price.final'); ?></th>
 											<?php if ($hasButtons) { ?>
 											<th>
-												<a class="btn btn-xs btn-link tooltips pull-left" title="<?php echo Translator::trans('add'); ?>" href="#product-add" data-toggle="modal">
+												<a class="btn btn-xs btn-link tooltips pull-left" title="<?php echo t('add'); ?>" href="#product-add" data-toggle="modal">
 													<i class="fa fa-plus"></i>
 												</a>
 											</th>
@@ -105,7 +105,7 @@ foreach ($this->transaction->products as $product) {
 												<td><?php echo $x++; ?></td>
 												<td><?php echo $product->title; ?></td>
 												<td class="hidden-xs"><?php echo $product->description; ?></td>
-												<td><?php echo Translator::trans('financial.number', ['number' => $product->number]); ?></td>
+												<td><?php echo t('financial.number', ['number' => $product->number]); ?></td>
 												<td><?php echo $this->numberFormat($product->price).' '.$product->currency->title; ?></td>
 												<td><?php echo $this->numberFormat($product->discount ? $product->discount : 0).' '.$product->currency->title; ?></td>
 												<td><?php echo $product->vat; ?> %</td>
@@ -128,17 +128,17 @@ foreach ($this->transaction->products as $product) {
                         ?>
 					<div class="row">
 						<div class="col-xs-12">
-							<h3 class="text-muted"><?php echo Translator::trans('pays'); ?></h3>
+							<h3 class="text-muted"><?php echo t('pays'); ?></h3>
 							<div class="table-responsive">
 								<table class="table table-striped table-hover table-pays">
 									<thead>
 										<tr>
 											<th> # </th>
-											<th> <?php echo Translator::trans('date&time'); ?> </th>
-											<th> <?php echo Translator::trans('pay.method'); ?> </th>
-											<th> <?php echo Translator::trans('description'); ?> </th>
-											<th> <?php echo Translator::trans('transaction.price'); ?> </th>
-											<th> <?php echo Translator::trans('pay.status'); ?> </th>
+											<th> <?php echo t('date&time'); ?> </th>
+											<th> <?php echo t('pay.method'); ?> </th>
+											<th> <?php echo t('description'); ?> </th>
+											<th> <?php echo t('transaction.price'); ?> </th>
+											<th> <?php echo t('pay.status'); ?> </th>
 											<?php if ($hasButtons) { ?><th></th><?php } ?>
 										</tr>
 									</thead>
@@ -179,7 +179,7 @@ foreach ($this->transaction->products as $product) {
 												<div class="pay-description btn-block"><?php echo $description ? nl2br($description) : ''; ?></div>
 											</td>
 											<td><?php echo $this->numberFormat(abs($pay->price)).' '.$pay->currency->title; ?></td>
-											<td><span class="<?php echo $statusClass; ?>"><?php echo Translator::trans($statusTxt); ?></td>
+											<td><span class="<?php echo $statusClass; ?>"><?php echo t($statusTxt); ?></td>
 											<?php
                                 if ($hasButtons) {
                                     echo '<td class="center">'.$this->genButtons(['pay_accept', 'pay_reject', 'pay_edit', 'pay_delete']).'</td>';
@@ -198,8 +198,8 @@ foreach ($this->transaction->products as $product) {
 					<div class="row">
 						<div class="col-sm-12">
 							<p>
-								<a href="<?php echo userpanel\url('transactions'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-right"></i> <?php echo Translator::trans('return'); ?></a>
-								<button type="submit" class="btn btn-teal"><i class="fa fa-check-square-o"></i> <?php echo Translator::trans('update'); ?></button>
+								<a href="<?php echo userpanel\url('transactions'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-right"></i> <?php echo t('return'); ?></a>
+								<button type="submit" class="btn btn-teal"><i class="fa fa-check-square-o"></i> <?php echo t('update'); ?></button>
 							</p>
 						</div>
 					</div>
@@ -221,28 +221,28 @@ foreach ($this->transaction->products as $product) {
     $feilds = [
         [
             'name' => 'product_title',
-            'label' => Translator::trans('transaction.add.product'),
+            'label' => t('transaction.add.product'),
         ],
         [
             'name' => 'description',
             'type' => 'textarea',
-            'label' => Translator::trans('transaction.add.description'),
+            'label' => t('transaction.add.description'),
         ],
         [
             'name' => 'number',
             'type' => 'number',
-            'label' => Translator::trans('transaction.add.number'),
+            'label' => t('transaction.add.number'),
             'ltr' => true,
         ],
         [
             'name' => 'product_price',
-            'label' => Translator::trans('transaction.add.price'),
+            'label' => t('transaction.add.price'),
             'ltr' => true,
             'step' => 0.001,
         ],
         [
             'name' => 'discount',
-            'label' => Translator::trans('transaction.add.discount'),
+            'label' => t('transaction.add.discount'),
             'ltr' => true,
             'step' => 0.001,
         ],
@@ -266,7 +266,7 @@ foreach ($this->transaction->products as $product) {
         [
             'name' => 'product_currency',
             'type' => 'select',
-            'label' => Translator::trans('financial.settings.currency'),
+            'label' => t('financial.settings.currency'),
             'options' => $this->getCurrenciesForSelect(),
         ],
     ];
@@ -277,15 +277,15 @@ foreach ($this->transaction->products as $product) {
 		</form>
 	</div>
 	<div class="modal-footer">
-		<button type="submit" form="editproductform" data-backdrop="static" aria-hidden="true" class="btn btn-success"><?php echo Translator::trans('update'); ?></button>
-		<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo Translator::trans('cancel'); ?></button>
+		<button type="submit" form="editproductform" data-backdrop="static" aria-hidden="true" class="btn btn-success"><?php echo t('update'); ?></button>
+		<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo t('cancel'); ?></button>
 	</div>
 </div>
 <?php } ?>
 <div class="modal fade" id="product-add" tabindex="-1" data-show="true" role="dialog">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h4 class="modal-title"><?php echo Translator::trans('users.search'); ?></h4>
+		<h4 class="modal-title"><?php echo t('users.search'); ?></h4>
 	</div>
 	<div class="modal-body">
 		<form id="addproductform" action="" method="post" class="form-horizontal">
@@ -294,28 +294,28 @@ foreach ($this->transaction->products as $product) {
 $feilds = [
     [
         'name' => 'product_title',
-        'label' => Translator::trans('transaction.add.product'),
+        'label' => t('transaction.add.product'),
     ],
     [
         'name' => 'description',
         'type' => 'textarea',
-        'label' => Translator::trans('transaction.add.description'),
+        'label' => t('transaction.add.description'),
     ],
     [
         'name' => 'number',
         'type' => 'number',
-        'label' => Translator::trans('transaction.add.number'),
+        'label' => t('transaction.add.number'),
         'ltr' => true,
     ],
     [
         'name' => 'product_price',
-        'label' => Translator::trans('transaction.add.price'),
+        'label' => t('transaction.add.price'),
         'ltr' => true,
         'step' => 0.001,
     ],
     [
         'name' => 'discount',
-        'label' => Translator::trans('transaction.add.discount'),
+        'label' => t('transaction.add.discount'),
         'ltr' => true,
         'step' => 0.001,
     ],
@@ -339,7 +339,7 @@ $feilds = [
     [
         'name' => 'product_currency',
         'type' => 'select',
-        'label' => Translator::trans('financial.settings.currency'),
+        'label' => t('financial.settings.currency'),
         'options' => $this->getCurrenciesForSelect(),
     ],
 ];
@@ -350,8 +350,8 @@ foreach ($feilds as $input) {
 		</form>
 	</div>
 	<div class="modal-footer">
-		<button type="submit" form="addproductform" data-backdrop="static" aria-hidden="true" class="btn btn-success"><?php echo Translator::trans('add'); ?></button>
-		<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo Translator::trans('cancel'); ?></button>
+		<button type="submit" form="addproductform" data-backdrop="static" aria-hidden="true" class="btn btn-success"><?php echo t('add'); ?></button>
+		<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo t('cancel'); ?></button>
 	</div>
 </div>
 <?php

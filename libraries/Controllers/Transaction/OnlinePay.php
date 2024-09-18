@@ -67,7 +67,7 @@ class OnlinePay extends Controller
                 $log = new Log();
                 $log->user = $transaction->user;
                 $log->type = Logs\Transactions\Pay::class;
-                $log->title = Translator::trans('financial.logs.transaction.pay', ['transaction_id' => $pay->transaction->id]);
+                $log->title = t('financial.logs.transaction.pay', ['transaction_id' => $pay->transaction->id]);
                 $parameters['pay'] = TransactionPay::byId($tPay);
                 $parameters['currency'] = $pay->currency;
                 $log->parameters = $parameters;

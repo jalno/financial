@@ -11,11 +11,6 @@ class Search extends ListView
 {
     use FormTrait;
 
-    public static function onSourceLoad()
-    {
-        self::$navigation = Authorization::is_accessed('settings_banks_accounts_search');
-    }
-    protected static $navigation;
     protected $canEdit;
     protected $canDelete;
     protected $canAdd;

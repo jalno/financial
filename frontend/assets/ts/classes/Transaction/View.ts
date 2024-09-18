@@ -1,4 +1,5 @@
 import "bootstrap-inputmsg";
+import $ from "jquery";
 import "jquery.growl";
 import "webuilder";
 import "webuilder/formAjax";

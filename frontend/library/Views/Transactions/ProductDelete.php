@@ -17,10 +17,10 @@ class ProductDelete extends \packages\financial\Views\Transactions\ProductDelete
     {
         $this->product = $this->getProduct();
         $this->setTitle([
-            Translator::trans('transaction.product.delete'),
+            t('transaction.product.delete'),
             $this->product->id,
         ]);
-        $this->setShortDescription(Translator::trans('transaction.product.delete'));
+        $this->setShortDescription(t('transaction.product.delete'));
         $this->setNavigation();
     }
 

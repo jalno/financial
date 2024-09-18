@@ -10,7 +10,7 @@ $this->the_header();
 			<div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-external-link-square"></i>
-                    <span><?php echo Translator::trans('transaction.add'); ?></span>
+                    <span><?php echo t('transaction.add'); ?></span>
                 </div>
                 <div class="panel-body">
                     <?php
@@ -18,7 +18,7 @@ $this->the_header();
 $fields = [
     [
         'name' => 'title',
-        'label' => Translator::trans('transaction.add.title'),
+        'label' => t('transaction.add.title'),
     ],
     [
         'name' => 'user',
@@ -26,16 +26,16 @@ $fields = [
     ],
     [
         'name' => 'user_name',
-        'label' => Translator::trans('transaction.user'),
+        'label' => t('transaction.user'),
     ],
     [
         'name' => 'create_at',
-        'label' => Translator::trans('transaction.add.create_at'),
+        'label' => t('transaction.add.create_at'),
         'ltr' => true,
     ],
     [
         'name' => 'expire_at',
-        'label' => Translator::trans('transaction.add.expire_at'),
+        'label' => t('transaction.add.expire_at'),
         'ltr' => true,
     ],
 ];
@@ -50,7 +50,7 @@ foreach ($fields as $field) {
 			<div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-external-link-square"></i>
-                    <span><?php echo Translator::trans('transaction.add.setting'); ?></span>
+                    <span><?php echo t('transaction.add.setting'); ?></span>
                 </div>
                 <div class="panel-body form-horizontal">
 					<?php
@@ -60,7 +60,7 @@ $feilds = [
     [
         'name' => 'notification',
         'type' => 'checkbox',
-        'label' => Translator::trans('transaction.add.notification'),
+        'label' => t('transaction.add.notification'),
         'options' => [
             [
                 'label' => '',
@@ -72,7 +72,7 @@ $feilds = [
     [
         'name' => 'notification_support',
         'type' => 'checkbox',
-        'label' => Translator::trans('transaction.add.notification.support'),
+        'label' => t('transaction.add.notification.support'),
         'options' => [
             [
                 'label' => '',
@@ -94,9 +94,9 @@ foreach ($feilds as $input) {
 			<div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-external-link-square"></i>
-                    <span><?php echo Translator::trans('transaction.add.products'); ?></span>
+                    <span><?php echo t('transaction.add.products'); ?></span>
 					<div class="panel-tools">
-						<a class="btn btn-xs btn-link tooltips" title="<?php echo Translator::trans('add'); ?>" href="#product-add" data-toggle="modal" data-original-title=""><i class="fa fa-plus"></i></a>
+						<a class="btn btn-xs btn-link tooltips" title="<?php echo t('add'); ?>" href="#product-add" data-toggle="modal" data-original-title=""><i class="fa fa-plus"></i></a>
 						<a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
 					</div>
                 </div>
@@ -115,14 +115,14 @@ foreach ($feilds as $input) {
 		<div class="col-md-8">
 		</div>
 		<div class="col-md-4">
-			<button class="btn btn-teal btn-block btn-submit" type="submit"><?php echo t('packages.financial.create'); ?> <i class="fa fa-arrow-circle-<?php echo ((bool) Translator::getLang()->isRTL()) ? 'left' : 'right'; ?>"></i></button>
+			<button class="btn btn-teal btn-block btn-submit" type="submit"><?php echo t('packages.financial.create'); ?> <i class="fa fa-arrow-circle-<?php echo Translator::isRTL() ? 'left' : 'right'; ?>"></i></button>
 		</div>
     </form>
 </div>
 <div class="modal fade" id="product-add" tabindex="-1" data-show="true" role="dialog" data-backdrop="static" data-keyboard="false">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h4 class="modal-title"><?php echo Translator::trans('users.search'); ?></h4>
+		<h4 class="modal-title"><?php echo t('users.search'); ?></h4>
 	</div>
 	<div class="modal-body">
 		<form id="addproductform" action="" method="post" class="form-horizontal">
@@ -132,26 +132,26 @@ $this->setHorizontalForm('sm-3', 'sm-9');
 $feilds = [
     [
         'name' => 'product_title',
-        'label' => Translator::trans('transaction.add.product'),
+        'label' => t('transaction.add.product'),
     ],
     [
         'name' => 'description',
-        'label' => Translator::trans('transaction.add.description'),
+        'label' => t('transaction.add.description'),
     ],
     [
         'name' => 'number',
         'type' => 'number',
-        'label' => Translator::trans('transaction.add.number'),
+        'label' => t('transaction.add.number'),
         'ltr' => true,
     ],
     [
         'name' => 'price',
-        'label' => Translator::trans('transaction.add.price'),
+        'label' => t('transaction.add.price'),
         'ltr' => true,
     ],
     [
         'name' => 'discount',
-        'label' => Translator::trans('transaction.add.discount'),
+        'label' => t('transaction.add.discount'),
         'ltr' => true,
     ],
     [
@@ -174,7 +174,7 @@ $feilds = [
     [
         'name' => 'currency',
         'type' => 'select',
-        'label' => Translator::trans('financial.settings.currency'),
+        'label' => t('financial.settings.currency'),
         'options' => $this->getCurrenciesForSelect(),
     ],
 ];
@@ -185,8 +185,8 @@ foreach ($feilds as $input) {
 		</form>
 	</div>
 	<div class="modal-footer">
-		<button type="submit" form="addproductform" data-backdrop="static" aria-hidden="true" class="btn btn-success product"><?php echo Translator::trans('add'); ?></button>
-		<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo Translator::trans('cancel'); ?></button>
+		<button type="submit" form="addproductform" data-backdrop="static" aria-hidden="true" class="btn btn-success product"><?php echo t('add'); ?></button>
+		<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true"><?php echo t('cancel'); ?></button>
 	</div>
 </div>
 <?php

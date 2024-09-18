@@ -21,9 +21,9 @@ class Pay extends PayView
         $this->transaction = $this->getTransaction();
         $this->methods = $this->getMethods();
         $this->setTitle([
-            Translator::trans('title.transaction.view'),
+            t('title.transaction.view'),
         ]);
-        $this->setShortDescription(Translator::trans('transaction.number', ['number' => $this->transaction->id]));
+        $this->setShortDescription(t('transaction.number', ['number' => $this->transaction->id]));
         $this->setNavigation();
         $this->addBodyClass('transaction-pay');
     }
@@ -31,19 +31,19 @@ class Pay extends PayView
     private function setNavigation()
     {
         $item = new MenuItem('transactions');
-        $item->setTitle(Translator::trans('transactions'));
+        $item->setTitle(t('transactions'));
         $item->setURL(userpanel\url('transactions'));
         $item->setIcon('clip-users');
         Breadcrumb::addItem($item);
 
         $item = new MenuItem('transaction');
-        $item->setTitle(Translator::trans('tranaction', ['id' => $this->transaction->id]));
+        $item->setTitle(t('tranaction', ['id' => $this->transaction->id]));
         $item->setURL(userpanel\url('transactions/view/'.$this->transaction->id));
         $item->setIcon('fa fa-television');
         Breadcrumb::addItem($item);
 
         $item = new MenuItem('pay');
-        $item->setTitle(Translator::trans('pay'));
+        $item->setTitle(t('pay'));
         $item->setURL(userpanel\url('transactions/pay/'.$this->transaction->id));
         $item->setIcon('fa fa-money');
         Breadcrumb::addItem($item);

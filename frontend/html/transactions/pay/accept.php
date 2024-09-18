@@ -11,12 +11,12 @@ $this->the_header();
 		<form action="<?php echo userpanel\url('transactions/pay/'.$this->action.'/'.$this->pay->id); ?>" method="POST" role="form">
 			<input type="hidden" name="confrim" value="1">
 			<div class="alert alert-block alert-warning fade in">
-				<h4 class="alert-heading"><i class="fa fa-exclamation-triangle"></i> <?php echo Translator::trans('attention'); ?>!</h4>
+				<h4 class="alert-heading"><i class="fa fa-exclamation-triangle"></i> <?php echo t('attention'); ?>!</h4>
 				<p>
-					<?php echo Translator::trans("pay.{$this->action}.warning", [
+					<?php echo t("pay.{$this->action}.warning", [
 					    'pay_id' => $this->pay->id,
 					    'pay_date' => Date::format('Y/m/d H:i:s', $this->pay->date),
-					    'pay_price' => Translator::trans('currency.rial', ['number' => $this->pay->price]),
+					    'pay_price' => t('currency.rial', ['number' => $this->pay->price]),
 					]); ?>
 				</p>
 				<p>
@@ -25,7 +25,7 @@ $this->the_header();
 					    echo 'fa-check';
 					} elseif ('reject' == $this->action) {
 					    echo 'fa-times';
-					} ?>"></i> <?php echo Translator::trans('pay.'.$this->action); ?></button>
+					} ?>"></i> <?php echo t('pay.'.$this->action); ?></button>
 				</p>
 			</div>
 		</form>

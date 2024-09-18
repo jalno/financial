@@ -24,29 +24,29 @@ class Accept extends AcceptView
         $this->pay = $this->getPay();
         $this->transaction = $this->pay->transaction;
         $this->setTitle([
-            Translator::trans('pay.byId', ['id' => $this->pay->id]),
-            Translator::trans('pay.accept'),
+            t('pay.byId', ['id' => $this->pay->id]),
+            t('pay.accept'),
         ]);
-        $this->setShortDescription(Translator::trans('pay.number', ['number' => $this->pay->id]));
+        $this->setShortDescription(t('pay.number', ['number' => $this->pay->id]));
         $this->setNavigation();
     }
 
     private function setNavigation()
     {
         $item = new MenuItem('transactions');
-        $item->setTitle(Translator::trans('transactions'));
+        $item->setTitle(t('transactions'));
         $item->setURL(userpanel\url('transactions'));
         $item->setIcon('clip-users');
         Breadcrumb::addItem($item);
 
         $item = new MenuItem('transaction');
-        $item->setTitle(Translator::trans('tranaction', ['id' => $this->transaction->id]));
+        $item->setTitle(t('tranaction', ['id' => $this->transaction->id]));
         $item->setURL(userpanel\url('transactions/view/'.$this->transaction->id));
         $item->setIcon('clip-user');
         Breadcrumb::addItem($item);
 
         $item = new MenuItem('pay');
-        $item->setTitle(Translator::trans('pay.accept'));
+        $item->setTitle(t('pay.accept'));
         $item->setURL(userpanel\url('transactions/pay/accept/'.$this->pay->id));
         $item->setIcon('fa fa-check');
         Breadcrumb::addItem($item);

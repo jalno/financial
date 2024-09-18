@@ -12,7 +12,7 @@ $this->the_header();
         <div class="panel panel-default">
             <div class="panel-heading">
                 <i class="fa fa-plus"></i>
-                <span><?php echo Translator::trans('transaction.adding_credit'); ?></span>
+                <span><?php echo t('transaction.adding_credit'); ?></span>
 				<div class="panel-tools">
 				</div>
             </div>
@@ -28,7 +28,7 @@ $this->the_header();
                             ]);
 					    $this->createField([
 					        'name' => 'client_name',
-					        'label' => Translator::trans('newticket.client'),
+					        'label' => t('newticket.client'),
 					        'error' => [
 					            'data_validation' => 'transactions.client.data_validation',
 					        ],
@@ -39,7 +39,7 @@ $this->the_header();
 						<div class="<?php echo $multyUser ? 'col-sm-6' : 'col-sm-6 col-sm-offset-3'; ?>">
 							<?php $this->createField([
 							    'name' => 'price',
-							    'label' => Translator::trans('transaction.addingcredit.price'),
+							    'label' => t('transaction.addingcredit.price'),
 							    'ltr' => true,
 							    'placeholder' => 10000,
 							    'input-group' => [
@@ -55,8 +55,8 @@ $this->the_header();
 						<div class="col-sm-12">
 			                <hr>
 			                <p>
-			                    <a href="<?php echo userpanel\url('transactions'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-right"></i> <?php echo Translator::trans('packages.financial.return'); ?></a>
-			                    <button type="submit" class="btn btn-yellow"><i class="fa fa-check-square-o"></i> <?php echo Translator::trans('packages.financial.submit'); ?></button>
+			                    <a href="<?php echo userpanel\url('transactions'); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-right"></i> <?php echo t('packages.financial.return'); ?></a>
+			                    <button type="submit" class="btn btn-yellow"><i class="fa fa-check-square-o"></i> <?php echo t('packages.financial.submit'); ?></button>
 			                </p>
 						</div>
 	                </form>

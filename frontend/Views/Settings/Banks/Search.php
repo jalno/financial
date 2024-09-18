@@ -6,9 +6,7 @@ use packages\base\Views\Traits\Form as BaseFormTrait;
 use packages\financial\Authorization;
 use packages\financial\Bank;
 use packages\financial\Views\ListView;
-use packages\userpanel;
 use themes\clipone\Navigation;
-use themes\clipone\Navigation\MenuItem;
 use themes\clipone\Views\FormTrait;
 use themes\clipone\Views\ListTrait;
 use themes\clipone\ViewTrait;
@@ -20,26 +18,6 @@ class Search extends ListView
     use FormTrait;
     use BaseFormTrait;
 
-    public static function onSourceLoad()
-    {
-        if (Authorization::is_accessed('settings_banks_search')) {
-            if ($settings = Navigation::getByName('settings')) {
-                if (!$financial = Navigation::getByName('settings/financial')) {
-                    $financial = new MenuItem('financial');
-                    $financial->setTitle(t('settings.financial'));
-                    $financial->setIcon('fa fa-money');
-                    if ($settings) {
-                        $settings->addItem($financial);
-                    }
-                }
-                $bank = new MenuItem('banks');
-                $bank->setTitle(t('packages.financial.banks'));
-                $bank->setURL(userpanel\url('settings/financial/banks'));
-                $bank->setIcon('fa fa-university');
-                $financial->addItem($bank);
-            }
-        }
-    }
     protected $canAdd;
     protected $canEdit;
     protected $canDelete;

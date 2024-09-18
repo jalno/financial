@@ -2,12 +2,10 @@
 
 namespace themes\clipone\Views\Financial\Settings\GateWays;
 
-use packages\base\Translator;
 use packages\base\View\Error;
 use packages\financial\Views\Settings\GateWays\Search as GateWaysListView;
 use packages\userpanel;
 use themes\clipone\Navigation;
-use themes\clipone\Navigation\MenuItem;
 use themes\clipone\Views\FormTrait;
 use themes\clipone\Views\ListTrait;
 use themes\clipone\ViewTrait;
@@ -21,7 +19,7 @@ class Search extends GateWaysListView
 
     public function __beforeLoad()
     {
-        $this->setTitle(Translator::trans('settings.financial.gateways'));
+        $this->setTitle(t('settings.financial.gateways'));
         Navigation::active('settings/financial/gateways');
         $this->setButtons();
         if (empty($this->getDataList())) {
@@ -38,7 +36,7 @@ class Search extends GateWaysListView
             $error->setData([
                 [
                     'type' => 'btn-success',
-                    'txt' => Translator::trans('settings.financial.gateways.add'),
+                    'txt' => t('settings.financial.gateways.add'),
                     'link' => userpanel\url('settings/financial/gateways/add'),
                 ],
             ], 'btns');
@@ -50,50 +48,29 @@ class Search extends GateWaysListView
     {
         return [
             [
-                'title' => Translator::trans('search.comparison.contains'),
+                'title' => t('search.comparison.contains'),
                 'value' => 'contains',
             ],
             [
-                'title' => Translator::trans('search.comparison.equals'),
+                'title' => t('search.comparison.equals'),
                 'value' => 'equals',
             ],
             [
-                'title' => Translator::trans('search.comparison.startswith'),
+                'title' => t('search.comparison.startswith'),
                 'value' => 'startswith',
             ],
         ];
     }
 
-    public static function onSourceLoad()
-    {
-        parent::onSourceLoad();
-        if (parent::$navigation) {
-            $settings = Navigation::getByName('settings');
-            if (!$financial = Navigation::getByName('settings/financial')) {
-                $financial = new MenuItem('financial');
-                $financial->setTitle(Translator::trans('settings.financial'));
-                $financial->setIcon('fa fa-money');
-                if ($settings) {
-                    $settings->addItem($financial);
-                }
-            }
-            $gateways = new MenuItem('gateways');
-            $gateways->setTitle(Translator::trans('settings.financial.gateways'));
-            $gateways->setURL(userpanel\url('settings/financial/gateways'));
-            $gateways->setIcon('fa fa-rss');
-            $financial->addItem($gateways);
-        }
-    }
-
     public function setButtons()
     {
         $this->setButton('edit', $this->canEdit, [
-            'title' => Translator::trans('edit'),
+            'title' => t('edit'),
             'icon' => 'fa fa-edit',
             'classes' => ['btn', 'btn-xs', 'btn-warning'],
         ]);
         $this->setButton('delete', $this->canDel, [
-            'title' => Translator::trans('delete'),
+            'title' => t('delete'),
             'icon' => 'fa fa-times',
             'classes' => ['btn', 'btn-xs', 'btn-bricky'],
         ]);

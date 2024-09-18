@@ -1,3 +1,4 @@
+import $ from "jquery";
 export default class Redirect {
 	public static init() {
 		Redirect.runFormSubmiter();

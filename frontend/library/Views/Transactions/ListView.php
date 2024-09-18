@@ -16,7 +16,6 @@ use packages\userpanel;
 use packages\userpanel\Date;
 use packages\userpanel\User;
 use themes\clipone\Navigation;
-use themes\clipone\Navigation\MenuItem;
 use themes\clipone\Views\FormTrait;
 use themes\clipone\Views\ListTrait;
 use themes\clipone\Views\TransactionTrait;
@@ -53,36 +52,6 @@ class ListView extends TransactionsListView
         $this->canAccept = Authorization::is_accessed('transactions_pay_accept');
 
         $this->initFormData();
-    }
-
-    public static function onSourceLoad()
-    {
-        parent::onSourceLoad();
-        if (self::$navigation) {
-            $item = new MenuItem('transactions');
-            $item->setTitle(t('packages.financial.transactions'));
-            $item->setURL(userpanel\url('transactions'));
-            $item->setIcon('fa fa-money');
-            Navigation::addItem($item);
-            if (Packages::package('dakhl')) {
-                $invoices = Navigation::getByName('invoices');
-                $bankAccounts = Navigation::getByName('bankAccounts');
-                if ($invoices or $bankAccounts) {
-                    $dakhl = new MenuItem('dakhl');
-                    $dakhl->setTitle('دخل');
-                    $dakhl->setIcon('fa fa-tachometer');
-                    Navigation::addItem($dakhl);
-                    if ($invoices) {
-                        Navigation::removeItem($invoices);
-                        $dakhl->addItem($invoices);
-                    }
-                    if ($bankAccounts) {
-                        Navigation::removeItem($bankAccounts);
-                        $dakhl->addItem($bankAccounts);
-                    }
-                }
-            }
-        }
     }
 
     public function setButtons()

@@ -21,8 +21,8 @@ class Add extends CurrenciesAdd
     {
         $this->currencies = $this->getCurrencies();
         $this->setTitle([
-            Translator::trans('settings.financial.currencies'),
-            Translator::trans('settings.financial.currency.add'),
+            t('settings.financial.currencies'),
+            t('settings.financial.currency.add'),
         ]);
         Navigation::active('settings/financial/currencies');
         $this->addBodyClass('financial-settings');

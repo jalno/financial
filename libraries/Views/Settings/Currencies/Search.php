@@ -12,7 +12,6 @@ class Search extends ListView
     protected $canAdd;
     protected $canEdit;
     protected $canDel;
-    protected static $navigation;
 
     public function __construct()
     {
@@ -24,10 +23,5 @@ class Search extends ListView
     public function getCurrencies(): array
     {
         return $this->getDataList();
-    }
-
-    public static function onSourceLoad()
-    {
-        self::$navigation = Authorization::is_accessed('settings_currencies_search');
     }
 }

@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import Transaction from '../Transaction';
 
 export default class Settings

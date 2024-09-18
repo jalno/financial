@@ -17,7 +17,7 @@ class Config extends ConfigProduct
     public function __beforeLoad()
     {
         $this->product = $this->getProduct();
-        $this->setTitle(Translator::trans('transaction.product.configure'));
+        $this->setTitle(t('transaction.product.configure'));
         $this->setNavigation();
         $this->setErrors();
     }

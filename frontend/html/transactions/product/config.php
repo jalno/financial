@@ -9,7 +9,7 @@ $this->the_header();
         <div class="panel panel-default">
             <div class="panel-heading">
                 <i class="fa fa-check"></i>
-                <span><?php echo Translator::trans('financial.configure'); ?></span>
+                <span><?php echo t('financial.configure'); ?></span>
 				<div class="panel-tools">
 					<a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
 				</div>
@@ -28,8 +28,8 @@ $this->the_header();
 					<div class="row">
 						<div class="col-xs-12 text-left">
 							<p>
-								<a href="<?php echo userpanel\url('transactions/view/'.$this->product->transaction->id); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-right"></i> <?php echo Translator::trans('financial.return'); ?></a>
-								<button type="submit" class="btn btn-success"><i class="fa fa-check-square-o"></i> <?php echo Translator::trans('financial.submit'); ?></button>
+								<a href="<?php echo userpanel\url('transactions/view/'.$this->product->transaction->id); ?>" class="btn btn-light-grey"><i class="fa fa-chevron-circle-right"></i> <?php echo t('financial.return'); ?></a>
+								<button type="submit" class="btn btn-success"><i class="fa fa-check-square-o"></i> <?php echo t('financial.submit'); ?></button>
 							</p>
 						</div>
 					</div>

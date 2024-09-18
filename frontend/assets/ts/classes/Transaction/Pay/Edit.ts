@@ -2,6 +2,8 @@ import "@jalno/translator";
 import "bootstrap";
 import "bootstrap-inputmsg";
 import "jalali-daterangepicker";
+import * as moment from "jalali-moment";
+import $ from "jquery";
 import "jquery.growl";
 import "webuilder/formAjax";
 import { ICurrency } from "../../Currency";

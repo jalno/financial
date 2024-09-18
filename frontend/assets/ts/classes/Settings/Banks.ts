@@ -1,5 +1,6 @@
 import "@jalno/translator";
 import "bootstrap";
+import $ from "jquery";
 import Accounts from "./Banks/Accounts";
 import Add from "./Banks/Add";
 import Delete from "./Banks/Delete";

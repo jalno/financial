@@ -17,7 +17,7 @@ class Edit extends EditView
 
     public function __beforeLoad()
     {
-        $this->setTitle(Translator::trans('settings.financial.gateways.edit'));
+        $this->setTitle(t('settings.financial.gateways.edit'));
         $this->setNavigation();
         $this->addBodyClass('transaction-settings-gateway');
     }
@@ -31,7 +31,7 @@ class Edit extends EditView
     {
         $options = [];
         foreach ($this->getGateways() as $gateway) {
-            $title = Translator::trans('financial.gateway.'.$gateway->getName());
+            $title = t('financial.gateway.'.$gateway->getName());
             $options[] = [
                 'value' => $gateway->getName(),
                 'title' => $title ? $title : $gateway->getName(),
@@ -45,11 +45,11 @@ class Edit extends EditView
     {
         $options = [
             [
-                'title' => Translator::trans('financial.gateway.status.active'),
+                'title' => t('financial.gateway.status.active'),
                 'value' => GateWay::active,
             ],
             [
-                'title' => Translator::trans('financial.gateway.status.deactive'),
+                'title' => t('financial.gateway.status.deactive'),
                 'value' => GateWay::deactive,
             ],
         ];

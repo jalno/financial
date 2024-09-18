@@ -21,29 +21,29 @@ class Delete extends PayDelete
     {
         $this->pay = $this->getPayData();
         $this->setTitle([
-            Translator::trans('transaction.pay.delete'),
+            t('transaction.pay.delete'),
             $this->pay->id,
         ]);
-        $this->setShortDescription(Translator::trans('transaction.pay.delete'));
+        $this->setShortDescription(t('transaction.pay.delete'));
         $this->setNavigation();
     }
 
     private function setNavigation()
     {
         $item = new MenuItem('transactions');
-        $item->setTitle(Translator::trans('transactions'));
+        $item->setTitle(t('transactions'));
         $item->setURL(userpanel\url('transactions'));
         $item->setIcon('clip-users');
         Breadcrumb::addItem($item);
 
         $item = new MenuItem('transaction');
-        $item->setTitle(Translator::trans('transaction.edit'));
+        $item->setTitle(t('transaction.edit'));
         $item->setURL(userpanel\url('transactions/edit/'.$this->pay->transaction->id));
         $item->setIcon('fa fa-edit');
         Breadcrumb::addItem($item);
 
         $item = new MenuItem('transaction.pay');
-        $item->setTitle(Translator::trans('transaction.pay.delete'));
+        $item->setTitle(t('transaction.pay.delete'));
         $item->setIcon('fa fa-trash');
         Breadcrumb::addItem($item);
         Navigation::active('transactions/list');

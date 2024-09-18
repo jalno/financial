@@ -27,7 +27,7 @@ class PayPortPay extends DBObject
     protected $relations = [
         'payport' => ['hasOne', PayPort::class, 'payport'],
         'transaction' => ['hasOne', Transaction::class, 'transaction'],
-        'params' => ['hasMany', PayPortPayParam::class, 'pay'],
+        'params' => ['hasMany', PayportPayParam::class, 'pay'],
         'currency' => ['hasOne', Currency::class, 'currency'],
     ];
 

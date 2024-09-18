@@ -1,5 +1,6 @@
 import "@jalno/translator";
 import "bootstrap-inputmsg";
+import $ from "jquery";
 import "jquery-inputlimiter";
 import "../../../jquery.financialUserAutoComplete";
 

@@ -22,10 +22,10 @@ class Add extends TransactionsAdd
     public function __beforeLoad()
     {
         $this->setTitle([
-            Translator::trans('tranaction'),
-            Translator::trans('add'),
+            t('tranaction'),
+            t('add'),
         ]);
-        $this->setShortDescription(Translator::trans('transaction.add'));
+        $this->setShortDescription(t('transaction.add'));
         $this->setNavigation();
         $this->FormDate();
         $this->addBodyClass('transaction-add');
@@ -44,13 +44,13 @@ class Add extends TransactionsAdd
     private function setNavigation()
     {
         $item = new MenuItem('transactions');
-        $item->setTitle(Translator::trans('transactions'));
+        $item->setTitle(t('transactions'));
         $item->setURL(userpanel\url('transactions'));
         $item->setIcon('clip-users');
         Breadcrumb::addItem($item);
 
         $item = new MenuItem('transaction');
-        $item->setTitle(Translator::trans('transaction.add'));
+        $item->setTitle(t('transaction.add'));
         $item->setURL(userpanel\url('transactions/add'));
         $item->setIcon('fa fa-plus');
         Breadcrumb::addItem($item);
