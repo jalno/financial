@@ -205,7 +205,7 @@ class Transactions extends Controller
 		}
 		$view->setDataForm($this->inputsvalue($inputsRules));
 		$transaction = new Transaction;
-		$transaction->with("currency");
+		$transaction->with("currency", 'inner');
 		foreach(array('id', 'title', 'status', 'user') as $item){
 			if(isset($inputs[$item])){
 				$comparison = $inputs['comparison'];
@@ -260,7 +260,6 @@ class Transactions extends Controller
 			$transaction->where("financial_transactions.id", $products->get("financial_transactions_products", null, "financial_transactions_products.transaction"), "IN");
 			$searched = false;
 		}
-		$transaction->orderBy('financial_transactions.id', 'DESC');
 		if (isset($inputs["download"])) {
 			$transactions = $transaction->get();
 			if (in_array($inputs["download"], $exporter->getExporterNames())) {
@@ -273,12 +272,14 @@ class Transactions extends Controller
 			if (!$searched) {
 				$transaction->where('financial_transactions.status', transaction::expired, '!=');
 			}
-			$transaction->pageLimit = $this->items_per_page;
-			$transactions = $transaction->paginate($this->page);
+
+			$transactions = $transaction->cursorPaginate("DESC", $this->items_per_page);
 			$view->setDataList($transactions);
-			$view->setPaginate($this->page, db::totalCount(), $this->items_per_page);
+			$view->setCursorPaginate($this->items_per_page, $transaction->getCursorName(), $transaction->getNextPageCursor(), $transaction->getPrevPageCursor());
 		}
+
 		$this->response->setStatus(true);
+
 		return $this->response;
 	}
 	public function transaction_view($data){
