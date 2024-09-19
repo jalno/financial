@@ -205,7 +205,7 @@ class Transactions extends Controller
 		}
 		$view->setDataForm($this->inputsvalue($inputsRules));
 		$transaction = new Transaction;
-		$transaction->with("currency", 'inner');
+		$transaction->with("currency");
 		foreach(array('id', 'title', 'status', 'user') as $item){
 			if(isset($inputs[$item])){
 				$comparison = $inputs['comparison'];
