@@ -4,8 +4,12 @@ namespace packages\financial;
 use packages\dakhl\API as dakhl;
 use packages\userpanel\{user, date};
 use packages\base\{db\dbObject, Options, Packages, Utility\Safe, Translator, db};
+use packages\userpanel\CursorPaginateTrait;
 
-class transaction extends dbObject{
+class transaction extends dbObject
+{
+	use CursorPaginateTrait;
+
 	/** status */
 	const UNPAID = self::unpaid;
 	const PENDING = self::pending;
