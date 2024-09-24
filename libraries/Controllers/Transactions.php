@@ -37,6 +37,7 @@ use packages\userpanel;
 use packages\userpanel\Date;
 use packages\userpanel\Log;
 use packages\userpanel\User;
+use themes\clipone\Views;
 
 class Transactions extends Controller
 {
@@ -168,7 +169,7 @@ class Transactions extends Controller
     public function listtransactions()
     {
         Authorization::haveOrFail('transactions_list');
-        $view = View::byName(FinancialViews\ListView::class);
+        $view = View::byName(Views\Transactions\ListView::class);
         $this->response->setView($view);
         $canAccept = Authorization::is_accessed('transactions_pay_accept');
         $exporters = [];
@@ -1298,7 +1299,7 @@ class Transactions extends Controller
     public function addingcredit()
     {
         Authorization::haveOrFail('transactions_addingcredit');
-        $view = View::byName(FinancialViews\AddingCredit::class);
+        $view = View::byName(Views\Transactions\AddingCredit::class);
         $this->response->setView($view);
 
         $types = Authorization::childrenTypes();
