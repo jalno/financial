@@ -75,8 +75,8 @@ class ListView extends TransactionsListView
 
     public function setDates()
     {
-        foreach ($this->dataList as $key => $data) {
-            $this->dataList[$key]->create_at = Date::format('Y/m/d H:i:s', $data->create_at);
+        foreach ($this->getTransactions() as $transaction) {
+            $transaction->create_at = Date::format('Y/m/d H:i:s',  $transaction->create_at);
         }
     }
 

@@ -8,7 +8,7 @@
 	"events": [
 		{
 			"name":"packages/userpanel/Events/UserTypePermissionsList",
-			"listener": "packages/financial/Settings/UserType@permissions_list"
+			"listener": "packages/financial/Listeners/Settings/UserType@permissions_list"
 		},
 		{
 			"name":"packages/userpanel/Events/Search",
