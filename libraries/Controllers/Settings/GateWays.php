@@ -19,7 +19,7 @@ use packages\financial\View;
 use packages\financial\Views\Settings\GateWays\Add;
 use packages\financial\Views\Settings\GateWays\Delete;
 use packages\financial\Views\Settings\GateWays\Edit;
-use packages\financial\Views\Settings\GateWays\Search;
+use themes\clipone\Views\Financial\Settings\GateWays\Search;
 use packages\userpanel;
 
 class GateWays extends Controller
