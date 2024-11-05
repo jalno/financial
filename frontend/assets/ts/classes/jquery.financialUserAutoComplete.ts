@@ -1,8 +1,9 @@
 /// <reference path="jquery.financialUserAutoComplete.d.ts"/>
 
 import $ from "jquery";
-import "jquery-ui/ui/widgets/autocomplete.js";
+import "jquery-ui/dist/jquery-ui.js";
 import {Router, webuilder} from "webuilder";
+
 export interface IUser {
 	id: number;
 	name: string;
