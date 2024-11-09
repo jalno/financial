@@ -143,7 +143,15 @@ class View extends TransactionsView
     protected function getTransActionLogo()
     {
         if ($logoPath = Options::get('packages.financial.transactions_logo')) {
-            return Packages::package('financial')->url($logoPath);
+            $publicStorage = Packages::package('financial')->getStorage('public');
+
+            if (str_starts_with($logoPath, 'storage/') and $nextSlash = strpos($logoPath, '/', 8)) {
+                $storageName = substr($logoPath, 8, $nextSlash - 8);
+                $storage = Packages::package('financial')->getStorage($storageName);
+                return $storage->getURL($storage->file(substr($logoPath, $nextSlash + 1)));
+            }
+
+            return $publicStorage->getURL($publicStorage->file($logoPath));
         }
 
         return null;
