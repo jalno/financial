@@ -16,9 +16,9 @@ use packages\financial\Currency;
 use packages\financial\Events\GateWays as GateWaysEvent;
 use packages\financial\PayPort as GateWay;
 use packages\financial\View;
-use packages\financial\Views\Settings\GateWays\Add;
-use packages\financial\Views\Settings\GateWays\Delete;
-use packages\financial\Views\Settings\GateWays\Edit;
+use themes\clipone\Views\Financial\Settings\GateWays\Add;
+use themes\clipone\Views\Financial\Settings\GateWays\Delete;
+use themes\clipone\Views\Financial\Settings\GateWays\Edit;
 use themes\clipone\Views\Financial\Settings\GateWays\Search;
 use packages\userpanel;
 
