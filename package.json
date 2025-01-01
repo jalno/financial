@@ -42,6 +42,10 @@
 		{
 			"name":"packages/userpanel/events/General/Settings",
 			"listener": "listeners/SettingsListener@init"
+		},
+		{
+			"name":"events/PaymentMethodEvent",
+			"listener": "listeners/PaymentMethodsListener@handle"
 		}
 	]
 }

@@ -31,7 +31,7 @@ class transaction_pay extends dbObject{
 	protected $primaryKey = "id";
 	protected $dbFields = array(
         'transaction' => array('type' => 'int', 'required' => true),
-        'method' => array('type' => 'int', 'required' => true),
+        'method' => array('type' => 'text', 'required' => true),
         'date' => array('type' => 'int', 'required' => true),
 		'price' => array('type' => 'double', 'required' => true),
 		"currency" => array("type" => "int", "required" => true),

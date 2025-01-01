@@ -11,35 +11,42 @@ interface ITransactionManager
      */
     public function getByID(int $id): Transaction;
 
-    public function canOnlinePay(int $id): bool;
+    /**
+     * @throws Exception when can not find transaction ot transaction is not payable
+     */
+    public function getForPayById(int $id): Transaction;
+
+    public function canPay(int|Transaction $id): bool;
+
+    public function canOnlinePay(int|Transaction $id): bool;
 
     /**
      * @return \packages\transaction\Payport[]
      *
      * @throws \Exceotion if not allowed to pay by online payports
      */
-    public function getOnlinePayports(int $id): array;
+    public function getOnlinePayports(int|Transaction $id): array;
 
-    public function canPayByTransferBank(int $id): bool;
+    public function canPayByTransferBank(int|Transaction $id): bool;
 
     /**
      * @return \packages\transaction\Bank\Account[]
      *
      * @throws \Exception if not allowed to pay by bank transfer method
      */
-    public function getBankAccountsForTransferPay(int $id): array;
+    public function getBankAccountsForTransferPay(int|Transaction $id): array;
 
-    public function canPayByCredit(int $id, ?int $opratorID): bool;
-
-    /**
-     * @return string[]
-     */
-    public function getAvailablePaymentMethods(int $id, ?int $opratorID): array;
+    public function canPayByCredit(int|Transaction $id): bool;
 
     /**
-     * @return string[]
+     * @return IPaymentMethod[]
      */
-    public function getPaymentMethods(int $id): array;
+    public function getAvailablePaymentMethods(int|Transaction $id): array;
+
+    /**
+     * @return IPaymentMethod[]
+     */
+    public function getPaymentMethods(int|Transaction $id): array;
 
     /**
      * @param array{user:int,title:string,currency:int,create_at?:int,expire?:int,params?:array<string,mixed>,products:array{title:string,price:float,method:int,type?:string,description?:string,discount?:float,vat?:float,number?:positive-int,currency?:int,params?:array<string,mixed>}} $data

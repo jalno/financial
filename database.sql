@@ -150,7 +150,7 @@ CREATE TABLE `financial_transactions_params` (
 CREATE TABLE `financial_transactions_pays` (
 	`id` int(11) NOT NULL AUTO_INCREMENT,
 	`transaction` int(11) NOT NULL,
-	`method` tinyint(4) NOT NULL,
+	`method` varchar(25) CHARACTER SET latin1 COLLATE latin1_general_cs NOT NULL,
 	`date` int(11) NOT NULL,
 	`price` DOUBLE NOT NULL,
 	`currency` int(11) NOT NULL,

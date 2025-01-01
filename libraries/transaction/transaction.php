@@ -6,6 +6,11 @@ use packages\userpanel\{user, date};
 use packages\base\{db\dbObject, Options, Packages, Utility\Safe, Translator, db};
 use packages\userpanel\CursorPaginateTrait;
 
+/**
+ * @property int $id
+ * @property User $user
+ * @property Currency $currency
+ */
 class transaction extends dbObject
 {
 	use CursorPaginateTrait;

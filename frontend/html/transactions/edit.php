@@ -170,7 +170,7 @@ $this->the_header();
 										)); ?>'>
 											<td><?php echo $x++; ?></td>
 											<td class="ltr"><?php echo date::format("Y/m/d H:i:s", $pay->date); ?></td>
-											<td class="hidden-480"><?php echo $pay->method; ?></td>
+											<td class="hidden-480"><?php echo t('pay.method.'.$pay->method); ?></td>
 											<td>
 											<?php echo $pay->description ? $pay->description : ""; ?>
 												<div class="pay-description btn-block"><?php echo $description ? nl2br($description) : ""; ?></div>

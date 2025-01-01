@@ -211,7 +211,6 @@ $this->the_header(!$isLogin ? "logedout" : "");
 			</div>
 			<?php
 			if($this->pays){
-				$hasdesc = $this->paysHasDiscription();
 				$hastatus = $this->paysHasStatus();
 				$hasButtons = $this->hasButtons();
 			?>
@@ -227,7 +226,6 @@ $this->the_header(!$isLogin ? "logedout" : "");
 								<th> # </th>
 								<th> <?php echo translator::trans('date&time'); ?> </th>
 								<th> <?php echo translator::trans('pay.method'); ?> </th>
-								<?php if($hasdesc){ ?><th> <?php echo translator::trans('description'); ?> </th><?php } ?>
 								<th> <?php echo translator::trans('pay.price'); ?> </th>
 								<?php if($hastatus){ ?><th> <?php echo translator::trans('pay.status'); ?> </th><?php } ?>
 								<?php if($hasButtons){ ?><th><?php echo t("financial.actions"); ?></th><?php } ?>
@@ -261,8 +259,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
 							<tr data-pay='<?php echo json\encode($pay->toArray()); ?>'>
 								<td><?php echo $x++; ?></td>
 								<td class="ltr-text-center"><?php echo $pay->date; ?></td>
-								<td><?php echo $pay->method; ?></td>
-								<?php if($hasdesc){ ?><td><?php echo $pay->description; ?></td><?php } ?>
+								<td><?php echo $this->getPayMethodForShow($pay); ?></td>
 								<td><?php echo $pay->price; ?></td>
 								<?php if($hastatus){ ?><td><span class="<?php echo $statusClass; ?>"><?php echo translator::trans($statusTxt); ?></td><?php } ?>
 								<?php

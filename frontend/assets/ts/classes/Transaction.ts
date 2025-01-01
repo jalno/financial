@@ -23,10 +23,11 @@ export default class Transaction {
 		return str.replace(/\,/g, "");
 	}
 	public static formatFloatNumber(float: number) {
+		const isNegative = float < 0;
 		const split = float.toString().split(".");
 		const int = parseInt(split[0].toString().replace(/\D/g, ""), 10);
 		const number = isNaN(int) ? 0 : Transaction.formatNumber(int);
 		const decimal = split.length > 1 ? (split[1].toString().replace(/\D/g, "")) : "";
-		return number + (decimal.length ? "." + decimal : "");
+		return (isNegative ? '-' : '') + number + (decimal.length ? "." + decimal : "");
 	}
 }

@@ -53,16 +53,6 @@
 			"file":"html/transactions/pay.php"
 		},
 		{
-			"name":"\\themes\\clipone\\views\\transactions\\pay\\credit",
-			"parent":"\\packages\\financial\\views\\transactions\\pay\\credit",
-			"file":"html/transactions/pay/credit.php"
-		},
-		{
-			"name":"\\themes\\clipone\\views\\transactions\\pay\\banktransfer",
-			"parent":"\\packages\\financial\\views\\transactions\\pay\\banktransfer",
-			"file":"html/transactions/pay/banktransfer.php"
-		},
-		{
 			"name":"\\themes\\clipone\\views\\transactions\\pay\\accept",
 			"parent":"\\packages\\financial\\views\\transactions\\pay\\accept",
 			"file":"html/transactions/pay/accept.php"
@@ -71,11 +61,6 @@
 			"name":"\\themes\\clipone\\views\\transactions\\pay\\reject",
 			"parent":"\\packages\\financial\\views\\transactions\\pay\\reject",
 			"file":"html/transactions/pay/accept.php"
-		},
-		{
-			"name":"\\themes\\clipone\\views\\transactions\\pay\\onlinepay",
-			"parent":"\\packages\\financial\\views\\transactions\\pay\\onlinepay",
-			"file":"html/transactions/pay/onlinepay.php"
 		},
 		{
 			"name":"\\themes\\clipone\\views\\transactions\\pay\\onlinepay\\error",
