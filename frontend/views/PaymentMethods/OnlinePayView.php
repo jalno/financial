@@ -23,6 +23,7 @@ class OnlinePayView extends Form
         $this->setShortDescription(t('transaction.number',array('number' =>  $this->transaction->id)));
         $this->setNavigation();
         $this->addBodyClass("transaction-pay-online");
+		$this->addBodyClass("transaction-payment-method");
         $this->setFormData();
     }
 

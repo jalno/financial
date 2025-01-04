@@ -23,6 +23,7 @@ class CreditView extends Form
 		$this->setNavigation();
 		$this->addBodyClass('pay');
 		$this->addBodyClass('pay-by-credit');
+		$this->addBodyClass("transaction-payment-method");
 
 		$this->initFormData();
 	}

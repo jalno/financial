@@ -31,6 +31,7 @@ class BankTransferView extends Form
 		$this->setNavigation();
 		$this->addBodyClass("transaction-pay-bankaccount");
 		$this->addBodyClass("transaction-pay-banktransfer");
+		$this->addBodyClass("transaction-payment-method");
 		$this->setFormData();
 	}
 

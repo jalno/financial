@@ -1,9 +1,11 @@
 body.not-logged {
 	&.transaction {
-		&-view, &-pay, &-pay-online, &-pay-bankaccount {
+		&-view, &-pay, &-payment-method {
 			background-color: #fff !important;
 			.container {
+				margin-top: 200px;
 				@media (min-width: 768px) {
+					margin-top: 100px;
 					width: 750px !important;
 				}
 				@media (min-width: 992px) {
@@ -12,22 +14,6 @@ body.not-logged {
 				@media (min-width: 1200px) {
 					width: 1170px !important;
 				}
-				@media (max-width: 768px) {
-					margin-top: 100px;
-				}
-			}
-		}
-		&-pay, &-pay-online {
-			.container {
-				margin-top: 200px;
-				@media (max-width: 768px) {
-					margin-top: 100px;
-				}
-			}
-		}
-		&-pay-bankaccount {
-			.container {
-				margin-top: 150px;
 				@media (max-width: 768px) {
 					margin-top: 100px;
 				}
