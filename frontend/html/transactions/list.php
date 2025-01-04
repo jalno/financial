@@ -146,6 +146,9 @@ if ($hasTransaction or $this->canRefund) {
 						<a class="btn btn-xs btn-link tooltips" title="<?php echo t('transaction.add'); ?>" href="<?php echo userpanel\url('transactions/new'); ?>"><i class="fa fa-plus"></i></a>
 				<?php } ?>
 					<a class="btn btn-xs btn-link tooltips" title="<?php echo t('search'); ?>" href="#search" data-toggle="modal" data-original-title=""><i class="fa fa-search"></i></a>
+				<?php if ($this->canAccept) { ?>
+					<a class="btn btn-xs btn-link tooltips" title="<?php echo t('titles.financial.pays.pending'); ?>" href="<?php echo userpanel\url('transactions', ['pending_pays' => 1]); ?>"><i class="fa fa-spin fa-spinner"></i></a>
+				<?php } ?>
 					<a class="btn btn-xs btn-link panel-collapse collapses" href="#"></a>
 				</div>
 			</div>

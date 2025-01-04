@@ -16,23 +16,6 @@ class Transactions extends Controller
 {
 	use Transactions\MergeTrait;
 
-	public static function checkBanktransferFollowup(int $bank, string $code) {
-		$account = new Account();
-		$account->where("bank_id", $bank);
-		$accounts = array_column($account->get(null, "id"), "id");
-		if (!$accounts) {
-			return false;
-		}
-		$banktransferPays = new transaction_pay();
-		db::join("financial_transactions_pays_params params1", "params1.pay=financial_transactions_pays.id", "INNER");
-		db::joinWhere("financial_transactions_pays_params params1", "params1.name", "bankaccount");
-		db::joinWhere("financial_transactions_pays_params params1", "params1.value", $accounts, "IN");
-		db::join("financial_transactions_pays_params params2", "params2.pay=financial_transactions_pays.id", "INNER");
-		db::joinWhere("financial_transactions_pays_params params2", "params2.name", "followup");
-		db::joinWhere("financial_transactions_pays_params params2", "params2.value", $code);
-		return $banktransferPays->has();
-	}
-
 	public static function getPay($data): Transaction_pay {
 		$check = Authentication::check();
 		$isOperator = false;
@@ -227,7 +210,12 @@ class Transactions extends Controller
 				'values' => array('equals', 'startswith', 'contains'),
 				'default' => 'contains',
 				'optional' => true
-			)
+			),
+			'pending_pays' => [
+				'type' => 'bool',
+				'optional' => true,
+				'default' => false,
+			],
 		);
 		if ($canAccept) {
 			$inputsRules["download"]["values"] = array_merge($exporter->getExporterNames(), $inputsRules["download"]["values"]);
@@ -264,6 +252,11 @@ class Transactions extends Controller
 			$transaction->where("financial_transactions.create_at", $inputs["create_to"], "<");
 			$searched = true;
 		}
+
+		if ($inputs['pending_pays']) {
+			$transaction->where('financial_transactions.id', DB::subQuery()->where('status', Transaction_pay::pending)->get('financial_transactions_pays', null, 'transaction'), 'in');
+		}
+
 		if(isset($inputs['word']) and $inputs['word']){
 			$parenthesis = new Parenthesis();
 			foreach(array('title') as $item){
