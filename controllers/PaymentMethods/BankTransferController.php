@@ -2,15 +2,12 @@
 
 namespace packages\financial\controllers\PaymentMethods;
 
-use packages\base\DB;
-use packages\base\DB\DuplicateRecord;
 use packages\base\Http;
 use packages\base\InputValidationException;
 use packages\base\NotFound;
 use packages\base\Packages;
 use packages\base\Response;
 use packages\base\View;
-use packages\financial\Bank\Account;
 use packages\financial\controllers\Transactions;
 use packages\financial\logs\transactions\Pay as PayLog;
 use packages\financial\PaymentMethdos\BankTransferPaymentMethod;
@@ -130,27 +127,6 @@ class BankTransferController extends Controller
 
         if (!$canAcceptPay and $inputs["date"] <= Date::time() - (86400 * 30)) {
             throw new InputValidationException("date");
-        }
-
-        $query = new Account();
-		$query->where("bank_id", $inputs["bankaccount"]->bank_id);
-		$accountIds = array_column($query->get(null, "id"), "id");
-
-        $followupIsInvalid = true;
-        if ($accountIds) {
-            DB::join("financial_transactions_pays_params params1", "params1.pay=financial_transactions_pays.id", "INNER");
-            DB::joinWhere("financial_transactions_pays_params params1", "params1.name", "bankaccount");
-            DB::joinWhere("financial_transactions_pays_params params1", "params1.value", $accountIds, "IN");
-            DB::join("financial_transactions_pays_params params2", "params2.pay=financial_transactions_pays.id", "INNER");
-            DB::joinWhere("financial_transactions_pays_params params2", "params2.name", "followup");
-            DB::joinWhere("financial_transactions_pays_params params2", "params2.value", $inputs['followup']);
-            $query = new TransactionPay();
-            $followupIsInvalid = $query->has();
-        }
-		
-
-        if ($followupIsInvalid) {
-            throw new DuplicateRecord("followup");
         }
 
         $params = array(
