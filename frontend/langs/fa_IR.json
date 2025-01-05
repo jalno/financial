@@ -332,6 +332,7 @@
 		"error.checkout_limits": "به دلیل محدودیت های ایجاد صورتحساب تسویه قادر به ایجاد صورتحساب تسویه جدید نیستید.",
 		"transaction.tax": "مالیات",
 		"titles.financial.attachment": "فایل پیوست",
-		"titles.financial.pays.pending": "پرداخت های منتظر تایید"
+		"titles.financial.pays.pending": "پرداخت های منتظر تایید",
+		"warning.financial.empty_data": "اطلاعاتی برای نمایش پیدا نشد."
 	}
 }

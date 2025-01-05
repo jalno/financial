@@ -2,8 +2,12 @@
 namespace packages\financial;
 use \packages\base\{db, db\dbObject, packages};
 use packages\financial\{Bank\Account, events};
+use packages\userpanel\CursorPaginateTrait;
 
-class transaction_pay extends dbObject{
+class transaction_pay extends dbObject
+{
+	use CursorPaginateTrait;
+
 	/** status */
 	const PENDING = self::pending;
 	const ACCEPTED = self::accepted;

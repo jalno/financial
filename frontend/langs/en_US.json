@@ -331,6 +331,7 @@
 		"error.checkout_limits": "Can not create new Withdraw transaction.",
 		"transaction.tax": "Vat",
 		"titles.financial.attachment": "Attachment",
-		"titles.financial.pays.pending": "Pending Pays"
+		"titles.financial.pays.pending": "Pending Pays",
+		"warning.financial.empty_data": "No data."
 	}
 }
