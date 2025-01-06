@@ -398,7 +398,18 @@ class TransactionManager implements ITransactionManager
         }
 
         return $transaction->canAddPay() and
-            $transaction->remainPriceForAddPay() >= 0 and
             !$transaction->param('UnChangableException');
+    }
+
+    public function canOverPay(int|Transaction $transaction): bool
+    {
+        if (!($transaction instanceof Transaction)) {
+            $transaction = $this->getByID($transaction);
+        }
+
+        return !((new Transaction_Product())
+            ->where('transaction', $transaction->id)
+            ->where('type', [products\AddingCredit::class, "\\" . products\AddingCredit::class], 'in')
+		    ->has());
     }
 }

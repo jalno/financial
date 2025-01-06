@@ -2,6 +2,7 @@
 
 namespace packages\financial\controllers\PaymentMethods;
 
+use packages\base\Date;
 use packages\base\Http;
 use packages\base\InputValidationException;
 use packages\base\NotFound;
@@ -68,9 +69,7 @@ class BankTransferController extends Controller
         $paymentMethod = BankTransferPaymentMethod::getInstance();
 
         if (
-            !$transaction->canAddPay() or
-            $transaction->remainPriceForAddPay() < 0 or
-            $transaction->param('UnChangableException') or
+            !$this->transactionManager->canPay($transaction) or
             !$paymentMethod->canPay($transaction)
         ) {
             throw new NotFound();
@@ -101,7 +100,6 @@ class BankTransferController extends Controller
                 "type" => "float",
                 "zero" => false,
                 "min" => 0,
-                "max" => $transaction->remainPriceForAddPay(),
             ],
             "followup" => [
                 "type" => "string",
@@ -122,6 +120,10 @@ class BankTransferController extends Controller
                 "obj" => true,
             ],
         ]);
+
+        if (!$this->transactionManager->canOverPay($transaction) and $inputs['price'] > $transaction->remainPriceForAddPay()) {
+            throw new InputValidationException('price');
+        }
 
         $canAcceptPay = Authorization::is_accessed("transactions_pay_accept", 'financial');
 

@@ -180,15 +180,16 @@ class transaction extends dbObject
 	);
 	protected $tmproduct = array();
 	protected $tmpays = array();
-
+	private ?TransactionManager $transactionManager = null;
+	
 	public function expire() {
 		$this->byId($this->id);
 		if ($this->status != self::UNPAID) {
 			return;
 		}
-		$payablePrice = $this->payablePrice();
-		if ($payablePrice < 0) {
-			$payablePrice = abs($payablePrice);
+		$totalPrice = $this->getTotalPrice();
+		if ($totalPrice < 0) {
+			$payablePrice = abs($totalPrice);
 
 			$userCurrency = Currency::getDefault($this->user);
 			$price = $this->currency->changeTo($payablePrice, $userCurrency);
@@ -198,7 +199,7 @@ class transaction extends dbObject
 					"credit" => db::inc($price),
 				));
 		} else {
-			$this->returnPaymentsToCredit([Transaction_Pay::credit, Transaction_Pay::onlinepay, Transaction_Pay::banktransfer]);
+			$this->returnPaymentsToCredit();
 		}
 
 		$this->status = self::expired;
@@ -220,8 +221,10 @@ class transaction extends dbObject
 	 * @throws Currency\UnChangableException
 	 * @return void
 	 */
-	public function returnPaymentsToCredit(array $methods = [Transaction_pay::credit]): void {
+	public function returnPaymentsToCredit(): void
+	{
 		$userCurrency = Currency::getDefault($this->user);
+		$methods = array_keys($this->getTransactionManager()->getPaymentMethods($this));
 		$total = 0;
 		foreach ($this->pays as $pay) {
 			if ($pay->status == Transaction_Pay::accepted and in_array($pay->method, $methods)) {
@@ -237,7 +240,8 @@ class transaction extends dbObject
 		if (!in_array($this->status, [self::UNPAID, self::PENDING])) {
 			return false;
 		}
-		return $this->remainPriceForAddPay() != 0;
+
+		return $this->getTotalPrice() > 0 and ($this->remainPriceForAddPay() > 0 or $this->getTransactionManager()->canOverPay($this));
 	}
 	public function remainPriceForAddPay(): float {
 		$remainPrice = $this->totalPrice();
@@ -560,6 +564,11 @@ class transaction extends dbObject
 	public function getTotalPrice(): float
 	{
 		return array_sum(array_map(fn (Transaction_product $product) => $product->totalPrice($this->currency), $this->isNew ? $this->tmproduct : $this->products));
+	}
+
+	private function getTransactionManager(): TransactionManager
+	{
+		return $this->transactionManager ?: $this->transactionManager = TransactionManager::getInstance();
 	}
 }
 class undefinedCurrencyException extends \Exception{}

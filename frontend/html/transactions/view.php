@@ -16,320 +16,339 @@ if ($refundTransaction) {
 	$refundInfo = null;
 }
 
+$remainPriceForShow = $refundTransaction ? abs($remainPriceForAddPay) : $remainPriceForAddPay;
+$overPay = $remainPriceForAddPay < 0;
+if ($overPay) {
+	$remainPriceForShow = 0; // Pay more that transaction
+}
+
 $this->the_header(!$isLogin ? "logedout" : "");
+$currenctUserId = $isLogin ? Authentication::getID() : null;
+
+if ($overPay and $isLogin and Transaction::PAID == $this->transaction->status) {
 ?>
-<div class="row">
-	<div class="col-xs-12">
-		<div class="invoice">
-			<div class="row invoice-logo">
-				<?php $logoPath = $this->getTransActionLogo(); ?>
-					<?php if($logoPath){ ?>
-					<div class="col-sm-6">
-						<a href="<?php echo base\url(); ?>" target="_blank" >
-							<img src="<?php echo($logoPath); ?>"/>
-						</a>
-					</div>
-					<?php } ?>
-				<div class="col-sm-6 <?php echo(!$logoPath ? "col-sm-offset-6" : ""); ?>">
-					<p>
-						#<?php echo $this->transaction->id; ?> / <?php echo date::format("l j F Y", $this->transaction->create_at); ?><span><?php echo $this->transaction->title; ?></span>
-					</p>
-				</div>
+<div class="alert alert-block alert-warning">
+	<p class="alert-heading">
+		<i class="fa fa-info-circle"></i>
+
+	<?php
+	echo $currenctUserId == $this->transaction->user->id ?
+		t('financial.transactions.overpay.added-to-credit', ['price' => $this->numberFormat(abs($remainPriceForAddPay)), 'currency' => $this->transaction->currency->title]) :
+		t('financial.transactions.overpay.added-to-user-credit', ['price' => $this->numberFormat(abs($remainPriceForAddPay)), 'currency' => $this->transaction->currency->title]);
+	?>
+	</p>
+</div>
+<?php } ?>
+<div class="invoice">
+	<div class="row invoice-logo">
+		<?php $logoPath = $this->getTransActionLogo(); ?>
+			<?php if($logoPath){ ?>
+			<div class="col-sm-6">
+				<a href="<?php echo base\url(); ?>" target="_blank" >
+					<img src="<?php echo($logoPath); ?>"/>
+				</a>
 			</div>
-			<hr>
-		<?php if ($this->hasdesc or ($this->transaction->status == Transaction::paid and $refundInfo)) { ?>
-			<div class="row">
-				<div class="col-md-12">
-					<div class="box-note">
-					<?php
-					if ($this->hasdesc) {
-						foreach ($this->transaction->products as $product) {
-							if ($product->param('description')) {
-					?>
-						<p><b><?php echo $product->title ?></b>: <br><?php echo $product->param('description') ?></p>
-					<?php
-							}
-						}
-					}
-					if ($refundInfo) {
-					?>
-						<p><b><?php echo t("packages.financial.refund.pay.info"); ?></b>: <br> <?php echo nl2br($refundInfo); ?></p>
-					<?php } ?>
-					</div>
-				</div>
-			</div>
+			<?php } ?>
+		<div class="col-sm-6 <?php echo(!$logoPath ? "col-sm-offset-6" : ""); ?>">
+			<p>
+				#<?php echo $this->transaction->id; ?> / <?php echo date::format("l j F Y", $this->transaction->create_at); ?><span><?php echo $this->transaction->title; ?></span>
+			</p>
+		</div>
+	</div>
+	<hr>
+<?php if (Transaction::PAID == $this->transaction->status and ($this->hasdesc or $refundInfo)) { ?>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="box-note">
 			<?php
-			}
-			if (!$this->transaction->user) {
-				$firstname = $this->transaction->param("firstname");
-				$lastname = $this->transaction->param("lastname");
-				$email = $this->transaction->param("email");
-				$cellphone = $this->transaction->param("cellphone");
-				if ($firstname or $lastname or $email or $cellphone) {
-					$user = new user();
-					if ($firstname) {
-						$user->name = $firstname;
+			if ($this->hasdesc) {
+				foreach ($this->transaction->products as $product) {
+					if ($product->param('description')) {
+			?>
+				<p><b><?php echo $product->title ?></b>: <br><?php echo $product->param('description') ?></p>
+			<?php
 					}
-					if ($lastname) {
-						$user->lastname = $lastname;
-					}
-					if ($email) {
-						$user->email = $email;
-					}
-					if ($cellphone) {
-						$user->cellphone = $cellphone;
-					}
-					$this->transaction->user = $user;
 				}
 			}
+			if ($refundInfo) {
 			?>
-			<div class="row">
-			<?php if ($this->transaction->user) { ?>
-				<div class="col-sm-4">
-					<h4><?php echo t("packages.financial.purchaser"); ?>:</h4>
-					<div class="well">
-						<address>
-							<?php if ($this->transaction->user->name or $this->transaction->user->lastname) { ?>
-							<strong><?php echo $this->transaction->user->getFullName(); ?></strong>
-							<br>
-							<?php
-							}
-							if($this->transaction->user->address){
-								echo $this->transaction->user->address;
-							?>
-							<br>
-							<?php
-							}
-							if($this->transaction->user->country) {
-								if ($this->transaction->user->country->id == 105 and Translator::getShortCodeLang() == "fa") {
-									echo("ایران");
-								} else {
-									echo($this->transaction->user->country->name);
-								}
-							}
-							?> - <?php echo $this->transaction->user->city; ?>
-							<?php if($this->transaction->user->phone){ ?>
-							<br>
-							<strong><?php echo t("packages.financial.phone"); ?>:</strong><?php echo $this->transaction->user->phone; ?>
-							<?php } ?>
-						</address>
-						<address>
-							<?php if ($this->transaction->user->email) { ?>
-							<strong><?php echo t("packages.financial.email"); ?>: </strong>
-							<br>
-							<?php
-							}
-							if ($this->transaction->user->email) { ?>
-							<a href="<?php echo "mailto:".$this->transaction->user->email; ?>"><?php echo $this->transaction->user->email; ?></a>
-							<?php } ?>
-						</address>
-					</div>
-				</div>
+				<p><b><?php echo t("packages.financial.refund.pay.info"); ?></b>: <br> <?php echo nl2br($refundInfo); ?></p>
 			<?php } ?>
-				<div class="col-sm-4 pull-left">
-					<h4><?php echo t("packages.financial.transaction.details"); ?>:</h4>
-					<ul class="list-unstyled invoice-details">
-						<li>
-							<strong><?php echo t("packages.financial.transaction.id"); ?> :</strong> <?php echo $this->transaction->id; ?>
-						</li>
-						<li>
-							<strong><?php echo t("packages.financial.transaction.title"); ?>:</strong> <?php echo $this->transaction->title; ?>
-						</li>
-						<li>
-							<strong><?php echo t("transaction.createdate"); ?>:</strong> <span dir="ltr"> <?php echo date::format("Y/m/d H:i:s", $this->transaction->create_at); ?><span>
-						</li>
-						<li>
-							<strong><?php echo t("transaction.add.expire_at"); ?>:</strong>
-							<span dir="ltr">
-								<?php echo $this->transaction->expire_at ? Date::format("Y/m/d H:i:s", $this->transaction->expire_at) : '-'; ?>
-							</span>
-						</li>
-						<li>
-							<strong><?php echo t("transaction.status"); ?>:</strong>
-							<?php echo TransactionUtilities::getStatusLabelSpan($this->transaction) ?? '-'; ?>
-						</li>
-					</ul>
-				</div>
-			</div>
-
-			<?php
-			if ($refundTransaction) {
-				if ($this->transaction->status == Transaction::expired) {	
-			?>
-				<div class="alert alert-info text-center"><?php echo t("packages.financial.refunded-expired-refund-transaction"); ?></div>
-			<?php
-				} elseif ($this->transaction->status == Transaction::rejected) {
-			?>
-			<div class="alert alert-warning"><?php echo t($refundInfo ? "packages.financial.rejected-refund-transaction-reasoned" : "packages.financial.rejected-refund-transaction", array(
-				'reason' => $refundInfo
-			)); ?></div>
-			<?php
-				}
-			}
-			?>
-			<h3><?php echo t("transaction.products"); ?></h3>
-			<div class="row">
-				<div class="col-sm-12">
-					<table class="table table-striped table-hover">
-						<thead>
-							<tr>
-								<th> # </th>
-								<th><?php echo t("transaction.add.product"); ?></th>
-								<th class="hidden-480"><?php echo t("transaction.add.description"); ?></th>
-								<th class="hidden-480"><?php echo t("transaction.add.number"); ?></th>
-								<th class="hidden-480"><?php echo t("financial.transaction.product.price_unit"); ?></th>
-								<th class="hidden-480"><?php echo t("financial.transaction.product.discount"); ?></th>
-								<th class="hidden-480"><?php echo t("transaction.tax"); ?></th>
-								<th><?php echo t("financial.transaction.product.price.final"); ?></th>‍
-								<?php if($this->transaction->status == transaction::paid and !$this->transaction->isConfigured()){ ?><th></th>‍<?php } ?>
-							</tr>
-						</thead>
-						<tbody>
-						<?php
-						$x = 1;
-						$currency = $this->transaction->currency;
-						foreach($this->transaction->products as $product){
-							$price = $product->getPrice($currency);
-						?>
-							<tr>
-								<td><?php echo $x++; ?></td>
-								<td><?php echo $product->title; ?></td>
-								<td class="hidden-480"><?php echo $product->description; ?></td>
-								<td class="hidden-480"><?php echo t("product.xnumber", array("number" => $product->number)); ?></td>
-								<td class="hidden-480"> <?php echo $this->numberFormat($price) . " " . $currency->title; ?></td>
-								<td class="hidden-480"> <?php echo $this->numberFormat($product->getDiscount($currency)) . " " . $currency->title; ?></td>
-								<td class="hidden-480"> <?php echo $this->numberFormat($product->getVat($currency, $price)) . " " . $currency->title; ?></td>
-								<td><?php echo $this->numberFormat($product->totalPrice($currency)) . " " . $currency->title; ?></td>
-								<?php if($this->transaction->status == transaction::paid and !$product->configure){ ?>
-								<td><a href="<?php echo userpanel\url("transactions/config/".$product->id); ?>" class="btn btn-sm btn-teal"><i class="fa fa-cog"></i> <?php echo translator::trans("financial.configure"); ?></a></td>
-								<?php } ?>
-							</tr>
-							<?php } ?>
-						</tbody>
-					</table>
-				</div>
-			</div>
-			<?php
-			if($this->pays){
-				$hastatus = $this->paysHasStatus();
-				$hasButtons = $this->hasButtons();
-			?>
-			<h3><?php echo translator::trans('pays'); ?></h3>
-			<?php if (!$refundTransaction and $this->transaction->status == Transaction::expired) { ?>
-			<div class="alert alert-info text-center"><?php echo t("packages.financial.refunded-expired-buy-transaction"); ?></div>
-			<?php } ?>
-			<div class="row">
-				<div class="col-xs-12">
-					<table class="table table-striped table-hover">
-						<thead>
-							<tr>
-								<th> # </th>
-								<th> <?php echo translator::trans('date&time'); ?> </th>
-								<th> <?php echo translator::trans('pay.method'); ?> </th>
-								<th> <?php echo translator::trans('pay.price'); ?> </th>
-								<?php if($hastatus){ ?><th> <?php echo translator::trans('pay.status'); ?> </th><?php } ?>
-								<?php if($hasButtons){ ?><th><?php echo t("financial.actions"); ?></th><?php } ?>
-							</tr>
-						</thead>
-						<tbody>
-						<?php
-						$x = 1;
-						foreach($this->pays as $pay){
-							if($hasButtons){
-								$this->setButtonParam('pay_accept', 'link', userpanel\url("transactions/pay/accept/".$pay->id));
-								$this->setButtonParam('pay_reject', 'link', userpanel\url("transactions/pay/reject/".$pay->id));
-								$this->setButtonActive('pay_accept', $this->canPayAccept and $pay->status == Transaction_pay::pending);
-								$this->setButtonActive('pay_reject', $this->canPayReject and $pay->status == Transaction_pay::pending);
-							}
-							if($hastatus){
-								$statusClass = utility::switchcase($pay->status, array(
-									'label label-danger' => transaction_pay::rejected,
-									'label label-success' => transaction_pay::accepted,
-									'label label-warning' => transaction_pay::pending,
-									'label label-info' => transaction_pay::REIMBURSE,
-								));
-								$statusTxt = utility::switchcase($pay->status, array(
-									'pay.rejected' => transaction_pay::rejected,
-									'pay.accepted' => transaction_pay::accepted,
-									'pay.pending' => transaction_pay::pending,
-									'pay.reimburse' => transaction_pay::REIMBURSE
-								));
-							}
-						?>
-							<tr data-pay='<?php echo json\encode($pay->toArray()); ?>'>
-								<td><?php echo $x++; ?></td>
-								<td class="ltr-text-center"><?php echo $pay->date; ?></td>
-								<td><?php echo $this->getPayMethodForShow($pay); ?></td>
-								<td><?php echo $pay->price; ?></td>
-								<?php if($hastatus){ ?><td><span class="<?php echo $statusClass; ?>"><?php echo translator::trans($statusTxt); ?></td><?php } ?>
-								<?php
-								if($hasButtons){
-									echo("<td class=\"center\">".$this->genButtons()."</td>");
-								}
-								?>
-								</tr>
-							</tr>
-						<?php } ?>
-						</tbody>
-					</table>
-				</div>
-			</div>
-
-			<?php
-			}
-			?>
-			<div class="row">
-				<div class="col-sm-12 invoice-block">
-					<ul class="list-unstyled amounts">
-						<li><strong><?php echo t("packages.financial.total_price"); ?>:</strong> <?php echo($this->numberFormat(abs($this->transaction->getPrice())). " " . $currency->title); ?></li>
-						<li><strong><?php echo t("transaction.add.discount"); ?>:</strong> <?php echo($this->numberFormat($this->transaction->getDiscount()) . " " . $currency->title); ?></li>
-						<li><strong><?php echo t("packages.financial.tax"); ?>:</strong> <?php echo $this->numberFormat($this->transaction->getVat()) . " " .$currency->title; ?></li>
-						<li>
-							<strong><?php echo t("packages.financial.payable_price"); ?>:</strong>
-						<?php
-						echo $this->numberFormat(abs($remainPriceForAddPay)) . " " .$currency->title;
-						?>
-						</li>
-					</ul>
-					<br>
-					<a onclick="javascript:window.print();" class="btn btn-lg btn-teal hidden-print"> <?php echo t("print"); ?> <i class="fa fa-print"></i></a>
-					<?php
-					if ($this->transaction->canAddPay() and !$refundTransaction) {
-						$parameter = array();
-						if ($token = http::getURIData("token")) {
-							$parameter["token"] = $token;
-						}
-					?>
-					<a class="btn btn-lg btn-green hidden-print btn-pay" href="<?php echo userpanel\url('transactions/pay/'.$this->transaction->id, $parameter);?>"><?php echo t("packages.financial.transaction.pay"); ?><i class="fa fa-check"></i></a>
-					<?php
-					} elseif (!$refundTransaction and in_array($this->transaction->status, [Transaction::PENDING, Transaction::UNPAID])) {
-					?>
-					<a class="btn btn-lg btn-info hidden-print btn-accept" href="<?php echo userpanel\url("transactions/accept/{$this->transaction->id}");?>"><?php echo t("packages.financial.transaction.accept"); ?><i class="fa fa-check"></i></a>
-					<?php
-					} elseif ($remainPriceForAddPay < 0 and $this->canAcceptRefund) {
-						$refundTransaction = true;
-					?>
-					<a class="btn btn-lg btn-success hidden-print" href="#refund-accept-modal" data-toggle="modal">
-						<div class="btn-icons"> <i class="fa fa-check-square-o"></i> </div>
-						<?php echo t("packages.financial.refund.accept"); ?>
-					</a>
-					<a class="btn btn-lg btn-danger hidden-print" href="#refund-reject-modal" data-toggle="modal">
-						<div class="btn-icons"> <i class="fa fa-times-circle"></i> </div>
-						<?php echo t("packages.financial.refund.reject"); ?>
-					</a>
-					<?php
-					}
-					if ($this->canReimburse) {
-					?>
-					<a class="btn btn-lg btn-warning hidden-print" href="<?php echo userpanel\url("transactions/{$this->transaction->id}/reimburse");?>">
-						<?php echo t("packages.financial.reimburse.btn_title"); ?> <i class="fa fa-undo"></i>
-					</a>
-					<?php
-					}
-					?>
-				</div>
 			</div>
 		</div>
+	</div>
+	<?php
+	}
+	if (!$this->transaction->user) {
+		$firstname = $this->transaction->param("firstname");
+		$lastname = $this->transaction->param("lastname");
+		$email = $this->transaction->param("email");
+		$cellphone = $this->transaction->param("cellphone");
+		if ($firstname or $lastname or $email or $cellphone) {
+			$user = new user();
+			if ($firstname) {
+				$user->name = $firstname;
+			}
+			if ($lastname) {
+				$user->lastname = $lastname;
+			}
+			if ($email) {
+				$user->email = $email;
+			}
+			if ($cellphone) {
+				$user->cellphone = $cellphone;
+			}
+			$this->transaction->user = $user;
+		}
+	}
+	?>
+	<div class="row">
+	<?php if ($this->transaction->user) { ?>
+		<div class="col-sm-4">
+			<h4><?php echo t("packages.financial.purchaser"); ?>:</h4>
+			<div class="well">
+				<address>
+					<?php if ($this->transaction->user->name or $this->transaction->user->lastname) { ?>
+					<strong><?php echo $this->transaction->user->getFullName(); ?></strong>
+					<br>
+					<?php
+					}
+					if($this->transaction->user->address){
+						echo $this->transaction->user->address;
+					?>
+					<br>
+					<?php
+					}
+					if($this->transaction->user->country) {
+						if ($this->transaction->user->country->id == 105 and Translator::getShortCodeLang() == "fa") {
+							echo("ایران");
+						} else {
+							echo($this->transaction->user->country->name);
+						}
+					}
+					?> - <?php echo $this->transaction->user->city; ?>
+					<?php if($this->transaction->user->phone){ ?>
+					<br>
+					<strong><?php echo t("packages.financial.phone"); ?>:</strong><?php echo $this->transaction->user->phone; ?>
+					<?php } ?>
+				</address>
+				<address>
+					<?php if ($this->transaction->user->email) { ?>
+					<strong><?php echo t("packages.financial.email"); ?>: </strong>
+					<br>
+					<?php
+					}
+					if ($this->transaction->user->email) { ?>
+					<a href="<?php echo "mailto:".$this->transaction->user->email; ?>"><?php echo $this->transaction->user->email; ?></a>
+					<?php } ?>
+				</address>
+			</div>
+		</div>
+	<?php } ?>
+		<div class="col-sm-4 pull-left">
+			<h4><?php echo t("packages.financial.transaction.details"); ?>:</h4>
+			<ul class="list-unstyled invoice-details">
+				<li>
+					<strong><?php echo t("packages.financial.transaction.id"); ?> :</strong> <?php echo $this->transaction->id; ?>
+				</li>
+				<li>
+					<strong><?php echo t("packages.financial.transaction.title"); ?>:</strong> <?php echo $this->transaction->title; ?>
+				</li>
+				<li>
+					<strong><?php echo t("transaction.createdate"); ?>:</strong> <span dir="ltr"> <?php echo date::format("Y/m/d H:i:s", $this->transaction->create_at); ?><span>
+				</li>
+				<li>
+					<strong><?php echo t("transaction.add.expire_at"); ?>:</strong>
+					<span dir="ltr">
+						<?php echo $this->transaction->expire_at ? Date::format("Y/m/d H:i:s", $this->transaction->expire_at) : '-'; ?>
+					</span>
+				</li>
+				<li>
+					<strong><?php echo t("transaction.status"); ?>:</strong>
+					<?php echo (TransactionUtilities::getStatusLabelSpan($this->transaction) ?? '-').$this->getPaysStatusIcon(); ?>
+				</li>
+			</ul>
+		</div>
+	</div>
+
+	<?php
+	if ($refundTransaction) {
+		if ($this->transaction->status == Transaction::expired) {	
+	?>
+		<div class="alert alert-info text-center"><?php echo t("packages.financial.refunded-expired-refund-transaction"); ?></div>
+	<?php
+		} elseif ($this->transaction->status == Transaction::rejected) {
+	?>
+	<div class="alert alert-warning"><?php echo t($refundInfo ? "packages.financial.rejected-refund-transaction-reasoned" : "packages.financial.rejected-refund-transaction", array(
+		'reason' => $refundInfo
+	)); ?></div>
+	<?php
+		}
+	}
+	?>
+	<h3><?php echo t("transaction.products"); ?></h3>
+	<div class="row">
+		<div class="col-sm-12">
+			<table class="table table-striped table-hover">
+				<thead>
+					<tr>
+						<th> # </th>
+						<th><?php echo t("transaction.add.product"); ?></th>
+						<th class="hidden-480"><?php echo t("transaction.add.description"); ?></th>
+						<th class="hidden-480"><?php echo t("transaction.add.number"); ?></th>
+						<th class="hidden-480"><?php echo t("financial.transaction.product.price_unit"); ?></th>
+						<th class="hidden-480"><?php echo t("financial.transaction.product.discount"); ?></th>
+						<th class="hidden-480"><?php echo t("transaction.tax"); ?></th>
+						<th><?php echo t("financial.transaction.product.price.final"); ?></th>‍
+						<?php if($this->transaction->status == transaction::paid and !$this->transaction->isConfigured()){ ?><th></th>‍<?php } ?>
+					</tr>
+				</thead>
+				<tbody>
+				<?php
+				$x = 1;
+				$currency = $this->transaction->currency;
+				foreach($this->transaction->products as $product){
+					$price = $product->getPrice($currency);
+				?>
+					<tr>
+						<td><?php echo $x++; ?></td>
+						<td><?php echo $product->title; ?></td>
+						<td class="hidden-480"><?php echo $product->description; ?></td>
+						<td class="hidden-480"><?php echo t("product.xnumber", array("number" => $product->number)); ?></td>
+						<td class="hidden-480"> <?php echo $this->numberFormat($price) . " " . $currency->title; ?></td>
+						<td class="hidden-480"> <?php echo $this->numberFormat($product->getDiscount($currency)) . " " . $currency->title; ?></td>
+						<td class="hidden-480"> <?php echo $this->numberFormat($product->getVat($currency, $price)) . " " . $currency->title; ?></td>
+						<td><?php echo $this->numberFormat($product->totalPrice($currency)) . " " . $currency->title; ?></td>
+						<?php if($this->transaction->status == transaction::paid and !$product->configure){ ?>
+						<td><a href="<?php echo userpanel\url("transactions/config/".$product->id); ?>" class="btn btn-sm btn-teal"><i class="fa fa-cog"></i> <?php echo translator::trans("financial.configure"); ?></a></td>
+						<?php } ?>
+					</tr>
+					<?php } ?>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<?php
+	if($this->pays){
+		$hastatus = $this->paysHasStatus();
+		$hasButtons = $this->hasButtons();
+	?>
+	<h3><?php echo translator::trans('pays'); ?></h3>
+	<?php if (!$refundTransaction and $this->transaction->status == Transaction::expired) { ?>
+	<div class="alert alert-info text-center"><?php echo t("packages.financial.refunded-expired-buy-transaction"); ?></div>
+	<?php } ?>
+	<div class="row">
+		<div class="col-xs-12">
+			<table class="table table-striped table-hover">
+				<thead>
+					<tr>
+						<th> # </th>
+						<th> <?php echo translator::trans('date&time'); ?> </th>
+						<th> <?php echo translator::trans('pay.method'); ?> </th>
+						<th> <?php echo translator::trans('pay.price'); ?> </th>
+						<?php if($hastatus){ ?><th> <?php echo translator::trans('pay.status'); ?> </th><?php } ?>
+						<?php if($hasButtons){ ?><th class="hidden-print"><?php echo t("financial.actions"); ?></th><?php } ?>
+					</tr>
+				</thead>
+				<tbody>
+				<?php
+				$x = 1;
+				foreach($this->pays as $pay){
+					if($hasButtons){
+						$this->setButtonParam('pay_accept', 'link', userpanel\url("transactions/pay/accept/".$pay->id));
+						$this->setButtonParam('pay_reject', 'link', userpanel\url("transactions/pay/reject/".$pay->id));
+						$this->setButtonActive('pay_accept', $this->canPayAccept and $pay->status == Transaction_pay::pending);
+						$this->setButtonActive('pay_reject', $this->canPayReject and $pay->status == Transaction_pay::pending);
+					}
+					if($hastatus){
+						$statusClass = utility::switchcase($pay->status, array(
+							'label label-danger' => transaction_pay::rejected,
+							'label label-success' => transaction_pay::accepted,
+							'label label-warning' => transaction_pay::pending,
+							'label label-info' => transaction_pay::REIMBURSE,
+						));
+						$statusTxt = utility::switchcase($pay->status, array(
+							'pay.rejected' => transaction_pay::rejected,
+							'pay.accepted' => transaction_pay::accepted,
+							'pay.pending' => transaction_pay::pending,
+							'pay.reimburse' => transaction_pay::REIMBURSE
+						));
+					}
+				?>
+					<tr data-pay='<?php echo json\encode($pay->toArray()); ?>'>
+						<td><?php echo $x++; ?></td>
+						<td class="ltr-text-center"><?php echo $pay->date; ?></td>
+						<td><?php echo $this->getPayMethodForShow($pay); ?></td>
+						<td><?php echo $pay->price; ?></td>
+						<?php if($hastatus){ ?><td><span class="<?php echo $statusClass; ?>"><?php echo translator::trans($statusTxt); ?></td><?php } ?>
+						<?php
+						if($hasButtons){
+							echo("<td class=\"center hidden-print\">".$this->genButtons()."</td>");
+						}
+						?>
+						</tr>
+					</tr>
+				<?php } ?>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<?php
+	}
+	?>
+	<div class="row">
+		<div class="col-sm-12 invoice-block">
+			<ul class="list-unstyled amounts">
+				<li><strong><?php echo t("packages.financial.total_price"); ?>:</strong> <?php echo($this->numberFormat(abs($this->transaction->getPrice())). " " . $currency->title); ?></li>
+				<li><strong><?php echo t("transaction.add.discount"); ?>:</strong> <?php echo($this->numberFormat($this->transaction->getDiscount()) . " " . $currency->title); ?></li>
+				<li><strong><?php echo t("packages.financial.tax"); ?>:</strong> <?php echo $this->numberFormat($this->transaction->getVat()) . " " .$currency->title; ?></li>
+				<li>
+					<strong><?php echo t("packages.financial.payable_price"); ?>:</strong>
+				<?php
+				echo $this->numberFormat($remainPriceForShow) . " " .$currency->title;
+				if ($overPay and Transaction::UNPAID == $this->transaction->status) {
+				?>
+					<p class="text-warning hidden-print"><?php echo t('financial.transactions.overpay.added-to-user-after-pay', ['price' => $this->numberFormat(abs($remainPriceForAddPay)), 'currency' => $currency->title]); ?></p>
+				<?php } ?>
+				</li>
+			</ul>
+			<br>
+			<a onclick="javascript:window.print();" class="btn btn-lg btn-teal hidden-print"> <?php echo t("print"); ?> <i class="fa fa-print"></i></a>
+		<?php if ($refundTransaction) { ?>
+			<a class="btn btn-lg btn-success hidden-print" href="#refund-accept-modal" data-toggle="modal">
+				<div class="btn-icons"> <i class="fa fa-check-square-o"></i> </div>
+				<?php echo t("packages.financial.refund.accept"); ?>
+			</a>
+			<a class="btn btn-lg btn-danger hidden-print" href="#refund-reject-modal" data-toggle="modal">
+				<div class="btn-icons"> <i class="fa fa-times-circle"></i> </div>
+				<?php echo t("packages.financial.refund.reject"); ?>
+			</a>
+		<?php
+		} else {
+			if ($this->transaction->canAddPay()) {
+				$parameter = [];
+				$token = Http::getURIData('token');
+				if ($token) {
+					$parameter['token'] = $token;
+				}
+		?>
+			<a class="btn btn-lg btn-green hidden-print btn-pay" href="<?php echo userpanel\url('transactions/pay/'.$this->transaction->id, $parameter);?>">
+			<?php echo t('packages.financial.transaction.pay'); ?>
+				<i class="fa fa-check"></i>
+			</a>
+		<?php
+			}
+			if ($this->canReimburse) {
+		?>
+			<a class="btn btn-lg btn-warning hidden-print" href="<?php echo userpanel\url("transactions/{$this->transaction->id}/reimburse");?>">
+			<?php echo t('packages.financial.reimburse.btn_title'); ?>
+				<i class="fa fa-undo"></i>
+			</a>
+		<?php
+			}
+		}
+		?>
 	</div>
 </div>
 <?php if ($refundTransaction) { ?>

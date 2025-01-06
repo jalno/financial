@@ -19,6 +19,7 @@ class BankTransferView extends Form
 	 * @var Account[]
 	 */
 	public array $bankAccounts = [];
+	public float $remainPriceForAddPay = 0;
 	protected $file = 'html/PaymentMethods/BankTransferPaymentMethod.php';
 	/**
 	 * @var array<int,Account>
@@ -32,6 +33,7 @@ class BankTransferView extends Form
 		$this->addBodyClass("transaction-pay-bankaccount");
 		$this->addBodyClass("transaction-pay-banktransfer");
 		$this->addBodyClass("transaction-payment-method");
+		$this->remainPriceForAddPay = max(0, $this->transaction->remainPriceForAddPay());
 		$this->setFormData();
 	}
 
@@ -99,7 +101,7 @@ class BankTransferView extends Form
 	private function setFormData(): void
 	{
 		if (!$this->getDataForm("price")) {
-			$this->setDataForm($this->transaction->remainPriceForAddPay(), "price");
+			$this->setDataForm($this->remainPriceForAddPay, "price");
 		}
 		if (!$this->getDataForm("date")) {
 			$this->setDataForm(Date::format("Y/m/d H:i:s"), "date");

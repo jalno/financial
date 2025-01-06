@@ -333,6 +333,11 @@
 		"transaction.tax": "مالیات",
 		"titles.financial.attachment": "فایل پیوست",
 		"titles.financial.pays.pending": "پرداخت های منتظر تایید",
-		"warning.financial.empty_data": "اطلاعاتی برای نمایش پیدا نشد."
+		"warning.financial.empty_data": "اطلاعاتی برای نمایش پیدا نشد.",
+		"titles.financial.progressing-pending-pays": "پرداخت های منتظر تایید در حال بررسی هستند.",
+		"error.financial.rejected-pays": "یکی از پرداخت ها رد شده است، لطفا بررسی نمایید.",
+		"financial.transactions.overpay.added-to-user-after-pay": "مبلغ {price} {currency} اضافه پرداخت بعد از تغییر وضعیت صورتحساب به پرداخت شده، به موجودی کاربری شما اضافه خواهد شد.",
+		"financial.transactions.overpay.added-to-credit": "مبلغ {price} {currency} اضافه پرداخت  به موجودی کاربری شما اضافه شده است.",
+		"financial.transactions.overpay.added-to-user-credit": "مبلغ {price} {currency} اضافه پرداخت  به موجودی حساب کاربر اضافه شده است."
 	}
 }

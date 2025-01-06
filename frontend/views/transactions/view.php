@@ -33,18 +33,42 @@ class view extends transactionsView
 		$this->addBodyClass("transaction-view");
 
 		$this->canReimburse = (
-			Authorization::is_accessed("transactions_reimburse") and
+			Authorization::is_accessed('transactions_reimburse') and
 			$this->transactionHasPaysToReimburse($this->transaction)
 		);
 	}
 
 	public function getPayMethodForShow(Transaction_pay $pay): string
 	{
+		if (transaction_pay::PAYACCEPTED == $pay->method) {
+			$user = User::byId($pay->param('acceptor'));
+			return t('pay.method.payaccepted', ['acceptor' => $user ? $user->getFullName() : '-']);
+		}
+
 		if (!isset($this->paymentMethods[$pay->method])) {
 			return $pay->method;
 		}
 
 		return $this->paymentMethods[$pay->method]->getPayTitle($pay);
+	}
+
+	public function getPaysStatusIcon(): string
+	{
+		if (Transaction::UNPAID == $this->transaction->status) {
+			$query = (new Transaction_pay())->where('transaction', $this->transaction->id);
+			$query->where('status', [Transaction_pay::PENDING, Transaction_pay::REJECTED], 'in');
+			$query->orderBy('status', 'DESC');
+			$pays = $query->get(null, ['id', 'updated_at', 'status']);
+			foreach ($pays as $pay) {
+				if (Transaction_pay::PENDING == $pay->status) {
+					return '<i class="fa fa-spin fa-spinner text-warning tooltips transaction-pays-status-icon hidden-print" title="'.t('titles.financial.progressing-pending-pays').'"></i>';
+				} elseif ($pay->updated_at > Date::time() - 86400) {
+					return '<i class="fa fa-info-circle text-danger tooltips transaction-pays-status-icon hidden-print" title="'.t('error.financial.rejected-pays').'"></i>';
+				}
+			}
+		}
+
+		return '';
 	}
 
 	private function setNavigation(){
@@ -137,18 +161,11 @@ class view extends transactionsView
 		return null;
 	}
 	protected function transactionHasPaysToReimburse(Transaction $transaction): bool {
-		return boolval(
-			(new Transaction_Pay)
-				->where("transaction", $transaction->id)
-				->where("method",
-						array(
-							Transaction_Pay::CREDIT,
-							Transaction_Pay::ONLINEPAY,
-							Transaction_Pay::BANKTRANSFER,
-						),
-						"IN"
-				)
-				->where("status", Transaction_Pay::ACCEPTED)
-		->has());
+		$methods = array_keys($this->paymentMethods);
+		return $methods and (new Transaction_Pay)
+				->where('transaction', $transaction->id)
+				->where('method',$methods, 'in')
+				->where('status', Transaction_Pay::ACCEPTED)
+				->has();
 	}
 }

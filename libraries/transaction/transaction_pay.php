@@ -1,6 +1,8 @@
 <?php
 namespace packages\financial;
-use \packages\base\{db, db\dbObject, packages};
+
+use packages\base\Date;
+use \packages\base\{db, db\dbObject};
 use packages\financial\{Bank\Account, events};
 use packages\userpanel\CursorPaginateTrait;
 
@@ -39,6 +41,7 @@ class transaction_pay extends dbObject
         'date' => array('type' => 'int', 'required' => true),
 		'price' => array('type' => 'double', 'required' => true),
 		"currency" => array("type" => "int", "required" => true),
+		'updated_at' => ['type' => 'int'],
         'status' => array('type' => 'int', 'required' => true),
 	);
 	protected $relations = array(
@@ -50,6 +53,16 @@ class transaction_pay extends dbObject
 		$data = $this->processData($data);
 		parent::__construct($data, $connection);
 	}
+
+	protected function preLoad(array $data): array
+	{
+		if (!isset($data['updated_at'])) {
+			$data['updated_at'] = Date::time();
+		}
+
+		return $data;
+	}
+
 	protected $tmparams = array();
 	private function processData($data){
 		$newdata = array();
@@ -105,29 +118,53 @@ class transaction_pay extends dbObject
 				$param->pay = $this->id;
 				$param->save();
 			}
-			$this->tmparams = array();
-			if (in_array($this->transaction->status, [Transaction::PENDING, Transaction::UNPAID])) {
-				if ($this->transaction->payablePrice() == 0) {
+
+			$this->tmparams = [];
+			$hasPendingPay = (new self)->where('transaction', $this->transaction->id)
+							->where('status', self::PENDING)
+							->has();
+
+			if (!$hasPendingPay and in_array($this->transaction->status, [Transaction::PENDING, Transaction::UNPAID])) {
+				$payablePrice = $this->transaction->payablePrice();
+				
+				if ($payablePrice <= 0) {
 					$this->transaction->status = Transaction::PAID;
 					$this->transaction->expire_at = null;
 					$this->transaction->paid_at = time();
 					$this->transaction->afterPay();
 					$this->transaction->save();
+
 					$event = new events\transactions\Pay($this->transaction);
 					$event->trigger();
 					if ($this->transaction->isConfigured()) {
 						$this->transaction->trigger_paid();
 					}
-				} elseif ($this->method == self::BANKTRANSFER and $this->status == self::PENDING and $this->transaction->status != Transaction::PENDING) {
-					$this->transaction->status = Transaction::PENDING;
-					$this->transaction->save();
-				} elseif ($this->transaction->status == Transaction::PENDING) {
-					$hasPendingPay = (new self)->where("transaction", $this->transaction->id)
-									->where("status", self::PENDING)
-									->has();
-					if (!$hasPendingPay) {
-						$this->transaction->status = Transaction::UNPAID;
-						$this->transaction->save();
+
+					if ($payablePrice < 0) {
+						try {
+							$userCurrency = Currency::getDefault($this->transaction->user);
+							$price = $this->currency->changeTo(abs($payablePrice), $userCurrency);
+	
+							DB::where('id', $this->transaction->user->id)
+								->update('userpanel_users', [
+									'credit' => DB::inc($price),
+								]);
+							$this->transaction->setParam('overpay_added_credit', [
+								'price' => $price,
+								'currency' => [
+									'id' => $userCurrency->id,
+									'title' => $userCurrency->title,
+								],
+							]);
+						} catch (Currency\UnChangableException) {
+							$this->transaction->setParam('overpay_add_credit_error', [
+								'price' => $payablePrice,
+								'currency' => [
+									'id' => $this->transaction->currency->id,
+									'title' => $this->transaction->currency->title,
+								],
+							]);
+						}
 					}
 				}
 			}

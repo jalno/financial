@@ -349,7 +349,7 @@ class Transactions extends Controller
 	 */
 	private function getTransactionForPay($data): Transaction {
 		$transaction = self::getTransaction($data['transaction']);
-		if (!$transaction->canAddPay() or $transaction->remainPriceForAddPay() < 0 or $transaction->param('UnChangableException')){
+		if (!$this->transactionManager->canPay($transaction)){
 			throw new NotFound;
 		}
 		return $transaction;
@@ -1276,18 +1276,16 @@ class Transactions extends Controller
 	public function reimburseTransactionView(array $data): Response {
 		Authorization::haveOrFail("transactions_reimburse");
 		$transaction = self::getTransaction($data["transaction_id"]);
+		$paymentMethods = array_keys($this->transactionManager->getPaymentMethods($transaction));
+		if (!$paymentMethods) {
+			throw new NotFound();
+		}
+
 		$pays = (new Transaction_Pay)
-				->where("transaction", $transaction->id)
-				->where("method",
-						array(
-							Transaction_Pay::CREDIT,
-							Transaction_Pay::ONLINEPAY,
-							Transaction_Pay::BANKTRANSFER,
-						),
-						"IN"
-				)
-				->where("status", Transaction_Pay::ACCEPTED)
-		->get();
+				->where('transaction', $transaction->id)
+				->where('method', $paymentMethods, 'in')
+				->where('status', Transaction_Pay::ACCEPTED)
+			->get();
 
 		if (empty($pays)) {
 			throw new NotFound;
@@ -1310,18 +1308,16 @@ class Transactions extends Controller
 	public function reimburseTransaction(array $data): Response {
 		Authorization::haveOrFail("transactions_reimburse");
 		$transaction = self::getTransaction($data["transaction_id"]);
+		$paymentMethods = array_keys($this->transactionManager->getPaymentMethods($transaction));
+		if (!$paymentMethods) {
+			throw new NotFound();
+		}
+
 		$pays = (new Transaction_Pay)
-				->where("transaction", $transaction->id)
-				->where("method",
-						array(
-							Transaction_Pay::CREDIT,
-							Transaction_Pay::ONLINEPAY,
-							Transaction_Pay::BANKTRANSFER,
-						),
-						"IN"
-				)
-				->where("status", Transaction_Pay::ACCEPTED)
-		->get();
+				->where('transaction', $transaction->id)
+				->where('method', $paymentMethods, 'in')
+				->where('status', Transaction_Pay::ACCEPTED)
+			->get();
 
 		if (empty($pays)) {
 			throw new NotFound;

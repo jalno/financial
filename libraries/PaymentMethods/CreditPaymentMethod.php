@@ -33,6 +33,10 @@ class CreditPaymentMethod implements IPaymentMethod
             $transactionId :
             TransactionManager::getInstance()->getForPayById($transactionId);
 
+        if ($transaction->remainPriceForAddPay() <= 0) {
+            return false;
+        }
+
         if (
             !$transaction->user or
             (

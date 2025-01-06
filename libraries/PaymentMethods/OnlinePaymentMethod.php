@@ -36,6 +36,10 @@ class OnlinePaymentMethod implements IPaymentMethod
             $transactionId :
             TransactionManager::getInstance()->getForPayById($transactionId);
 
+        if ($transaction->remainPriceForAddPay() <= 0) {
+            return false;
+        }
+
         $payportIDs = $transaction->param('available_online_payports');
         if (!$payportIDs) {
             $payportIDs = Options::get('packages.financial.available_online_payports');

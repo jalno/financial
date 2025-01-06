@@ -138,7 +138,7 @@ $this->the_header(!$isLogin ? "logedout" : "");
                         <div class="col-xs-12">
                             <div class="well label-info">
                                 <?php echo t("packages.financial.remain_price"); ?>:
-                                <span class="pull-left"><?php echo number_format($this->transaction->remainPriceForAddPay()) . " " . $this->transaction->currency->title; ?></span>
+                                <span class="pull-left"><?php echo number_format($this->remainPriceForAddPay) . " " . $this->transaction->currency->title; ?></span>
                             </div>
                         </div>
                         <div class="col-xs-12">

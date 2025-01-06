@@ -332,6 +332,11 @@
 		"transaction.tax": "Vat",
 		"titles.financial.attachment": "Attachment",
 		"titles.financial.pays.pending": "Pending Pays",
-		"warning.financial.empty_data": "No data."
+		"warning.financial.empty_data": "No data.",
+		"titles.financial.progressing-pending-pays": "Processing Pending Pays",
+		"error.financial.rejected-pays": "Some of penidng payments is rejected",
+		"financial.transactions.overpay.added-to-user-after-pay": "Additional {price} {currency} over paing amount will be added to your credit after transaction is Paied. ",
+		"financial.transactions.overpay.added-to-credit": "Additional {price} {currency} over paing amount added to your credit.",
+		"financial.transactions.overpay.added-to-user-credit": "Additional {price} {currency} over paing amount added to userredit."
 	}
 }

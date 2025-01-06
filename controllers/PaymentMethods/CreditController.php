@@ -3,6 +3,7 @@
 namespace packages\financial\controllers\PaymentMethods;
 
 use packages\base\DB;
+use packages\base\InputValidationException;
 use packages\base\NotFound;
 use packages\base\Response;
 use packages\base\View;
@@ -55,7 +56,7 @@ class CreditController extends Controller
          */
         $view = View::byName(CreditView::class);
         $view->transaction = $transaction;
-        $view->price = $user->credit > 0 ? $user->credit : -1*$transaction->remainPriceForAddPay();
+        $view->price = $transaction->remainPriceForAddPay();
 
         $this->response->setView($view);
         $this->response->setStatus(true);
@@ -70,9 +71,7 @@ class CreditController extends Controller
         $canCreateDebt = Authorization::is_accessed('payment_method_credit_debt', 'financial');
 
         if (
-            !$transaction->canAddPay() or
-            $transaction->remainPriceForAddPay() < 0 or
-            $transaction->param('UnChangableException') or
+            !$this->transactionManager->canPay($transaction) or
             !$paymentMethod->canPay($transaction) or
             $transaction->currency->id != Currency::getDefault($transaction->user)->id or
             ($transaction->user->credit <= 0 and !$canCreateDebt)
@@ -86,15 +85,16 @@ class CreditController extends Controller
          */
         $view = View::byName(CreditView::class);
         $view->transaction = $transaction;
-        $view->price = $user->credit > 0 ? $user->credit : -1*$transaction->remainPriceForAddPay();
+        $view->price = $canCreateDebt ? $transaction->remainPriceForAddPay() : $transaction->user->credit;
 
         $this->response->setView($view);
 
         $inputs = $this->checkInputs([
             'price' => [
-                'type' => 'number',
+                'type' => 'float',
                 'negetive' => $canCreateDebt,
                 'zero' => false,
+                'min' => 0,
                 'max' => $view->price,
             ],
         ]);
@@ -103,7 +103,7 @@ class CreditController extends Controller
 
         $pay = $transaction->addPay([
 			'method' => $paymentMethod->getName(),
-			'price' => abs($inputs['price']),
+			'price' => $inputs['price'],
 			"currency" => $transaction->currency->id,
 			'params' => [
 				'user' => $user->id,
@@ -119,7 +119,7 @@ class CreditController extends Controller
 
         DB::where('id', $user->id);
         $result = DB::update('userpanel_users', [
-            'credit' => DB::dec(abs($inputs['price'])),
+            'credit' => DB::dec($inputs['price']),
         ]);
 
         if (!$result) {
