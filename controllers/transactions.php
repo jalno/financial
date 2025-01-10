@@ -696,6 +696,7 @@ class Transactions extends Controller
 			], $transaction->products);
 			
 			$this->response->setStatus(true);
+			$this->response->setData($transaction->id, 'transaction');
 			$this->response->setData($products, "products");
 		} else {
 			$this->response->setStatus(true);
@@ -807,6 +808,7 @@ class Transactions extends Controller
 		$transaction = $this->transactionManager->store($inputs, Authentication::getID(), $inputs['notification']);
 
 		$this->response->setStatus(true);
+		$this->response->setData($transaction->id, 'transaction');
 		$this->response->Go(userpanel\url('transactions/view/'.$transaction->id));
 
 		return $this->response;
