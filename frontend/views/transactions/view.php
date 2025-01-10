@@ -41,8 +41,9 @@ class view extends transactionsView
 	public function getPayMethodForShow(Transaction_pay $pay): string
 	{
 		if (transaction_pay::PAYACCEPTED == $pay->method) {
-			$user = User::byId($pay->param('acceptor'));
-			return t('pay.method.payaccepted', ['acceptor' => $user ? $user->getFullName() : '-']);
+			$acceptor = $pay->param('acceptor') ?: '-';
+			$user = is_numeric($acceptor) ? User::byId($pay->param('acceptor')) : $acceptor;
+			return t('pay.method.payaccepted', ['acceptor' => $user instanceof User ? $user->getFullName() : $acceptor]);
 		}
 
 		if (!isset($this->paymentMethods[$pay->method])) {

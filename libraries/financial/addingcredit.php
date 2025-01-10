@@ -1,13 +1,21 @@
 <?php
+
 namespace packages\financial\products;
-use \packages\userpanel\user;
-use \packages\financial\transaction_product;
-class addingcredit extends transaction_product{
-	public function trigger_paid(){
-		$user = new user;
-		$user->where("id", $this->transaction->user->id);
-		$user = $user->getOne();
-		$user->credit += $this->price;
-		$user->save();
+
+use packages\base\DB;
+use packages\financial\transaction_product;
+
+/**
+ * @property \packages\financial\Transaction $transaction
+ * @property float $price
+ */
+class addingcredit extends transaction_product
+{
+	public function trigger_paid()
+	{
+		DB::where('id', $this->transaction->user->id)
+			->update('userpanel_users', [
+				'credit' => DB::inc($this->price),
+			]);
 	}
 }

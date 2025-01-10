@@ -173,8 +173,9 @@ $this->the_header();
 											<td class="ltr"><?php echo date::format("Y/m/d H:i:s", $pay->date); ?></td>
 											<td><?php
 											if (transaction_pay::PAYACCEPTED == $pay->method) {
-												$user = User::byId($pay->param('acceptor'));
-												echo t('pay.method.payaccepted', ['acceptor' => $user ? $user->getFullName() : '-']);
+												$acceptor = $pay->param('acceptor') ?: '-';
+												$user = is_numeric($acceptor) ? User::byId($acceptor) : $acceptor;
+												echo t('pay.method.payaccepted', ['acceptor' => $user instanceof User ? $user->getFullName() : $acceptor]);
 											} else {
 												echo t('pay.method.'.$pay->method);
 											}
