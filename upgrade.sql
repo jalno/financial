@@ -79,5 +79,6 @@ ALTER TABLE `financial_transactions_pays` CHANGE `method` `method` VARCHAR(25) C
 UPDATE `financial_transactions_pays` SET `method` = 'credit' WHERE `method` = '1';
 UPDATE `financial_transactions_pays` SET `method` = 'banktransfer' WHERE `method` = '2';
 UPDATE `financial_transactions_pays` SET `method` = 'onlinepay' WHERE `method` = '3';
+UPDATE `financial_transactions_pays` SET `method` = 'payaccepted' WHERE `method` = '4';
 ALTER TABLE `financial_transactions_pays` ADD `updated_at` INT NULL DEFAULT NULL AFTER `currency`; 
 
