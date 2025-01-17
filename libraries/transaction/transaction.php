@@ -186,6 +186,13 @@ class transaction extends dbObject
 		if ($this->status != self::UNPAID) {
 			return;
 		}
+
+		foreach ($this->pays as $pay) {
+			if ($pay->status == Transaction_Pay::PENDING) {
+				return;
+			}
+		}
+
 		$totalPrice = $this->getTotalPrice();
 		if ($totalPrice < 0) {
 			$payablePrice = abs($totalPrice);
