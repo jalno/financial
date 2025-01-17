@@ -28,10 +28,10 @@ class transaction_pay extends dbObject
 	const accepted = 1;
 	const rejected = 0;
 
-	const credit = 1;
-	const banktransfer = 2;
-	const onlinepay = 3;
-	const payaccepted = 4;
+	const credit = 'credit';
+	const banktransfer = 'banktransfer';
+	const onlinepay = 'onlinepay';
+	const payaccepted = 'payaccepted';
 
 	protected $dbTable = "financial_transactions_pays";
 	protected $primaryKey = "id";
