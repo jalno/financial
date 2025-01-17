@@ -149,19 +149,9 @@ class Transactions extends Controller
 			parent::response(authentication::FailResponse());
 		}
 	}
-	public function listtransactions(){
-		authorization::haveOrFail('transactions_list');
-		$view = view::byName(views\transactions\listview::class);
-		$this->response->setView($view);
-		$canAccept = Authorization::is_accessed("transactions_pay_accept");
-		$exporters = array();
-		$exporter = null;
-		if ($canAccept) {
-			$exporter = new Events\Exporters();
-			$exporter->trigger();
-			$exporters = $exporter->get();
-			$view->setExporters($exporters);
-		}
+
+	public function getSearchQuery(): Transaction
+	{
 		$types = authorization::childrenTypes();
 		$anonymous = authorization::is_accessed("transactions_anonymous");
 		$inputsRules = array(
@@ -217,7 +207,12 @@ class Transactions extends Controller
 				'default' => false,
 			],
 		);
+
+		$canAccept = Authorization::is_accessed("transactions_pay_accept");
 		if ($canAccept) {
+			$exporter = new Events\Exporters();
+			$exporter->trigger();
+
 			$inputsRules["download"]["values"] = array_merge($exporter->getExporterNames(), $inputsRules["download"]["values"]);
 			$inputsRules['refund'] = array(
 				'type' => 'bool',
@@ -226,35 +221,36 @@ class Transactions extends Controller
 				'default' => false,
 			);
 		}
+
 		$searched = false;
 		$inputs = $this->checkinputs($inputsRules);
 		if (!$canAccept) {
 			$inputs["refund"] = false;
 		}
-		$view->setDataForm($this->inputsvalue($inputsRules));
-		$transaction = new Transaction;
-		$transaction->with("currency");
+
+		$query = new Transaction;
+		$query->with("currency");
 		foreach(array('id', 'title', 'status', 'user') as $item){
 			if(isset($inputs[$item])){
 				$comparison = $inputs['comparison'];
 				if(in_array($item, array('id', 'status', 'user'))){
 					$comparison = 'equals';
 				}
-				$transaction->where("financial_transactions.".$item, $inputs[$item], $comparison);
+				$query->where("financial_transactions.".$item, $inputs[$item], $comparison);
 				$searched = true;
 			}
 		}
 		if (isset($inputs["create_from"])) {
-			$transaction->where("financial_transactions.create_at", $inputs["create_from"], ">=");
+			$query->where("financial_transactions.create_at", $inputs["create_from"], ">=");
 			$searched = true;
 		}
 		if (isset($inputs["create_to"])) {
-			$transaction->where("financial_transactions.create_at", $inputs["create_to"], "<");
+			$query->where("financial_transactions.create_at", $inputs["create_to"], "<");
 			$searched = true;
 		}
 
 		if ($inputs['pending_pays']) {
-			$transaction->where('financial_transactions.id', DB::subQuery()->where('status', Transaction_pay::pending)->get('financial_transactions_pays', null, 'transaction'), 'in');
+			$query->where('financial_transactions.id', DB::subQuery()->where('status', Transaction_pay::pending)->get('financial_transactions_pays', null, 'transaction'), 'in');
 		}
 
 		if(isset($inputs['word']) and $inputs['word']){
@@ -270,45 +266,72 @@ class Transactions extends Controller
 			}
 			$parenthesis->orWhere("financial_transactions.id", $products->get("financial_transactions_products", null, "financial_transactions_products.transaction"), "IN");
 			$searched = true;
-			$transaction->where($parenthesis);
+			$query->where($parenthesis);
 		}
 
 		if($anonymous){
-			$transaction->with("user", "LEFT");
+			$query->with('user', 'LEFT');
 			$parenthesis = new Parenthesis();
-			$parenthesis->where("userpanel_users.type",  $types, "in");
-			$parenthesis->orWhere("financial_transactions.user", null, "is");
-			$transaction->where($parenthesis);
+			$parenthesis->where('userpanel_users.type',  $types, 'in');
+			$parenthesis->orWhere('financial_transactions.user', null, 'is');
+			$query->where($parenthesis);
 		} else {
-			$transaction->with("user", "INNER");
+			$query->with('user', 'INNER');
 			if ($types) {
-				$transaction->where("userpanel_users.type", $types, "in");
+				$query->where('userpanel_users.type', $types, 'in');
 			} else {
-				$transaction->where("userpanel_users.id", authentication::getID());
+				$query->where('userpanel_users.id', Authentication::getID());
 			}
 		}
-		if ($inputs["refund"]) {
-			$products = db::subQuery();
-			$products->where("financial_transactions_products.method", Transaction_product::refund);
-			$transaction->where("financial_transactions.id", $products->get("financial_transactions_products", null, "financial_transactions_products.transaction"), "IN");
+		if ($inputs['refund']) {
+			$products = DB::subQuery();
+			$products->where('financial_transactions_products.method', Transaction_product::refund);
+			$query->where('financial_transactions.id', $products->get('financial_transactions_products', null, 'financial_transactions_products.transaction'), 'in');
 			$searched = false;
 		}
-		if (isset($inputs["download"])) {
-			$transactions = $transaction->get();
-			if (in_array($inputs["download"], $exporter->getExporterNames())) {
-				$handler = $exporter->getByName($inputs["download"])->getHandler();
+
+		if (!isset($inputs['download']) and !$searched) {
+			$query->where('financial_transactions.status', Transaction::expired, '!=');
+		}
+		
+		return $query;
+	}
+
+	public function listtransactions(){
+		authorization::haveOrFail('transactions_list');
+		$view = view::byName(views\transactions\listview::class);
+		$this->response->setView($view);
+		$canAccept = Authorization::is_accessed("transactions_pay_accept");
+
+		$exporter = null;
+		if ($canAccept) {
+			$exporter = new Events\Exporters();
+			$exporter->trigger();
+			$exporters = $exporter->get();
+			$view->setExporters($exporters);
+		}
+
+		$query = $this->getSearchQuery();
+
+		$inputs = $this->checkInputs([
+			'download' => array(
+				'type' => 'string',
+				'optional' => true,
+			),
+		]);
+		
+		if (isset($inputs['download'])) {
+			$transactions = $query->get();
+			if (in_array($inputs['download'], $exporter->getExporterNames())) {
+				$handler = $exporter->getByName($inputs['download'])->getHandler();
 				$responseFile = (new $handler())->export($transactions);
 				$this->response->setFile($responseFile);
 				$this->response->forceDownload();
 			}
 		} else {
-			if (!$searched) {
-				$transaction->where('financial_transactions.status', transaction::expired, '!=');
-			}
-
-			$transactions = $transaction->cursorPaginate("DESC", $this->items_per_page);
+			$transactions = $query->cursorPaginate('DESC', $this->items_per_page);
 			$view->setDataList($transactions);
-			$view->setCursorPaginate($this->items_per_page, $transaction->getCursorName(), $transaction->getNextPageCursor(), $transaction->getPrevPageCursor());
+			$view->setCursorPaginate($this->items_per_page, $query->getCursorName(), $query->getNextPageCursor(), $query->getPrevPageCursor());
 		}
 
 		$this->response->setStatus(true);
