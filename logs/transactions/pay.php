@@ -50,7 +50,10 @@ class pay extends logs{
 	private function getPayTitle(transaction_pay $pay): string
 	{
 		if ($pay->method == transaction_pay::payaccepted) {
-			return translator::trans('pay.method.payaccepted', array('acceptor' => $this->log->user->getFullName()));
+			return translator::trans('pay.method.payaccepted', array(
+				'acceptor' =>
+				$this->log->user ? $this->log->user->getFullName() : 'سیستم'
+			));
 		}
 
 		$transaction = $pay->transaction;
