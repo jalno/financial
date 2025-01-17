@@ -1,7 +1,6 @@
 <?php
 namespace packages\financial;
 
-use packages\dakhl\API as dakhl;
 use packages\userpanel\{user, date};
 use packages\base\{db\dbObject, Options, Packages, Utility\Safe, Translator, db};
 use packages\userpanel\CursorPaginateTrait;
@@ -462,30 +461,7 @@ class transaction extends dbObject
 		return true;
 	}
 	public function afterPay(){
-		$dakhlPackage = packages::package("dakhl");
-		$dakhl = false;
-		$invoice = false;
-		$dcurrency = false;
 		$pays = array();
-		if ($dakhlPackage and class_exists(dakhl::class)) {
-			$pay = new transaction_pay();
-			$pay->where("transaction", $this->id);
-			$pay->where("status", transaction_pay::accepted);
-			$pay->where("method", array(transaction_pay::onlinepay, transaction_pay::banktransfer), "in");
-			$pays = $pay->get();
-			if ($pays) {
-				$ocurrency = options::get("packages.dakhl.currency");
-				if (!$dcurrency = currency::where("id", $ocurrency)->getOne()) {
-					throw new \Exception("notfound dakhl currency");
-				}
-				$dakhl = new dakhl();
-				$price = $this->price;
-				if ($this->currency->id != $dcurrency->id) {
-					$price = $this->currency->changeTo($this->price, $dcurrency);
-				}
-				$invoice = $dakhl->addIncomeInvoice($this->title, $this->user, $price);
-			}
-		}
 		$currency = $this->currency;
 		foreach ($this->products as $product) {
 			$pcurrency = $product->currency;
@@ -495,54 +471,6 @@ class transaction extends dbObject
 				$product->currency = $currency->id;
 				$product->save();
 			} catch (currency\UnChangableException $e) {}
-			if ($invoice) {
-				if (!$product->description) {
-					$product->description = "";
-				}
-				$price = $product->price;
-				$discount = $product->discount;
-				if ($product->currency->id != $dcurrency->id) {
-					$price = $product->currency->changeTo($product->price, $dcurrency);
-					$discount = $product->currency->changeTo($product->discount, $dcurrency);
-				}
-				$dakhl->addInvoiceProduct($invoice, $product->title, $product->number, $price, $discount, $product->description);
-			}
-		}
-		if ($invoice) {
-			foreach ($pays as $pay) {
-				$account = null;
-				$description = "";
-				if ($pay->method == transaction_pay::onlinepay) {
-					$payparam = $pay->param("payport_pay");
-					if ($payparam) {
-						$payportpay = payport_pay::where("id", $payparam)->getOne();
-						if ($payportpay) {
-							$payport = $payportpay->payport;
-							$account = $payport->account;
-							$description = translator::trans("financial.pay.online", array("payport" => $payport->title));
-						}
-					}
-				} else if ($pay->method == transaction_pay::banktransfer) {
-					$payparam = $pay->param("bankaccount");
-					if ($payparam) {
-						$account = (new Bank\Account)->byID($payparam);
-						$description = t("financial.pay.bankTransfer");
-						$followup = $pay->param("followup");
-						if ($followup) {
-							$description .= " - " . translator::trans("financial.pay.bankTransfer.followup", array("followup" => $pay->param("followup")));
-						}
-					}
-				}
-				if (!$account) {
-					continue;
-				}
-				$dakhlaccount = $dakhl->getBankAccount($account->bank->title, $account->shaba);
-				$price = $pay->price;
-				if ($pay->currency->id != $dcurrency->id) {
-					$price = $pay->currency->changeTo($pay->price, $dcurrency);
-				}
-				$dakhl->addInvoicePay($invoice, $dakhlaccount, $price, $pay->date, $description);
-			}
 		}
 	}
 
