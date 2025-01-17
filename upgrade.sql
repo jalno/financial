@@ -82,3 +82,10 @@ UPDATE `financial_transactions_pays` SET `method` = 'onlinepay' WHERE `method` =
 UPDATE `financial_transactions_pays` SET `method` = 'payaccepted' WHERE `method` = '4';
 ALTER TABLE `financial_transactions_pays` ADD `updated_at` INT NULL DEFAULT NULL AFTER `currency`; 
 
+UPDATE
+    `financial_transactions_pays`
+INNER JOIN `financial_transactions` ON `financial_transactions`.`id` = `financial_transactions_pays`.`transaction`
+SET
+    `financial_transactions_pays`.`status` = 0
+WHERE
+    `financial_transactions_pays`.`status` = 2 AND `financial_transactions`.`status` = 4
