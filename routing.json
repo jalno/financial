@@ -15,23 +15,23 @@
 		"method":"get"
 	},
 	{
-		"path": "userpanel/transactions/pay/credit/:transaction",
-		"controller": "controllers/transactions@payByCreditView",
+		"path": "userpanel/transactions/pay/credit/:id",
+		"controller": "controllers/PaymentMethods/CreditController@view",
 		"method": "get"
 	},
 	{
-		"path": "userpanel/transactions/pay/credit/:transaction",
-		"controller": "controllers/transactions@payByCredit",
+		"path": "userpanel/transactions/pay/credit/:id",
+		"controller": "controllers/PaymentMethods/CreditController@pay",
 		"method": "post"
 	},
 	{
-		"path": ["userpanel","transactions","pay", "banktransfer", {"type":"dynamic", "name":"transaction", "regex":"/^(\\d+)$/"}],
-		"controller": "controllers/transactions@payByBankTransferView",
+		"path": "userpanel/transactions/pay/banktransfer/:id",
+		"controller": "controllers/PaymentMethods/BankTransferController@view",
 		"method":"get"
 	},
 	{
-		"path": ["userpanel","transactions","pay", "banktransfer", {"type":"dynamic", "name":"transaction", "regex":"/^(\\d+)$/"}],
-		"controller": "controllers/transactions@payByBankTransfer",
+		"path": "userpanel/transactions/pay/banktransfer/:id",
+		"controller": "controllers/PaymentMethods/BankTransferController@pay",
 		"method" :"post"
 	},
 	{
@@ -43,13 +43,13 @@
 		"controller": "controllers\\transactions@rejectPay"
 	},
 	{
-		"path": "userpanel/transactions/pay/onlinepay/:transaction",
-		"controller": "controllers/transactions@onlinePayView",
+		"path": "userpanel/transactions/pay/onlinepay/:id",
+		"controller": "controllers/PaymentMethods/OnlineController@view",
 		"method": "get"
 	},
 	{
-		"path": "userpanel/transactions/pay/onlinepay/:transaction",
-		"controller": "controllers/transactions@onlinePay",
+		"path": "userpanel/transactions/pay/onlinepay/:id",
+		"controller": "controllers/PaymentMethods/OnlineController@pay",
 		"method": "post"
 	},
 	{

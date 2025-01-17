@@ -28,11 +28,14 @@ class pay  extends \packages\financial\view{
 	public function setPayPorts($ports){
 		$this->setData($ports, 'payports');
 	}
-	public function setMethod($method){
-		$this->data['methods'][] = $method;
+
+	public function setMethods(array $methods): void
+	{
+		$this->setData($methods, 'payment_methods');
 	}
+
 	public function getMethods(){
-		return $this->getData('methods');
+		return $this->getData('payment_methods');
 	}
 	public function export() {
 		return array(

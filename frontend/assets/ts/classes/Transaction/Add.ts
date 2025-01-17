@@ -118,16 +118,56 @@ export default class Add {
 		return info;
 	}
 	private static runSubmitFormListener() {
-		Add.$form.on("submit", function(e) {
+		const $btn = $('.btn-submit', Add.$form);
+		const $icon = $('.fa', $btn);
+		Add.$form.on("submit", async function(e) {
 			e.preventDefault();
+			const preSubmitEvent = $.Event('pre_submit');
+			const preSubmitHandlers = $(this).data('pre_submit');
+
+			if (preSubmitHandlers) {
+				$btn.prop('disabled', true);
+				$icon.removeClass('fa-arrow-circle-left').addClass('fa-spinner fa-spin');
+				for (const handler of preSubmitHandlers) {
+					await handler(preSubmitEvent);
+				}
+			}
+
+			if (preSubmitEvent.isDefaultPrevented()) {
+				$btn.prop('disabled', false);
+				$icon.attr('class', 'fa fa-arrow-circle-left');
+				return;
+			}
+
 			$(this).formAjax({
 				data: Add.serialize(),
-				success: (data: webuilder.AjaxResponse) => {
+				success: async (response: webuilder.AjaxResponse) => {
+					$icon.attr('class', 'fa fa-arrow-circle-left');
+					$btn.prop('disabled', true);
+
 					$.growl.notice({
 						title: t("packages.financial.success"),
 						message: t("packages.financial.request.success"),
 					});
-					window.location.href = data.redirect;
+
+					const postSubmitEvent = $.Event('post_submit');
+					const postSubmitHandlers = $(this).data('post_submit');
+
+					if (postSubmitHandlers) {
+						$btn.prop('disabled', true);
+						$icon.removeClass('fa-arrow-circle-left').addClass('fa-spinner fa-spin');
+						for (const handler of postSubmitHandlers) {
+							await handler(postSubmitEvent, response.transaction);
+						}
+					}
+
+					if (postSubmitEvent.isDefaultPrevented()) {
+						return;
+					}
+
+					setTimeout(() => {
+						window.location.href = response.redirect;
+					}, 1000);
 				},
 				error: (error: webuilder.AjaxError) => {
 					if (error.error === "data_duplicate" || error.error === "data_validation") {

@@ -52,6 +52,8 @@ class usertype{
 
 			"profile_change_currency",
 			"profile_checkout_limits",
+
+			"payment_method_credit_debt",
 		);
 		foreach($permissions as $permission){
 			permissions::add('financial_'.$permission);

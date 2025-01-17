@@ -2,7 +2,6 @@
 namespace themes\clipone\views\transactions;
 use \packages\base\translator;
 use \packages\userpanel;
-use \packages\userpanel\date;
 use \packages\financial\views\transactions\pay as payView;
 use \themes\clipone\breadcrumb;
 use \themes\clipone\navigation;
@@ -43,8 +42,5 @@ class pay extends payView{
 		breadcrumb::addItem($item);
 
 		navigation::active("transactions/list");
-	}
-	protected function getColumnWidth(){
-		return ($this->canViewGuestLink ? 12 : 6)/count($this->methods);
 	}
 }

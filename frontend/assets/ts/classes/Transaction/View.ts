@@ -6,15 +6,19 @@ import "webuilder/formAjax";
 
 export default class View {
 	public static initIfNeeded() {
-		View.$acceptForm = $("#refund-accept-modal #refund-accept-form");
-		View.$rejectForm = $("#refund-reject-modal #refund-reject-form");
-		if (View.$acceptForm.length || View.$rejectForm.length) {
+		if ($('body').hasClass('transaction-view')) {
 			View.init();
 		}
 	}
 	protected static $acceptForm: JQuery;
 	protected static $rejectForm: JQuery;
 	protected static init() {
+		const $paysStatusIcon = $('.transaction-pays-status-icon');
+		if ($paysStatusIcon.length) {
+			$paysStatusIcon.tooltip('show');
+		}
+		View.$acceptForm = $("#refund-accept-modal #refund-accept-form");
+		View.$rejectForm = $("#refund-reject-modal #refund-reject-form");
 		if (View.$acceptForm.length) {
 			View.acceptFormListener();
 		}

@@ -72,3 +72,20 @@ ALTER TABLE `financial_transactions_products` ADD INDEX(`type`, `service_id`)
 -- WHERE
 --     financial_transactions_products.service_id IS NULL;
 
+--
+-- Commit: e31c103ba127278a25bbcda29fe99f6486133c7b
+--
+ALTER TABLE `financial_transactions_pays` CHANGE `method` `method` VARCHAR(25) CHARACTER SET latin1 COLLATE latin1_general_cs NOT NULL;
+UPDATE `financial_transactions_pays` SET `method` = 'credit' WHERE `method` = '1';
+UPDATE `financial_transactions_pays` SET `method` = 'banktransfer' WHERE `method` = '2';
+UPDATE `financial_transactions_pays` SET `method` = 'onlinepay' WHERE `method` = '3';
+UPDATE `financial_transactions_pays` SET `method` = 'payaccepted' WHERE `method` = '4';
+ALTER TABLE `financial_transactions_pays` ADD `updated_at` INT NULL DEFAULT NULL AFTER `currency`; 
+
+UPDATE
+    `financial_transactions_pays`
+INNER JOIN `financial_transactions` ON `financial_transactions`.`id` = `financial_transactions_pays`.`transaction`
+SET
+    `financial_transactions_pays`.`status` = 0
+WHERE
+    `financial_transactions_pays`.`status` = 2 AND `financial_transactions`.`status` = 4

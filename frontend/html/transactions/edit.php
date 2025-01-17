@@ -1,5 +1,6 @@
 <?php
-use \packages\userpanel;
+use packages\userpanel;
+use packages\userpanel\User;
 use \themes\clipone\utility;
 use \packages\userpanel\date;
 use \packages\base\{json, translator};
@@ -170,7 +171,15 @@ $this->the_header();
 										)); ?>'>
 											<td><?php echo $x++; ?></td>
 											<td class="ltr"><?php echo date::format("Y/m/d H:i:s", $pay->date); ?></td>
-											<td class="hidden-480"><?php echo $pay->method; ?></td>
+											<td><?php
+											if (transaction_pay::PAYACCEPTED == $pay->method) {
+												$acceptor = $pay->param('acceptor') ?: '-';
+												$user = is_numeric($acceptor) ? User::byId($acceptor) : $acceptor;
+												echo t('pay.method.payaccepted', ['acceptor' => $user instanceof User ? $user->getFullName() : $acceptor]);
+											} else {
+												echo t('pay.method.'.$pay->method);
+											}
+											?></td>
 											<td>
 											<?php echo $pay->description ? $pay->description : ""; ?>
 												<div class="pay-description btn-block"><?php echo $description ? nl2br($description) : ""; ?></div>

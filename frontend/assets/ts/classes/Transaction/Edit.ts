@@ -177,19 +177,56 @@ export default class Edit {
 		});
 	}
 	private static runSubmitFormListener() {
-		Edit.$form.on("submit", function(e) {
+		const $btn = $('.btn-submit', Edit.$form);
+		const $icon = $('.fa', $btn);
+		Edit.$form.on("submit", async function(e) {
 			e.preventDefault();
+			const preSubmitEvent = $.Event('pre_submit');
+			const preSubmitHandlers = $(this).data('pre_submit');
+
+			if (preSubmitHandlers) {
+				$btn.prop('disabled', true);
+				$icon.removeClass('fa-check-square-o').addClass('fa-spinner fa-spin');
+				for (const handler of preSubmitHandlers) {
+					await handler(preSubmitEvent);
+				}
+			}
+
+			if (preSubmitEvent.isDefaultPrevented()) {
+				$btn.prop('disabled', false);
+				$icon.attr('class', 'fa fa-check-square-o');
+				return;
+			}
+
 			const form = this as HTMLFormElement;
 			$(form).formAjax({
 				data: Edit.serialize(),
-				success: (response) => {
+				success: async(response) => {
+					$icon.attr('class', 'fa fa-check-square-o');
 					$.growl.notice({
 						title: t("packages.financial.success"),
 						message: t("packages.financial.request.success"),
 					});
+
+					const postSubmitEvent = $.Event('post_submit');
+					const postSubmitHandlers = $(this).data('post_submit');
+
+					if (postSubmitHandlers) {
+						$btn.prop('disabled', true);
+						$icon.removeClass('fa-check-square-o').addClass('fa-spinner fa-spin');
+						for (const handler of postSubmitHandlers) {
+							await handler(postSubmitEvent, response.transaction);
+						}
+					}
+
+					if (postSubmitEvent.isDefaultPrevented()) {
+						return;
+					}
+
 					Edit.rebuildProductsTable(response.products);
 				},
 				error: (error: webuilder.AjaxError) => {
+					$icon.attr('class', 'fa fa-check-square-o');
 					if (error.error === "data_duplicate" || error.error === "data_validation") {
 						const $input = $(`[name="${error.input}"]`, form);
 						const $params = {

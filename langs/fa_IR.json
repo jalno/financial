@@ -141,6 +141,8 @@
 		"usertype.permissions.financial_profile_change_currency": "تغییر ارز در قسمت تنظیمات کاربر",
 		"usertype.permissions.financial_profile_checkout_limits": "تغییر محدودیت های ایجاد صورتحساب تسویه در قسمت تنظیمات کاربر",
 
+		"usertype.permissions.financial_payment_method_credit_debt": "پرداخت با موجودی کاربری با ایجاد بدهی",
+
 		"error.packages.financial.error.transactions.user.delete_user_warn": "هشدار در خصوص صورتحساب های این کاربر",
 		"error.packages.financial.error.transactions.user.delete_user_warn.message": "این کاربر دارای صورتحساب یا صورتحساب هایی می باشد؛ در صورت حذف این کاربر، تمامی صورتحساب های ایشان نیز حذف خواهند شد!",
 		"packages.financial.error.transactions.user.delete_user_warn.view_transactions": "در صورت نیاز میتوانید با استفاده از لینک زیر، صورتحساب های این کاربر را مشاهده بفرمایید.",

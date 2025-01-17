@@ -1,6 +1,8 @@
 import * as $ from "jquery";
 import Transaction from "../../Transaction";
 import "webuilder/formAjax";
+import * as moment from "jalali-moment";
+import "jalali-daterangepicker";
 
 export default class BankTransfer {
 	public static initIfNeeded() {
@@ -12,6 +14,7 @@ export default class BankTransfer {
 	private static init() {
 		BankTransfer.runNumberFormatListener();
 		BankTransfer.runSubmitFormListener();
+		BankTransfer.runDateRangePicker();
 	}
 	private static $form: JQuery;
 	private static runNumberFormatListener() {
@@ -69,6 +72,29 @@ export default class BankTransfer {
 					}
 				},
 			});
+		});
+	}
+
+	private static runDateRangePicker() {
+		moment.locale(Translator.getActiveShortLang());
+		const config: any = {
+			autoUpdateInput: false,
+			showDropdowns: true,
+			singleDatePicker: true,
+		};
+		if (Translator.getActiveShortLang() === "fa") {
+			config.locale = {
+				format: "YYYY/MM/DD",
+				monthNames: (moment.localeData() as any)._jMonthsShort,
+				firstDay: 6,
+				direction: "rtl",
+				separator: " - ",
+				applyLabel: t("packages.financial.action"),
+				cancelLabel: t("cancel"),
+			};
+		}
+		$('input[name="date"]', BankTransfer.$form).daterangepicker(config, function(start) {
+			$(this.element).val(start.format("YYYY/MM/DD"));
 		});
 	}
 }

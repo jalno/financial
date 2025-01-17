@@ -1,27 +1,20 @@
 <?php
 namespace packages\financial\logs\transactions;
 use \packages\base\{view, translator};
+use packages\financial\Contracts\ITransactionManager;
 use \packages\userpanel\{logs\panel, logs};
 use \packages\financial\transaction_pay;
+use packages\financial\TransactionManager;
+
 class pay extends logs{
 	public function getColor():string{
 		return "circle-green";
 	}
+
 	public function getIcon():string{
 		return "fa fa-money";
 	}
-	private function getPayTitle(transaction_pay $pay){
-		switch($pay->method){
-			case(transaction_pay::credit):
-				return translator::trans('pay.method.credit');
-			case(transaction_pay::banktransfer):
-				return translator::trans('pay.byBankTransfer');
-			case(transaction_pay::onlinepay):
-				return translator::trans('pay.byPayOnline');
-			case(transaction_pay::payaccepted):
-				return translator::trans('pay.method.payaccepted', array('acceptor' => $this->log->user->getFullName()));
-		}
-	}
+
 	public function buildFrontend(view $view){
 		$parameters = $this->log->parameters;
 		$pay = $parameters['pay'];
@@ -50,5 +43,34 @@ class pay extends logs{
 
 		$panel->setHTML($html);
 		$this->addPanel($panel);
+	}
+
+	private ?ITransactionManager $transactionManager = null;
+
+	private function getPayTitle(transaction_pay $pay): string
+	{
+		if ($pay->method == transaction_pay::payaccepted) {
+			return translator::trans('pay.method.payaccepted', array(
+				'acceptor' =>
+				$this->log->user ? $this->log->user->getFullName() : 'سیستم'
+			));
+		}
+
+		$transaction = $pay->transaction;
+		if (!$transaction) {
+			return $pay->method;
+		}
+
+		$paymentMethods = $this->getTransactionManager()->getPaymentMethods($transaction);
+		if (!isset($paymentMethods[$pay->method])) {
+			return $pay->method;
+		}
+
+		return $paymentMethods[$pay->method]->getPayTitle($pay);
+	}
+
+	private function getTransactionManager(): ITransactionManager
+	{
+		return $this->transactionManager ?: $this->transactionManager = TransactionManager::getInstance();
 	}
 }

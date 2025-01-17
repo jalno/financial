@@ -3,6 +3,7 @@ namespace themes\clipone\views\transactions;
 
 use packages\base\{view\Error, Packages, frontend\Theme, db\Parenthesis};
 use packages\financial\{Authentication, Authorization, Bank\Account, Currency, Transaction, transaction_product as TransactionProduct};
+use packages\financial\Transaction_pay as TransactionPay;
 use packages\userpanel;
 use packages\userpanel\{Date, User};
 use themes\clipone\{viewTrait, navigation, views\listTrait, views\formTrait, navigation\menuItem, views\TransactionTrait};
@@ -43,25 +44,16 @@ class ListView extends TransactionsListView {
 			$item->setTitle(t("packages.financial.transactions"));
 			$item->setURL(userpanel\url('transactions'));
 			$item->setIcon('fa fa-money');
-			navigation::addItem($item);
-			if (packages::package("dakhl")) {
-				$invoices = navigation::getByName("invoices");
-				$bankAccounts = navigation::getByName("bankAccounts");
-				if ($invoices or $bankAccounts) {
-					$dakhl = new menuItem("dakhl");
-					$dakhl->setTitle("دخل");
-					$dakhl->setIcon("fa fa-tachometer");
-					navigation::addItem($dakhl);
-					if ($invoices) {
-						navigation::removeItem($invoices);
-						$dakhl->addItem($invoices);
-					}
-					if ($bankAccounts) {
-						navigation::removeItem($bankAccounts);
-						$dakhl->addItem($bankAccounts);
-					}
+
+			if (Authorization::is_accessed('transactions_pay_accept')) {
+				$query = (new TransactionPay())->where('status', TransactionPay::pending);
+				$pendingPays = $query->count();
+				if ($pendingPays > 0) {
+					$item->setBadge(Navigation\Badge::warning($pendingPays));
 				}
 			}
+
+			navigation::addItem($item);
 		}
 	}
 	public function setButtons(){

@@ -33,7 +33,7 @@ class view extends \packages\financial\view {
 			$this->addError($error);
 		}
 	}
-	protected function getTransaction(){
+	public function getTransaction(){
 		return $this->getData('transaction');
 	}
 }

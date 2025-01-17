@@ -1,7 +1,6 @@
 <?php
 namespace themes\clipone\views\transactions;
 use packages\userpanel;
-use packages\userpanel\date;
 use themes\clipone\{navigation, viewTrait, views\listTrait, views\formTrait, views\TransactionTrait};
 use packages\financial\{Bank\Account, transaction, transaction_pay, payport_pay, views\transactions\edit as transactionsEdit};
 
@@ -31,30 +30,7 @@ class edit extends transactionsEdit{
 		foreach($this->pays as $pay){
 			if($pay->status == transaction_pay::pending){
 				$needacceptbtn = true;
-			}
-			switch($pay->method){
-				case(transaction_pay::credit):
-					$pay->method = t('pay.method.credit');
-					break;
-				case(transaction_pay::banktransfer):
-					if ($bankaccount = Account::byId($pay->param('bankaccount'))) {
-						$pay->method = t('pay.byBankTransfer.withbank', array('bankaccount' => $bankaccount->cart));
-					} else {
-						$pay->method = t('pay.byBankTransfer');
-					}
-					$pay->description = t('pay.byBankTransfer.withfollowup', array('followup' => $pay->param('followup')));
-					break;
-				case(transaction_pay::onlinepay):
-					if($payport_pay = payport_pay::byId($pay->param('payport_pay'))){
-						$pay->method = t('pay.byPayOnline.withpayport', array('payport' => $payport_pay->payport->title));
-					}else{
-						$pay->method = t('pay.byPayOnline');
-					}
-					break;
-				case(transaction_pay::payaccepted):
-					$acceptor = userpanel\user::byId($pay->param('acceptor'));
-					$pay->method = t('pay.method.payaccepted', array('acceptor' => $acceptor->getFullName()));
-					break;
+				break;
 			}
 		}
 		if($needacceptbtn){

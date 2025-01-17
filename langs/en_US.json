@@ -114,6 +114,8 @@
 		"usertype.permissions.financial_profile_change_currency": "Change currency in profile setting",
 		"usertype.permissions.financial_profile_checkout_limits": "Change checkout limits in profile setting",
 
+		"usertype.permissions.financial_payment_method_credit_debt": "Create Debit in pay by user credit",
+
 		"error.packages.financial.error.transactions.user.delete_user_warn": "Warning about user transactions",
 		"error.packages.financial.error.transactions.user.delete_user_warn.message": "This user has transaction(s). If you delete this user, all user's transactions will be deleted!",
 		"packages.financial.error.transactions.user.delete_user_warn.view_transactions": "You can we user's transactions(s)",
