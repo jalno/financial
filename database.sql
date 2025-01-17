@@ -154,6 +154,7 @@ CREATE TABLE `financial_transactions_pays` (
 	`date` int(11) NOT NULL,
 	`price` DOUBLE NOT NULL,
 	`currency` int(11) NOT NULL,
+	`updated_at` int(11) DEFAULT NULL,
 	`status` tinyint(1) NOT NULL,
 	PRIMARY KEY (`id`),
 	KEY `transaction` (`transaction`),

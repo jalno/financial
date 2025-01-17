@@ -76,6 +76,8 @@ ALTER TABLE `financial_transactions_products` ADD INDEX(`type`, `service_id`)
 -- Commit: e31c103ba127278a25bbcda29fe99f6486133c7b
 --
 ALTER TABLE `financial_transactions_pays` CHANGE `method` `method` VARCHAR(25) CHARACTER SET latin1 COLLATE latin1_general_cs NOT NULL;
-UPDATE `financial_transactions_pays` SET `method` = 'credit' WHERE `method` = 1;
-UPDATE `financial_transactions_pays` SET `method` = 'banktransfer' WHERE `method` = 2;
-UPDATE `financial_transactions_pays` SET `method` = 'onlinepay' WHERE `method` = 3;
+UPDATE `financial_transactions_pays` SET `method` = 'credit' WHERE `method` = '1';
+UPDATE `financial_transactions_pays` SET `method` = 'banktransfer' WHERE `method` = '2';
+UPDATE `financial_transactions_pays` SET `method` = 'onlinepay' WHERE `method` = '3';
+ALTER TABLE `financial_transactions_pays` ADD `updated_at` INT NULL DEFAULT NULL AFTER `currency`; 
+
